@@ -5,8 +5,8 @@ project(programmingenclaves)
 include(HelperScripts/CMakeLists.txt)
 
 
-#include Samples directory
-subdirs(Samples)
+#include PingPong Samples directory
+subdirs(Samples/PingPong/)
 
 
 ##########################################################################

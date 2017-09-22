@@ -28,7 +28,7 @@ FILE(GLOB_RECURSE ${projectName}_gsources PGenerated/*.c)
 
 
 
-add_library(${projectName} SHARED
+add_executable(${projectName}
   ${${projectName}_gsources}
   ${${projectName}_csources}
   ${${projectName}_psources}
@@ -54,6 +54,7 @@ target_include_directories(${projectName} PRIVATE
 
 target_link_libraries(${projectName}
   pruntime
+  pthread
 )
 
 

@@ -1,45 +1,43 @@
-#include "linker.h"
+#include "pingpong.h"
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
-	if (status == PRT_STATUS_ASSERT)
-	{
-		fprintf_s(stdout, "exiting with PRT_STATUS_ASSERT (assertion failure)\n");
-		exit(1);
-	}
-	else if (status == PRT_STATUS_EVENT_OVERFLOW)
-	{
-		fprintf_s(stdout, "exiting with PRT_STATUS_EVENT_OVERFLOW\n");
-		exit(1);
-	}
-	else if (status == PRT_STATUS_EVENT_UNHANDLED)
-	{
-		fprintf_s(stdout, "exiting with PRT_STATUS_EVENT_UNHANDLED\n");
-		exit(1);
-	}
-	else if (status == PRT_STATUS_QUEUE_OVERFLOW)
-	{
-		fprintf_s(stdout, "exiting with PRT_STATUS_QUEUE_OVERFLOW \n");
-		exit(1);
-	}
-	else if (status == PRT_STATUS_ILLEGAL_SEND)
-	{
-		fprintf_s(stdout, "exiting with PRT_STATUS_ILLEGAL_SEND \n");
-		exit(1);
-	}
-	else
-	{
-		fprintf_s(stdout, "unexpected PRT_STATUS in ErrorHandler: %d\n", status);
-		exit(2);
-	}
+    if (status == PRT_STATUS_ASSERT)
+    {
+        fprintf_s(stdout, "exiting with PRT_STATUS_ASSERT (assertion failure)\n");
+        exit(1);
+    }
+    else if (status == PRT_STATUS_EVENT_OVERFLOW)
+    {
+        fprintf_s(stdout, "exiting with PRT_STATUS_EVENT_OVERFLOW\n");
+        exit(1);
+    }
+    else if (status == PRT_STATUS_EVENT_UNHANDLED)
+    {
+        fprintf_s(stdout, "exiting with PRT_STATUS_EVENT_UNHANDLED\n");
+        exit(1);
+    }
+    else if (status == PRT_STATUS_QUEUE_OVERFLOW)
+    {
+        fprintf_s(stdout, "exiting with PRT_STATUS_QUEUE_OVERFLOW \n");
+        exit(1);
+    }
+    else if (status == PRT_STATUS_ILLEGAL_SEND)
+    {
+        fprintf_s(stdout, "exiting with PRT_STATUS_ILLEGAL_SEND \n");
+        exit(1);
+    }
+    else
+    {
+        fprintf_s(stdout, "unexpected PRT_STATUS in ErrorHandler: %d\n", status);
+        exit(2);
+    }
 
 
 }
 
 
 
-HANDLE threadsTerminated;
-long threadsRunning = 0;
 static PRT_BOOLEAN cooperative = PRT_FALSE;
 static int threads = 1;
 
@@ -49,35 +47,36 @@ static long steps = 0;
 static long startTime = 0;
 static long perfEndTime = 0;
 static const char* parg = NULL;
+static const char* workspaceConfig;
 
-void Log(PRT_STEP step, PRT_MACHINESTATE *senderState, PRT_MACHINEINST *receiver, PRT_VALUE* event, PRT_VALUE* payload)
-{
-	PrtPrintStep(step, senderState, receiver, event, payload);
+void Log(PRT_STEP step, PRT_MACHINEINST *sender, PRT_MACHINEINST *receiver, PRT_VALUE* event, PRT_VALUE* payload)
+{ 
+    PrtPrintStep(step, sender, receiver, event, payload);
 }
 
 static PRT_BOOLEAN ParseCommandLine(int argc, char *argv[])
 {
-	for (int i = 1; i < argc; i++)
-	{
-		char* arg = argv[i];
-		if (arg[0] == '-' || arg[0] == '/')
-		{
-			if (_stricmp(arg + 1, "cooperative") == 0)
-			{
-				cooperative = PRT_TRUE;
-			}
-			else if (_stricmp(arg + 1, "threads") == 0)
-			{
-				if (i + 1 < argc)
-				{
-					threads = atoi(argv[++i]);
-					if (threads <= 0)
-					{
-						threads = 1;
-					}
-				}
-			}
-			else if (_stricmp(arg + 1, "perf") == 0)
+    for (int i = 1; i < argc; i++)
+    {
+        char* arg = argv[i];
+        if (arg[0] == '-' || arg[0] == '/')
+        {
+            if (strcasecmp(arg + 1, "cooperative") == 0)
+            {
+                cooperative = PRT_TRUE;
+            }
+            else if (strcasecmp(arg + 1, "threads") == 0)
+            {
+                if (i + 1 < argc)
+                {
+                    threads = atoi(argv[++i]);
+                    if (threads <= 0)
+                    {
+                        threads = 1;
+                    }
+                }
+            }
+            else if (strcasecmp(arg + 1, "perf") == 0)
 			{
 				if (i + 1 < argc)
 				{
@@ -89,41 +88,49 @@ static PRT_BOOLEAN ParseCommandLine(int argc, char *argv[])
 					}
 				}
 			}
-			else if (_stricmp(arg + 1, "arg") == 0)
+            else if (strcasecmp(arg + 1, "w") == 0)
+			{
+				if (i + 1 < argc)
+				{
+					workspaceConfig = argv[++i];
+				}
+			}
+            else if (strcasecmp(arg + 1, "arg") == 0)
 			{
 				if (i + 1 < argc)
 				{
 					parg = argv[++i];
 				}
 			}
-			else if (_stricmp(arg + 1, "h") == 0 || _stricmp(arg + 1, "help") == 0 || _stricmp(arg + 1, "?") == 0)
-			{
-				return PRT_FALSE;
-			}
-			else
-			{
-				printf("Unknown argument: '%s'\n", arg);
-				return PRT_FALSE;
-			}
-		}
-		else
-		{
-			printf("Unknown argument: '%s'\n", arg);
-			return PRT_FALSE;
-		}
-	}
-	return PRT_TRUE;
+            else if (strcasecmp(arg + 1, "h") == 0 || strcasecmp(arg + 1, "help") == 0 || strcasecmp(arg + 1, "?") == 0)
+            {
+                return PRT_FALSE;
+            }
+            else
+            {
+                printf("Unknown argument: '%s'\n", arg);
+                return PRT_FALSE;
+            }
+        }
+        else 
+        {
+            printf("Unknown argument: '%s'\n", arg);
+            return PRT_FALSE;
+        }
+    }
+    return PRT_TRUE;
 }
 
 static void PrintUsage(void)
 {
-	printf("Usage: Tester [options]\n");
-	printf("This program tests the compiled state machine in program.c and program.h\n");
-	printf("Options:\n");
-	printf("   -cooperative     run state machine with the cooperative scheduler\n");
-	printf("   -threads [n]     run P using multiple threads");
-	printf("   -perf [n]        run performance test that outputs #steps every 10 seconds, terminating after n seconds");
-	printf("   -arg [x]         pass argument 'x' to P main machine");
+    printf("Usage: Tester [options]\n");
+    printf("This program tests the compiled state machine in program.c and program.h\n");
+    printf("Options:\n");
+	printf("	-w [path]		[path] represents the path to the workspace config file\n");
+    printf("   -cooperative     run state machine with the cooperative scheduler\n");
+	printf("   -threads [n]     run P using multiple threads\n");
+	printf("   -perf [n]        run performance test that outputs #steps every 10 seconds, terminating after n seconds\n");
+	printf("   -arg [x]         pass argument 'x' to P main machine\n");
 }
 
 static void RunPerfTest()
@@ -131,7 +138,7 @@ static void RunPerfTest()
 
 }
 
-void PRT_CALL_CONV  MyAssert(PRT_INT32 condition, PRT_CSTRING message)
+void MyAssert(PRT_INT32 condition, PRT_CSTRING message)
 {
 	if (condition != 0)
 	{
@@ -149,57 +156,57 @@ void PRT_CALL_CONV  MyAssert(PRT_INT32 condition, PRT_CSTRING message)
 }
 
 
-static void RunToIdle(LPVOID process)
+static void RunToIdle(void* process)
 {
-	// In the tester we run the state machines until there is no more work to do then we exit
-	// instead of blocking indefinitely.  This is then equivalent of the non-cooperative case
-	// where we PrtRunStateMachine once (inside PrtMkMachine).  So we do NOT call PrtWaitForWork.
-	// PrtWaitForWork(process);
-	InterlockedIncrement(&threadsRunning);
-	PRT_PROCESS_PRIV* privateProcess = (PRT_PROCESS_PRIV*)process;
+    // In the tester we run the state machines until there is no more work to do then we exit
+    // instead of blocking indefinitely.  This is then equivalent of the non-cooperative case
+    // where we PrtRunStateMachine once (inside PrtMkMachine).  So we do NOT call PrtWaitForWork.
+    
+    PRT_PROCESS_PRIV* privateProcess = (PRT_PROCESS_PRIV*)process;
 	while (privateProcess->terminating == PRT_FALSE)
 	{
-		if (PRT_STEP_IDLE == PrtStepProcess(process))
-		{
+		PRT_STEP_RESULT result = PrtStepProcess(process);
+		switch (result) {
+		case PRT_STEP_TERMINATING:
+			break;
+		case PRT_STEP_IDLE:
+			PrtWaitForWork(process);
+			break;
+		case PRT_STEP_MORE:
+			PrtYieldThread();
 			break;
 		}
 	}
-	long count = InterlockedDecrement(&threadsRunning);
-	if (count == 0)
-	{
-		SetEvent(threadsTerminated);
-	}
 }
+
+extern int Delta;
 
 int main(int argc, char *argv[])
 {
-	if (!ParseCommandLine(argc, argv))
-	{
-		PrintUsage();
-		return 1;
-	}
+    if (!ParseCommandLine(argc, argv))
+    {
+        PrintUsage();
+        return 1;
+    }
+
+    printf("Press any key to start simulation\n");
+    getchar();
 
 	PRT_DBG_START_MEM_BALANCED_REGION
 	{
-#ifdef REPORT_MEMORY_LEAK
-		// if there is a memory leak, then #define REPORT_MEMORY_LEAK, and run again, the report will 
-		// output the block number in the Debug Output window.  Copy that number to the following line and
-		// uncomment it.  In this example, it was block number 105.  But when you put the right block number in here
-		// then re-run the test, you will get the full call stack in the debugger where the block was allocated.
-		// _CrtSetBreakAlloc(105);
-#endif
 		PRT_PROCESS *process;
 		PRT_GUID processGuid;
 		PRT_VALUE *payload;
+
 		processGuid.data1 = 1;
 		processGuid.data2 = 0;
 		processGuid.data3 = 0;
 		processGuid.data4 = 0;
 		process = PrtStartProcess(processGuid, &P_GEND_PROGRAM, ErrorHandler, Log);
-		if (cooperative)
-		{
-			PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
-		}
+        if (cooperative)
+        {
+            PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
+        }
 		if (parg == NULL)
 		{
 			payload = PrtMkNullValue();
@@ -212,28 +219,27 @@ int main(int argc, char *argv[])
 
 		PrtUpdateAssertFn(MyAssert);
 
-		PrtMkMachine(process, P_MACHINE_Main, 1, PRT_FUN_PARAM_CLONE, payload);
+        PrtMkMachine(process, P_MACHINE_Main, 1, PRT_FUN_PARAM_CLONE, payload);
 
-		if (cooperative)
-		{
-			// test some multithreading across state machines.
-			threadsTerminated = CreateEvent(NULL, TRUE, FALSE, NULL);
-			for (int i = 0; i < threads; i++)
-			{
-				DWORD threadId;
-				CreateThread(NULL, 16000, (LPTHREAD_START_ROUTINE)RunToIdle, process, 0, &threadId);
-			}
-			WaitForSingleObject(threadsTerminated, INFINITE);
-		}
-
+        if (cooperative)
+        {
+            // test some multithreading across state machines.
+            typedef void *(*start_routine) (void *);
+            pthread_t tid[threads];
+            for (int i = 0; i < threads; i++)
+            {
+                pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
+            }
+            for (int i = 0; i < threads; i++)
+            {
+                pthread_join(tid[i], NULL);
+            }
+        }
 		PrtFreeValue(payload);
 		PrtStopProcess(process);
 	}
-#ifdef REPORT_MEMORY_LEAK
-    }
-	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
-	_CrtDumpMemoryLeaks();
-#else
-		PRT_DBG_END_MEM_BALANCED_REGION
-#endif
+	PRT_DBG_END_MEM_BALANCED_REGION
+
+	//_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+	//_CrtDumpMemoryLeaks();
 }
