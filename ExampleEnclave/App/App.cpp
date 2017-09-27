@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <iostream>
+#include <assert.h>
 #include "Enclave_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
@@ -24,6 +25,35 @@ int main(int argc, char const *argv[]) {
         std::cout << "noob" << std::endl;
     }
     printf("Random number: %d\n", ptr);
+
+    status = add_number(global_eid, &ptr, 10); 
+    assert (ptr);
+    assert (status == SGX_SUCCESS);
+
+    status = add_number(global_eid, &ptr, 20); 
+    assert (ptr);
+    assert (status == SGX_SUCCESS);
+
+    status = add_number(global_eid, &ptr, 30); 
+    assert (ptr);
+    assert (status == SGX_SUCCESS);
+
+    status = add_number(global_eid, &ptr, 30); 
+    assert (ptr);
+    assert (status == SGX_SUCCESS);
+
+    status = add_number(global_eid, &ptr, 40); 
+    assert (ptr);
+    assert (status == SGX_SUCCESS);
+
+    status = del_number(global_eid, &ptr, 30); 
+    assert (ptr);
+    assert (status == SGX_SUCCESS);
+
+    uint32_t sum;
+    status = get_sum(global_eid, &sum); 
+    printf("Sum: %u\n", sum);
+    assert (status == SGX_SUCCESS);
 
     // Seal the random number
     size_t sealed_size = sizeof(sgx_sealed_data_t) + sizeof(ptr);
