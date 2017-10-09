@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <assert.h>
-#include "Enclave_u.h"
+#include "enclave_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 

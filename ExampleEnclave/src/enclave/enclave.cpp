@@ -1,4 +1,4 @@
-#include "Enclave_t.h"
+#include "enclave_t.h"
 
 struct node_t {
     uint32_t value;

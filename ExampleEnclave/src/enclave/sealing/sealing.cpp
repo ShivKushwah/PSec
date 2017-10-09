@@ -1,7 +1,7 @@
 #include "sgx_trts.h"
 #include "sgx_tseal.h"
 #include "string.h"
-#include "Enclave_t.h"
+#include "enclave_t.h"
 
 /**
  * @brief      Seals the plaintext given into the sgx_sealed_data_t structure

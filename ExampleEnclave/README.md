@@ -1,33 +1,12 @@
 # Intel SGX "Hello World"
 
-This is meant to be a base template for an [Intel SGX](https://github.com/01org/linux-sgx/) application on Linux. Not sure if it is just me, but I feel the documentations on Intel SGX development on Linux is still sorely lacking. This meant to be a stub of a "Getting-started" tutorial.
-
-This template is based on the SampleEnclave app of the sample enclaves provided with the Intel SGX Linux [drivers](https://github.com/01org/linux-sgx-driver) and [SDK](https://github.com/01org/linux-sgx/).
+A sample enclave built using CMake.
 
 ## Building
 
-    $ make SGX_MODE=SIM
+Ensure you have SGX\_SDK set in your environment. You will need to source the SGX setup script.
 
-    This builds the application in simulation mode.
+    $ mkdir build
+    $ cd build
+    $ cmake ..
 
-    $ make
-
-    This builds the application for hardware mode. (Need a real SGX machine for this to produce a usable executable.)
-
-## Features
-
-- Sample code for doing `ECALL`
-- Sample code for doing `OCALL`
-- Sample code for sealing (can be taken out and patched into your enclave!)
-
-## TODO
-
-- Tutorial explaining what each directory and file is used for.
-
-- Write a getting started tutorial.
-
-- Tutorial on treating `edl`s as static library (with the sealing functions as example)
-
-## Contribute
-
-Any help for the above TODOs or any general feedback will be much appreciated! Go ahead and submit those PRs in!
