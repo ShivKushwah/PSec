@@ -1,0 +1,15 @@
+<PSolution name= "SecuredVoting">
+  <PProject name= "SecuredVoting" outputdir="./PGenerated">
+    <Source>
+    <Include>./SecuredVotingHeader.p</Include>
+      <Include>./VotingClient.p</Include>
+      <Include>./BallotBox.p</Include>
+      <Include>./TabulationTeller.p</Include>
+      <Include>./BulletinBoard.p</Include>
+      <Include>./TamperEvidentLog.p</Include>
+    </Source>
+    <Link>
+      <Include>./Testscript.p</Include>
+    </Link>
+  </PProject>
+</PSolution>
