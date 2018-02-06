@@ -4,20 +4,18 @@ SET(CMAKE_VERBOSE_MAKEFILE true)
 ###########################################################################
 ## P Compilation Related Helper Functions
 ###########################################################################
-
+set(SGX ON)
+add_definitions( -DPRT_PLAT_SGXUSER )
 ## Compile P source
 set(P_COMPILER_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Release/x64/Binaries/Pc.exe)
 set(P_BUILD_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Release/x64/Binaries/PBuild.exe)
-set(P_BUILT_LIB_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/PrtUser)
+set(P_BUILT_LIB_PATH ${CMAKE_SOURCE_DIR}/Submodule/PTemp/Bld/Drops/PrtUser)
 set(P_LIB_INCLUDE_PATH ${P_BUILT_LIB_PATH}/include)
 set(P_LIB_LINK_PATH ${P_BUILT_LIB_PATH}/lib)
 
+
 ## Initializing the P Runtime Library
-if (NOT (TARGET pruntime))
-    add_library(pruntime SHARED IMPORTED)
-    set_target_properties(pruntime PROPERTIES IMPORTED_LOCATION ${P_LIB_LINK_PATH}/libPrt_shared.so)
-    add_definitions( -DPRT_PLAT_LINUXUSER )
-endif()
+add_subdirectory(${CMAKE_SOURCE_DIR}/Submodule/PTemp/Src)
 
 if(NOT EXISTS ${P_BUILD_PATH})
 Message(FATAL_ERROR ">|> ${P_BUILD_PATH} not found. Build P")
