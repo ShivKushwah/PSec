@@ -21,10 +21,10 @@ sends eStartElection, eCloseElection, eDoTally;
         }
     }
 
-    fun DoCloseElection() : bool
+    fun DoCloseElection() : bool;/*
     {
         return $;
-    }
+    }*/
 
     state StartElection {
         entry {

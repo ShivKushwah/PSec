@@ -27,16 +27,18 @@ sends eVote, eGetElectionResults;
         }
     }
 
-    fun ReadCredentials() : int {
+    fun ReadCredentials() : int;
+    /* {
         return 1;
-    }
-    fun ReadOperationToPerform() : bool
-    {
+    }*/
+    fun ReadOperationToPerform() : bool;
+    /*{
         return $;
-    }
-    fun ReadVote(): int {
+    }*/
+    fun ReadVote(): int;
+    /*{
         return 10;
-    }
+    }*/
 
     state SubmitVote {
         entry {

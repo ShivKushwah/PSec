@@ -9,3 +9,5 @@ module votingsystem =
 };
 
 test test1: main SupervisorMachine in votingsystem;
+
+implementation votingsystem;
