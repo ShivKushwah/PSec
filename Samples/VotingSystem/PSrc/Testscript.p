@@ -2,7 +2,6 @@ module votingsystem =
 { 
     SupervisorMachine,
     VotingClientMachine,
-    TabulationTellerMachine,
     BulletinBoardMachine,
     BallotBoxMachine,
     TamperEvidentLogMachine

@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
-project(pingpong)
+project(VotingSystem)
 
 
-set(projectName pingpong)
-PBUILD(dep_${projectName} ${CMAKE_CURRENT_SOURCE_DIR}/pingpong.xml "c" ${CMAKE_CURRENT_SOURCE_DIR})
+set(projectName votingsystem)
+PBUILD(dep_${projectName} ${CMAKE_CURRENT_SOURCE_DIR}/SecuredVoting.xml "c" ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 

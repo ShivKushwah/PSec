@@ -4,8 +4,8 @@ SET(CMAKE_VERBOSE_MAKEFILE true)
 ###########################################################################
 ## P Compilation Related Helper Functions
 ###########################################################################
-set(SGX ON)
-add_definitions( -DPRT_PLAT_SGXUSER )
+#set(SGX ON)
+add_definitions( -DPRT_PLAT_LINUXUSER )
 ## Compile P source
 set(P_COMPILER_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Release/x64/Binaries/Pc.exe)
 set(P_BUILD_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Release/x64/Binaries/PBuild.exe)

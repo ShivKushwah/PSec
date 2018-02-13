@@ -1,8 +1,7 @@
 
   #ifndef P_PINGPONG_H_
     #define P_PINGPONG_H_
-    #include "PrtUser.h"
-    #include "PrtExecution.h"
+    #include "Prt.h"
     #ifdef __cplusplus
       extern "C"{
     #endif

@@ -7,7 +7,7 @@ include(HelperScripts/CMakeLists.txt)
 
 #include PingPong Samples directory
 subdirs(Samples/PingPong/)
-
+subdirs(Samples/VotingSystem/)
 
 ##########################################################################
 # Common header files used across project
