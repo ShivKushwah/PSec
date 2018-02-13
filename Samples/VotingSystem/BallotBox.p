@@ -4,8 +4,8 @@ BallotBox Machine
 ******************************/
 
 machine BallotBoxMachine
-sends eAllVotes;
-receives eVote, eStartElection, eCloseElection;
+sends eAllVotes, eAddItem, eGetLog, eRespConfirmVote;
+receives eVote, eStartElection, eCloseElection, eRespGetLog, eRespAddItem;
 {
     var bulletinBoard: machine;
     var appendOnlyLog: machine;
@@ -42,19 +42,7 @@ receives eVote, eStartElection, eCloseElection;
             receive{
                 case eRespGetLog: (p: seq[data])
                 {
-                    var vote: Vote;
-                    var allVotes: map[int, int];
-                    var i: int;
-                    i = 0;
-                    while(i < sizeof(p))
-                    {
-                        vote = p[i] as Vote;
-                        //consider the latest vote
-                        //validate the credentials
-                        allVotes[vote.credentials] = vote.vote;
-                        i = i + 1;
-                    }
-                    send bulletinBoard, eAllVotes, (ballotId = 0, votes = allVotes);
+                    send bulletinBoard, eAllVotes, (ballotId = 0, votes = p as seq[Vote]);
                 }
             }
 

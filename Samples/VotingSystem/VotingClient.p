@@ -5,7 +5,7 @@ Voting Client Machine
 * VotingClient -> BulletinBoard = GetElectionResults.
 ***************************/
 
-machine VotingClient
+machine VotingClientMachine
 receives eRespConfirmVote, eRespElectionResults;
 sends eVote, eGetElectionResults;
 {
@@ -27,9 +27,16 @@ sends eVote, eGetElectionResults;
         }
     }
 
-    fun ReadCredentials() : int;
-    fun ReadOperationToPerform() : bool;
-    fun ReadVote(): int;
+    fun ReadCredentials() : int {
+        return 1;
+    }
+    fun ReadOperationToPerform() : bool
+    {
+        return $;
+    }
+    fun ReadVote(): int {
+        return 10;
+    }
 
     state SubmitVote {
         entry {
