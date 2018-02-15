@@ -12,7 +12,7 @@ sends eRespAddItem, eRespGetLog;
     start state Init {
         entry(payload: machine)
          {
-             parent = payload;
+            parent = payload;
             goto WaitForRequests;
          }
     }
