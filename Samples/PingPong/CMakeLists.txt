@@ -53,7 +53,7 @@ target_include_directories(${projectName} PRIVATE
 )
 
 target_link_libraries(${projectName}
-  pruntime
+  Prt_static
   pthread
 )
 

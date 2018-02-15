@@ -14,6 +14,7 @@ add_custom_command(
         COMMAND ${SGX_EDGER8R} --trusted enclave.edl
         --search-path ${SGX_SDK}/include
         --search-path ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS enclave.edl
         WORKING_DIRECTORY .
 )
 

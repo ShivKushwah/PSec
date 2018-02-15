@@ -1,5 +1,6 @@
 enclave {
     from "sealing/sealing.edl" import *;
+    from "sgx_tstdc.edl" import *;
 
     trusted {
         /* define ECALLs here. */
