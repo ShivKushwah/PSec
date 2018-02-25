@@ -1,4 +1,5 @@
 #include "enclave_t.h"
+#include <sgx_thread.h>
 
 struct node_t {
     uint32_t value;
@@ -16,6 +17,13 @@ struct node_t * tail = NULL;
 
 int add_number(uint32_t value) {
     struct node_t* new_node = (struct node_t*) malloc(sizeof(node_t));
+
+    sgx_thread_mutex_t mutex;
+    sgx_thread_mutexattr_t attr;
+
+    sgx_thread_mutex_init(&mutex, &attr);
+    sgx_thread_mutex_lock(&mutex);
+
     if (new_node == NULL) {
         return 0;
     }
@@ -30,6 +38,9 @@ int add_number(uint32_t value) {
         new_node->prev = tail;
         tail = new_node;
     }
+
+    sgx_thread_mutex_unlock(&mutex);
+    sgx_thread_mutex_destroy(&mutex);
     return 1;
 }
 

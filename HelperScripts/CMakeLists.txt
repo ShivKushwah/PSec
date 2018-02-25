@@ -13,6 +13,21 @@ set(P_BUILT_LIB_PATH ${CMAKE_SOURCE_DIR}/Submodule/PTemp/Bld/Drops/PrtUser)
 set(P_LIB_INCLUDE_PATH ${P_BUILT_LIB_PATH}/include)
 set(P_LIB_LINK_PATH ${P_BUILT_LIB_PATH}/lib)
 
+# Setup SGX options.
+if (SGX)
+    set(SGX_SDK $ENV{SGX_SDK})
+    set(SGX_ARCH x64)
+    set(SGX_MODE SIM CACHE STRING "SGX mode: SIM or HW") # SGX mode: sim, hw
+    set(COMPILE_EXAMPLES NO CACHE BOOL "Build examples")
+    set(SGX_BUILD DEBUG CACHE STRING "Build: DEBUG, PRERELEASE or RELEASE")
+
+    set(HELPER_SCRIPTS_DIR ${CMAKE_SOURCE_DIR}/HelperScripts/)
+    set(CMAKE_MODULE_PATH ${HELPER_SCRIPTS_DIR} ${CMAKE_MODULE_PATH})
+    include(${HELPER_SCRIPTS_DIR}/Init.cmake)
+    include(${HELPER_SCRIPTS_DIR}/FindSGXSDK.cmake)
+    include(${HELPER_SCRIPTS_DIR}/ConfigSGX.cmake)
+endif()
+
 
 ## Initializing the P Runtime Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/Submodule/PTemp/Src)
