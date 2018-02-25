@@ -1,14 +1,14 @@
 //// Program pingpong_4ml_LinkModel.4ml
-model pingpong_4ml_LinkModel of PLink at "/home/pramod/research/swsec/ProgrammingEnclaves/Submodule/P/Bld/Drops/Release/x64/Binaries/PLink.4ml"
+model pingpong_4ml_LinkModel of PLink at "/home/ankush/Workspace/ProgrammingEnclaves/Submodule/P/Bld/Drops/Release/x64/Binaries/PLink.4ml"
 {
   MachineSends("PONG", ALL),
   MachineSends("Main", ALL),
   MachineReceives("PONG", ALL),
   MachineReceives("Main", ALL),
-  EventDecl("Success", NIL, NIL, IdList(2, IdList("/home/pramod/research/swsec/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
-  EventDecl("Pong", AssertMaxInstances(1), NIL, IdList(1, IdList("/home/pramod/research/swsec/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
-  DependsOn("/home/pramod/research/swsec/ProgrammingEnclaves/Samples/PingPongEnclave/pingpong.4ml", NIL),
-  EventDecl("Ping", AssertMaxInstances(1), BaseType(MACHINE), IdList(0, IdList("/home/pramod/research/swsec/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
+  EventDecl("Success", NIL, NIL, IdList(2, IdList("/home/ankush/Workspace/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
+  EventDecl("Pong", AssertMaxInstances(1), NIL, IdList(1, IdList("/home/ankush/Workspace/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
+  DependsOn("/home/ankush/Workspace/ProgrammingEnclaves/Samples/PingPongEnclave/pingpong.4ml", NIL),
+  EventDecl("Ping", AssertMaxInstances(1), BaseType(MACHINE), IdList(0, IdList("/home/ankush/Workspace/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
   PermEmbeddedInEvent("Ping", "Ping"),
   PermEmbeddedInEvent("Ping", "Pong"),
   PermEmbeddedInEvent("Ping", "Success"),
@@ -18,10 +18,10 @@ model pingpong_4ml_LinkModel of PLink at "/home/pramod/research/swsec/Programmin
   EventSet("P_GEND_EVENTSET_Pong", EventNameList("Pong", NIL)),
   EventSet("P_GEND_EVENTSET_Success", EventNameList("Success", NIL)),
   MachineProtoDecl("PONG", BaseType(NULL)),
-  MachineDecl("PONG", BaseType(NULL), IdList(42, IdList("/home/pramod/research/swsec/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
-  InterfaceDecl("PONG", ALL, BaseType(NULL), IdList(42, IdList("/home/pramod/research/swsec/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
-  InterfaceDecl("Main", ALL, BaseType(NULL), IdList(14, IdList("/home/pramod/research/swsec/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
+  MachineDecl("PONG", BaseType(NULL), IdList(42, IdList("/home/ankush/Workspace/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
+  InterfaceDecl("PONG", ALL, BaseType(NULL), IdList(42, IdList("/home/ankush/Workspace/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
+  InterfaceDecl("Main", ALL, BaseType(NULL), IdList(14, IdList("/home/ankush/Workspace/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))),
   MachineProtoDecl("Main", BaseType(NULL)),
-  MachineDecl("Main", BaseType(NULL), IdList(14, IdList("/home/pramod/research/swsec/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))).
+  MachineDecl("Main", BaseType(NULL), IdList(14, IdList("/home/ankush/Workspace/ProgrammingEnclaves/Samples/PingPongEnclave/PSrc/PingPong.p", NIL))).
 }
 
