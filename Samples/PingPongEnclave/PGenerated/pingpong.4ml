@@ -1,5 +1,5 @@
 //// Program pingpong_4ml_LinkModel.4ml
-model pingpong_4ml_LinkModel of PLink at "/home/ankush/Workspace/ProgrammingEnclaves/Submodule/P/Bld/Drops/Release/x64/Binaries/PLink.4ml"
+model pingpong_4ml_LinkModel of PLink at "/home/ankush/Workspace/ProgrammingEnclaves/Submodule/P/Bld/Drops/Debug/AnyCPU/Binaries/ubuntu-x64/publish/PLink.4ml"
 {
   MachineSends("PONG", ALL),
   MachineSends("Main", ALL),

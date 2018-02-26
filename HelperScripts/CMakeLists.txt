@@ -7,8 +7,8 @@ SET(CMAKE_VERBOSE_MAKEFILE true)
 set(SGX ON)
 add_definitions( -DPRT_PLAT_SGXUSER )
 ## Compile P source
-set(P_COMPILER_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Release/x64/Binaries/Pc.exe)
-set(P_BUILD_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Release/x64/Binaries/PBuild.exe)
+set(P_COMPILER_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Debug/AnyCPU/Binaries/ubuntu-x64/publish/PBuild)
+set(P_BUILD_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Debug/AnyCPU/Binaries/ubuntu-x64/publish/PBuild)
 set(P_BUILT_LIB_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/PrtUser)
 set(P_LIB_INCLUDE_PATH ${P_BUILT_LIB_PATH}/include)
 set(P_LIB_LINK_PATH ${P_BUILT_LIB_PATH}/lib)
@@ -53,7 +53,7 @@ function (PBUILD depName solutionFile type workingdirectory)
     ADD_CUSTOM_TARGET(
             ${depName} ALL
             COMMENT "Building P ${solutionFile}..."
-            COMMAND mono ${P_BUILD_PATH} /sln:${solutionFile} /generate:${type}
+            COMMAND ${P_BUILD_PATH} /sln:${solutionFile} /generate:${type}
             WORKING_DIRECTORY ${workingdirectory}
     )
 endfunction(PBUILD)
