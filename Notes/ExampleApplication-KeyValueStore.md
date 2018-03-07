@@ -1,4 +1,4 @@
-#Principals
+# Principals
 
 1. KeyValServer
 1. User
@@ -8,7 +8,7 @@
     ``forall i: User[i] actsfor User``
 
 
-#Enclaves (Private Machines)
+# Enclaves (Private Machines)
 
   - Server enclave (``actsfor KeyValServer``)
   - User enclave 1 (``actsfor User, actsfor User[1]``)
@@ -16,9 +16,9 @@
 
 The two user enclaves have identical code but represent different instances of the same machine.
 
-#Pseudocode
+# Pseudocode
 
-##User Enclave
+## User Enclave
 
     while (*)
     {  
@@ -34,12 +34,12 @@ The two user enclaves have identical code but represent different instances of t
        }
     }
 
-##Server Enclave
+## Server Enclave
 
     method put(key, value, label)
     method get(key, value, label)
 
-#Threat Model
+# Threat Model
 
 Adversary controls all privileged software. This means the following:
 
@@ -49,7 +49,7 @@ Adversary controls all privileged software. This means the following:
   * Adversary can start an arbitrary number of enclaves
   * Adversary can destroy enclaves
 
-##Security Requirements
+## Security Requirements
 
   * Only two instances of the user enclave are created for each run of the system
   * Only one instance of the server enclave is created for each run of the system
@@ -59,7 +59,7 @@ Adversary controls all privileged software. This means the following:
   * Any key labelled User[1] is only readable/modifiable by User[i]
   * Any key labelled User is readable/modifiable by both User[1] and User[2]
 
-#Implementation
+# Implementation
 
 * The runtime handles message authentication, encryption and replay using cryptography.
 * The central server maintains an "enclave budget" so that too many copies of an enclave not launched by the adversary.. 
