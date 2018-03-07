@@ -51,16 +51,16 @@ Adversary controls all privileged software. This means the following:
 
 ## Security Requirements
 
-  * Only two instances of the user enclave are created for each run of the system
-  * Only one instance of the server enclave is created for each run of the system
   * Only instances created are the "correct" ones (measurement)
   * If any of the enclaves is killed, the entire system aborts execution
-  * The only put/get msgs received by the server are from User 1 or User 2
+  * The only put/get msgs received by the server are from User, similarly only responses Users receive are from the Server
   * Any key labelled User[1] is only readable/modifiable by User[i]
   * Any key labelled User is readable/modifiable by both User[1] and User[2]
+  * ~~Only two instances of the user enclave are created for each run of the system~~
+  * ~~Only one instance of the server enclave is created for each run of the system~~
 
 # Implementation
 
-* The runtime handles message authentication, encryption and replay using cryptography.
-* The central server maintains an "enclave budget" so that too many copies of an enclave not launched by the adversary.. 
+* The runtime handles message authentication, encryption and replay using cryptography
 * The central server also uses the initial authentication of newly launched enclaves to can detect when an enclave is destroyed by the adversary
+* ~~The central server maintains an "enclave budget" so that too many copies of an enclave are not launched by the adversary~~
