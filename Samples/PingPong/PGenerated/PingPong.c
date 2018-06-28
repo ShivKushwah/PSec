@@ -1,13 +1,13 @@
 #include "PingPong.h"
 
 // Type universe for program:
-static PRT_TYPE P_PINGPONG_GEND_TYPE_e = { PRT_KIND_EVENT, { NULL } };
 // TODO: implement full permission types in runtime
 static PRT_TYPE P_PINGPONG_GEND_TYPE_R_1 = { PRT_KIND_MACHINE, { NULL } };
+static PRT_TYPE P_PINGPONG_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
 static PRT_TYPE P_PINGPONG_GEND_TYPE_m = { PRT_KIND_MACHINE, { NULL } };
 // TODO: implement full permission types in runtime
 static PRT_TYPE P_PINGPONG_GEND_TYPE_R = { PRT_KIND_MACHINE, { NULL } };
-static PRT_TYPE P_PINGPONG_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
+static PRT_TYPE P_PINGPONG_GEND_TYPE_e = { PRT_KIND_EVENT, { NULL } };
 
 // Function implementation prototypes:
 PRT_VALUE* P_PINGPONG_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
