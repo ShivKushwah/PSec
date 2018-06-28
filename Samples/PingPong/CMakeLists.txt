@@ -3,24 +3,13 @@ project(pingpong)
 
 
 set(projectName pingpong)
-PBUILD(dep_${projectName} ${CMAKE_CURRENT_SOURCE_DIR}/pingpong.xml "c" ${CMAKE_CURRENT_SOURCE_DIR})
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ###################################
 # Generic setup for each project
 ##################################
+
+FILE(GLOB_RECURSE psources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/ PSrc/*)
+PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/ ./PGenerated/)
 
 FILE(GLOB_RECURSE ${projectName}_psources PSrc/*)
 FILE(GLOB_RECURSE ${projectName}_csources Src/*)

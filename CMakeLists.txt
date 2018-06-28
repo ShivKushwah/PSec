@@ -1,13 +1,16 @@
 cmake_minimum_required(VERSION 3.0)
 project(programmingenclaves)
 
+#set(SGX ON)
+add_definitions( -DPRT_PLAT_LINUXUSER )
+
 #include the helper functions and decls
 include(HelperScripts/CMakeLists.txt)
 
 #include PingPong Samples directory
 
-#subdirs(Samples/PingPong/)
-subdirs(Samples/PingPongEnclave/)
+subdirs(Samples/PingPong/)
+#subdirs(Samples/PingPongEnclave/)
 #subdirs(Samples/VotingSystem/)
 
 

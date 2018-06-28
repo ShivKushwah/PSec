@@ -4,12 +4,10 @@ SET(CMAKE_VERBOSE_MAKEFILE true)
 ###########################################################################
 ## P Compilation Related Helper Functions
 ###########################################################################
-set(SGX ON)
-add_definitions( -DPRT_PLAT_SGXUSER )
+
 ## Compile P source
-set(P_COMPILER_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Debug/AnyCPU/Binaries/ubuntu-x64/publish/PBuild)
-set(P_BUILD_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Debug/AnyCPU/Binaries/ubuntu-x64/publish/PBuild)
-set(P_BUILT_LIB_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/PrtUser)
+set(P_COMPILER_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Release/AnyCPU/Binaries/Pc.dll)
+set(P_BUILT_LIB_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Prt)
 set(P_LIB_INCLUDE_PATH ${P_BUILT_LIB_PATH}/include)
 set(P_LIB_LINK_PATH ${P_BUILT_LIB_PATH}/lib)
 
@@ -32,28 +30,18 @@ endif()
 ## Initializing the P Runtime Library
 add_subdirectory(${CMAKE_SOURCE_DIR}/Submodule/P/Src)
 
-if(NOT EXISTS ${P_BUILD_PATH})
-Message(FATAL_ERROR ">|> ${P_BUILD_PATH} not found. Build P")
+if(NOT EXISTS ${P_COMPILER_PATH})
+Message(FATAL_ERROR ">|> ${P_COMPILER_PATH} not found. Build P")
 else()
-Message(STATUS ">|> Found P at ${P_BUILD_PATH}")
+Message(STATUS ">|> Found P compiler at ${P_COMPILER_PATH}")
 endif()
 
 
-function (PBUILD depName solutionFile type workingdirectory)
-    if(NOT EXISTS ${solutionFile})
-        Message(SEND_ERROR ">|> solution ${solutionFile} not found")
-    endif()
-    if(${type} STREQUAL "c")
-        Message(STATUS ">|> Will generate C code for solution ${solutionFile}")
-    elseif(${type} EQUAL "c#")
-        Message(STATUS ">|> Will generate C# code for solution ${solutionFile}")
-    else()
-        Message(SEND_ERROR ">|> incorrect parameter for generation ${type}")
-    endif()
+function (PBUILD depName pFiles workingdirectory outputDirect)
     ADD_CUSTOM_TARGET(
             ${depName} ALL
-            COMMENT "Building P ${solutionFile}..."
-            COMMAND ${P_BUILD_PATH} /sln:${solutionFile} /generate:${type}
+            COMMENT "Building P ${${pFiles}} ..."
+            COMMAND dotnet ${P_COMPILER_PATH} ${${pFiles}} /outputDir:${outputDirect}
             WORKING_DIRECTORY ${workingdirectory}
     )
 endfunction(PBUILD)
