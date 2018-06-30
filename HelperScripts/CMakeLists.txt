@@ -37,12 +37,12 @@ Message(STATUS ">|> Found P compiler at ${P_COMPILER_PATH}")
 endif()
 
 
-function (PBUILD depName pFiles workingdirectory outputDirect)
+function (PBUILD depName pFiles outputDirect)
     ADD_CUSTOM_TARGET(
             ${depName} ALL
             COMMENT "Building P ${${pFiles}} ..."
-            COMMAND dotnet ${P_COMPILER_PATH} ${${pFiles}} /outputDir:${outputDirect}
-            WORKING_DIRECTORY ${workingdirectory}
+            COMMAND dotnet ${P_COMPILER_PATH} ${${pFiles}} -outputDir:${outputDirect}
+            WORKING_DIRECTORY ${outputDirect}
     )
 endfunction(PBUILD)
 

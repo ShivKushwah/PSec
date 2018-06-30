@@ -49,9 +49,9 @@ static long perfEndTime = 0;
 static const char* parg = NULL;
 static const char* workspaceConfig;
 
-void Log(PRT_STEP step, PRT_MACHINEINST *sender, PRT_MACHINEINST *receiver, PRT_VALUE* event, PRT_VALUE* payload)
+void Log(PRT_STEP step, PRT_MACHINESTATE* senderState, PRT_MACHINEINST *receiver, PRT_VALUE* event, PRT_VALUE* payload)
 { 
-    PrtPrintStep(step, sender, receiver, event, payload);
+    PrtPrintStep(step, senderState, receiver, event, payload);
 }
 
 static PRT_BOOLEAN ParseCommandLine(int argc, char *argv[])

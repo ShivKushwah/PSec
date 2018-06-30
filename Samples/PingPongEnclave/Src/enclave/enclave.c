@@ -1,4 +1,4 @@
-#include "pingpong.h"
+#include "PingPong.h"
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -49,9 +49,9 @@ static long perfEndTime = 0;
 static const char* parg = NULL;
 static const char* workspaceConfig;
 
-void Log(PRT_STEP step, PRT_MACHINEINST *sender, PRT_MACHINEINST *receiver, PRT_VALUE* event, PRT_VALUE* payload)
+void Log(PRT_STEP step, PRT_MACHINESTATE* senderState, PRT_MACHINEINST *receiver, PRT_VALUE* event, PRT_VALUE* payload)
 { 
-    PrtPrintStep(step, sender, receiver, event, payload);
+    PrtPrintStep(step, senderState, receiver, event, payload);
 }
 
 static void PrintUsage(void)
@@ -128,7 +128,7 @@ int enclave_main(void)
 		processGuid.data2 = 0;
 		processGuid.data3 = 0;
 		processGuid.data4 = 0;
-		process = PrtStartProcess(processGuid, &P_GEND_PROGRAM, ErrorHandler, Log);
+		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
         ocall_print("after start process!\n");
         if (cooperative)
         {
@@ -147,7 +147,10 @@ int enclave_main(void)
 		PrtUpdateAssertFn(MyAssert);
         ocall_print("after update assert fn!\n");
 
-        PrtMkMachine(process, P_MACHINE_Main, 1, PRT_FUN_PARAM_CLONE, payload);
+        PRT_UINT32 mainMachine = 0;
+		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Main", &mainMachine);
+		PrtAssert(foundMachine, "No 'Main' machine found!");
+		PrtMkMachine(process, mainMachine, 1, &payload);
         ocall_print("after mk machine!\n");
 
         if (cooperative)

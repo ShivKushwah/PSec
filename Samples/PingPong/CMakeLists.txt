@@ -8,8 +8,8 @@ set(projectName pingpong)
 # Generic setup for each project
 ##################################
 
-FILE(GLOB_RECURSE psources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/ PSrc/*)
-PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/ ./PGenerated/)
+FILE(GLOB_RECURSE psources PSrc/*)
+PBUILD(dep_${projectName} psources ./PGenerated/ ${CMAKE_CURRENT_SOURCE_DIR})
 
 FILE(GLOB_RECURSE ${projectName}_psources PSrc/*)
 FILE(GLOB_RECURSE ${projectName}_csources Src/*)

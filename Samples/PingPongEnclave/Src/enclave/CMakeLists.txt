@@ -2,15 +2,16 @@ cmake_minimum_required(VERSION 3.0)
 project(pingpong)
 
 set(projectName enclave)
-PBUILD(dep_${projectName} ${CMAKE_CURRENT_SOURCE_DIR}/../../pingpong.xml "c" ${CMAKE_CURRENT_SOURCE_DIR}/../../)
+FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*)
+PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/)
 
 ###################################
 # Generic setup for each project
 ##################################
 
-FILE(GLOB_RECURSE ${projectName}_psources ../../PSrc/*)
+FILE(GLOB_RECURSE ${projectName}_psources ${CMAKE_CURRENT_SOURCE_DIR}../../PSrc/*)
 #FILE(GLOB_RECURSE ${projectName}_csources ./*)
-FILE(GLOB_RECURSE ${projectName}_gsources ../../PGenerated/*.c)
+FILE(GLOB_RECURSE ${projectName}_gsources ${CMAKE_CURRENT_SOURCE_DIR}../../PGenerated/*.c)
 
 #add_executable(${projectName}
 #  ${${projectName}_gsources}

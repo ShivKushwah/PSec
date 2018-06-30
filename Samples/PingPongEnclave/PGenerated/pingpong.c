@@ -1,1017 +1,663 @@
+#include "PingPong.h"
 
-  #include "pingpong.h"
-  #define P_SEQ
-  #define P_STMT_0(s, x0, f0) P_SEQ(p_tmp_stmt_0 = (x0), (s), ((f0) ? PrtFreeValue(p_tmp_stmt_0) : 0U))
-  #define P_STMT_1(s, x1, f1, x0, f0) P_SEQ(p_tmp_stmt_0 = (x0), p_tmp_stmt_1 = (x1), (s), ((f0) ? PrtFreeValue(p_tmp_stmt_0) : 0U), ((f1) ? PrtFreeValue(p_tmp_stmt_1) : 0U))
-  #define P_BOOL_EXPR(x0, f0) P_SEQ(p_tmp_expr_0 = (x0), p_tmp_bool = PrtPrimGetBool(p_tmp_expr_0), ((f0) ? PrtFreeValue(p_tmp_expr_0) : 0U), p_tmp_bool)
-  #define P_EXPR_0(x0, f0) P_SEQ(p_tmp_expr_0 = (x0), p_tmp_expr_0)
-  #define P_EXPR_3(x3, f3, x2, f2, x1, f1, x0, f0) P_SEQ(p_tmp_expr_0 = (x0), p_tmp_expr_1 = (x1), p_tmp_expr_2 = (x2), p_tmp_expr_3 = (x3), ((f0) ? PrtFreeValue(p_tmp_expr_0) : 0U), ((f1) ? PrtFreeValue(p_tmp_expr_1) : 0U), ((f2) ? PrtFreeValue(p_tmp_expr_2) : 0U), p_tmp_expr_3)
-  #define P_TUPLE_0(t, x0) P_SEQ(p_tmp_tuple = PrtMkDefaultValue(t), PrtTupleSet(p_tmp_tuple, 0U, (x0)), p_tmp_tuple)
-  static PRT_TYPE P_GEND_TYPE_0 = 
-  {
-    PRT_KIND_BOOL,
-    
-    {
-        NULL
-    }
-  };
-  static PRT_TYPE P_GEND_TYPE_1 = 
-  {
-    PRT_KIND_EVENT,
-    
-    {
-        NULL
-    }
-  };
-  static PRT_TYPE P_GEND_TYPE_2 = 
-  {
-    PRT_KIND_INT,
-    
-    {
-        NULL
-    }
-  };
-  static PRT_TYPE P_GEND_TYPE_3 = 
-  {
-    PRT_KIND_MACHINE,
-    
-    {
-        NULL
-    }
-  };
-  static PRT_TYPE P_GEND_TYPE_4 = 
-  {
-    PRT_KIND_NULL,
-    
-    {
-        NULL
-    }
-  };
-  PRT_EVENTDECL *P_GEND_EVENTSET_Ping_INNER[] = 
-  {
-    &P_EVENT_Ping_STRUCT
-  };
-  PRT_EVENTDECL *P_GEND_EVENTSET_Pong_INNER[] = 
-  {
-    &P_EVENT_Pong_STRUCT
-  };
-  PRT_EVENTDECL *P_GEND_EVENTSET_Success_INNER[] = 
-  {
-    &P_EVENT_Success_STRUCT
-  };
-  PRT_EVENTDECL P_EVENT_Ping_STRUCT = 
-  {
-    
-    {
-        PRT_VALUE_KIND_EVENT,
-        0U
-    },
+// Type universe for program:
+static PRT_TYPE P_PINGPONG_GEND_TYPE_e = { PRT_KIND_EVENT, { NULL } };
+static PRT_TYPE P_PINGPONG_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
+// TODO: implement full permission types in runtime
+static PRT_TYPE P_PINGPONG_GEND_TYPE_R = { PRT_KIND_MACHINE, { NULL } };
+static PRT_TYPE P_PINGPONG_GEND_TYPE_m = { PRT_KIND_MACHINE, { NULL } };
+// TODO: implement full permission types in runtime
+static PRT_TYPE P_PINGPONG_GEND_TYPE_R_1 = { PRT_KIND_MACHINE, { NULL } };
+
+// Function implementation prototypes:
+PRT_VALUE* P_PINGPONG_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_PINGPONG_FUNCTION_Anon;
+
+PRT_VALUE* P_PINGPONG_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_PINGPONG_FUNCTION_Anon_1;
+
+PRT_VALUE* P_PINGPONG_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_PINGPONG_FUNCTION_Anon_2;
+
+PRT_VALUE* P_PINGPONG_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_PINGPONG_FUNCTION_Anon_3;
+
+
+#line 1 "PingPong.p"
+PRT_EVENTDECL P_PINGPONG_EVENT_Ping = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
     "Ping",
     1U,
-    &P_GEND_TYPE_3,
-    0U,
-    NULL
-  };
-  PRT_EVENTDECL P_EVENT_Pong_STRUCT = 
-  {
-    
-    {
-        PRT_VALUE_KIND_EVENT,
-        0U
-    },
+    &P_PINGPONG_GEND_TYPE_m
+};
+
+#line 2 "PingPong.p"
+PRT_EVENTDECL P_PINGPONG_EVENT_Pong = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
     "Pong",
     1U,
-    &P_GEND_TYPE_4,
-    0U,
-    NULL
-  };
-  PRT_EVENTDECL P_EVENT_Success_STRUCT = 
-  {
-    
-    {
-        PRT_VALUE_KIND_EVENT,
-        0U
-    },
+    &P_PINGPONG_GEND_TYPE_n
+};
+
+#line 3 "PingPong.p"
+PRT_EVENTDECL P_PINGPONG_EVENT_Success = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
     "Success",
     4294967295U,
-    &P_GEND_TYPE_4,
-    0U,
-    NULL
-  };
-  PRT_EVENTSETDECL P_GEND_EVENTSET = 
-  {
-    0U,
-    NULL,
-    NULL
-  };
-  PRT_EVENTSETDECL P_GEND_EVENTSET_Ping = 
-  {
-    1U,
-    P_GEND_EVENTSET_Ping_INNER,
-    NULL
-  };
-  PRT_EVENTSETDECL P_GEND_EVENTSET_Pong = 
-  {
-    1U,
-    P_GEND_EVENTSET_Pong_INNER,
-    NULL
-  };
-  PRT_EVENTSETDECL P_GEND_EVENTSET_Success = 
-  {
-    1U,
-    P_GEND_EVENTSET_Success_INNER,
-    NULL
-  };
-  PRT_TYPE P_GEND_TYPE_Main = 
-  {
-    PRT_KIND_MACHINE,
-    
-    {
-        NULL
-    }
-  };
-  PRT_TYPE P_GEND_TYPE_PONG = 
-  {
-    PRT_KIND_MACHINE,
-    
-    {
-        NULL
-    }
-  };
-  PRT_VARDECL P_GEND_VARS_Main[] = 
-  {
-    
-    {
-        "pongId",
-        &P_GEND_TYPE_3,
-        0U,
-        NULL
-    }
-  };
-  PRT_TRANSDECL P_GEND_TRANS_Main_Ping_Init[] = 
-  {
-    
-    {
-        P_STATE_Main_Ping_Init,
-        &P_EVENT_Success_STRUCT,
-        P_STATE_Main_Ping_SendPing,
-        &P_FUN_Main_ANON2_STRUCT,
-        0U,
-        NULL
-    }
-  };
-  PRT_TRANSDECL P_GEND_TRANS_Main_Ping_SendPing[] = 
-  {
-    
-    {
-        P_STATE_Main_Ping_SendPing,
-        &P_EVENT_Success_STRUCT,
-        P_STATE_Main_Ping_WaitPong,
-        &P_FUN_Main_ANON5_STRUCT,
-        0U,
-        NULL
-    }
-  };
-  PRT_TRANSDECL P_GEND_TRANS_Main_Ping_WaitPong[] = 
-  {
-    
-    {
-        P_STATE_Main_Ping_WaitPong,
-        &P_EVENT_Pong_STRUCT,
-        P_STATE_Main_Ping_SendPing,
-        &P_FUN_Main_ANON8_STRUCT,
-        0U,
-        NULL
-    }
-  };
-  PRT_TRANSDECL P_GEND_TRANS_PONG_Pong_SendPong[] = 
-  {
-    
-    {
-        P_STATE_PONG_Pong_SendPong,
-        &P_EVENT_Success_STRUCT,
-        P_STATE_PONG_Pong_WaitPing,
-        &P_FUN_PONG_ANON6_STRUCT,
-        0U,
-        NULL
-    }
-  };
-  PRT_TRANSDECL P_GEND_TRANS_PONG_Pong_WaitPing[] = 
-  {
-    
-    {
-        P_STATE_PONG_Pong_WaitPing,
-        &P_EVENT_Ping_STRUCT,
-        P_STATE_PONG_Pong_SendPong,
-        &P_FUN_PONG_ANON3_STRUCT,
-        0U,
-        NULL
-    }
-  };
-  static PRT_VALUE *P_FUN_Main_ANON0_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
+    &P_PINGPONG_GEND_TYPE_n
+};
 
-  static PRT_VALUE *P_FUN_Main_ANON10_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
+#line 5 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Main_RECV_INNER[] = { &P_PINGPONG_EVENT_Ping, &P_PINGPONG_EVENT_Pong, &P_PINGPONG_EVENT_Success };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Main_RECV =
+{
+    3U,
+    P_PINGPONG_Main_RECV_INNER,
+    NULL
+};
 
-  static PRT_VALUE *P_FUN_Main_ANON11_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_expr_0;
-      PRT_VALUE *p_tmp_funstmt_ret;
-      PRT_VALUE *p_tmp_ret;
-      PRT_VALUE *p_tmp_stmt_0;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      p_tmp_funstmt_ret = PrtCloneValue(PrtMkInterface(context, P_I_PONG, 0U)->id);
-      PrtSetGlobalVarEx(p_tmp_mach_priv, P_VAR_Main_pongId, p_tmp_funstmt_ret, PRT_FALSE);
-      P_STMT_0(PrtRaise(p_tmp_mach_priv, p_tmp_stmt_0, 0U), P_EXPR_0(&P_EVENT_Success_STRUCT.value, PRT_FALSE), PRT_FALSE);
-      goto P_EXIT_FUN;
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_Main_ANON12_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_event;
-      PRT_VALUE *p_tmp_expr_0;
-      PRT_VALUE *p_tmp_expr_1;
-      PRT_VALUE *p_tmp_expr_2;
-      PRT_VALUE *p_tmp_expr_3;
-      PRT_VALUE *p_tmp_machine;
-      PRT_VALUE *p_tmp_ret;
-      PRT_VALUE *p_tmp_stmt_0;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      P_SEQ(p_tmp_machine = P_EXPR_0(p_tmp_mach_priv->varValues[P_VAR_Main_pongId], PRT_FALSE), p_tmp_event = P_EXPR_0(&P_EVENT_Ping_STRUCT.value, PRT_FALSE), P_EXPR_3(P_SEQ(PrtCheckIsLocalMachineId(context, p_tmp_expr_2), PrtSendInternal(context, PrtGetMachine(context->process, p_tmp_expr_2), p_tmp_expr_1, 1U, PRT_FUN_PARAM_CLONE, p_tmp_expr_0), NULL), PRT_FALSE, p_tmp_machine, PRT_FALSE, p_tmp_event, PRT_FALSE, p_tmp_mach_priv->id, PRT_FALSE));
-      P_STMT_0(PrtRaise(p_tmp_mach_priv, p_tmp_stmt_0, 0U), P_EXPR_0(&P_EVENT_Success_STRUCT.value, PRT_FALSE), PRT_FALSE);
-      goto P_EXIT_FUN;
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_Main_ANON1_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_Main_ANON2_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_Main_ANON3_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_Main_ANON4_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_Main_ANON5_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_Main_ANON6_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_Main_ANON7_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_Main_ANON8_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_Main_ANON9_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_PONG_ANON0_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_PONG_ANON1_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_PONG_ANON2_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_PONG_ANON3_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_PONG_ANON4_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_PONG_ANON5_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_PONG_ANON6_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_ret;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  static PRT_VALUE *P_FUN_PONG_ANON7_IMPL(PRT_MACHINEINST *context)
-  {
-    {
-      PRT_FUNSTACK_INFO p_tmp_frame;
-      PRT_MACHINEINST_PRIV *p_tmp_mach_priv;
-      PRT_VALUE *p_tmp_expr_0;
-      PRT_VALUE *p_tmp_ret;
-      PRT_VALUE *p_tmp_stmt_0;
-      PRT_VALUE *p_tmp_stmt_1;
-      p_tmp_mach_priv = (PRT_MACHINEINST_PRIV *)context;
-      p_tmp_ret = NULL;
-      PrtPopFrame(p_tmp_mach_priv, &p_tmp_frame);
-      P_STMT_1(P_SEQ(PrtCheckIsLocalMachineId(context, p_tmp_stmt_0), PrtSendInternal(context, PrtGetMachine(context->process, p_tmp_stmt_0), p_tmp_stmt_1, 0U)), P_EXPR_0(&P_EVENT_Pong_STRUCT.value, PRT_FALSE), PRT_FALSE, P_EXPR_0(p_tmp_frame.locals[0U], PRT_FALSE), PRT_FALSE);
-      P_STMT_0(PrtRaise(p_tmp_mach_priv, p_tmp_stmt_0, 0U), P_EXPR_0(&P_EVENT_Success_STRUCT.value, PRT_FALSE), PRT_FALSE);
-      goto P_EXIT_FUN;
-      goto P_EXIT_FUN;
-      P_EXIT_FUN:
-      PrtFreeLocals(p_tmp_mach_priv, &p_tmp_frame);
-      return p_tmp_ret;
-    }
-  }
-
-  PRT_FUNDECL *P_GEND_FUNS_Main[] = 
-  {
-    &P_FUN_Main_ANON0_STRUCT,
-    &P_FUN_Main_ANON1_STRUCT,
-    &P_FUN_Main_ANON2_STRUCT,
-    &P_FUN_Main_ANON3_STRUCT,
-    &P_FUN_Main_ANON4_STRUCT,
-    &P_FUN_Main_ANON5_STRUCT,
-    &P_FUN_Main_ANON6_STRUCT,
-    &P_FUN_Main_ANON7_STRUCT,
-    &P_FUN_Main_ANON8_STRUCT,
-    &P_FUN_Main_ANON9_STRUCT,
-    &P_FUN_Main_ANON10_STRUCT,
-    &P_FUN_Main_ANON11_STRUCT,
-    &P_FUN_Main_ANON12_STRUCT
-  };
-  PRT_FUNDECL *P_GEND_FUNS_PONG[] = 
-  {
-    &P_FUN_PONG_ANON0_STRUCT,
-    &P_FUN_PONG_ANON1_STRUCT,
-    &P_FUN_PONG_ANON2_STRUCT,
-    &P_FUN_PONG_ANON3_STRUCT,
-    &P_FUN_PONG_ANON4_STRUCT,
-    &P_FUN_PONG_ANON5_STRUCT,
-    &P_FUN_PONG_ANON6_STRUCT,
-    &P_FUN_PONG_ANON7_STRUCT
-  };
-  PRT_FUNDECL P_FUN_Main_ANON0_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON0_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON10_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON10_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON11_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON11_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON12_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON12_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON1_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON1_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON2_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON2_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON3_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON3_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON4_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON4_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON5_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON5_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON6_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON6_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON7_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON7_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON8_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON8_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_Main_ANON9_STRUCT = 
-  {
-    NULL,
-    &P_FUN_Main_ANON9_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_PONG_ANON0_STRUCT = 
-  {
-    NULL,
-    &P_FUN_PONG_ANON0_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_PONG_ANON1_STRUCT = 
-  {
-    NULL,
-    &P_FUN_PONG_ANON1_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_PONG_ANON2_STRUCT = 
-  {
-    NULL,
-    &P_FUN_PONG_ANON2_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_PONG_ANON3_STRUCT = 
-  {
-    NULL,
-    &P_FUN_PONG_ANON3_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_PONG_ANON4_STRUCT = 
-  {
-    NULL,
-    &P_FUN_PONG_ANON4_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_PONG_ANON5_STRUCT = 
-  {
-    NULL,
-    &P_FUN_PONG_ANON5_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_PONG_ANON6_STRUCT = 
-  {
-    NULL,
-    &P_FUN_PONG_ANON6_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_4,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_FUNDECL P_FUN_PONG_ANON7_STRUCT = 
-  {
-    NULL,
-    &P_FUN_PONG_ANON7_IMPL,
-    1U,
-    1U,
-    1U,
-    &P_GEND_TYPE_3,
-    NULL,
-    0U,
-    NULL,
-    0U,
-    NULL
-  };
-  PRT_STATEDECL P_GEND_STATES_Main[] = 
-  {
-    
-    {
-        "Done",
-        0,
-        0,
-        &P_GEND_EVENTSET,
-        &P_GEND_EVENTSET,
-        &P_GEND_EVENTSET,
-        NULL,
-        NULL,
-        &P_FUN_Main_ANON9_STRUCT,
-        &P_FUN_Main_ANON10_STRUCT,
-        0U,
-        NULL
-    },
-    
-    {
-        "Ping_Init",
-        1,
-        0,
-        &P_GEND_EVENTSET,
-        &P_GEND_EVENTSET_Success,
-        &P_GEND_EVENTSET,
-        P_GEND_TRANS_Main_Ping_Init,
-        NULL,
-        &P_FUN_Main_ANON11_STRUCT,
-        &P_FUN_Main_ANON1_STRUCT,
-        0U,
-        NULL
-    },
-    
-    {
-        "Ping_SendPing",
-        1,
-        0,
-        &P_GEND_EVENTSET,
-        &P_GEND_EVENTSET_Success,
-        &P_GEND_EVENTSET,
-        P_GEND_TRANS_Main_Ping_SendPing,
-        NULL,
-        &P_FUN_Main_ANON12_STRUCT,
-        &P_FUN_Main_ANON4_STRUCT,
-        0U,
-        NULL
-    },
-    
-    {
-        "Ping_WaitPong",
-        1,
-        0,
-        &P_GEND_EVENTSET,
-        &P_GEND_EVENTSET_Pong,
-        &P_GEND_EVENTSET,
-        P_GEND_TRANS_Main_Ping_WaitPong,
-        NULL,
-        &P_FUN_Main_ANON6_STRUCT,
-        &P_FUN_Main_ANON7_STRUCT,
-        0U,
-        NULL
-    }
-  };
-  PRT_STATEDECL P_GEND_STATES_PONG[] = 
-  {
-    
-    {
-        "Pong_SendPong",
-        1,
-        0,
-        &P_GEND_EVENTSET,
-        &P_GEND_EVENTSET_Success,
-        &P_GEND_EVENTSET,
-        P_GEND_TRANS_PONG_Pong_SendPong,
-        NULL,
-        &P_FUN_PONG_ANON7_STRUCT,
-        &P_FUN_PONG_ANON5_STRUCT,
-        0U,
-        NULL
-    },
-    
-    {
-        "Pong_WaitPing",
-        1,
-        0,
-        &P_GEND_EVENTSET,
-        &P_GEND_EVENTSET_Ping,
-        &P_GEND_EVENTSET,
-        P_GEND_TRANS_PONG_Pong_WaitPing,
-        NULL,
-        &P_FUN_PONG_ANON0_STRUCT,
-        &P_FUN_PONG_ANON2_STRUCT,
-        0U,
-        NULL
-    }
-  };
-  PRT_MACHINEDECL P_MACHINE_Main_STRUCT = 
-  {
+#line 5 "PingPong.p"
+PRT_INTERFACEDECL P_PINGPONG_I_Main =
+{
     0U,
     "Main",
-    1,
-    4,
-    13,
-    4294967295,
-    P_STATE_Main_Ping_Init,
-    P_GEND_VARS_Main,
-    P_GEND_STATES_Main,
-    P_GEND_FUNS_Main,
-    0U,
+    &P_PINGPONG_GEND_TYPE_n,
+    &P_PINGPONG_EVENTSET_Main_RECV
+};
+
+#line 31 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_PONG_RECV_INNER[] = { &P_PINGPONG_EVENT_Ping, &P_PINGPONG_EVENT_Pong, &P_PINGPONG_EVENT_Success };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_PONG_RECV =
+{
+    3U,
+    P_PINGPONG_PONG_RECV_INNER,
     NULL
-  };
-  PRT_MACHINEDECL P_MACHINE_PONG_STRUCT = 
-  {
-    0U,
+};
+
+#line 31 "PingPong.p"
+PRT_INTERFACEDECL P_PINGPONG_I_PONG =
+{
+    1U,
     "PONG",
-    0,
-    2,
-    8,
-    4294967295,
-    P_STATE_PONG_Pong_WaitPing,
-    NULL,
-    P_GEND_STATES_PONG,
-    P_GEND_FUNS_PONG,
+    &P_PINGPONG_GEND_TYPE_n,
+    &P_PINGPONG_EVENTSET_PONG_RECV
+};
+
+PRT_VARDECL P_PINGPONG_Main_VARS[] = {
+    { "pongId", &P_PINGPONG_GEND_TYPE_m }
+};
+
+#line 8 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Ping_Init_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Ping_Init_DEFERS =
+{
     0U,
+    P_PINGPONG_Ping_Init_DEFERS_INNER,
     NULL
-  };
-  
+};
+
+#line 8 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Ping_Init_TRANS_INNER[] = { &P_PINGPONG_EVENT_Success };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Ping_Init_TRANS =
+{
+    1U,
+    P_PINGPONG_Ping_Init_TRANS_INNER,
+    NULL
+};
+
+#line 8 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Ping_Init_DOS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Ping_Init_DOS =
+{
+    0U,
+    P_PINGPONG_Ping_Init_DOS_INNER,
+    NULL
+};
+
+PRT_TRANSDECL P_PINGPONG_TRANS[] =
+{
+    { 0, &P_PINGPONG_EVENT_Success, 1, &_P_NO_OP }
+};
+
+#line 8 "PingPong.p"
+#define P_PINGPONG_STATE_Main_Ping_Init \
+{ \
+    "Main.Ping_Init", \
+    1U, \
+    0U, \
+    &P_PINGPONG_EVENTSET_Ping_Init_DEFERS, \
+    &P_PINGPONG_EVENTSET_Ping_Init_TRANS, \
+    &P_PINGPONG_EVENTSET_Ping_Init_DOS, \
+    P_PINGPONG_TRANS, \
+    NULL, \
+    &P_PINGPONG_FUNCTION_Anon, \
+    &_P_NO_OP, \
+}
+
+#line 16 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Ping_SendPing_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Ping_SendPing_DEFERS =
+{
+    0U,
+    P_PINGPONG_Ping_SendPing_DEFERS_INNER,
+    NULL
+};
+
+#line 16 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Ping_SendPing_TRANS_INNER[] = { &P_PINGPONG_EVENT_Success };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Ping_SendPing_TRANS =
+{
+    1U,
+    P_PINGPONG_Ping_SendPing_TRANS_INNER,
+    NULL
+};
+
+#line 16 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Ping_SendPing_DOS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Ping_SendPing_DOS =
+{
+    0U,
+    P_PINGPONG_Ping_SendPing_DOS_INNER,
+    NULL
+};
+
+PRT_TRANSDECL P_PINGPONG_TRANS_1[] =
+{
+    { 1, &P_PINGPONG_EVENT_Success, 2, &_P_NO_OP }
+};
+
+#line 16 "PingPong.p"
+#define P_PINGPONG_STATE_Main_Ping_SendPing \
+{ \
+    "Main.Ping_SendPing", \
+    1U, \
+    0U, \
+    &P_PINGPONG_EVENTSET_Ping_SendPing_DEFERS, \
+    &P_PINGPONG_EVENTSET_Ping_SendPing_TRANS, \
+    &P_PINGPONG_EVENTSET_Ping_SendPing_DOS, \
+    P_PINGPONG_TRANS_1, \
+    NULL, \
+    &P_PINGPONG_FUNCTION_Anon_1, \
+    &_P_NO_OP, \
+}
+
+#line 24 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Ping_WaitPong_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Ping_WaitPong_DEFERS =
+{
+    0U,
+    P_PINGPONG_Ping_WaitPong_DEFERS_INNER,
+    NULL
+};
+
+#line 24 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Ping_WaitPong_TRANS_INNER[] = { &P_PINGPONG_EVENT_Pong };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Ping_WaitPong_TRANS =
+{
+    1U,
+    P_PINGPONG_Ping_WaitPong_TRANS_INNER,
+    NULL
+};
+
+#line 24 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Ping_WaitPong_DOS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Ping_WaitPong_DOS =
+{
+    0U,
+    P_PINGPONG_Ping_WaitPong_DOS_INNER,
+    NULL
+};
+
+PRT_TRANSDECL P_PINGPONG_TRANS_2[] =
+{
+    { 2, &P_PINGPONG_EVENT_Pong, 1, &_P_NO_OP }
+};
+
+#line 24 "PingPong.p"
+#define P_PINGPONG_STATE_Main_Ping_WaitPong \
+{ \
+    "Main.Ping_WaitPong", \
+    1U, \
+    0U, \
+    &P_PINGPONG_EVENTSET_Ping_WaitPong_DEFERS, \
+    &P_PINGPONG_EVENTSET_Ping_WaitPong_TRANS, \
+    &P_PINGPONG_EVENTSET_Ping_WaitPong_DOS, \
+    P_PINGPONG_TRANS_2, \
+    NULL, \
+    &_P_NO_OP, \
+    &_P_NO_OP, \
+}
+
+#line 28 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Done_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Done_DEFERS =
+{
+    0U,
+    P_PINGPONG_Done_DEFERS_INNER,
+    NULL
+};
+
+#line 28 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Done_TRANS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Done_TRANS =
+{
+    0U,
+    P_PINGPONG_Done_TRANS_INNER,
+    NULL
+};
+
+#line 28 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Done_DOS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Done_DOS =
+{
+    0U,
+    P_PINGPONG_Done_DOS_INNER,
+    NULL
+};
+
+#line 28 "PingPong.p"
+#define P_PINGPONG_STATE_Main_Done \
+{ \
+    "Main.Done", \
+    0U, \
+    0U, \
+    &P_PINGPONG_EVENTSET_Done_DEFERS, \
+    &P_PINGPONG_EVENTSET_Done_TRANS, \
+    &P_PINGPONG_EVENTSET_Done_DOS, \
+    NULL, \
+    NULL, \
+    &_P_NO_OP, \
+    &_P_NO_OP, \
+}
+
+PRT_STATEDECL P_PINGPONG_Main_STATES[] = { P_PINGPONG_STATE_Main_Ping_Init, P_PINGPONG_STATE_Main_Ping_SendPing, P_PINGPONG_STATE_Main_Ping_WaitPong, P_PINGPONG_STATE_Main_Done };
+
+#line 9 "PingPong.p"
+PRT_VALUE* P_PINGPONG_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+#line 9 "PingPong.p"
+    PRT_VALUE* PTMP_tmp0 = PrtMkDefaultValue(&P_PINGPONG_GEND_TYPE_R);
+    PRT_VALUE* PTMP_tmp1 = PrtMkDefaultValue(&P_PINGPONG_GEND_TYPE_e);
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+#line 9 "PingPong.p"
+#line 10 "PingPong.p"
+    PRT_VALUE** P_PINGPONG_LVALUE = &(PTMP_tmp0);
+    PrtFreeValue(*P_PINGPONG_LVALUE);
+    *P_PINGPONG_LVALUE = PrtCloneValue(PrtMkInterface(context, 1, 0)->id);
+    
+#line 10 "PingPong.p"
+    {
+        PRT_VALUE** P_PINGPONG_LVALUE_1 = &(p_this->varValues[0]);
+        PrtFreeValue(*P_PINGPONG_LVALUE_1);
+        *P_PINGPONG_LVALUE_1 = PTMP_tmp0;
+        PTMP_tmp0 = NULL;
+    }
+    
+#line 11 "PingPong.p"
+    PRT_VALUE** P_PINGPONG_LVALUE_2 = &(PTMP_tmp1);
+    PrtFreeValue(*P_PINGPONG_LVALUE_2);
+    *P_PINGPONG_LVALUE_2 = PrtCloneValue((&P_PINGPONG_EVENT_Success.value));
+    
+#line 11 "PingPong.p"
+    PrtFreeTriggerPayload(p_this);
+    PrtRaise(p_this, PTMP_tmp1, 0);
+    *(&(PTMP_tmp1)) = NULL;
+    goto p_return;
+    
+p_return:
+    PrtFreeValue(PTMP_tmp0); PTMP_tmp0 = NULL;
+    PrtFreeValue(PTMP_tmp1); PTMP_tmp1 = NULL;
+    return _P_GEN_retval;
+}
+
+PRT_FUNDECL P_PINGPONG_FUNCTION_Anon =
+{
+    NULL,
+    &P_PINGPONG_Anon_IMPL,
+    NULL
+};
+
+
+#line 17 "PingPong.p"
+PRT_VALUE* P_PINGPONG_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+#line 17 "PingPong.p"
+    PRT_VALUE* PTMP_tmp0_1 = PrtMkDefaultValue(&P_PINGPONG_GEND_TYPE_m);
+    PRT_VALUE* PTMP_tmp1_1 = PrtMkDefaultValue(&P_PINGPONG_GEND_TYPE_e);
+    PRT_VALUE* PTMP_tmp2 = PrtMkDefaultValue(&P_PINGPONG_GEND_TYPE_R_1);
+    PRT_VALUE* PTMP_tmp3 = PrtMkDefaultValue(&P_PINGPONG_GEND_TYPE_e);
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+#line 17 "PingPong.p"
+#line 18 "PingPong.p"
+    PRT_VALUE** P_PINGPONG_LVALUE_3 = &(PTMP_tmp0_1);
+    PrtFreeValue(*P_PINGPONG_LVALUE_3);
+    *P_PINGPONG_LVALUE_3 = PrtCloneValue(p_this->varValues[0]);
+    
+#line 18 "PingPong.p"
+    PRT_VALUE** P_PINGPONG_LVALUE_4 = &(PTMP_tmp1_1);
+    PrtFreeValue(*P_PINGPONG_LVALUE_4);
+    *P_PINGPONG_LVALUE_4 = PrtCloneValue((&P_PINGPONG_EVENT_Ping.value));
+    
+#line 18 "PingPong.p"
+    PRT_VALUE** P_PINGPONG_LVALUE_5 = &(PTMP_tmp2);
+    PrtFreeValue(*P_PINGPONG_LVALUE_5);
+    *P_PINGPONG_LVALUE_5 = PrtCloneValue((p_this->id));
+    
+#line 18 "PingPong.p"
+    PrtSendInternal(context, PrtGetMachine(context->process, PTMP_tmp0_1), PTMP_tmp1_1, 1, &(PTMP_tmp2));
+    *(&(PTMP_tmp1_1)) = NULL;
+    
+#line 19 "PingPong.p"
+    PRT_VALUE** P_PINGPONG_LVALUE_6 = &(PTMP_tmp3);
+    PrtFreeValue(*P_PINGPONG_LVALUE_6);
+    *P_PINGPONG_LVALUE_6 = PrtCloneValue((&P_PINGPONG_EVENT_Success.value));
+    
+#line 19 "PingPong.p"
+    PrtFreeTriggerPayload(p_this);
+    PrtRaise(p_this, PTMP_tmp3, 0);
+    *(&(PTMP_tmp3)) = NULL;
+    goto p_return;
+    
+p_return:
+    PrtFreeValue(PTMP_tmp0_1); PTMP_tmp0_1 = NULL;
+    PrtFreeValue(PTMP_tmp1_1); PTMP_tmp1_1 = NULL;
+    PrtFreeValue(PTMP_tmp2); PTMP_tmp2 = NULL;
+    PrtFreeValue(PTMP_tmp3); PTMP_tmp3 = NULL;
+    return _P_GEN_retval;
+}
+
+PRT_FUNDECL P_PINGPONG_FUNCTION_Anon_1 =
+{
+    NULL,
+    &P_PINGPONG_Anon_IMPL_1,
+    NULL
+};
+
+
+PRT_FUNDECL* P_PINGPONG_Main_METHODS[] = { &P_PINGPONG_FUNCTION_Anon, &P_PINGPONG_FUNCTION_Anon_1 };
+
+#line 5 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Main_RECV_INNER_1[] = { &P_PINGPONG_EVENT_Ping, &P_PINGPONG_EVENT_Pong, &P_PINGPONG_EVENT_Success };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Main_RECV_1 =
+{
+    3U,
+    P_PINGPONG_Main_RECV_INNER_1,
+    NULL
+};
+
+#line 5 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Main_SEND_INNER[] = { &P_PINGPONG_EVENT_Ping, &P_PINGPONG_EVENT_Pong, &P_PINGPONG_EVENT_Success };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Main_SEND =
+{
+    3U,
+    P_PINGPONG_Main_SEND_INNER,
+    NULL
+};
+
+PRT_UINT32 P_PINGPONG_Main_CREATES_ARR[] = { 1 };
+PRT_INTERFACESETDECL P_PINGPONG_Main_CREATES = { 1, P_PINGPONG_Main_CREATES_ARR };
+#line 5 "PingPong.p"
+PRT_MACHINEDECL P_PINGPONG_MACHINE_Main = 
+{
+    0U,
+    "Main",
+    &P_PINGPONG_EVENTSET_Main_RECV_1,
+    &P_PINGPONG_EVENTSET_Main_SEND,
+    &P_PINGPONG_Main_CREATES,
+    1U,
+    4U,
+    2U,
+    4294967295U,
+    0U,
+    P_PINGPONG_Main_VARS,
+    P_PINGPONG_Main_STATES,
+    P_PINGPONG_Main_METHODS
+};
+
+#line 32 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Pong_WaitPing_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Pong_WaitPing_DEFERS =
+{
+    0U,
+    P_PINGPONG_Pong_WaitPing_DEFERS_INNER,
+    NULL
+};
+
+#line 32 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Pong_WaitPing_TRANS_INNER[] = { &P_PINGPONG_EVENT_Ping };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Pong_WaitPing_TRANS =
+{
+    1U,
+    P_PINGPONG_Pong_WaitPing_TRANS_INNER,
+    NULL
+};
+
+#line 32 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Pong_WaitPing_DOS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Pong_WaitPing_DOS =
+{
+    0U,
+    P_PINGPONG_Pong_WaitPing_DOS_INNER,
+    NULL
+};
+
+PRT_TRANSDECL P_PINGPONG_TRANS_3[] =
+{
+    { 0, &P_PINGPONG_EVENT_Ping, 1, &_P_NO_OP }
+};
+
+#line 32 "PingPong.p"
+#define P_PINGPONG_STATE_PONG_Pong_WaitPing \
+{ \
+    "PONG.Pong_WaitPing", \
+    1U, \
+    0U, \
+    &P_PINGPONG_EVENTSET_Pong_WaitPing_DEFERS, \
+    &P_PINGPONG_EVENTSET_Pong_WaitPing_TRANS, \
+    &P_PINGPONG_EVENTSET_Pong_WaitPing_DOS, \
+    P_PINGPONG_TRANS_3, \
+    NULL, \
+    &P_PINGPONG_FUNCTION_Anon_2, \
+    &_P_NO_OP, \
+}
+
+#line 37 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Pong_SendPong_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Pong_SendPong_DEFERS =
+{
+    0U,
+    P_PINGPONG_Pong_SendPong_DEFERS_INNER,
+    NULL
+};
+
+#line 37 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Pong_SendPong_TRANS_INNER[] = { &P_PINGPONG_EVENT_Success };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Pong_SendPong_TRANS =
+{
+    1U,
+    P_PINGPONG_Pong_SendPong_TRANS_INNER,
+    NULL
+};
+
+#line 37 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_Pong_SendPong_DOS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_Pong_SendPong_DOS =
+{
+    0U,
+    P_PINGPONG_Pong_SendPong_DOS_INNER,
+    NULL
+};
+
+PRT_TRANSDECL P_PINGPONG_TRANS_4[] =
+{
+    { 1, &P_PINGPONG_EVENT_Success, 0, &_P_NO_OP }
+};
+
+#line 37 "PingPong.p"
+#define P_PINGPONG_STATE_PONG_Pong_SendPong \
+{ \
+    "PONG.Pong_SendPong", \
+    1U, \
+    0U, \
+    &P_PINGPONG_EVENTSET_Pong_SendPong_DEFERS, \
+    &P_PINGPONG_EVENTSET_Pong_SendPong_TRANS, \
+    &P_PINGPONG_EVENTSET_Pong_SendPong_DOS, \
+    P_PINGPONG_TRANS_4, \
+    NULL, \
+    &P_PINGPONG_FUNCTION_Anon_3, \
+    &_P_NO_OP, \
+}
+
+PRT_STATEDECL P_PINGPONG_PONG_STATES[] = { P_PINGPONG_STATE_PONG_Pong_WaitPing, P_PINGPONG_STATE_PONG_Pong_SendPong };
+
+#line 33 "PingPong.p"
+PRT_VALUE* P_PINGPONG_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+#line 33 "PingPong.p"
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+#line 33 "PingPong.p"
+p_return:
+    return _P_GEN_retval;
+}
+
+PRT_FUNDECL P_PINGPONG_FUNCTION_Anon_2 =
+{
+    NULL,
+    &P_PINGPONG_Anon_IMPL_2,
+    NULL
+};
+
+
+#line 38 "PingPong.p"
+PRT_VALUE* P_PINGPONG_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+#line 38 "PingPong.p"
+    PRT_VALUE** P_PINGPONG_VAR_payload = argRefs[0];
+    PRT_VALUE* PTMP_tmp0_2 = PrtMkDefaultValue(&P_PINGPONG_GEND_TYPE_m);
+    PRT_VALUE* PTMP_tmp1_2 = PrtMkDefaultValue(&P_PINGPONG_GEND_TYPE_e);
+    PRT_VALUE* PTMP_tmp2_1 = PrtMkDefaultValue(&P_PINGPONG_GEND_TYPE_e);
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+#line 38 "PingPong.p"
+#line 39 "PingPong.p"
+    PRT_VALUE** P_PINGPONG_LVALUE_7 = &(PTMP_tmp0_2);
+    PrtFreeValue(*P_PINGPONG_LVALUE_7);
+    *P_PINGPONG_LVALUE_7 = PrtCloneValue(*P_PINGPONG_VAR_payload);
+    
+#line 39 "PingPong.p"
+    PRT_VALUE** P_PINGPONG_LVALUE_8 = &(PTMP_tmp1_2);
+    PrtFreeValue(*P_PINGPONG_LVALUE_8);
+    *P_PINGPONG_LVALUE_8 = PrtCloneValue((&P_PINGPONG_EVENT_Pong.value));
+    
+#line 39 "PingPong.p"
+    PrtSendInternal(context, PrtGetMachine(context->process, PTMP_tmp0_2), PTMP_tmp1_2, 0);
+    *(&(PTMP_tmp1_2)) = NULL;
+    
+#line 40 "PingPong.p"
+    PRT_VALUE** P_PINGPONG_LVALUE_9 = &(PTMP_tmp2_1);
+    PrtFreeValue(*P_PINGPONG_LVALUE_9);
+    *P_PINGPONG_LVALUE_9 = PrtCloneValue((&P_PINGPONG_EVENT_Success.value));
+    
+#line 40 "PingPong.p"
+    PrtFreeTriggerPayload(p_this);
+    PrtRaise(p_this, PTMP_tmp2_1, 0);
+    *(&(PTMP_tmp2_1)) = NULL;
+    goto p_return;
+    
+p_return:
+    PrtFreeValue(PTMP_tmp0_2); PTMP_tmp0_2 = NULL;
+    PrtFreeValue(PTMP_tmp1_2); PTMP_tmp1_2 = NULL;
+    PrtFreeValue(PTMP_tmp2_1); PTMP_tmp2_1 = NULL;
+    return _P_GEN_retval;
+}
+
+PRT_FUNDECL P_PINGPONG_FUNCTION_Anon_3 =
+{
+    NULL,
+    &P_PINGPONG_Anon_IMPL_3,
+    &P_PINGPONG_GEND_TYPE_m
+};
+
+
+PRT_FUNDECL* P_PINGPONG_PONG_METHODS[] = { &P_PINGPONG_FUNCTION_Anon_2, &P_PINGPONG_FUNCTION_Anon_3 };
+
+#line 31 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_PONG_RECV_INNER_1[] = { &P_PINGPONG_EVENT_Ping, &P_PINGPONG_EVENT_Pong, &P_PINGPONG_EVENT_Success };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_PONG_RECV_1 =
+{
+    3U,
+    P_PINGPONG_PONG_RECV_INNER_1,
+    NULL
+};
+
+#line 31 "PingPong.p"
+PRT_EVENTDECL* P_PINGPONG_PONG_SEND_INNER[] = { &P_PINGPONG_EVENT_Ping, &P_PINGPONG_EVENT_Pong, &P_PINGPONG_EVENT_Success };
+PRT_EVENTSETDECL P_PINGPONG_EVENTSET_PONG_SEND =
+{
+    3U,
+    P_PINGPONG_PONG_SEND_INNER,
+    NULL
+};
+
+#line 31 "PingPong.p"
+PRT_MACHINEDECL P_PINGPONG_MACHINE_PONG = 
+{
+    1U,
+    "PONG",
+    &P_PINGPONG_EVENTSET_PONG_RECV_1,
+    &P_PINGPONG_EVENTSET_PONG_SEND,
+    NULL,
+    0U,
+    2U,
+    2U,
+    4294967295U,
+    0U,
+    NULL,
+    P_PINGPONG_PONG_STATES,
+    P_PINGPONG_PONG_METHODS
+};
+
+PRT_EVENTDECL* P_PINGPONG_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_PINGPONG_EVENT_Ping, &P_PINGPONG_EVENT_Pong, &P_PINGPONG_EVENT_Success };
+PRT_MACHINEDECL* P_PINGPONG_ALL_MACHINES[] = { &P_PINGPONG_MACHINE_Main, &P_PINGPONG_MACHINE_PONG };
+PRT_INTERFACEDECL* P_PINGPONG_ALL_INTERFACES[] = { &P_PINGPONG_I_Main, &P_PINGPONG_I_PONG };
+PRT_FUNDECL* P_PINGPONG_ALL_FUNCTIONS[] = { NULL };
+int P_PINGPONG_DefaultImpl_LME_0[] = { -1,1 };
+int P_PINGPONG_DefaultImpl_LME_1[] = { -1,-1 };
+int* P_PINGPONG_DefaultImpl_LINKMAP[] = { P_PINGPONG_DefaultImpl_LME_0, P_PINGPONG_DefaultImpl_LME_1 };
+int P_PINGPONG_DefaultImpl_DEFMAP[] = { 0,1 };
+PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl = {
+    5U,
+    2U,
+    2U,
+    0U,
+    0U,
+    P_PINGPONG_ALL_EVENTS,
+    P_PINGPONG_ALL_MACHINES,
+    P_PINGPONG_ALL_INTERFACES,
+    P_PINGPONG_ALL_FUNCTIONS,
+    NULL,
+    P_PINGPONG_DefaultImpl_LINKMAP,
+    P_PINGPONG_DefaultImpl_DEFMAP
+};
