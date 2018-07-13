@@ -1,4 +1,4 @@
 [submodule "Submodule/P"]
 	path = Submodule/P
 	url = https://github.com/p-org/P.git
-  branch = sgxruntime
+  branch = ssa
