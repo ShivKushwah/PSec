@@ -1,4 +1,4 @@
-Meeting with Sanjit: Tuesday, 09/04/18
+# Meeting with Sanjit: Tuesday, 09/04/18
 
 - Discussed project with Sanjit and gave thumbs up
 - Workshop paper deadline in November
@@ -11,7 +11,7 @@ TODOs:
 
 ------------------------------------------------
 
-First Project Skype Meeting: Thursday, 08/30/18
+# First Project Skype Meeting: Thursday, 08/30/18
 
 Big Project #1
 Problem:
