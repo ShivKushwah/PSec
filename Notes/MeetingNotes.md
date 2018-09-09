@@ -1,3 +1,35 @@
+# Weekly Friday Meeting: Friday, 09/07/18
+
+- Discussed the electronic voting system and state diagrams for each
+- Breifly talked about helio paper. The dataset was directly provided from UCSF, not publicly available. 
+
+Electronic Voting Spec:
+Vote: (credentials: int, id: int, vote: int);
+VotersList: List<credentials>
+BallotBox: List<Vote>
+
+Functions:
+1. CastVote: Vote -> bool. 
+true: if its a valid voter and legit vote then add it to the BallotBox, false otherwise.
+2. RemoveDuplicate: VotersList -> VotersList. 
+Removes all the duplicates and picks the latest vote.
+3. AnonVote: 
+replace the credentials by null.
+4. GenerateResults
+return the results.
+5. CheckVote: BallotBox -> bool
+
+Questions:
+Q1: Would you implement it using RDD, DataFrame, Dataset etc. What is the difference in all of them?
+Q2: How does spark-submit really work?
+Q3: DAG for each of the spark queries.
+
+TODOs:
+- Finish spark electronic voting system by Tuesday
+- Read Helio Paper
+
+------------------------------------------------
+
 # Meeting with Sanjit: Tuesday, 09/04/18
 
 - Discussed project with Sanjit and gave thumbs up
