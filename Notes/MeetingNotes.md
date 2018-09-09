@@ -4,11 +4,13 @@
 - Breifly talked about helio paper. The dataset was directly provided from UCSF, not publicly available. 
 
 Electronic Voting Spec:
-Vote: (credentials: int, id: int, vote: int);
-VotersList: List<credentials>
-BallotBox: List<Vote>
+
+- Vote: (credentials: int, id: int, vote: int);
+- VotersList: List<credentials>
+- BallotBox: List<Vote>
 
 Functions:
+
 1. CastVote: Vote -> bool. 
 true: if its a valid voter and legit vote then add it to the BallotBox, false otherwise.
 2. RemoveDuplicate: VotersList -> VotersList. 
