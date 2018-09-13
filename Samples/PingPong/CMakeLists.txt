@@ -9,7 +9,7 @@ set(projectName pingpong)
 ##################################
 
 FILE(GLOB_RECURSE psources PSrc/*)
-PBUILD(dep_${projectName} psources ./PGenerated/ ${CMAKE_CURRENT_SOURCE_DIR})
+PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/)
 
 FILE(GLOB_RECURSE ${projectName}_psources PSrc/*)
 FILE(GLOB_RECURSE ${projectName}_csources Src/*)
