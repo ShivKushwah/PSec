@@ -5,6 +5,7 @@ set(projectName enclave)
 FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*)
 PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/)
 
+
 ###################################
 # Generic setup for each project
 ##################################

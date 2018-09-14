@@ -8,6 +8,7 @@ SET(CMAKE_VERBOSE_MAKEFILE true)
 ## Compile P source
 set(P_COMPILER_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Release/AnyCPU/Binaries/Pc.dll)
 set(P_BUILT_LIB_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Prt)
+set(P_LIBHANDLER_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Ext/libhandler)
 set(P_LIB_INCLUDE_PATH ${P_BUILT_LIB_PATH}/include)
 set(P_LIB_LINK_PATH ${P_BUILT_LIB_PATH}/lib)
 
