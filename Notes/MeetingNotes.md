@@ -1,3 +1,13 @@
+# Thursday Extended Meeting: Thursday, 09/15/18
+- Went over electronic voting system code and were provided with feedback for improvements
+- Went over how DAG of spark code fits into the state policy diagrams
+- Had P tutorial
+- Breifly went over Helio paper and compared it to what we are doing. The difference is Helio paper has only one source. 
+
+TODOs:
+- Visualize DAGs, want to see the disassembly
+- Refactor code to create minimal DAG, toDf() method becomes problematic since it creates an instance of the DF. We want to create expressions in the form of queries using the most minimal subset. Ideally want to use map and reduce.
+------------------------------------------------
 # Weekly Friday Meeting: Friday, 09/07/18
 
 - Discussed the electronic voting system and state diagrams for each
