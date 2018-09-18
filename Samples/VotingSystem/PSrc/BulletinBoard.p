@@ -5,7 +5,7 @@
 * BulletinBoard -> TabulationTeller -> AllVotes.
 *****************************************/
 
-machine BulletinBoardImpl
+machine BulletinBoardMachine
 receives eAllVotes, eGetElectionResults;
 sends eRespElectionResults;
 {

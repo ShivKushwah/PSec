@@ -3,18 +3,9 @@ project(VotingSystem)
 
 
 set(projectName votingsystem)
-PBUILD(dep_${projectName} ${CMAKE_CURRENT_SOURCE_DIR}/SecuredVoting.xml "c" ${CMAKE_CURRENT_SOURCE_DIR})
 
-
-
-
-
-
-
-
-
-
-
+FILE(GLOB_RECURSE psources PSrc/*.p)
+PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/)
 
 
 
@@ -52,15 +43,10 @@ target_include_directories(${projectName} PRIVATE
 
 )
 
+set(LIBHANDLERLIB_PATH ${P_LIBHANDLER_PATH}/out/gcc-amd64-linux-gnu/debug/libhandler.a)
+
 target_link_libraries(${projectName}
   Prt_static
   pthread
+  ${LIBHANDLERLIB_PATH}
 )
-
-
-
-
-
-
-
-

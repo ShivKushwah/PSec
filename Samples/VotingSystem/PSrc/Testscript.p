@@ -7,6 +7,4 @@ module votingsystem =
     TamperEvidentLogMachine
 };
 
-test test1: main SupervisorMachine in votingsystem;
-
-implementation votingsystem;
+implementation complete: votingsystem;

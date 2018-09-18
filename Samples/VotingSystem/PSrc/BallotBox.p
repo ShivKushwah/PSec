@@ -40,7 +40,7 @@ receives eVote, eStartElection, eCloseElection, eRespGetLog, eRespAddItem;
         entry {
             send appendOnlyLog, eGetLog;
             receive{
-                case eRespGetLog: (p: seq[data])
+                case eRespGetLog: (p: seq[any])
                 {
                     send bulletinBoard, eAllVotes, (ballotId = 0, votes = p as seq[Vote]);
                 }
