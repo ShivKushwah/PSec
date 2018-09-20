@@ -97,8 +97,11 @@ target_include_directories(${projectName} PRIVATE
 
 )
 
-#target_link_libraries(${projectName}
-#    # Prt_trusted_static
+set(LIBHANDLERLIB_PATH ${P_LIBHANDLER_PATH}/out/gcc-amd64-linux-gnu/debug/libhandler.a)
+
+target_link_libraries(${projectName}
+    Prt_trusted_static
+    ${LIBHANDLERLIB_PATH}
 #  #  pthread
-#)
+)
 
