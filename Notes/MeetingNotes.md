@@ -1,4 +1,4 @@
-# Monday Extended Meeting: Monday, 09/20/18
+# Monday Extended Meeting: Monday, 09/17/18
 - Finish Spark
 - Run Pinpong using setup 
 - Spawn 2 threads and create pinpong program with zeroMQ and RPC. 
