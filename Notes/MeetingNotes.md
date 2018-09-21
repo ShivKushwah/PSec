@@ -1,3 +1,13 @@
+# Monday Extended Meeting: Monday, 09/20/18
+- Finish Spark
+- Run Pinpong using setup 
+- Spawn 2 threads and create pinpong program with zeroMQ and RPC. 
+- Look into Binn
+- Ping Pong Ding Dong Example
+- Try and get Voting System in Programming Enclaves to compile
+- Send unbounded array or linked list over ping pong
+
+------------------------------------------------
 # Thursday Extended Meeting: Thursday, 09/15/18
 - Went over electronic voting system code and were provided with feedback for improvements
 - Went over how DAG of spark code fits into the state policy diagrams
