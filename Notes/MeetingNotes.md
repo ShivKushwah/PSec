@@ -1,4 +1,4 @@
-# Friday Extended Meeting: Monday, 09/21/18
+# Friday Extended Meeting: Friday, 09/21/18
 - Emphasized importance of having clean code from the start
 - Created a Todoist of all tasks that need to be completed with deadlines
 - Again discussed overall architecture of the spark code displayed below (transcribed from whiteboard image):
@@ -19,7 +19,7 @@ TODOs:
 - Read Spark paper
 - Read Typestates paper
 
-- **This upcoming week we will transition to the P project for the workshop paper**
+- **This upcoming week we will transition to the P project for the workshop paper. Must make up for lost time this past week.**
 ------------------------------------------------
 # Monday Extended Meeting: Monday, 09/17/18
 - Finish Spark
