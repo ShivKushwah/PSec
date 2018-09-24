@@ -13,12 +13,13 @@ class Vote:
 
 - All of the above methods should all other internal methods when approriate
 - All class variables and fields should be private
+
 TODOs:
 - Clean up Spark code to reflec this architecture
 - Read Spark paper
 - Read Typestates paper
 
-- This upcoming week we will transition to the P project for the workshop paper
+- **This upcoming week we will transition to the P project for the workshop paper**
 ------------------------------------------------
 # Monday Extended Meeting: Monday, 09/17/18
 - Finish Spark
