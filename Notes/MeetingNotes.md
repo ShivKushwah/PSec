@@ -1,3 +1,25 @@
+# Friday Extended Meeting: Monday, 09/21/18
+- Emphasized importance of having clean code from the start
+- Created a Todoist of all tasks that need to be completed with deadlines
+- Again discussed overall architecture of the spark code displayed below (transcribed from whiteboard image):
+class BallotBox:
+  - addVote: vote -> BallotBox
+  - RemoveDup: Ballotox -> BallotBox
+class Vote:
+  - compareCredential: vote -> bool
+  - readCredential: vote -> credential
+  - readVote: true -> vote
+  - anonVote: true -> vote
+
+- All of the above methods should all other internal methods when approriate
+- All class variables and fields should be private
+TODOs:
+- Clean up Spark code to reflec this architecture
+- Read Spark paper
+- Read Typestates paper
+
+- This upcoming week we will transition to the P project for the workshop paper
+------------------------------------------------
 # Monday Extended Meeting: Monday, 09/17/18
 - Finish Spark
 - Run Pinpong using setup 
