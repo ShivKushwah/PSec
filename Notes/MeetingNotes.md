@@ -2,9 +2,12 @@
 - Emphasized importance of having clean code from the start
 - Created a Todoist of all tasks that need to be completed with deadlines
 - Again discussed overall architecture of the spark code displayed below (transcribed from whiteboard image):
+
 class BallotBox:
   - addVote: vote -> BallotBox
   - RemoveDup: Ballotox -> BallotBox
+  
+  
 class Vote:
   - compareCredential: vote -> bool
   - readCredential: vote -> credential
