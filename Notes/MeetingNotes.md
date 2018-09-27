@@ -1,3 +1,19 @@
+# Hangouts Meeting: Tuesday, 09/26/18
+- Vote class looks ok
+- Ballotbox needs to be changed
+	- Drop validateVote
+	- Figure out how things are getting stored in the dataset
+	- Use groupbykey instead instead of groupby
+	- Prevent access to vote fields
+- DAG visualizations
+- There are objects only, container is an object that contains other objects
+- Implement a class called Kavach
+	- T Data 
+	- Statemachine Policy
+	- func performOperation (op). Func also transitions the policy
+- class Votepolicy extends
+- Implement Votepolicy
+------------------------------------------------
 # Friday Extended Meeting: Friday, 09/21/18
 - Emphasized importance of having clean code from the start
 - Created a Todoist of all tasks that need to be completed with deadlines
