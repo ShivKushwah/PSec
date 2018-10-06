@@ -1,3 +1,27 @@
+# Hangouts Meeting: Friday, 10/05/18
+
+- 3 Use cases:
+	- Social media graph analysis
+		- Write a policy where you cannot infer information on who you are with the connection graph
+	- Event calendar
+		- Ensure no one knows youre going to party but you want to let the people  
+	- Healthcare:
+		- TODO: Get this example running, no policy yet
+		- no data, but we have schema so generate our own inputs
+		- ML model from A to B, should not leak information about who was used to train the model
+	- Pagerank:
+		- Used for benchmarking 
+
+- Action Items:
+	- Search a bit more on privacy violations in medical records
+	- Get medical example running
+	- Get pagerank example running
+	- Talk to Fernando about data access
+		- What kind of learning do people normally do? 
+		- Did this learning lead to privacy concerns?
+
+- Ankush will implement the kavach dataset
+------------------------------------------------
 # Hangouts Meeting: Tuesday, 09/26/18
 - Vote class looks ok
 - Ballotbox needs to be changed
