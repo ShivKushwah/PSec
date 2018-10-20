@@ -1,3 +1,14 @@
+# Hangouts Meeting Tuesday, 10/16/18
+- Verify if healthcare runs correctly
+- Train a simple regression model on data? age, smoking -> disease
+- Find online data for cancer
+- Training of the model over data, the training will have policy
+- Train: output a model with policy which is a conjunction
+- Training Data: Data that goes into trainer, figure out the set of features
+- Patient data and diagnosis in different tables and putting together puts together the policies and then training takes the conjunction of policies of all that is inputted into trainer. Online data on medical records to input for our
+- Generate bigger mount of data for voting system
+- Run medical records on realistic example
+
 # Hangouts Meeting: Friday, 10/05/18
 
 - 3 Use cases:
