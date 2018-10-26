@@ -11,7 +11,6 @@
  Action Items:
  1. Go through the HIPAA paper and note down examples of such transitions and policy changes
  2. Meet with Shiv and note these policy changes to the data and feel free to add extra columsn for data
- 
  Deadline: 1 week
 ------------------------------------------------
 
