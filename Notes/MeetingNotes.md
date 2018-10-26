@@ -1,3 +1,20 @@
+# Hangouts Meeting Tuesday, 10/25/18
+- Went over the code for Cancer Classifier, and recapped Health care system behavior
+- Discussed HIPAA and how we should focus on making a better system, not break the existing one
+- Capture 4 scenarios and write policies where patient information transitions to other people
+- Examples:
+	1: anonymize data for billing people
+	2: my data can be used for
+
+- Need to go thru hipaa and find people of interest, patient, doctor, specialist, billing, insurance, research (training entity)
+ 
+ Action Items:
+ 1. Go through the HIPAA paper and note down examples of such transitions and policy changes
+ 2. Meet with Shiv and note these policy changes to the data and feel free to add extra columsn for data
+ 
+ Deadline: 1 week
+------------------------------------------------
+
 # Hangouts Meeting Tuesday, 10/16/18
 - Verify if healthcare runs correctly
 - Train a simple regression model on data? age, smoking -> disease
