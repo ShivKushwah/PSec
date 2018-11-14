@@ -1,3 +1,34 @@
+# Cory Meeting Tuesday, 11/23/18
+New structure:
+Patient Table -> (personal information)
+Doctor Table -> (doctor personal information)
+Diagnosis Table -> (diagnosisID, diagnosisCodes, doctorName)
+Visit Table -> (patientName, doctorName, diagnosisID, date, visitNumber)
+Billing Table -> (visitNumber, amount)
+CancerDiagTable -> (nonIdentifyingPatientInformation, visit number, diagnosises)
+
+Entities:
+Patient
+Doctor -> adds to visit table, has access to only his/her entires in diagnosis table
+Researcher
+BillingAgent -> Modifies Billing Table, has no access to other tables to perform joins to figure out which patient got this
+HosptialAdmin -> adds stuff to patient table and doctor table
+
+
+Whenever a patient is diagnosed with cancer, his/her data is added to the CancerDiagTable IF the patient has indicated in their policy that they want to participate in cancer research
+
+Patient Table access policy -> if you are the patient, you have access. If you are the primary doctor for this patient, then you have access. 
+
+Let's say doctor does join on Visit Table and Diagnosis. First, the doctor accesses the elements he has access to in the visit table and truncates the table. He does the same to the Diagnosis table, and then performs a join over these truncated tables.
+
+Extensions:
+Nurse? Insurance?
+
+For next time:
+Draw out transitions and make the policy more concrete
+
+------------------------------------------------
+
 # Hangouts Meeting Tuesday, 10/25/18
 - Went over the code for Cancer Classifier, and recapped Health care system behavior
 - Discussed HIPAA and how we should focus on making a better system, not break the existing one
