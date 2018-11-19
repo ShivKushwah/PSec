@@ -1,4 +1,15 @@
-# Cory Meeting Tuesday, 11/23/18
+# Hangouts Meeting Sunday, 11/18/18
+- Went over the state diagrams for patient data. 
+- Got the OK from Ankush, and will begin implementation
+- Ankush will take care of porting VotingPOlicy to the new dataset as seen in Pramod's latest commit
+
+Action Items:
+- Create state diagrams for the other tables 
+- Implement policies discussed today
+
+------------------------------------------------
+
+# Cory Meeting Tuesday, 11/13/18
 New structure:
 Patient Table -> (personal information)
 Doctor Table -> (doctor personal information)
