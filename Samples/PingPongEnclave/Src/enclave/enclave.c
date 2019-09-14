@@ -128,49 +128,49 @@ int enclave_main(void)
 		processGuid.data2 = 0;
 		processGuid.data3 = 0;
 		processGuid.data4 = 0;
-		// process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
-        // ocall_print("after start process!\n");
-        // if (cooperative)
-        // {
-        //     PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
-        // }
-		// if (parg == NULL)
-		// {
-		// 	payload = PrtMkNullValue();
-		// }
-		// else
-		// {
-		// 	int i = atoi(parg);
-		// 	payload = PrtMkIntValue(i);
-		// }
+		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
+        ocall_print("after start process!\n");
+        if (cooperative)
+        {
+            PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
+        }
+		if (parg == NULL)
+		{
+			payload = PrtMkNullValue();
+		}
+		else
+		{
+			int i = atoi(parg);
+			payload = PrtMkIntValue(i);
+		}
 
-		// PrtUpdateAssertFn(MyAssert);
-        // ocall_print("after update assert fn!\n");
+		PrtUpdateAssertFn(MyAssert);
+        ocall_print("after update assert fn!\n");
 
-        // PRT_UINT32 mainMachine = 0;
-		// PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Main", &mainMachine);
-		// PrtAssert(foundMachine, "No 'Main' machine found!");
-		// PrtMkMachine(process, mainMachine, 1, &payload);
-        // ocall_print("after mk machine!\n");
+        PRT_UINT32 mainMachine = 0;
+		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Main", &mainMachine);
+		PrtAssert(foundMachine, "No 'Main' machine found!");
+		PrtMkMachine(process, mainMachine, 1, &payload);
+        ocall_print("after mk machine!\n");
 
-        // if (cooperative)
-        // {
-        //     // test some multithreading across state machines.
-        //     /*
-        //     typedef void *(*start_routine) (void *);
-        //     pthread_t tid[threads];
-        //     for (int i = 0; i < threads; i++)
-        //     {
-        //         pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
-        //     }
-        //     for (int i = 0; i < threads; i++)
-        //     {
-        //         pthread_join(tid[i], NULL);
-        //     }
-        //     */
-        // }
-		// PrtFreeValue(payload);
-		// PrtStopProcess(process);
+        if (cooperative)
+        {
+            // test some multithreading across state machines.
+            /*
+            typedef void *(*start_routine) (void *);
+            pthread_t tid[threads];
+            for (int i = 0; i < threads; i++)
+            {
+                pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
+            }
+            for (int i = 0; i < threads; i++)
+            {
+                pthread_join(tid[i], NULL);
+            }
+            */
+        }
+		PrtFreeValue(payload);
+		PrtStopProcess(process);
 	}
 	PRT_DBG_END_MEM_BALANCED_REGION
 

@@ -11,7 +11,7 @@ PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/
 ##################################
 
 FILE(GLOB_RECURSE ${projectName}_psources ${CMAKE_CURRENT_SOURCE_DIR}../../PSrc/*)
-#FILE(GLOB_RECURSE ${projectName}_csources ./*)
+FILE(GLOB_RECURSE ${projectName}_csources ./*)
 FILE(GLOB_RECURSE ${projectName}_gsources ${CMAKE_CURRENT_SOURCE_DIR}../../PGenerated/*.c)
 
 #add_executable(${projectName}
@@ -30,6 +30,7 @@ set (${projectName}_INCLUDE
 set(ENCLAVE_SOURCE_FILES
         enclave.c
         enclave_t.c
+        ~/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c
         )
 
 add_definitions(-DENCLAVE_STD_ALT)
