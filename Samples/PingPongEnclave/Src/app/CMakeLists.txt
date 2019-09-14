@@ -25,7 +25,7 @@ set(LIBHANDLERLIB_PATH ${P_LIBHANDLER_PATH}/out/gcc-amd64-linux-gnu/debug/libhan
 
 target_link_libraries(app
         -L${SGX_LIBRARY_PATH} -l${SGX_URTS_LIB} -l${SGX_USVC_LIB}
-        -l${LIBHANDLERLIB_PATH}
+        ${LIBHANDLERLIB_PATH}
         -Wl,-rpath -Wl,/usr/local/lib
         -Wl,-rpath -Wl,${SGX_LIBRARY_PATH}
         -lpthread)

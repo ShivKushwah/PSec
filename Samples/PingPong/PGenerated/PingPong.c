@@ -42,10 +42,10 @@ PRT_EVENTDECL P_EVENT_Success =
     &P_GEND_TYPE_n
 };
 
-PRT_EVENTDECL* P_Main_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success };
+PRT_EVENTDECL* P_Main_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Main_RECV =
 {
-    3U,
+    4U,
     P_Main_RECV_INNER,
     NULL
 };
@@ -58,10 +58,10 @@ PRT_INTERFACEDECL P_I_Main =
     &P_EVENTSET_Main_RECV
 };
 
-PRT_EVENTDECL* P_PONG_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success };
+PRT_EVENTDECL* P_PONG_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_PONG_RECV =
 {
-    3U,
+    4U,
     P_PONG_RECV_INNER,
     NULL
 };
@@ -260,6 +260,9 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
     *P_LVALUE = PrtCloneValue(PrtMkInterface(context, 1, 0)->id);
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
     if (p_this->isHalted == PRT_TRUE) {
         PrtFreeValue(_P_GEN_retval);
         _P_GEN_retval = NULL;
@@ -321,6 +324,9 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PrtSendInternal(context, PrtGetMachine(context->process, PTMP_tmp0_1), PTMP_tmp1_1, 1, &(PTMP_tmp2));
     *(&(PTMP_tmp1_1)) = NULL;
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_1;
+    }
     if (p_this->isHalted == PRT_TRUE) {
         PrtFreeValue(_P_GEN_retval);
         _P_GEN_retval = NULL;
@@ -353,18 +359,18 @@ PRT_FUNDECL P_FUNCTION_Anon_1 =
 
 PRT_FUNDECL* P_Main_METHODS[] = { &P_FUNCTION_Anon, &P_FUNCTION_Anon_1 };
 
-PRT_EVENTDECL* P_Main_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success };
+PRT_EVENTDECL* P_Main_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Main_RECV_1 =
 {
-    3U,
+    4U,
     P_Main_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_Main_SEND_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success };
+PRT_EVENTDECL* P_Main_SEND_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Main_SEND =
 {
-    3U,
+    4U,
     P_Main_SEND_INNER,
     NULL
 };
@@ -517,6 +523,9 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PrtSendInternal(context, PrtGetMachine(context->process, PTMP_tmp0_2), PTMP_tmp1_2, 0);
     *(&(PTMP_tmp1_2)) = NULL;
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_3;
+    }
     if (p_this->isHalted == PRT_TRUE) {
         PrtFreeValue(_P_GEN_retval);
         _P_GEN_retval = NULL;
@@ -548,18 +557,18 @@ PRT_FUNDECL P_FUNCTION_Anon_3 =
 
 PRT_FUNDECL* P_PONG_METHODS[] = { &P_FUNCTION_Anon_2, &P_FUNCTION_Anon_3 };
 
-PRT_EVENTDECL* P_PONG_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success };
+PRT_EVENTDECL* P_PONG_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_PONG_RECV_1 =
 {
-    3U,
+    4U,
     P_PONG_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_PONG_SEND_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success };
+PRT_EVENTDECL* P_PONG_SEND_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_PONG_SEND =
 {
-    3U,
+    4U,
     P_PONG_SEND_INNER,
     NULL
 };
