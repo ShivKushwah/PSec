@@ -13,7 +13,7 @@ src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: /home/shiv/Research/Intel-SGX-I
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_urts.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/ForeignTypesImpl.c
-src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/PingPong.h
+src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/OTPServer.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/Prt.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/PrtConfig.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/PrtExecution.h
@@ -26,17 +26,17 @@ src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/ext_compat.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/sal.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/sgx_utils/sgx_utils.h
 
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/PingPong.c
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/PingPong.h
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/Prt.h
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/PrtConfig.h
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/PrtExecution.h
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/PrtLinuxUserConfig.h
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/PrtProgram.h
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/PrtTypes.h
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/PrtValues.h
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/ext_compat.h
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/sal.h
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/OTPServer.c
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/OTPServer.h
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/Prt.h
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/PrtConfig.h
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/PrtExecution.h
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/PrtLinuxUserConfig.h
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/PrtProgram.h
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/PrtTypes.h
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/PrtValues.h
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/ext_compat.h
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/sal.h
 
 src/app/CMakeFiles/app.dir/app.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
 src/app/CMakeFiles/app.dir/app.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
@@ -49,7 +49,7 @@ src/app/CMakeFiles/app.dir/app.c.o: /home/shiv/Research/Intel-SGX-Installation/l
 src/app/CMakeFiles/app.dir/app.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tcrypto.h
 src/app/CMakeFiles/app.dir/app.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
 src/app/CMakeFiles/app.dir/app.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_urts.h
-src/app/CMakeFiles/app.dir/app.c.o: src/app/PingPong.h
+src/app/CMakeFiles/app.dir/app.c.o: src/app/OTPServer.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/Prt.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/PrtConfig.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/PrtExecution.h

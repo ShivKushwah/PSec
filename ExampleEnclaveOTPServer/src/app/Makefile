@@ -152,32 +152,32 @@ ForeignTypesImpl.c.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.s
 .PHONY : ForeignTypesImpl.c.s
 
-PingPong.o: PingPong.c.o
+OTPServer.o: OTPServer.c.o
 
-.PHONY : PingPong.o
+.PHONY : OTPServer.o
 
 # target to build an object file
-PingPong.c.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/PingPong.c.o
-.PHONY : PingPong.c.o
+OTPServer.c.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/OTPServer.c.o
+.PHONY : OTPServer.c.o
 
-PingPong.i: PingPong.c.i
+OTPServer.i: OTPServer.c.i
 
-.PHONY : PingPong.i
+.PHONY : OTPServer.i
 
 # target to preprocess a source file
-PingPong.c.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/PingPong.c.i
-.PHONY : PingPong.c.i
+OTPServer.c.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/OTPServer.c.i
+.PHONY : OTPServer.c.i
 
-PingPong.s: PingPong.c.s
+OTPServer.s: OTPServer.c.s
 
-.PHONY : PingPong.s
+.PHONY : OTPServer.s
 
 # target to generate assembly for a file
-PingPong.c.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/PingPong.c.s
-.PHONY : PingPong.c.s
+OTPServer.c.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/OTPServer.c.s
+.PHONY : OTPServer.c.s
 
 app.o: app.c.o
 
@@ -272,9 +272,9 @@ help:
 	@echo "... ForeignTypesImpl.o"
 	@echo "... ForeignTypesImpl.i"
 	@echo "... ForeignTypesImpl.s"
-	@echo "... PingPong.o"
-	@echo "... PingPong.i"
-	@echo "... PingPong.s"
+	@echo "... OTPServer.o"
+	@echo "... OTPServer.i"
+	@echo "... OTPServer.s"
 	@echo "... app.o"
 	@echo "... app.i"
 	@echo "... app.s"

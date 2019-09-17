@@ -7,7 +7,7 @@
 
 //-----------------------------------
 
-#include "PingPong.h"
+#include "OTPServer.h"
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -197,7 +197,7 @@ PRT_DBG_START_MEM_BALANCED_REGION
         ocall_print("after update assert fn!\n");
 
         PRT_UINT32 mainMachine = 0;
-		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Main", &mainMachine);
+		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("IntializerMachine", &mainMachine);
 		PrtAssert(foundMachine, "No 'Main' machine found!");
 		PrtMkMachine(process, mainMachine, 1, &payload);
         ocall_print("after mk machine!\n");

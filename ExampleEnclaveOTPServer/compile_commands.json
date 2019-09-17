@@ -31,8 +31,8 @@
 },
 {
   "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app",
-  "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/PingPong.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.c",
-  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.c"
+  "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/OTPServer.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.c"
 },
 {
   "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app",

@@ -1,4 +1,4 @@
-#include "PingPong.h"
+#include "OTPServer.h"
 #include "enclave_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"

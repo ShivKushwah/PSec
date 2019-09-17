@@ -14,7 +14,7 @@ src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_urts.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/ForeignTypesImpl.c
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.h
+ /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/Prt.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PrtConfig.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PrtExecution.h
@@ -26,9 +26,9 @@ src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/ext_compat.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/sal.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/sgx_utils/sgx_utils.h
-src/app/CMakeFiles/app.dir/PingPong.c.o
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.c
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.h
+src/app/CMakeFiles/app.dir/OTPServer.c.o
+ /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.c
+ /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/Prt.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PrtConfig.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PrtExecution.h
@@ -50,7 +50,7 @@ src/app/CMakeFiles/app.dir/app.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tcrypto.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_urts.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.h
+ /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/Prt.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PrtConfig.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PrtExecution.h

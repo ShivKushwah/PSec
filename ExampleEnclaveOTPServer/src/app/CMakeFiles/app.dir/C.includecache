@@ -91,8 +91,8 @@ stddef.h
 -
 
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/ForeignTypesImpl.c
-PingPong.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.h
+OTPServer.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.h
 enclave_u.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/enclave_u.h
 sgx_urts.h
@@ -100,11 +100,11 @@ sgx_urts.h
 sgx_utils/sgx_utils.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/sgx_utils/sgx_utils.h
 
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.c
-PingPong.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.c
+OTPServer.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.h
 
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.h
 Prt.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/Prt.h
 
@@ -165,8 +165,8 @@ sgx_urts.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/sgx_urts.h
 sgx_utils/sgx_utils.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/sgx_utils/sgx_utils.h
-PingPong.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.h
+OTPServer.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.h
 
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/enclave_u.c
 enclave_u.h

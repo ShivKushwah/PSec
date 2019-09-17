@@ -133,28 +133,28 @@ src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o.provides: src/app/CMakeFiles/
 src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o.provides.build: src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o
 
 
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/CMakeFiles/app.dir/flags.make
-src/app/CMakeFiles/app.dir/PingPong.c.o: src/app/PingPong.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object src/app/CMakeFiles/app.dir/PingPong.c.o"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/app.dir/PingPong.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.c
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/CMakeFiles/app.dir/flags.make
+src/app/CMakeFiles/app.dir/OTPServer.c.o: src/app/OTPServer.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object src/app/CMakeFiles/app.dir/OTPServer.c.o"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/app.dir/OTPServer.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.c
 
-src/app/CMakeFiles/app.dir/PingPong.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/app.dir/PingPong.c.i"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.c > CMakeFiles/app.dir/PingPong.c.i
+src/app/CMakeFiles/app.dir/OTPServer.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/app.dir/OTPServer.c.i"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.c > CMakeFiles/app.dir/OTPServer.c.i
 
-src/app/CMakeFiles/app.dir/PingPong.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/app.dir/PingPong.c.s"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/PingPong.c -o CMakeFiles/app.dir/PingPong.c.s
+src/app/CMakeFiles/app.dir/OTPServer.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/app.dir/OTPServer.c.s"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/OTPServer.c -o CMakeFiles/app.dir/OTPServer.c.s
 
-src/app/CMakeFiles/app.dir/PingPong.c.o.requires:
+src/app/CMakeFiles/app.dir/OTPServer.c.o.requires:
 
-.PHONY : src/app/CMakeFiles/app.dir/PingPong.c.o.requires
+.PHONY : src/app/CMakeFiles/app.dir/OTPServer.c.o.requires
 
-src/app/CMakeFiles/app.dir/PingPong.c.o.provides: src/app/CMakeFiles/app.dir/PingPong.c.o.requires
-	$(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/PingPong.c.o.provides.build
-.PHONY : src/app/CMakeFiles/app.dir/PingPong.c.o.provides
+src/app/CMakeFiles/app.dir/OTPServer.c.o.provides: src/app/CMakeFiles/app.dir/OTPServer.c.o.requires
+	$(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/OTPServer.c.o.provides.build
+.PHONY : src/app/CMakeFiles/app.dir/OTPServer.c.o.provides
 
-src/app/CMakeFiles/app.dir/PingPong.c.o.provides.build: src/app/CMakeFiles/app.dir/PingPong.c.o
+src/app/CMakeFiles/app.dir/OTPServer.c.o.provides.build: src/app/CMakeFiles/app.dir/OTPServer.c.o
 
 
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/CMakeFiles/app.dir/flags.make
@@ -186,7 +186,7 @@ app_OBJECTS = \
 "CMakeFiles/app.dir/enclave_u.c.o" \
 "CMakeFiles/app.dir/app.c.o" \
 "CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o" \
-"CMakeFiles/app.dir/PingPong.c.o" \
+"CMakeFiles/app.dir/OTPServer.c.o" \
 "CMakeFiles/app.dir/ForeignTypesImpl.c.o"
 
 # External object files for target app
@@ -195,7 +195,7 @@ app_EXTERNAL_OBJECTS =
 app: src/app/CMakeFiles/app.dir/enclave_u.c.o
 app: src/app/CMakeFiles/app.dir/app.c.o
 app: src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o
-app: src/app/CMakeFiles/app.dir/PingPong.c.o
+app: src/app/CMakeFiles/app.dir/OTPServer.c.o
 app: src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o
 app: src/app/CMakeFiles/app.dir/build.make
 app: src/app/libPrt_static.a
@@ -212,7 +212,7 @@ src/app/CMakeFiles/app.dir/build: app
 src/app/CMakeFiles/app.dir/requires: src/app/CMakeFiles/app.dir/enclave_u.c.o.requires
 src/app/CMakeFiles/app.dir/requires: src/app/CMakeFiles/app.dir/app.c.o.requires
 src/app/CMakeFiles/app.dir/requires: src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o.requires
-src/app/CMakeFiles/app.dir/requires: src/app/CMakeFiles/app.dir/PingPong.c.o.requires
+src/app/CMakeFiles/app.dir/requires: src/app/CMakeFiles/app.dir/OTPServer.c.o.requires
 src/app/CMakeFiles/app.dir/requires: src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o.requires
 
 .PHONY : src/app/CMakeFiles/app.dir/requires

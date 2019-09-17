@@ -5,7 +5,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/app.dir/enclave_u.c.o"
   "CMakeFiles/app.dir/app.c.o"
   "CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o"
-  "CMakeFiles/app.dir/PingPong.c.o"
+  "CMakeFiles/app.dir/OTPServer.c.o"
   "CMakeFiles/app.dir/ForeignTypesImpl.c.o"
   "../../app.pdb"
   "../../app"
