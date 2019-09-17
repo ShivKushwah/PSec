@@ -1,0 +1,17 @@
+enclave {
+    from "sealing/sealing.edl" import *;
+    from "sgx_tstdc.edl" import *;
+
+    trusted {
+        /* define ECALLs here. */
+        public int generate_random_number(void);
+        public int add_number(uint32_t value);
+        public int del_number(uint32_t value);
+        public uint32_t get_sum(void);
+    };
+
+    untrusted {
+        /* define OCALLs here. */
+        void ocall_print([in, string]const char* str);
+    };
+};

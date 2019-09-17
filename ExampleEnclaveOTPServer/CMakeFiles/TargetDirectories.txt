@@ -1,0 +1,10 @@
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/CMakeFiles/rebuild_cache.dir
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/CMakeFiles/edit_cache.dir
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/CMakeFiles/rebuild_cache.dir
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/CMakeFiles/edit_cache.dir
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/enclave/CMakeFiles/rebuild_cache.dir
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/enclave/CMakeFiles/enclave.dir
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/enclave/CMakeFiles/edit_cache.dir
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/CMakeFiles/rebuild_cache.dir
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/CMakeFiles/app.dir
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServer/src/app/CMakeFiles/edit_cache.dir
