@@ -29,13 +29,13 @@ src/app/CMakeFiles/app.dir/enclave_u.c.o: /home/shiv/Research/Intel-SGX-Installa
 src/app/CMakeFiles/app.dir/enclave_u.c.o: src/app/enclave_u.c
 src/app/CMakeFiles/app.dir/enclave_u.c.o: src/app/enclave_u.h
 
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_eid.h
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_error.h
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_key.h
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_report.h
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_urts.h
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o: src/app/sgx_utils/sgx_utils.cpp
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o: src/app/sgx_utils/sgx_utils.h
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_eid.h
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_error.h
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_key.h
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_report.h
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_urts.h
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: src/app/sgx_utils/sgx_utils.c
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: src/app/sgx_utils/sgx_utils.h
 

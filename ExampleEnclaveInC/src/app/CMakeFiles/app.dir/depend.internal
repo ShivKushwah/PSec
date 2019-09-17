@@ -29,7 +29,7 @@ src/app/CMakeFiles/app.dir/enclave_u.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/enclave_u.c
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/enclave_u.h
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_eid.h
@@ -37,5 +37,5 @@ src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_key.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_report.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_urts.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.cpp
+ /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.c
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.h

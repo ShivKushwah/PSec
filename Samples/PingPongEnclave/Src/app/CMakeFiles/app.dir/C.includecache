@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h
+
+/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_edger8r.h
+sgx_defs.h
+/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h
+sgx_error.h
+/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_error.h
+sgx_eid.h
+/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_eid.h
+stddef.h
+-
+
+/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_eid.h
+stdint.h
+-
+
+/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_error.h
+
+/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/Src/app/enclave_u.c
+enclave_u.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/Src/app/enclave_u.h
+errno.h
+-
+
+/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/Src/app/enclave_u.h
+stdint.h
+-
+wchar.h
+-
+stddef.h
+-
+string.h
+-
+sgx_edger8r.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/Src/app/sgx_edger8r.h
+stdlib.h
+-
+

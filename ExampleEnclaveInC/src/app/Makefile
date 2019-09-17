@@ -179,32 +179,32 @@ enclave_u.c.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/enclave_u.c.s
 .PHONY : enclave_u.c.s
 
-sgx_utils/sgx_utils.o: sgx_utils/sgx_utils.cpp.o
+sgx_utils/sgx_utils.o: sgx_utils/sgx_utils.c.o
 
 .PHONY : sgx_utils/sgx_utils.o
 
 # target to build an object file
-sgx_utils/sgx_utils.cpp.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o
-.PHONY : sgx_utils/sgx_utils.cpp.o
+sgx_utils/sgx_utils.c.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o
+.PHONY : sgx_utils/sgx_utils.c.o
 
-sgx_utils/sgx_utils.i: sgx_utils/sgx_utils.cpp.i
+sgx_utils/sgx_utils.i: sgx_utils/sgx_utils.c.i
 
 .PHONY : sgx_utils/sgx_utils.i
 
 # target to preprocess a source file
-sgx_utils/sgx_utils.cpp.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.i
-.PHONY : sgx_utils/sgx_utils.cpp.i
+sgx_utils/sgx_utils.c.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.i
+.PHONY : sgx_utils/sgx_utils.c.i
 
-sgx_utils/sgx_utils.s: sgx_utils/sgx_utils.cpp.s
+sgx_utils/sgx_utils.s: sgx_utils/sgx_utils.c.s
 
 .PHONY : sgx_utils/sgx_utils.s
 
 # target to generate assembly for a file
-sgx_utils/sgx_utils.cpp.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.s
-.PHONY : sgx_utils/sgx_utils.cpp.s
+sgx_utils/sgx_utils.c.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.s
+.PHONY : sgx_utils/sgx_utils.c.s
 
 # Help Target
 help:

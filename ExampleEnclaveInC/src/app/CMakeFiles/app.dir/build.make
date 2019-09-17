@@ -109,45 +109,45 @@ src/app/CMakeFiles/app.dir/app.c.o.provides: src/app/CMakeFiles/app.dir/app.c.o.
 src/app/CMakeFiles/app.dir/app.c.o.provides.build: src/app/CMakeFiles/app.dir/app.c.o
 
 
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o: src/app/CMakeFiles/app.dir/flags.make
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o: src/app/sgx_utils/sgx_utils.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.cpp
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: src/app/CMakeFiles/app.dir/flags.make
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: src/app/sgx_utils/sgx_utils.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.c
 
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.i"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.cpp > CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.i
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/app.dir/sgx_utils/sgx_utils.c.i"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.c > CMakeFiles/app.dir/sgx_utils/sgx_utils.c.i
 
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.s"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.cpp -o CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.s
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/app.dir/sgx_utils/sgx_utils.c.s"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.c -o CMakeFiles/app.dir/sgx_utils/sgx_utils.c.s
 
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o.requires:
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o.requires:
 
-.PHONY : src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o.requires
+.PHONY : src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o.requires
 
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o.provides: src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o.requires
-	$(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o.provides.build
-.PHONY : src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o.provides
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o.provides: src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o.requires
+	$(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o.provides.build
+.PHONY : src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o.provides
 
-src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o.provides.build: src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o
+src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o.provides.build: src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o
 
 
 # Object files for target app
 app_OBJECTS = \
 "CMakeFiles/app.dir/enclave_u.c.o" \
 "CMakeFiles/app.dir/app.c.o" \
-"CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o"
+"CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o"
 
 # External object files for target app
 app_EXTERNAL_OBJECTS =
 
 app: src/app/CMakeFiles/app.dir/enclave_u.c.o
 app: src/app/CMakeFiles/app.dir/app.c.o
-app: src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o
+app: src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o
 app: src/app/CMakeFiles/app.dir/build.make
 app: src/app/CMakeFiles/app.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable ../../app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking C executable ../../app"
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/app.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -157,7 +157,7 @@ src/app/CMakeFiles/app.dir/build: app
 
 src/app/CMakeFiles/app.dir/requires: src/app/CMakeFiles/app.dir/enclave_u.c.o.requires
 src/app/CMakeFiles/app.dir/requires: src/app/CMakeFiles/app.dir/app.c.o.requires
-src/app/CMakeFiles/app.dir/requires: src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o.requires
+src/app/CMakeFiles/app.dir/requires: src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o.requires
 
 .PHONY : src/app/CMakeFiles/app.dir/requires
 

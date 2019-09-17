@@ -4,12 +4,12 @@ file(REMOVE_RECURSE
   "enclave_u.c"
   "CMakeFiles/app.dir/enclave_u.c.o"
   "CMakeFiles/app.dir/app.c.o"
-  "CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o"
+  "CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o"
   "../../app.pdb"
   "../../app"
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang C CXX)
+foreach(lang C)
   include(CMakeFiles/app.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()

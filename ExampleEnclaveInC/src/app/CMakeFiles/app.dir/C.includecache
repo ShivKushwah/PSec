@@ -124,7 +124,15 @@ sgx_tseal.h
 stdlib.h
 -
 
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.c
+stdio.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/stdio.h
+sgx_urts.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_urts.h
+sgx_utils.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.h
-string
+
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveInC/src/app/sgx_utils/sgx_utils.h
+string.h
 -
 

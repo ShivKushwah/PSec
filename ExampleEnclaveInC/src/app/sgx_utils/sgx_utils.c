@@ -1,5 +1,4 @@
-#include <cstdio>
-#include <cstring>
+#include "stdio.h"
 #include "sgx_urts.h"
 #include "sgx_utils.h"
 
@@ -21,8 +20,8 @@ void print_error_message(sgx_status_t ret) {
  *   Step 2: call sgx_create_enclave to initialize an enclave instance
  *   Step 3: save the launch token if it is updated
  */
-int initialize_enclave(sgx_enclave_id_t* eid, const std::string& launch_token_path, const std::string& enclave_name) {
-    const char* token_path = launch_token_path.c_str();
+int initialize_enclave(sgx_enclave_id_t* eid, const char* launch_token_path, const char* enclave_name) {
+    const char* token_path = launch_token_path;
     sgx_launch_token_t token = {0};
     sgx_status_t ret = SGX_ERROR_UNEXPECTED;
     int updated = 0;
@@ -47,7 +46,7 @@ int initialize_enclave(sgx_enclave_id_t* eid, const std::string& launch_token_pa
     }
     /* Step 2: call sgx_create_enclave to initialize an enclave instance */
     /* Debug Support: set 2nd parameter to 1 */
-    ret = sgx_create_enclave(enclave_name.c_str(), SGX_DEBUG_FLAG, &token, &updated, eid, NULL);
+    ret = sgx_create_enclave(enclave_name, SGX_DEBUG_FLAG, &token, &updated, eid, NULL);
     if (ret != SGX_SUCCESS) {
         print_error_message(ret);
         if (fp != NULL) fclose(fp);
@@ -71,13 +70,24 @@ int initialize_enclave(sgx_enclave_id_t* eid, const std::string& launch_token_pa
     return 0;
 }
 
-bool is_ecall_successful(sgx_status_t sgx_status, const std::string& err_msg,
-        sgx_status_t ecall_return_value) {
-    if (sgx_status != SGX_SUCCESS || ecall_return_value != SGX_SUCCESS) {
-        printf("%s\n", err_msg.c_str());
+int is_ecall_successful_overload(sgx_status_t sgx_status, const char* err_msg) {
+	sgx_status_t ecall_return_value = SGX_SUCCESS;
+	if (sgx_status != SGX_SUCCESS || ecall_return_value != SGX_SUCCESS) {
+        printf("%s\n", err_msg);
         print_error_message(sgx_status);
         print_error_message(ecall_return_value);
-        return false;
+        return 0;
     }
-    return true;
+    return 1;
+}
+
+int is_ecall_successful(sgx_status_t sgx_status, const char* err_msg,
+        sgx_status_t ecall_return_value) {
+    if (sgx_status != SGX_SUCCESS || ecall_return_value != SGX_SUCCESS) {
+        printf("%s\n", err_msg);
+        print_error_message(sgx_status);
+        print_error_message(ecall_return_value);
+        return 0;
+    }
+    return 1;
 }

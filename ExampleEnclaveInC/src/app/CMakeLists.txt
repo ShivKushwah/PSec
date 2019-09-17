@@ -1,7 +1,7 @@
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SGX_COMMON_CFLAGS} -fPIC -Wno-attributes")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} -std=c++11")
 
-set(CLIENT_SRC_FILES enclave_u.c app.c sgx_utils/sgx_utils.cpp)
+set(CLIENT_SRC_FILES enclave_u.c app.c sgx_utils/sgx_utils.c)
 
 set_directory_properties(PROPERTIES
         ADDITIONAL_MAKE_CLEAN_FILES "enclave_u.c; enclave_u.h")
