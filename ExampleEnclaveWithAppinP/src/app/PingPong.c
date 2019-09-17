@@ -5,6 +5,8 @@ static PRT_TYPE P_GEND_TYPE_m = { PRT_KIND_MACHINE, { NULL } };
 static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
 
 // Function implementation prototypes:
+PRT_VALUE* P_Print_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
 
@@ -41,6 +43,14 @@ PRT_EVENTDECL P_EVENT_Success =
     4294967295U,
     &P_GEND_TYPE_n
 };
+
+PRT_FUNDECL P_FUNCTION_Print =
+{
+    "Print",
+    &P_Print_IMPL,
+    NULL
+};
+
 
 PRT_EVENTDECL* P_Main_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Main_RECV =
@@ -257,6 +267,16 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PrtFreeValue(P_Print_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
     *P_LVALUE = PrtCloneValue(PrtMkInterface(context, 1, 0)->id);

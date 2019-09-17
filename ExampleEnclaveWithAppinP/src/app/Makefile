@@ -125,6 +125,33 @@ app/fast:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/build
 .PHONY : app/fast
 
+ForeignTypesImpl.o: ForeignTypesImpl.c.o
+
+.PHONY : ForeignTypesImpl.o
+
+# target to build an object file
+ForeignTypesImpl.c.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o
+.PHONY : ForeignTypesImpl.c.o
+
+ForeignTypesImpl.i: ForeignTypesImpl.c.i
+
+.PHONY : ForeignTypesImpl.i
+
+# target to preprocess a source file
+ForeignTypesImpl.c.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.i
+.PHONY : ForeignTypesImpl.c.i
+
+ForeignTypesImpl.s: ForeignTypesImpl.c.s
+
+.PHONY : ForeignTypesImpl.s
+
+# target to generate assembly for a file
+ForeignTypesImpl.c.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.s
+.PHONY : ForeignTypesImpl.c.s
+
 PingPong.o: PingPong.c.o
 
 .PHONY : PingPong.o
@@ -242,6 +269,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... app"
 	@echo "... edit_cache"
+	@echo "... ForeignTypesImpl.o"
+	@echo "... ForeignTypesImpl.i"
+	@echo "... ForeignTypesImpl.s"
 	@echo "... PingPong.o"
 	@echo "... PingPong.i"
 	@echo "... PingPong.s"

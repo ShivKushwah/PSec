@@ -6,6 +6,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/app.dir/app.cpp.o"
   "CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o"
   "CMakeFiles/app.dir/PingPong.c.o"
+  "CMakeFiles/app.dir/ForeignTypesImpl.c.o"
   "../../app.pdb"
   "../../app"
 )

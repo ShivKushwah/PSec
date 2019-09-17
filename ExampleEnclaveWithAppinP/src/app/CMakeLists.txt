@@ -6,6 +6,7 @@ find_package (Threads)
 
 set(CLIENT_SRC_FILES enclave_u.c app.cpp sgx_utils/sgx_utils.cpp 
         PingPong.c
+        ForeignTypesImpl.c
         ext_compat.h
         libhandler.h
         libhandler-internal.h

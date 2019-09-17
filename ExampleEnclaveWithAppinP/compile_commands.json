@@ -33,5 +33,10 @@
   "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app",
   "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/PingPong.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/PingPong.c",
   "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/PingPong.c"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app",
+  "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/ForeignTypesImpl.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/ForeignTypesImpl.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/ForeignTypesImpl.c"
 }
 ]
