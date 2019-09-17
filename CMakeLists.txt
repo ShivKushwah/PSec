@@ -11,9 +11,9 @@ include(HelperScripts/CMakeLists.txt)
 #include PingPong Samples directory
 
 #subdirs(Samples/PingPong/)
-#subdirs(Samples/PingPongEnclave/)
+subdirs(Samples/PingPongEnclave/)
 #subdirs(Samples/VotingSystem/)
-subdirs(Samples/ForeignTypesEnclave/)
+#subdirs(Samples/ForeignTypesEnclave/)
 
 
 ##########################################################################

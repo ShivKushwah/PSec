@@ -2,14 +2,14 @@ event Ping assert 1 : machine;
 event Pong assert 1;
 event Success;
 
-fun Print() : int;
+//fun Print() : int;
 
 machine Main {
     var pongId: machine;
 
     start state Ping_Init {
         entry {
-            Print();
+            //Print();
       	    pongId = new PONG();
     	    raise Success;   	   
         }
