@@ -43,6 +43,7 @@ int SGX_UBRIDGE(SGX_CDECL, sgx_thread_set_multiple_untrusted_events_ocall, (cons
 #endif
 
 sgx_status_t generate_random_number(sgx_enclave_id_t eid, int* retval);
+sgx_status_t save_otp_secret(sgx_enclave_id_t eid, int* retval, int value);
 sgx_status_t add_number(sgx_enclave_id_t eid, int* retval, uint32_t value);
 sgx_status_t del_number(sgx_enclave_id_t eid, int* retval, uint32_t value);
 sgx_status_t get_sum(sgx_enclave_id_t eid, uint32_t* retval);

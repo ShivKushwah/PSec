@@ -3,7 +3,7 @@ event OTPSecretReceived;
 event OTPCodeMsg: int;
 event OTPCodeValidated;
 event OTPCodeFailed;
-fun Print(): int;
+fun SaveOTPSecret(): int;
 
 machine BANK_SERVER 
 {
@@ -35,7 +35,6 @@ machine BANK_SERVER
         entry (payload: int) {
 		  // validate OTP code
 		  if (payload == 123456789) {
-			Print();
 			send clientOtpGenerator, OTPCodeValidated;
           	goto Done;  
 		  } else  {
@@ -61,6 +60,7 @@ machine CLIENT_OTP_GENERATOR
 	    entry (payload: (machine, int)) {
 	        bankServer = payload.0;
 			OTPSecret = payload.1;
+			SaveOTPSecret();
 			send bankServer, OTPSecretReceived;
 			goto GenerateOTPCode;	 	  
 	    }

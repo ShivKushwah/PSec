@@ -7,6 +7,17 @@ struct node_t {
     struct node_t* prev;
 };
 
+int OTP_SECRET = 0;
+
+int save_otp_secret(int secret) {
+    OTP_SECRET = secret;
+    if (OTP_SECRET == secret) {
+        ocall_print("Entered Enclave: Stored Secret Successfully");
+    }
+    return 1;
+}
+
+
 int generate_random_number() {
     ocall_print("Processing random number generation...");
     return 42;

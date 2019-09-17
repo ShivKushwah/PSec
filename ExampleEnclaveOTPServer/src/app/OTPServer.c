@@ -14,7 +14,7 @@ static PRT_TUPTYPE P_TUP_1 = { 2U, P_TUP_T_1 };
 static PRT_TYPE P_GEND_TYPE_T2Ri = { PRT_KIND_TUPLE, { .tuple = &P_TUP_1 } };
 
 // Function implementation prototypes:
-PRT_VALUE* P_Print_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+PRT_VALUE* P_SaveOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
@@ -78,10 +78,10 @@ PRT_EVENTDECL P_EVENT_OTPCodeFailed =
     &P_GEND_TYPE_n
 };
 
-PRT_FUNDECL P_FUNCTION_Print =
+PRT_FUNDECL P_FUNCTION_SaveOTPSecret =
 {
-    "Print",
-    &P_Print_IMPL,
+    "SaveOTPSecret",
+    &P_SaveOTPSecret_IMPL,
     NULL
 };
 
@@ -464,16 +464,6 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     if (PrtPrimGetBool(PTMP_tmp0_2))
     {
-        PrtFreeValue(P_Print_IMPL(context, _P_GEN_funargs));
-        if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
-            goto p_return_2;
-        }
-        if (p_this->isHalted == PRT_TRUE) {
-            PrtFreeValue(_P_GEN_retval);
-            _P_GEN_retval = NULL;
-            goto p_return_2;
-        }
-        
         PRT_VALUE** P_LVALUE_9 = &(PTMP_tmp1_1);
         PrtFreeValue(*P_LVALUE_9);
         *P_LVALUE_9 = PrtCloneValue(p_this->varValues[0]);
@@ -778,6 +768,16 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         PrtFreeValue(*P_LVALUE_16);
         *P_LVALUE_16 = PTMP_tmp1_2;
         PTMP_tmp1_2 = NULL;
+    }
+    
+    PrtFreeValue(P_SaveOTPSecret_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_3;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_3;
     }
     
     PRT_VALUE** P_LVALUE_17 = &(PTMP_tmp2_2);

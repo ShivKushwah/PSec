@@ -137,23 +137,24 @@ void ocall_print(const char* str) {
     printf("%s\n", str);
 }
 
-PRT_VALUE* P_Print_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_SaveOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-	printf("KKKKKK\n");
-    //ocall_print("kirat2");
-    //You can make enclave call here
+	printf("Entering Enclave to Save OTP Secret:\n");
 
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
-      //  std::cout << "Fail to initialize enclave." << std::endl;
+        printf("Failed to initialize Enclave \n");
         return 1;
     }
     int ptr;
-    sgx_status_t status = generate_random_number(global_eid, &ptr);
+    int secret = 7;
+    sgx_status_t status = save_otp_secret(global_eid, &ptr, secret);
     //std::cout << status << std::endl;
     if (status != SGX_SUCCESS) {
        // std::cout << "noob" << std::endl;
     }
-    printf("Random number kirat: %d\n", ptr);
+    if (ptr == 1) {
+        printf("Exited Enclave Successfully\n");
+    }
 
 
 
