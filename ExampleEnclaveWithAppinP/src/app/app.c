@@ -137,6 +137,32 @@ void ocall_print(const char* str) {
     printf("%s\n", str);
 }
 
+PRT_VALUE* P_Print_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+	printf("KKKKKK\n");
+    //ocall_print("kirat2");
+    //You can make enclave call here
+
+    if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
+      //  std::cout << "Fail to initialize enclave." << std::endl;
+        return 1;
+    }
+    int ptr;
+    sgx_status_t status = generate_random_number(global_eid, &ptr);
+    //std::cout << status << std::endl;
+    if (status != SGX_SUCCESS) {
+       // std::cout << "noob" << std::endl;
+    }
+    printf("Random number kirat: %d\n", ptr);
+
+
+
+	PRT_INT64 temp = (PRT_INT64) PrtMalloc(sizeof(PRT_UINT32));
+	temp = 64;
+	return (PRT_VALUE*) &temp;
+	//return PrtMkDefaultValue(P_TYPEDEF_StringType);
+}
+
 int main(int argc, char const *argv[]) {
 
 
@@ -206,17 +232,7 @@ PRT_DBG_START_MEM_BALANCED_REGION
 
 
 
-    if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
-      //  std::cout << "Fail to initialize enclave." << std::endl;
-        return 1;
-    }
-    int ptr;
-    sgx_status_t status = generate_random_number(global_eid, &ptr);
-    //std::cout << status << std::endl;
-    if (status != SGX_SUCCESS) {
-       // std::cout << "noob" << std::endl;
-    }
-    printf("Random number: %d\n", ptr);
+    
 
     // status = add_number(global_eid, &ptr, 10); 
     // assert (ptr);
