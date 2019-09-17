@@ -4,7 +4,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} -std=c++11")
 find_package (Threads)
 
 
-set(CLIENT_SRC_FILES enclave_u.c app.cpp sgx_utils/sgx_utils.cpp 
+set(CLIENT_SRC_FILES enclave_u.c app.c sgx_utils/sgx_utils.c
         PingPong.c
         ForeignTypesImpl.c
         ext_compat.h

@@ -179,32 +179,32 @@ PingPong.c.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/PingPong.c.s
 .PHONY : PingPong.c.s
 
-app.o: app.cpp.o
+app.o: app.c.o
 
 .PHONY : app.o
 
 # target to build an object file
-app.cpp.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.cpp.o
-.PHONY : app.cpp.o
+app.c.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.c.o
+.PHONY : app.c.o
 
-app.i: app.cpp.i
+app.i: app.c.i
 
 .PHONY : app.i
 
 # target to preprocess a source file
-app.cpp.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.cpp.i
-.PHONY : app.cpp.i
+app.c.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.c.i
+.PHONY : app.c.i
 
-app.s: app.cpp.s
+app.s: app.c.s
 
 .PHONY : app.s
 
 # target to generate assembly for a file
-app.cpp.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.cpp.s
-.PHONY : app.cpp.s
+app.c.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.c.s
+.PHONY : app.c.s
 
 enclave_u.o: enclave_u.c.o
 
@@ -233,32 +233,32 @@ enclave_u.c.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/enclave_u.c.s
 .PHONY : enclave_u.c.s
 
-sgx_utils/sgx_utils.o: sgx_utils/sgx_utils.cpp.o
+sgx_utils/sgx_utils.o: sgx_utils/sgx_utils.c.o
 
 .PHONY : sgx_utils/sgx_utils.o
 
 # target to build an object file
-sgx_utils/sgx_utils.cpp.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o
-.PHONY : sgx_utils/sgx_utils.cpp.o
+sgx_utils/sgx_utils.c.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o
+.PHONY : sgx_utils/sgx_utils.c.o
 
-sgx_utils/sgx_utils.i: sgx_utils/sgx_utils.cpp.i
+sgx_utils/sgx_utils.i: sgx_utils/sgx_utils.c.i
 
 .PHONY : sgx_utils/sgx_utils.i
 
 # target to preprocess a source file
-sgx_utils/sgx_utils.cpp.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.i
-.PHONY : sgx_utils/sgx_utils.cpp.i
+sgx_utils/sgx_utils.c.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.i
+.PHONY : sgx_utils/sgx_utils.c.i
 
-sgx_utils/sgx_utils.s: sgx_utils/sgx_utils.cpp.s
+sgx_utils/sgx_utils.s: sgx_utils/sgx_utils.c.s
 
 .PHONY : sgx_utils/sgx_utils.s
 
 # target to generate assembly for a file
-sgx_utils/sgx_utils.cpp.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.s
-.PHONY : sgx_utils/sgx_utils.cpp.s
+sgx_utils/sgx_utils.c.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.s
+.PHONY : sgx_utils/sgx_utils.c.s
 
 # Help Target
 help:

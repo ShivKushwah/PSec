@@ -184,16 +184,6 @@ stdarg.h
 
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sal.h
 
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.cpp
-cstdio
--
-cstring
--
-sgx_urts.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_urts.h
-sgx_utils.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.h
-
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.h
 string
 -

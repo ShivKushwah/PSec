@@ -1,4 +1,7 @@
 #include "PingPong.h"
+#include "enclave_u.h"
+#include "sgx_urts.h"
+#include "sgx_utils/sgx_utils.h"
 
 
 PRT_VALUE* P_Print_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)

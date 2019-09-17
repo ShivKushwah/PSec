@@ -99,8 +99,6 @@ sgx_urts.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_urts.h
 sgx_utils/sgx_utils.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.h
-stdio.h
--
 
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/PingPong.c
 PingPong.h
@@ -158,6 +156,18 @@ PrtConfig.h
 PrtTypes.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/PrtTypes.h
 
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/app.c
+stdio.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/stdio.h
+enclave_u.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/enclave_u.h
+sgx_urts.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_urts.h
+sgx_utils/sgx_utils.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.h
+PingPong.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/PingPong.h
+
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/enclave_u.c
 enclave_u.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/enclave_u.h
@@ -189,6 +199,14 @@ stdarg.h
 -
 
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sal.h
+
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.c
+stdio.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/stdio.h
+sgx_urts.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_urts.h
+sgx_utils.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.h
 
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.h
 string

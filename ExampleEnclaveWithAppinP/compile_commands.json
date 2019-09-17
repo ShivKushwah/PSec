@@ -21,13 +21,13 @@
 },
 {
   "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app",
-  "command": "/usr/bin/c++   -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include    -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes -std=c++11   -o CMakeFiles/app.dir/app.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/app.cpp",
-  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/app.cpp"
+  "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/app.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/app.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/app.c"
 },
 {
   "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app",
-  "command": "/usr/bin/c++   -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include    -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes -std=c++11   -o CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.cpp",
-  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.cpp"
+  "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app/sgx_utils/sgx_utils.c"
 },
 {
   "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveWithAppinP/src/app",
