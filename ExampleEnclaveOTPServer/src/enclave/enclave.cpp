@@ -18,6 +18,12 @@ int save_otp_secret(int secret) {
     return 1;
 }
 
+int get_otp_secret() {
+    ocall_print("Entered Enclave: Retrieving Secret");
+    ocall_print_int(OTP_SECRET);
+    return OTP_SECRET;
+}
+
 
 int generate_random_number() {
     ocall_print("Processing random number generation...");

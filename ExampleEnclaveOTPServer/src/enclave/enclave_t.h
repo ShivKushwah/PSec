@@ -18,6 +18,7 @@ extern "C" {
 
 int generate_random_number(void);
 int save_otp_secret(int value);
+int get_otp_secret(void);
 int add_number(uint32_t value);
 int del_number(uint32_t value);
 uint32_t get_sum(void);

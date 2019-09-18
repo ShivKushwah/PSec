@@ -6,6 +6,7 @@ enclave {
         /* define ECALLs here. */
         public int generate_random_number(void);
         public int save_otp_secret(int value);
+        public int get_otp_secret(void);
         public int add_number(uint32_t value);
         public int del_number(uint32_t value);
         public uint32_t get_sum(void);

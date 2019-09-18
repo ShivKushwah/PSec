@@ -36,6 +36,10 @@ typedef struct ms_save_otp_secret_t {
 	int ms_value;
 } ms_save_otp_secret_t;
 
+typedef struct ms_get_otp_secret_t {
+	int ms_retval;
+} ms_get_otp_secret_t;
+
 typedef struct ms_add_number_t {
 	int ms_retval;
 	uint32_t ms_value;
@@ -133,6 +137,24 @@ static sgx_status_t SGX_CDECL sgx_save_otp_secret(void* pms)
 
 
 	ms->ms_retval = save_otp_secret(ms->ms_value);
+
+
+	return status;
+}
+
+static sgx_status_t SGX_CDECL sgx_get_otp_secret(void* pms)
+{
+	CHECK_REF_POINTER(pms, sizeof(ms_get_otp_secret_t));
+	//
+	// fence after pointer checks
+	//
+	sgx_lfence();
+	ms_get_otp_secret_t* ms = SGX_CAST(ms_get_otp_secret_t*, pms);
+	sgx_status_t status = SGX_SUCCESS;
+
+
+
+	ms->ms_retval = get_otp_secret();
 
 
 	return status;
@@ -328,12 +350,13 @@ err:
 
 SGX_EXTERNC const struct {
 	size_t nr_ecall;
-	struct {void* ecall_addr; uint8_t is_priv;} ecall_table[7];
+	struct {void* ecall_addr; uint8_t is_priv;} ecall_table[8];
 } g_ecall_table = {
-	7,
+	8,
 	{
 		{(void*)(uintptr_t)sgx_generate_random_number, 0},
 		{(void*)(uintptr_t)sgx_save_otp_secret, 0},
+		{(void*)(uintptr_t)sgx_get_otp_secret, 0},
 		{(void*)(uintptr_t)sgx_add_number, 0},
 		{(void*)(uintptr_t)sgx_del_number, 0},
 		{(void*)(uintptr_t)sgx_get_sum, 0},
@@ -344,17 +367,17 @@ SGX_EXTERNC const struct {
 
 SGX_EXTERNC const struct {
 	size_t nr_ocall;
-	uint8_t entry_table[7][7];
+	uint8_t entry_table[7][8];
 } g_dyn_entry_table = {
 	7,
 	{
-		{0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, },
 	}
 };
 
