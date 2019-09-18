@@ -141,7 +141,7 @@ void ocall_print_int(int print_int) {
     printf("%d\n", print_int);
 }
 
-PRT_VALUE* P_SaveOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+void P_SaveOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE** P_VAR_payload = argRefs[0];
     int secret = PrtPrimGetInt(*P_VAR_payload);
@@ -167,8 +167,40 @@ PRT_VALUE* P_SaveOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 
 	PRT_INT64 temp = (PRT_INT64) PrtMalloc(sizeof(PRT_UINT32));
 	temp = 64;
-	return (PRT_VALUE*) &temp;
+	//return (PRT_VALUE*) &temp;
 	//return PrtMkDefaultValue(P_TYPEDEF_StringType);
+}
+
+PRT_VALUE* P_GetOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    // PRT_VALUE** P_VAR_payload = argRefs[0];
+    // int secret = PrtPrimGetInt(*P_VAR_payload);
+    // //int secret = 0
+
+	printf("BRUH\n");
+
+    return PrtMkIntValue(123456788);
+
+    // if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
+    //     printf("Failed to initialize Enclave \n");
+    //     return 1;
+    // }
+    // int ptr;
+    // sgx_status_t status = save_otp_secret(global_eid, &ptr, secret);
+    // //std::cout << status << std::endl;
+    // if (status != SGX_SUCCESS) {
+    //    // std::cout << "noob" << std::endl;
+    // }
+    // if (ptr == 1) {
+    //     printf("Exited Enclave Successfully\n");
+    // }
+
+
+
+	// PRT_INT64 temp = (PRT_INT64) PrtMalloc(sizeof(PRT_UINT32));
+	// temp = 64;
+	// return (PRT_VALUE*) &temp;
+	////return PrtMkDefaultValue(P_TYPEDEF_StringType);
 }
 
 int main(int argc, char const *argv[]) {

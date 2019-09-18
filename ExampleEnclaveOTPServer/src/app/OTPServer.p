@@ -3,7 +3,8 @@ event OTPSecretReceived;
 event OTPCodeMsg: int;
 event OTPCodeValidated;
 event OTPCodeFailed;
-fun SaveOTPSecret(secret : int): int;
+fun SaveOTPSecret(secret : int);
+fun GetOTPSecret() : int;
 
 machine BANK_SERVER 
 {
@@ -60,7 +61,7 @@ machine CLIENT_OTP_GENERATOR
 	    entry (payload: (machine, int)) {
 	        bankServer = payload.0;
 			OTPSecret = payload.1;
-			SaveOTPSecret(7);
+			SaveOTPSecret(OTPSecret);
 			send bankServer, OTPSecretReceived;
 			goto GenerateOTPCode;	 	  
 	    }
@@ -68,7 +69,9 @@ machine CLIENT_OTP_GENERATOR
 
 	state GenerateOTPCode {
 	    entry {
-			send bankServer, OTPCodeMsg, OTPSecret + 1;
+			var secret : int;
+			secret = GetOTPSecret();
+			send bankServer, OTPCodeMsg, secret + 1;
 	    }
         on OTPCodeValidated goto End;
 		on OTPCodeFailed goto GenerateOTPCode;
