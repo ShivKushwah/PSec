@@ -137,8 +137,16 @@ void ocall_print(const char* str) {
     printf("%s\n", str);
 }
 
+void ocall_print_int(int print_int) {
+    printf("%d\n", print_int);
+}
+
 PRT_VALUE* P_SaveOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    int secret = PrtPrimGetInt(*P_VAR_payload);
+    //int secret = 0
+
 	printf("Entering Enclave to Save OTP Secret:\n");
 
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
@@ -146,7 +154,6 @@ PRT_VALUE* P_SaveOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         return 1;
     }
     int ptr;
-    int secret = 7;
     sgx_status_t status = save_otp_secret(global_eid, &ptr, secret);
     //std::cout << status << std::endl;
     if (status != SGX_SUCCESS) {

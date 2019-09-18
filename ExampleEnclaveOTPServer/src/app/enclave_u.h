@@ -21,6 +21,10 @@ extern "C" {
 #define OCALL_PRINT_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_print, (const char* str));
 #endif
+#ifndef OCALL_PRINT_INT_DEFINED__
+#define OCALL_PRINT_INT_DEFINED__
+void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_print_int, (int print_int));
+#endif
 #ifndef SGX_OC_CPUIDEX_DEFINED__
 #define SGX_OC_CPUIDEX_DEFINED__
 void SGX_UBRIDGE(SGX_CDECL, sgx_oc_cpuidex, (int cpuinfo[4], int leaf, int subleaf));

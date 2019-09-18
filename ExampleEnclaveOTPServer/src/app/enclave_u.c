@@ -44,6 +44,10 @@ typedef struct ms_ocall_print_t {
 	const char* ms_str;
 } ms_ocall_print_t;
 
+typedef struct ms_ocall_print_int_t {
+	int ms_print_int;
+} ms_ocall_print_int_t;
+
 typedef struct ms_sgx_oc_cpuidex_t {
 	int* ms_cpuinfo;
 	int ms_leaf;
@@ -76,6 +80,14 @@ static sgx_status_t SGX_CDECL enclave_ocall_print(void* pms)
 {
 	ms_ocall_print_t* ms = SGX_CAST(ms_ocall_print_t*, pms);
 	ocall_print(ms->ms_str);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL enclave_ocall_print_int(void* pms)
+{
+	ms_ocall_print_int_t* ms = SGX_CAST(ms_ocall_print_int_t*, pms);
+	ocall_print_int(ms->ms_print_int);
 
 	return SGX_SUCCESS;
 }
@@ -122,11 +134,12 @@ static sgx_status_t SGX_CDECL enclave_sgx_thread_set_multiple_untrusted_events_o
 
 static const struct {
 	size_t nr_ocall;
-	void * table[6];
+	void * table[7];
 } ocall_table_enclave = {
-	6,
+	7,
 	{
 		(void*)enclave_ocall_print,
+		(void*)enclave_ocall_print_int,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
 		(void*)enclave_sgx_thread_set_untrusted_event_ocall,

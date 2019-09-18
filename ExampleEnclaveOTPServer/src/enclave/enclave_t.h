@@ -25,6 +25,7 @@ sgx_status_t seal(uint8_t* plaintext, size_t plaintext_len, sgx_sealed_data_t* s
 sgx_status_t unseal(sgx_sealed_data_t* sealed_data, size_t sealed_size, uint8_t* plaintext, uint32_t plaintext_len);
 
 sgx_status_t SGX_CDECL ocall_print(const char* str);
+sgx_status_t SGX_CDECL ocall_print_int(int print_int);
 sgx_status_t SGX_CDECL sgx_oc_cpuidex(int cpuinfo[4], int leaf, int subleaf);
 sgx_status_t SGX_CDECL sgx_thread_wait_untrusted_event_ocall(int* retval, const void* self);
 sgx_status_t SGX_CDECL sgx_thread_set_untrusted_event_ocall(int* retval, const void* waiter);

@@ -3,7 +3,7 @@ event OTPSecretReceived;
 event OTPCodeMsg: int;
 event OTPCodeValidated;
 event OTPCodeFailed;
-fun SaveOTPSecret(): int;
+fun SaveOTPSecret(secret : int): int;
 
 machine BANK_SERVER 
 {
@@ -60,7 +60,7 @@ machine CLIENT_OTP_GENERATOR
 	    entry (payload: (machine, int)) {
 	        bankServer = payload.0;
 			OTPSecret = payload.1;
-			SaveOTPSecret();
+			SaveOTPSecret(7);
 			send bankServer, OTPSecretReceived;
 			goto GenerateOTPCode;	 	  
 	    }
