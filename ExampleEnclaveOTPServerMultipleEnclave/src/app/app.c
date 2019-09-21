@@ -2,6 +2,7 @@
 //#include <iostream>
 //#include <assert.h>
 #include "enclave_u.h"
+#include "enclave2_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 
@@ -132,6 +133,9 @@ extern int Delta;
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
 
+sgx_enclave_id_t global_eid2 = 0;
+
+
 // OCall implementations
 void ocall_print(const char* str) {
     printf("%s\n", str);
@@ -187,6 +191,28 @@ PRT_VALUE* P_GetOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     printf("Exited Enclave Successfully\n");
 
     return PrtMkIntValue(ptr);
+}
+
+void P_EnclaveCallTwo_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+
+    printf("Entering Enclave2:\n");
+
+    if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
+        printf("Failed to initialize Enclave 2 \n");
+        return 1;
+    }
+    int ptr;
+    sgx_status_t status = generate_random_number(global_eid2, &ptr);
+    //std::cout << status << std::endl;
+    if (status != SGX_SUCCESS) {
+        printf("ENCLAVE 2 ERROR\n");
+       // std::cout << "noob" << std::endl;
+    }
+
+
+    printf("Exited Enclave 2 Successfully\n");
+
 }
 
 int main(int argc, char const *argv[]) {

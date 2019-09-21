@@ -18,6 +18,8 @@ PRT_VALUE* P_SaveOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_GetOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
+PRT_VALUE* P_EnclaveCallTwo_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
 
@@ -92,6 +94,14 @@ PRT_FUNDECL P_FUNCTION_GetOTPSecret =
 {
     "GetOTPSecret",
     &P_GetOTPSecret_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_EnclaveCallTwo =
+{
+    "EnclaveCallTwo",
+    &P_EnclaveCallTwo_IMPL,
     NULL
 };
 
@@ -404,6 +414,16 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE** P_LVALUE_2 = &(p_this->varValues[1]);
     PrtFreeValue(*P_LVALUE_2);
     *P_LVALUE_2 = PrtCloneValue((&P_LIT_INT32));
+    
+    PrtFreeValue(P_EnclaveCallTwo_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_1;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_1;
+    }
     
     PRT_VALUE** P_LVALUE_3 = &(PTMP_tmp0_1);
     PrtFreeValue(*P_LVALUE_3);

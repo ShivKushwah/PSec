@@ -5,6 +5,7 @@ event OTPCodeValidated;
 event OTPCodeFailed;
 fun SaveOTPSecret(secret : int);
 fun GetOTPSecret() : int;
+fun EnclaveCallTwo();
 
 machine BANK_SERVER 
 {
@@ -23,6 +24,7 @@ machine BANK_SERVER
         entry {
 			// generate OTP secret 
 			secret = 123456788;
+			EnclaveCallTwo();
 			send clientOtpGenerator, OTPSecretMsg, (this, secret);
 	    }
         on OTPSecretReceived goto WaitOTPCode;

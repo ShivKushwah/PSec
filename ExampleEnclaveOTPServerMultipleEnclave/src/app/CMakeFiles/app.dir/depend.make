@@ -58,6 +58,7 @@ src/app/CMakeFiles/app.dir/app.c.o: src/app/PrtProgram.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/PrtTypes.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/PrtValues.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/app.c
+src/app/CMakeFiles/app.dir/app.c.o: src/app/enclave2_u.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/enclave_u.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/ext_compat.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/sal.h
