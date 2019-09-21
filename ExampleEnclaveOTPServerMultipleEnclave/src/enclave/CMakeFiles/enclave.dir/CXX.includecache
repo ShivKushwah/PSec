@@ -58,14 +58,6 @@ sgx_defs.h
 stdlib.h
 /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stdlib.h
 
-/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_thread.h
-stdint.h
--
-stddef.h
--
-sgx_defs.h
-/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h
-
 /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_trts.h
 sgx_error.h
 /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_error.h
@@ -135,8 +127,6 @@ sys/stdint.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerMultipleEnclave/src/enclave/enclave.cpp
 enclave_t.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerMultipleEnclave/src/enclave/enclave_t.h
-sgx_thread.h
--
 
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerMultipleEnclave/src/enclave/enclave_t.h
 stdint.h

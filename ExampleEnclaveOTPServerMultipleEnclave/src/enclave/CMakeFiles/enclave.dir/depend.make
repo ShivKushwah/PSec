@@ -36,7 +36,6 @@ src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: /home/shiv/Research/Intel-SGX-
 src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_key.h
 src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_report.h
 src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tcrypto.h
-src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_thread.h
 src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
 src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/stddef.h
 src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/stdint.h

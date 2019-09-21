@@ -10,20 +10,6 @@ typedef struct ms_get_otp_secret_t {
 	int ms_retval;
 } ms_get_otp_secret_t;
 
-typedef struct ms_add_number_t {
-	int ms_retval;
-	uint32_t ms_value;
-} ms_add_number_t;
-
-typedef struct ms_del_number_t {
-	int ms_retval;
-	uint32_t ms_value;
-} ms_del_number_t;
-
-typedef struct ms_get_sum_t {
-	uint32_t ms_retval;
-} ms_get_sum_t;
-
 typedef struct ms_seal_t {
 	sgx_status_t ms_retval;
 	uint8_t* ms_plaintext;
@@ -166,35 +152,6 @@ sgx_status_t get_otp_secret(sgx_enclave_id_t eid, int* retval)
 	return status;
 }
 
-sgx_status_t add_number(sgx_enclave_id_t eid, int* retval, uint32_t value)
-{
-	sgx_status_t status;
-	ms_add_number_t ms;
-	ms.ms_value = value;
-	status = sgx_ecall(eid, 2, &ocall_table_enclave, &ms);
-	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
-	return status;
-}
-
-sgx_status_t del_number(sgx_enclave_id_t eid, int* retval, uint32_t value)
-{
-	sgx_status_t status;
-	ms_del_number_t ms;
-	ms.ms_value = value;
-	status = sgx_ecall(eid, 3, &ocall_table_enclave, &ms);
-	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
-	return status;
-}
-
-sgx_status_t get_sum(sgx_enclave_id_t eid, uint32_t* retval)
-{
-	sgx_status_t status;
-	ms_get_sum_t ms;
-	status = sgx_ecall(eid, 4, &ocall_table_enclave, &ms);
-	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
-	return status;
-}
-
 sgx_status_t seal(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* plaintext, size_t plaintext_len, sgx_sealed_data_t* sealed_data, size_t sealed_size)
 {
 	sgx_status_t status;
@@ -203,7 +160,7 @@ sgx_status_t seal(sgx_enclave_id_t eid, sgx_status_t* retval, uint8_t* plaintext
 	ms.ms_plaintext_len = plaintext_len;
 	ms.ms_sealed_data = sealed_data;
 	ms.ms_sealed_size = sealed_size;
-	status = sgx_ecall(eid, 5, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 2, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
@@ -216,7 +173,7 @@ sgx_status_t unseal(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_sealed_data_
 	ms.ms_sealed_size = sealed_size;
 	ms.ms_plaintext = plaintext;
 	ms.ms_plaintext_len = plaintext_len;
-	status = sgx_ecall(eid, 6, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 3, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
