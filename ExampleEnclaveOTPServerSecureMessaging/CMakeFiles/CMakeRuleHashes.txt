@@ -1,4 +1,5 @@
 # Hashes of file build rules.
+cbb832a525f4a0bfcd516fc33feb30be src/LocalAttestationCode/LocalAttestationCode_t.c
 bf8dc50c9fc128831f1315668e0b4cbb src/app/enclave2_u.c
 35d9d944502d2cccd07599e72ba643f7 src/app/enclave_u.c
 1fc3db0247f12fab49f05b7a491d82ed src/enclave/enclave_t.c

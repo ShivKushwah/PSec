@@ -1,4 +1,4 @@
-# Install script for directory: /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src
+# Install script for directory: /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/LocalAttestationCode
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -35,14 +35,5 @@ endif()
 # Is this installation the result of a crosscompile?
 if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for each subdirectory.
-  include("/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/LocalAttestationCode/cmake_install.cmake")
-  include("/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/cmake_install.cmake")
-  include("/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/cmake_install.cmake")
-  include("/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/cmake_install.cmake")
-
 endif()
 

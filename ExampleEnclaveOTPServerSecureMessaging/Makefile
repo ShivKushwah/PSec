@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named attest
+
+# Build rule for target.
+attest: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 attest
+.PHONY : attest
+
+# fast build rule for target.
+attest/fast:
+	$(MAKE) -f src/LocalAttestationCode/CMakeFiles/attest.dir/build.make src/LocalAttestationCode/CMakeFiles/attest.dir/build
+.PHONY : attest/fast
+
+#=============================================================================
 # Target rules for targets named enclave
 
 # Build rule for target.
@@ -157,6 +170,7 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... attest"
 	@echo "... enclave"
 	@echo "... enclave2"
 	@echo "... app"

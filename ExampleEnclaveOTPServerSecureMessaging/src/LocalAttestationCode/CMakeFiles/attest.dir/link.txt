@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC  -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -nostdinc -fvisibility=hidden -fpie -fstack-protector  -shared -Wl,-soname,attest.so -o ../../attest.so CMakeFiles/attest.dir/EnclaveMessageExchange.c.o CMakeFiles/attest.dir/LocalAttestationCode_t.c.o 
