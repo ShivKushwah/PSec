@@ -62,7 +62,7 @@ include Samples/PingPongEnclave/Src/app/CMakeFiles/app.dir/flags.make
 
 Samples/PingPongEnclave/Src/app/enclave_u.c:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating enclave_u.c"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/Src/app && /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/bin/x64/sgx_edger8r --untrusted enclave.edl --search-path ../enclave/ --search-path /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include --search-path /lib
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/Src/app && /bin/x64/sgx_edger8r --untrusted enclave.edl --search-path ../enclave/ --search-path /include --search-path /lib
 
 Samples/PingPongEnclave/Src/app/CMakeFiles/app.dir/enclave_u.c.o: Samples/PingPongEnclave/Src/app/CMakeFiles/app.dir/flags.make
 Samples/PingPongEnclave/Src/app/CMakeFiles/app.dir/enclave_u.c.o: Samples/PingPongEnclave/Src/app/enclave_u.c

@@ -20,9 +20,9 @@ set(CMAKE_TARGET_DEFINITIONS_C
 set(CMAKE_C_TARGET_INCLUDE_PATH
   "Submodule/P/Bld/Drops/Prt/include"
   "Samples/PingPongEnclave/Src/enclave"
-  "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include"
-  "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc"
-  "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport"
+  "/include"
+  "/include/tlibc"
+  "/include/stlport"
   "Samples/PingPongEnclave/Src/enclave/../../PGenerated"
   "Samples/PingPongEnclave/Src/enclave/../../Includes"
   "Submodule/P/Src/Prt/API"

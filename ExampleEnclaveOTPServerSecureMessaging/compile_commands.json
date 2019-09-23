@@ -1,0 +1,57 @@
+[
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave",
+  "command": "/usr/bin/c++  -DENCLAVE_STD_ALT -Denclave_EXPORTS -I/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport    -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -nostdinc -fvisibility=hidden -fpie -fstack-protector -std=c++03 -nostdinc++ -fPIC   -o CMakeFiles/enclave.dir/enclave.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave.cpp",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave.cpp"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave",
+  "command": "/usr/bin/cc -DENCLAVE_STD_ALT -Denclave_EXPORTS -I/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -nostdinc -fvisibility=hidden -fpie -fstack-protector -fPIC   -o CMakeFiles/enclave.dir/enclave_t.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave_t.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave_t.c"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave",
+  "command": "/usr/bin/c++  -DENCLAVE_STD_ALT -Denclave_EXPORTS -I/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport    -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -nostdinc -fvisibility=hidden -fpie -fstack-protector -std=c++03 -nostdinc++ -fPIC   -o CMakeFiles/enclave.dir/sealing/sealing.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sealing/sealing.cpp",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sealing/sealing.cpp"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2",
+  "command": "/usr/bin/c++  -DENCLAVE_STD_ALT -Denclave2_EXPORTS -I/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2 -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport    -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -nostdinc -fvisibility=hidden -fpie -fstack-protector -std=c++03 -nostdinc++ -fPIC   -o CMakeFiles/enclave2.dir/enclave2.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/enclave2.cpp",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/enclave2.cpp"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2",
+  "command": "/usr/bin/cc -DENCLAVE_STD_ALT -Denclave2_EXPORTS -I/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2 -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -nostdinc -fvisibility=hidden -fpie -fstack-protector -fPIC   -o CMakeFiles/enclave2.dir/enclave2_t.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/enclave2_t.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/enclave2_t.c"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app",
+  "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/enclave_u.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave_u.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave_u.c"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app",
+  "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/enclave2_u.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave2_u.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave2_u.c"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app",
+  "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/app.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/app.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/app.c"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app",
+  "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sgx_utils/sgx_utils.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sgx_utils/sgx_utils.c"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app",
+  "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/OTPServer.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/OTPServer.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/OTPServer.c"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app",
+  "command": "/usr/bin/cc  -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes   -o CMakeFiles/app.dir/ForeignTypesImpl.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/ForeignTypesImpl.c",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/ForeignTypesImpl.c"
+}
+]
