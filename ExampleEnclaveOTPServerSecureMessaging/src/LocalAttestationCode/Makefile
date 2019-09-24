@@ -110,75 +110,6 @@ depend:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-# Convenience name for target.
-src/LocalAttestationCode/CMakeFiles/attest.dir/rule:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f CMakeFiles/Makefile2 src/LocalAttestationCode/CMakeFiles/attest.dir/rule
-.PHONY : src/LocalAttestationCode/CMakeFiles/attest.dir/rule
-
-# Convenience name for target.
-attest: src/LocalAttestationCode/CMakeFiles/attest.dir/rule
-
-.PHONY : attest
-
-# fast build rule for target.
-attest/fast:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/LocalAttestationCode/CMakeFiles/attest.dir/build.make src/LocalAttestationCode/CMakeFiles/attest.dir/build
-.PHONY : attest/fast
-
-EnclaveMessageExchange.o: EnclaveMessageExchange.c.o
-
-.PHONY : EnclaveMessageExchange.o
-
-# target to build an object file
-EnclaveMessageExchange.c.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/LocalAttestationCode/CMakeFiles/attest.dir/build.make src/LocalAttestationCode/CMakeFiles/attest.dir/EnclaveMessageExchange.c.o
-.PHONY : EnclaveMessageExchange.c.o
-
-EnclaveMessageExchange.i: EnclaveMessageExchange.c.i
-
-.PHONY : EnclaveMessageExchange.i
-
-# target to preprocess a source file
-EnclaveMessageExchange.c.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/LocalAttestationCode/CMakeFiles/attest.dir/build.make src/LocalAttestationCode/CMakeFiles/attest.dir/EnclaveMessageExchange.c.i
-.PHONY : EnclaveMessageExchange.c.i
-
-EnclaveMessageExchange.s: EnclaveMessageExchange.c.s
-
-.PHONY : EnclaveMessageExchange.s
-
-# target to generate assembly for a file
-EnclaveMessageExchange.c.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/LocalAttestationCode/CMakeFiles/attest.dir/build.make src/LocalAttestationCode/CMakeFiles/attest.dir/EnclaveMessageExchange.c.s
-.PHONY : EnclaveMessageExchange.c.s
-
-LocalAttestationCode_t.o: LocalAttestationCode_t.c.o
-
-.PHONY : LocalAttestationCode_t.o
-
-# target to build an object file
-LocalAttestationCode_t.c.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/LocalAttestationCode/CMakeFiles/attest.dir/build.make src/LocalAttestationCode/CMakeFiles/attest.dir/LocalAttestationCode_t.c.o
-.PHONY : LocalAttestationCode_t.c.o
-
-LocalAttestationCode_t.i: LocalAttestationCode_t.c.i
-
-.PHONY : LocalAttestationCode_t.i
-
-# target to preprocess a source file
-LocalAttestationCode_t.c.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/LocalAttestationCode/CMakeFiles/attest.dir/build.make src/LocalAttestationCode/CMakeFiles/attest.dir/LocalAttestationCode_t.c.i
-.PHONY : LocalAttestationCode_t.c.i
-
-LocalAttestationCode_t.s: LocalAttestationCode_t.c.s
-
-.PHONY : LocalAttestationCode_t.s
-
-# target to generate assembly for a file
-LocalAttestationCode_t.c.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/LocalAttestationCode/CMakeFiles/attest.dir/build.make src/LocalAttestationCode/CMakeFiles/attest.dir/LocalAttestationCode_t.c.s
-.PHONY : LocalAttestationCode_t.c.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -186,14 +117,7 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... attest"
 	@echo "... edit_cache"
-	@echo "... EnclaveMessageExchange.o"
-	@echo "... EnclaveMessageExchange.i"
-	@echo "... EnclaveMessageExchange.s"
-	@echo "... LocalAttestationCode_t.o"
-	@echo "... LocalAttestationCode_t.i"
-	@echo "... LocalAttestationCode_t.s"
 .PHONY : help
 
 

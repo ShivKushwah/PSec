@@ -20,8 +20,11 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include"
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc"
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport"
+  "src/Include"
+  "src/LocalAttestationCode"
   )
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/Utility_E1.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o"
   "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o"
   "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sealing/sealing.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/CMakeFiles/enclave.dir/sealing/sealing.cpp.o"
   )
@@ -38,6 +41,8 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include"
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc"
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport"
+  "src/Include"
+  "src/LocalAttestationCode"
   )
 
 # Targets to which this target links.

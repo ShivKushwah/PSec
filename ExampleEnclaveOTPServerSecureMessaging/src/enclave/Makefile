@@ -125,6 +125,33 @@ enclave/fast:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/build
 .PHONY : enclave/fast
 
+Utility_E1.o: Utility_E1.cpp.o
+
+.PHONY : Utility_E1.o
+
+# target to build an object file
+Utility_E1.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o
+.PHONY : Utility_E1.cpp.o
+
+Utility_E1.i: Utility_E1.cpp.i
+
+.PHONY : Utility_E1.i
+
+# target to preprocess a source file
+Utility_E1.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.i
+.PHONY : Utility_E1.cpp.i
+
+Utility_E1.s: Utility_E1.cpp.s
+
+.PHONY : Utility_E1.s
+
+# target to generate assembly for a file
+Utility_E1.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.s
+.PHONY : Utility_E1.cpp.s
+
 enclave.o: enclave.cpp.o
 
 .PHONY : enclave.o
@@ -215,6 +242,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... enclave"
 	@echo "... edit_cache"
+	@echo "... Utility_E1.o"
+	@echo "... Utility_E1.i"
+	@echo "... Utility_E1.s"
 	@echo "... enclave.o"
 	@echo "... enclave.i"
 	@echo "... enclave.s"

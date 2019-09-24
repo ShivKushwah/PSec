@@ -4,8 +4,8 @@ file(REMOVE_RECURSE
   "LocalAttestationCode_t.c"
   "CMakeFiles/attest.dir/EnclaveMessageExchange.c.o"
   "CMakeFiles/attest.dir/LocalAttestationCode_t.c.o"
-  "../../attest.pdb"
-  "../../attest.so"
+  "../../lib/attest.pdb"
+  "../../lib/attest.a"
 )
 
 # Per-language clean rules from dependency scanning.

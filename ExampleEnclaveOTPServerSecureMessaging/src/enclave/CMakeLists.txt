@@ -1,4 +1,5 @@
 set(ENCLAVE_SOURCE_FILES
+        Utility_E1.cpp
         enclave.cpp
         enclave_t.c
         sealing/sealing.cpp
@@ -26,6 +27,10 @@ include_directories(
         ${SGX_SDK}/include
         ${SGX_SDK}/include/tlibc
         ${SGX_SDK}/include/stlport
+        ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include
+        ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/LocalAttestationCode
+
+
 )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SGX_COMMON_CFLAGS} -nostdinc -fvisibility=hidden -fpie -fstack-protector")
@@ -50,3 +55,4 @@ add_custom_command(TARGET enclave
         -out ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/enclave.signed.so
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Signing the enclave => ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/enclave.signed.so")
+

@@ -90,12 +90,12 @@ src/preinstall: src/app/preinstall
 # Directory level rules for directory src/LocalAttestationCode
 
 # Convenience name for "all" pass in the directory.
-src/LocalAttestationCode/all: src/LocalAttestationCode/CMakeFiles/attest.dir/all
+src/LocalAttestationCode/all:
 
 .PHONY : src/LocalAttestationCode/all
 
 # Convenience name for "clean" pass in the directory.
-src/LocalAttestationCode/clean: src/LocalAttestationCode/CMakeFiles/attest.dir/clean
+src/LocalAttestationCode/clean:
 
 .PHONY : src/LocalAttestationCode/clean
 
@@ -103,43 +103,6 @@ src/LocalAttestationCode/clean: src/LocalAttestationCode/CMakeFiles/attest.dir/c
 src/LocalAttestationCode/preinstall:
 
 .PHONY : src/LocalAttestationCode/preinstall
-
-#=============================================================================
-# Target rules for target src/LocalAttestationCode/CMakeFiles/attest.dir
-
-# All Build rule for target.
-src/LocalAttestationCode/CMakeFiles/attest.dir/all:
-	$(MAKE) -f src/LocalAttestationCode/CMakeFiles/attest.dir/build.make src/LocalAttestationCode/CMakeFiles/attest.dir/depend
-	$(MAKE) -f src/LocalAttestationCode/CMakeFiles/attest.dir/build.make src/LocalAttestationCode/CMakeFiles/attest.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles --progress-num=10,11,12,13 "Built target attest"
-.PHONY : src/LocalAttestationCode/CMakeFiles/attest.dir/all
-
-# Include target in all.
-all: src/LocalAttestationCode/CMakeFiles/attest.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-src/LocalAttestationCode/CMakeFiles/attest.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles 4
-	$(MAKE) -f CMakeFiles/Makefile2 src/LocalAttestationCode/CMakeFiles/attest.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles 0
-.PHONY : src/LocalAttestationCode/CMakeFiles/attest.dir/rule
-
-# Convenience name for target.
-attest: src/LocalAttestationCode/CMakeFiles/attest.dir/rule
-
-.PHONY : attest
-
-# clean rule for target.
-src/LocalAttestationCode/CMakeFiles/attest.dir/clean:
-	$(MAKE) -f src/LocalAttestationCode/CMakeFiles/attest.dir/build.make src/LocalAttestationCode/CMakeFiles/attest.dir/clean
-.PHONY : src/LocalAttestationCode/CMakeFiles/attest.dir/clean
-
-# clean rule for target.
-clean: src/LocalAttestationCode/CMakeFiles/attest.dir/clean
-
-.PHONY : clean
 
 #=============================================================================
 # Directory level rules for directory src/enclave
@@ -166,7 +129,7 @@ src/enclave/preinstall:
 src/enclave/CMakeFiles/enclave.dir/all:
 	$(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/depend
 	$(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles --progress-num=14,15,16,17,18 "Built target enclave"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles --progress-num=10,11,12,13,14,15 "Built target enclave"
 .PHONY : src/enclave/CMakeFiles/enclave.dir/all
 
 # Include target in all.
@@ -176,7 +139,7 @@ all: src/enclave/CMakeFiles/enclave.dir/all
 
 # Build rule for subdir invocation for target.
 src/enclave/CMakeFiles/enclave.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles 6
 	$(MAKE) -f CMakeFiles/Makefile2 src/enclave/CMakeFiles/enclave.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles 0
 .PHONY : src/enclave/CMakeFiles/enclave.dir/rule
@@ -221,7 +184,7 @@ src/enclave2/preinstall:
 src/enclave2/CMakeFiles/enclave2.dir/all:
 	$(MAKE) -f src/enclave2/CMakeFiles/enclave2.dir/build.make src/enclave2/CMakeFiles/enclave2.dir/depend
 	$(MAKE) -f src/enclave2/CMakeFiles/enclave2.dir/build.make src/enclave2/CMakeFiles/enclave2.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles --progress-num=19,20,21,22 "Built target enclave2"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles --progress-num=16,17,18,19 "Built target enclave2"
 .PHONY : src/enclave2/CMakeFiles/enclave2.dir/all
 
 # Include target in all.
@@ -273,7 +236,6 @@ src/app/preinstall:
 # Target rules for target src/app/CMakeFiles/app.dir
 
 # All Build rule for target.
-src/app/CMakeFiles/app.dir/all: src/LocalAttestationCode/CMakeFiles/attest.dir/all
 src/app/CMakeFiles/app.dir/all: src/enclave/CMakeFiles/enclave.dir/all
 src/app/CMakeFiles/app.dir/all: src/enclave2/CMakeFiles/enclave2.dir/all
 	$(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/depend
@@ -288,7 +250,7 @@ all: src/app/CMakeFiles/app.dir/all
 
 # Build rule for subdir invocation for target.
 src/app/CMakeFiles/app.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles 19
 	$(MAKE) -f CMakeFiles/Makefile2 src/app/CMakeFiles/app.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles 0
 .PHONY : src/app/CMakeFiles/app.dir/rule

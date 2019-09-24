@@ -61,7 +61,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "src/LocalAttestationCode/CMakeFiles/attest.dir/DependInfo.cmake"
   "src/enclave/CMakeFiles/enclave.dir/DependInfo.cmake"
   "src/enclave2/CMakeFiles/enclave2.dir/DependInfo.cmake"
   "src/app/CMakeFiles/app.dir/DependInfo.cmake"

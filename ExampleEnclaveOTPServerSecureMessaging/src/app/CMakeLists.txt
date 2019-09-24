@@ -55,4 +55,4 @@ target_link_libraries(app
         -Wl,-rpath -Wl,${SGX_LIBRARY_PATH}
         -lpthread)
 
-add_dependencies(app attest enclave enclave2)
+add_dependencies(app enclave enclave2)
