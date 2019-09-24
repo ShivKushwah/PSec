@@ -125,12 +125,17 @@ ATTESTATION_STATUS create_session(sgx_enclave_id_t src_enclave_id,
     memset(&dh_msg3, 0, sizeof(sgx_dh_msg3_t));
     memset(session_info, 0, sizeof(dh_session_t));
 
+    ocall_print("In create_session:");
+
     //Intialize the session as a session initiator
     status = sgx_dh_init_session(SGX_DH_SESSION_INITIATOR, &sgx_dh_session);
     if(SGX_SUCCESS != status)
     {
             return status;
     }
+
+    ocall_print("After sgx_dh_init_session:");
+
     
     //Ocall to request for a session with the destination enclave and obtain session id and Message 1 if successful
     status = session_request_ocall(&retstatus, src_enclave_id, dest_enclave_id, &dh_msg1, &session_id);
@@ -143,6 +148,10 @@ ATTESTATION_STATUS create_session(sgx_enclave_id_t src_enclave_id,
     {
         return ATTESTATION_SE_ERROR;
     }
+
+        ocall_print("After session_request_ocall:");
+
+
     //Process the message 1 obtained from desination enclave and generate message 2
     status = sgx_dh_initiator_proc_msg1(&dh_msg1, &dh_msg2, &sgx_dh_session);
     if(SGX_SUCCESS != status)

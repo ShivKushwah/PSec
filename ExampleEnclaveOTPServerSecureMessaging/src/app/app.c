@@ -17,6 +17,14 @@ static const char* workspaceConfig;
 
 extern int Delta;
 
+// UNTRUSTED
+
+sgx_enclave_id_t destination_enclave_id;
+uint32_t destination_enclave_num;
+//TODO I am hardcoding the above for enclave1 -> enclave2
+
+// END UNTRUSTED
+
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
 
@@ -118,6 +126,7 @@ void P_SaveOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         printf("Failed to initialize Enclave \n");
         return 1;
     }
+
     int ptr;
     sgx_status_t status = save_otp_secret(global_eid, &ptr, secret);
     if (status != SGX_SUCCESS) {
@@ -126,6 +135,72 @@ void P_SaveOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     if (ptr == 1) {
         printf("Exited Enclave Successfully\n");
     }
+
+    if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
+        printf("Failed to initialize Enclave 2 \n");
+    }
+    destination_enclave_id = global_eid2;
+    destination_enclave_num = 2;
+    //TODO This above is hardcoded
+
+    uint32_t ret_status;
+
+    status = test_create_session(global_eid, &ret_status, global_eid, global_eid2);
+            if (status!=SGX_SUCCESS)
+            {
+                printf("Enclave1_test_create_session Ecall failed: Error code is %x", status);
+            }
+            else
+            {
+                if(ret_status==0)
+                {
+                    printf("\nSecure Channel Establishment between Source (E1) and Destination (E2) Enclaves successful !!!");
+                }
+                else
+                {
+                    printf("\nSession establishment and key exchange failure between Source (E1) and Destination (E2): Error code is %x", ret_status);
+                }
+            }
+    //Test message exchange between Enclave1(Source) and Enclave2(Destination)
+            status = test_message_exchange(global_eid, &ret_status, global_eid, global_eid2, "kirat", 6);
+            if (status!=SGX_SUCCESS)
+            {
+                printf("Enclave1_test_message_exchange Ecall failed: Error code is %x", status);
+            }
+            else
+            {
+                if(ret_status==0)
+                {
+                    printf("\nMessage Exchange between Source (E1) and Destination (E2) Enclaves successful !!!");
+                }
+                else
+                {
+                    printf("\nMessage Exchange failure between Source (E1) and Destination (E2): Error code is %x", ret_status);
+                }
+            }
+
+            
+        
+
+            //Test Closing Session between Enclave1(Source) and Enclave2(Destination)
+            status = test_close_session(global_eid, &ret_status, global_eid, global_eid2);
+            if (status!=SGX_SUCCESS)
+            {
+                printf("Enclave1_test_close_session Ecall failed: Error code is %x", status);
+            }
+            else
+            {
+                if(ret_status==0)
+                {
+                    printf("\nClose Session between Source (E1) and Destination (E2) Enclaves successful !!!");
+                }
+                else
+                {
+                    printf("\nClose session failure between Source (E1) and Destination (E2): Error code is %x", ret_status);
+                }
+            }
+
+
 }
 
 PRT_VALUE* P_GetOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -159,7 +234,7 @@ void P_EnclaveCallTwo_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         printf("Enclave2 Error!\n");
     }
 
-    printf("Exited Enclave 2 Successfully\n");
+    printf("Exited Enclave 2 Successfully\n");     
 }
 
 // OCall implementations
@@ -257,8 +332,7 @@ int main(int argc, char const *argv[]) {
 #include "sgx_dh.h"
 //#include <map>
 
-sgx_enclave_id_t destination_enclave_id;
-uint32_t destination_enclave_num;
+
 
 // std::map<sgx_enclave_id_t, uint32_t>g_enclave_id_map;
 
@@ -269,6 +343,8 @@ ATTESTATION_STATUS session_request_ocall(sgx_enclave_id_t src_enclave_id, sgx_en
 	sgx_status_t ret = SGX_SUCCESS;
 	uint32_t temp_enclave_no;
 
+    printf("Inside session_request_ocall:");
+
 	if (destination_enclave_id == dest_enclave_id) {
 		temp_enclave_no = destination_enclave_num;
 
@@ -276,6 +352,8 @@ ATTESTATION_STATUS session_request_ocall(sgx_enclave_id_t src_enclave_id, sgx_en
 		return INVALID_SESSION;
 
 	}
+
+    printf("after checking if destination_enclave_id = dest_enclave_id\n");
 
 	// std::map<sgx_enclave_id_t, uint32_t>::iterator it = g_enclave_id_map.find(dest_enclave_id);
     // if(it != g_enclave_id_map.end())
