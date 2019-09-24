@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "enclave2_t.c"
   "CMakeFiles/enclave2.dir/enclave2.cpp.o"
   "CMakeFiles/enclave2.dir/enclave2_t.c.o"
+  "CMakeFiles/enclave2.dir/Utility_E1.cpp.o"
   "../../enclave2.pdb"
   "../../enclave2.so"
 )

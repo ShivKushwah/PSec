@@ -70,7 +70,7 @@ int get_otp_secret() {
 #include "dh_session_protocol.h"
 #include "sgx_dh.h"
 #include "sgx_tcrypto.h"
-#include "LocalAttestationCode_t.h"
+// #include "LocalAttestationCode_t.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -772,10 +772,6 @@ ATTESTATION_STATUS generate_session_id(uint32_t *session_id)
 
 }
 
-int kirat(){
-    return 7;
-}
-
 
 
 //------------ enclave1.cpp
@@ -1164,5 +1160,6 @@ static uint32_t e1_foo1_wrapper(ms_in_msg_exchange_t *ms,
     SAFE_FREE(p_struct_var);
     return SUCCESS;
 }
+
 
 

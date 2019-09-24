@@ -229,6 +229,12 @@ string.h
 -
 sgx_edger8r.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sgx_edger8r.h
+sgx_eid.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sgx_eid.h
+datatypes.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/datatypes.h
+../Include/dh_session_protocol.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/dh_session_protocol.h
 stdlib.h
 -
 

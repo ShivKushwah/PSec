@@ -1,6 +1,8 @@
 set(ENCLAVE_SOURCE_FILES
         enclave2.cpp
         enclave2_t.c
+        Utility_E1.cpp
+
         )
 
 add_definitions(-DENCLAVE_STD_ALT)
@@ -25,6 +27,9 @@ include_directories(
         ${SGX_SDK}/include
         ${SGX_SDK}/include/tlibc
         ${SGX_SDK}/include/stlport
+        ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include
+        #  ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/LocalAttestationCode
+
 )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SGX_COMMON_CFLAGS} -nostdinc -fvisibility=hidden -fpie -fstack-protector")

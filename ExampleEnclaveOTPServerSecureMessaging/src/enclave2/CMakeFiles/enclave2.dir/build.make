@@ -109,19 +109,45 @@ src/enclave2/CMakeFiles/enclave2.dir/enclave2_t.c.o.provides: src/enclave2/CMake
 src/enclave2/CMakeFiles/enclave2.dir/enclave2_t.c.o.provides.build: src/enclave2/CMakeFiles/enclave2.dir/enclave2_t.c.o
 
 
+src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o: src/enclave2/CMakeFiles/enclave2.dir/flags.make
+src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o: src/enclave2/Utility_E1.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2 && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/enclave2.dir/Utility_E1.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/Utility_E1.cpp
+
+src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/enclave2.dir/Utility_E1.cpp.i"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2 && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/Utility_E1.cpp > CMakeFiles/enclave2.dir/Utility_E1.cpp.i
+
+src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/enclave2.dir/Utility_E1.cpp.s"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2 && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/Utility_E1.cpp -o CMakeFiles/enclave2.dir/Utility_E1.cpp.s
+
+src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o.requires:
+
+.PHONY : src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o.requires
+
+src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o.provides: src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o.requires
+	$(MAKE) -f src/enclave2/CMakeFiles/enclave2.dir/build.make src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o.provides.build
+.PHONY : src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o.provides
+
+src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o.provides.build: src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o
+
+
 # Object files for target enclave2
 enclave2_OBJECTS = \
 "CMakeFiles/enclave2.dir/enclave2.cpp.o" \
-"CMakeFiles/enclave2.dir/enclave2_t.c.o"
+"CMakeFiles/enclave2.dir/enclave2_t.c.o" \
+"CMakeFiles/enclave2.dir/Utility_E1.cpp.o"
 
 # External object files for target enclave2
 enclave2_EXTERNAL_OBJECTS =
 
 enclave2.so: src/enclave2/CMakeFiles/enclave2.dir/enclave2.cpp.o
 enclave2.so: src/enclave2/CMakeFiles/enclave2.dir/enclave2_t.c.o
+enclave2.so: src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o
 enclave2.so: src/enclave2/CMakeFiles/enclave2.dir/build.make
 enclave2.so: src/enclave2/CMakeFiles/enclave2.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX shared library ../../enclave2.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX shared library ../../enclave2.so"
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2 && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/enclave2.dir/link.txt --verbose=$(VERBOSE)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Signing the enclave => /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/enclave2.signed.so"
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2 && /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/bin/x64/sgx_sign sign -key enclave2_private.pem -config enclave2.config.xml -enclave /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/enclave2.so -out /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/enclave2.signed.so
@@ -133,6 +159,7 @@ src/enclave2/CMakeFiles/enclave2.dir/build: enclave2.so
 
 src/enclave2/CMakeFiles/enclave2.dir/requires: src/enclave2/CMakeFiles/enclave2.dir/enclave2.cpp.o.requires
 src/enclave2/CMakeFiles/enclave2.dir/requires: src/enclave2/CMakeFiles/enclave2.dir/enclave2_t.c.o.requires
+src/enclave2/CMakeFiles/enclave2.dir/requires: src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o.requires
 
 .PHONY : src/enclave2/CMakeFiles/enclave2.dir/requires
 

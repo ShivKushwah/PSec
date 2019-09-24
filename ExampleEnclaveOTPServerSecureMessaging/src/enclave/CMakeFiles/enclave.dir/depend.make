@@ -88,7 +88,6 @@ src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: src/enclave/enclave.cpp
 src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: src/enclave/enclave_t.h
 src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: src/enclave/error_codes.h
 src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: src/Include/dh_session_protocol.h
-src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: src/LocalAttestationCode/LocalAttestationCode_t.h
 
 src/enclave/CMakeFiles/enclave.dir/sealing/sealing.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
 src/enclave/CMakeFiles/enclave.dir/sealing/sealing.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h

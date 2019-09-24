@@ -229,8 +229,6 @@ sgx_dh.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_dh.h
 sgx_tcrypto.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_tcrypto.h
-LocalAttestationCode_t.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/LocalAttestationCode_t.h
 
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave_t.h
 stdint.h
@@ -273,24 +271,6 @@ sgx_report.h
 src/Include/sgx_report.h
 sgx_attributes.h
 src/Include/sgx_attributes.h
-
-src/LocalAttestationCode/LocalAttestationCode_t.h
-stdint.h
--
-wchar.h
--
-stddef.h
--
-sgx_edger8r.h
-src/LocalAttestationCode/sgx_edger8r.h
-sgx_eid.h
-src/LocalAttestationCode/sgx_eid.h
-datatypes.h
-src/LocalAttestationCode/datatypes.h
-../Include/dh_session_protocol.h
-src/Include/dh_session_protocol.h
-stdlib.h
--
 
 src/enclave/datatypes.h
 sgx_report.h

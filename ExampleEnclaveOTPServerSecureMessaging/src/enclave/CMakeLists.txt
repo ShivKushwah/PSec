@@ -28,7 +28,7 @@ include_directories(
         ${SGX_SDK}/include/tlibc
         ${SGX_SDK}/include/stlport
         ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include
-        ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/LocalAttestationCode
+        # ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/LocalAttestationCode
 
 
 )
