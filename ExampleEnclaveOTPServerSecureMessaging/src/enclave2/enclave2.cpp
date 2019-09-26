@@ -5,7 +5,7 @@
 #include "Utility_E1.h"
 
 //NOTE: Change not persisted in other file
-char* secret_string;
+char* secret_string = (char*) malloc(20);
 
 
 int generate_random_number() {
@@ -1093,7 +1093,9 @@ extern "C" uint32_t message_exchange_response_generator(char* decrypted_data,
     ocall_print(inp_really_secret_data);
 
     //TODO: figure out a way to not just store string, NOTE: Change not persisted in other file
-    secret_string = inp_really_secret_data;
+    memcpy(secret_string, inp_really_secret_data, strlen(inp_really_secret_data));
+    secret_string[strlen(inp_really_secret_data)] = '\0';
+
 
     out_secret_data = get_message_exchange_response(inp_secret_data);
 

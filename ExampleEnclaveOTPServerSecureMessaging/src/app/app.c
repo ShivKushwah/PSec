@@ -224,16 +224,15 @@ PRT_VALUE* P_EnclaveTwoGenerateOTPCode_IMPL(PRT_MACHINEINST* context, PRT_VALUE*
 
     printf("Entering Enclave2:\n");
 
-    if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
-        printf("Failed to initialize Enclave 2 \n");
-        return 1;
-    }
+    // if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
+    //     printf("Failed to initialize Enclave 2 \n");
+    //     return 1;
+    // }
     int ptr;
-    sgx_status_t status = generate_random_number(global_eid2, &ptr);
+    sgx_status_t status = generate_OTP_code(global_eid2, &ptr);
     if (status != SGX_SUCCESS) {
         printf("Enclave2 Error!\n");
     }
-    ptr = 123456789;
     //TODO NEXT STEP -> make ptr call within enclave2 and check if secret_string = kirat and if so return 123456789 for ptr
 
     printf("Exited Enclave 2 Successfully\n");  
