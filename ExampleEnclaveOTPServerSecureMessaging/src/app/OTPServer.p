@@ -3,10 +3,12 @@ event OTPSecretReceived;
 event OTPCodeMsg: int;
 event OTPCodeValidated;
 event OTPCodeFailed;
-fun SaveOTPSecret(secret : int);
-fun EnclaveCallTwo();
-fun EnclaveOneSendSecret(secret : int);
-fun EnclaveTwoGenerateOTPCode() : int;
+
+fun EnclaveOneInitialize();
+fun EnclaveTwoInitialize();
+
+fun EnclaveOneSendSecret(secret: int);
+fun EnclaveTwoGenerateOTPCode(): int;
 
 
 machine BANK_SERVER 
@@ -17,8 +19,9 @@ machine BANK_SERVER
     // This is the entry point.
     start state Init {
         entry (payload:any) {
-          clientOtpGenerator = payload as machine;
-          goto GenerateOTPSecret;   	   
+			EnclaveOneInitialize();
+          	clientOtpGenerator = payload as machine;
+          	goto GenerateOTPSecret;   	   
         }
     }
 
@@ -57,6 +60,9 @@ machine CLIENT_OTP_GENERATOR
 	var bankServer: machine;
 
     start state Init {
+		entry {
+			EnclaveTwoInitialize(); // Potential Race Condition if 2 isn't intialized right after 1
+		}
         on OTPSecretMsg goto HandleOTPSecret;
     }
 
@@ -70,7 +76,7 @@ machine CLIENT_OTP_GENERATOR
 
 	state GenerateOTPCode {
 	    entry {
-			var code : int;
+			var code: int;
 			code = EnclaveTwoGenerateOTPCode();
 			send bankServer, OTPCodeMsg, code;
 	    }
