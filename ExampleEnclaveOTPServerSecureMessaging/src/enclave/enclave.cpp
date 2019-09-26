@@ -3,27 +3,6 @@
 
 #include "Utility_E1.h"
 
-
-int OTP_SECRET = 0;
-
-int save_otp_secret(int secret) {
-    OTP_SECRET = secret;
-    if (OTP_SECRET == secret) {
-        ocall_print("kirat");
-        //int ret = kirat();
-        //ocall_print_int();
-        ocall_print("Entered Enclave: Stored Secret Successfully:");
-        ocall_print_int(OTP_SECRET);
-    }
-    return 1;
-}
-
-int get_otp_secret() {
-    ocall_print("Entered Enclave: Retrieving Secret");
-    ocall_print_int(OTP_SECRET);
-    return OTP_SECRET;
-}
-
 // Enclave Message Exchange
 /*
  * Copyright (C) 2011-2019 Intel Corporation. All rights reserved.
@@ -125,16 +104,12 @@ ATTESTATION_STATUS create_session(sgx_enclave_id_t src_enclave_id,
     memset(&dh_msg3, 0, sizeof(sgx_dh_msg3_t));
     memset(session_info, 0, sizeof(dh_session_t));
 
-    ocall_print("In create_session:");
-
     //Intialize the session as a session initiator
     status = sgx_dh_init_session(SGX_DH_SESSION_INITIATOR, &sgx_dh_session);
     if(SGX_SUCCESS != status)
     {
             return status;
     }
-
-    ocall_print("After sgx_dh_init_session:");
 
     
     //Ocall to request for a session with the destination enclave and obtain session id and Message 1 if successful
@@ -148,8 +123,6 @@ ATTESTATION_STATUS create_session(sgx_enclave_id_t src_enclave_id,
     {
         return ATTESTATION_SE_ERROR;
     }
-
-        ocall_print("After session_request_ocall:");
 
 
     //Process the message 1 obtained from desination enclave and generate message 2

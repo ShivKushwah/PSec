@@ -27,15 +27,6 @@
 )
 
 
-typedef struct ms_save_otp_secret_t {
-	int ms_retval;
-	int ms_value;
-} ms_save_otp_secret_t;
-
-typedef struct ms_get_otp_secret_t {
-	int ms_retval;
-} ms_get_otp_secret_t;
-
 typedef struct ms_session_request_t {
 	uint32_t ms_retval;
 	sgx_enclave_id_t ms_src_enclave_id;
@@ -178,42 +169,6 @@ typedef struct ms_sgx_thread_set_multiple_untrusted_events_ocall_t {
 	const void** ms_waiters;
 	size_t ms_total;
 } ms_sgx_thread_set_multiple_untrusted_events_ocall_t;
-
-static sgx_status_t SGX_CDECL sgx_save_otp_secret(void* pms)
-{
-	CHECK_REF_POINTER(pms, sizeof(ms_save_otp_secret_t));
-	//
-	// fence after pointer checks
-	//
-	sgx_lfence();
-	ms_save_otp_secret_t* ms = SGX_CAST(ms_save_otp_secret_t*, pms);
-	sgx_status_t status = SGX_SUCCESS;
-
-
-
-	ms->ms_retval = save_otp_secret(ms->ms_value);
-
-
-	return status;
-}
-
-static sgx_status_t SGX_CDECL sgx_get_otp_secret(void* pms)
-{
-	CHECK_REF_POINTER(pms, sizeof(ms_get_otp_secret_t));
-	//
-	// fence after pointer checks
-	//
-	sgx_lfence();
-	ms_get_otp_secret_t* ms = SGX_CAST(ms_get_otp_secret_t*, pms);
-	sgx_status_t status = SGX_SUCCESS;
-
-
-
-	ms->ms_retval = get_otp_secret();
-
-
-	return status;
-}
 
 static sgx_status_t SGX_CDECL sgx_session_request(void* pms)
 {
@@ -658,12 +613,10 @@ err:
 
 SGX_EXTERNC const struct {
 	size_t nr_ecall;
-	struct {void* ecall_addr; uint8_t is_priv;} ecall_table[12];
+	struct {void* ecall_addr; uint8_t is_priv;} ecall_table[10];
 } g_ecall_table = {
-	12,
+	10,
 	{
-		{(void*)(uintptr_t)sgx_save_otp_secret, 0},
-		{(void*)(uintptr_t)sgx_get_otp_secret, 0},
 		{(void*)(uintptr_t)sgx_session_request, 0},
 		{(void*)(uintptr_t)sgx_exchange_report, 0},
 		{(void*)(uintptr_t)sgx_generate_response, 0},
@@ -679,21 +632,21 @@ SGX_EXTERNC const struct {
 
 SGX_EXTERNC const struct {
 	size_t nr_ocall;
-	uint8_t entry_table[11][12];
+	uint8_t entry_table[11][10];
 } g_dyn_entry_table = {
 	11,
 	{
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
 	}
 };
 

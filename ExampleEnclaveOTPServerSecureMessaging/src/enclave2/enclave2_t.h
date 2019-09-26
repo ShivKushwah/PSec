@@ -18,7 +18,6 @@
 extern "C" {
 #endif
 
-int generate_random_number(void);
 int generate_OTP_code(void);
 uint32_t session_request_enclave2(sgx_enclave_id_t src_enclave_id, sgx_dh_msg1_t* dh_msg1, uint32_t* session_id);
 uint32_t exchange_report_enclave2(sgx_enclave_id_t src_enclave_id, sgx_dh_msg2_t* dh_msg2, sgx_dh_msg3_t* dh_msg3, uint32_t session_id);

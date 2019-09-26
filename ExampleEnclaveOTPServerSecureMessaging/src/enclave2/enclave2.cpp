@@ -16,13 +16,9 @@ int atoi(char *p) {
      return k;
 }
 
-
-int generate_random_number() {
-    ocall_print("Processing random number generation...");
-    return 42;
-}
-
 int generate_OTP_code() {
+    ocall_print("Generating OTP Code");
+    ocall_print_int(atoi(secret_string) + 1);
     return atoi(secret_string) + 1;
 }
 

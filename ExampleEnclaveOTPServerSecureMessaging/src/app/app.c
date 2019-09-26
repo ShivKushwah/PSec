@@ -48,32 +48,11 @@ PRT_VALUE* P_EnclaveTwoInitialize_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** ar
    
 }
 
-
-PRT_VALUE* P_EnclaveTwoGenerateOTPCode_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    printf("Entering Enclave2:\n");
-
-    int ptr;
-    sgx_status_t status = generate_OTP_code(global_eid2, &ptr);
-    if (status != SGX_SUCCESS) {
-        printf("Enclave2 Error!\n");
-    }
-
-    printf("Exited Enclave 2 Successfully\n");  
-    return PrtMkIntValue(ptr);
-   
-}
-
 void P_EnclaveOneSendSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    int secret = PrtPrimGetInt(*P_VAR_payload);
+    char* secret = "12344";
 
     printf("Entering Enclave1 to send Secret to Enclave2:\n");
-
-
-
-    
 
     destination_enclave_id = global_eid2;
     destination_enclave_num = 2;
@@ -99,7 +78,7 @@ void P_EnclaveOneSendSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         }
     }
     //Test message exchange between Enclave1(Source) and Enclave2(Destination)
-    status = test_message_exchange(global_eid, &ret_status, global_eid, global_eid2, "12344", 6);
+    status = test_message_exchange(global_eid, &ret_status, global_eid, global_eid2, secret, 6);
     if (status!=SGX_SUCCESS)
     {
         printf("Enclave1_test_message_exchange Ecall failed: Error code is %x", status);
@@ -115,8 +94,6 @@ void P_EnclaveOneSendSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
             printf("\nMessage Exchange failure between Source (E1) and Destination (E2): Error code is %x", ret_status);
         }
     }
-
-    
 
 
     //Test Closing Session between Enclave1(Source) and Enclave2(Destination)
@@ -138,6 +115,22 @@ void P_EnclaveOneSendSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     }
 
     printf("Exited Enclave 1 Successfully\n");     
+}
+
+
+PRT_VALUE* P_EnclaveTwoGenerateOTPCode_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    printf("Entering Enclave2 to generate OTP Code:\n");
+
+    int ptr;
+    sgx_status_t status = generate_OTP_code(global_eid2, &ptr);
+    if (status != SGX_SUCCESS) {
+        printf("Enclave2 Error!\n");
+    }
+
+    printf("Exited Enclave 2 Successfully\n");  
+    return PrtMkIntValue(ptr);
+   
 }
 
 
@@ -332,8 +325,6 @@ ATTESTATION_STATUS session_request_ocall(sgx_enclave_id_t src_enclave_id, sgx_en
 	sgx_status_t ret = SGX_SUCCESS;
 	uint32_t temp_enclave_no;
 
-    printf("Inside session_request_ocall:");
-
 	if (destination_enclave_id == dest_enclave_id) {
 		temp_enclave_no = destination_enclave_num;
 
@@ -341,8 +332,6 @@ ATTESTATION_STATUS session_request_ocall(sgx_enclave_id_t src_enclave_id, sgx_en
 		return INVALID_SESSION;
 
 	}
-
-    printf("after checking if destination_enclave_id = dest_enclave_id\n");
 
 	// std::map<sgx_enclave_id_t, uint32_t>::iterator it = g_enclave_id_map.find(dest_enclave_id);
     // if(it != g_enclave_id_map.end())
