@@ -1,12 +1,11 @@
-event OTPSecretMsg: (machine, int);
+event OTPSecretMsg: machine;
 event OTPSecretReceived;
 event OTPCodeMsg: int;
 event OTPCodeValidated;
 event OTPCodeFailed;
 fun SaveOTPSecret(secret : int);
-fun GetOTPSecret() : int;
 fun EnclaveCallTwo();
-fun EnclaveOneSendSecret();
+fun EnclaveOneSendSecret(secret : int);
 fun EnclaveTwoGenerateOTPCode() : int;
 
 
@@ -27,9 +26,8 @@ machine BANK_SERVER
         entry {
 			// generate OTP secret 
 			secret = 12344;
-			EnclaveCallTwo();
-			EnclaveOneSendSecret();
-			send clientOtpGenerator, OTPSecretMsg, (this, secret);
+			EnclaveOneSendSecret(secret);
+			send clientOtpGenerator, OTPSecretMsg, this;
 	    }
         on OTPSecretReceived goto WaitOTPCode;
      }
@@ -57,17 +55,14 @@ machine BANK_SERVER
 machine CLIENT_OTP_GENERATOR
 {
 	var bankServer: machine;
-	var OTPSecret: int;
 
     start state Init {
         on OTPSecretMsg goto HandleOTPSecret;
     }
 
     state HandleOTPSecret {
-	    entry (payload: (machine, int)) {
-	        bankServer = payload.0;
-			OTPSecret = payload.1;
-			SaveOTPSecret(OTPSecret);
+	    entry (payload: machine) {
+	        bankServer = payload;
 			send bankServer, OTPSecretReceived;
 			goto GenerateOTPCode;	 	  
 	    }
@@ -76,7 +71,6 @@ machine CLIENT_OTP_GENERATOR
 	state GenerateOTPCode {
 	    entry {
 			var code : int;
-			code = GetOTPSecret();
 			code = EnclaveTwoGenerateOTPCode();
 			send bankServer, OTPCodeMsg, code;
 	    }

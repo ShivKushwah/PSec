@@ -16,19 +16,6 @@ int atoi(char *p) {
      return k;
 }
 
-// int atoi(char* str) 
-// { 
-//     int res = 0; // Initialize result 
-  
-//     // Iterate through all characters of input string and 
-//     // update result 
-//     for (int i = 0; str[i] != '\0'; ++i) 
-//         res = res * 10 + str[i] - '0'; 
-  
-//     // return result. 
-//     return res; 
-// } 
-
 
 int generate_random_number() {
     ocall_print("Processing random number generation...");
@@ -37,11 +24,6 @@ int generate_random_number() {
 
 int generate_OTP_code() {
     return atoi(secret_string) + 1;
-    // if (strcmp(secret_string, "kirat") == 0) {
-    //     return 123456789;
-    // } else {
-    //     return 0;
-    // }
 }
 
 // Enclave Message Exchange
