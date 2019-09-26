@@ -71,6 +71,9 @@ uint32_t verify_peer_enclave_trust(sgx_dh_session_enclave_identity_t* peer_encla
 
 #define MAX_SESSION_COUNT  16
 
+//NOTE: Change not persisted in other file
+char* secret_string;
+
 //number of open sessions
 uint32_t g_session_count = 0;
 
@@ -1079,6 +1082,9 @@ extern "C" uint32_t message_exchange_response_generator(char* decrypted_data,
         return ATTESTATION_ERROR;
     ocall_print("\nENCLAVE2 RECEIVED MESSAGE: ");
     ocall_print(inp_really_secret_data);
+
+    //TODO: figure out a way to not just store string, NOTE: Change not persisted in other file
+    secret_string = inp_really_secret_data;
 
     out_secret_data = get_message_exchange_response(inp_secret_data);
 

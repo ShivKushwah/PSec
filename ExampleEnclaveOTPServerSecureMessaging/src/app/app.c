@@ -219,6 +219,108 @@ PRT_VALUE* P_GetOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     return PrtMkIntValue(ptr);
 }
 
+PRT_VALUE* P_EnclaveTwoGenerateOTPCode_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+
+    printf("Entering Enclave2:\n");
+
+    if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
+        printf("Failed to initialize Enclave 2 \n");
+        return 1;
+    }
+    int ptr;
+    sgx_status_t status = generate_random_number(global_eid2, &ptr);
+    if (status != SGX_SUCCESS) {
+        printf("Enclave2 Error!\n");
+    }
+    ptr = 123456789;
+    //TODO NEXT STEP -> make ptr call within enclave2 and check if secret_string = kirat and if so return 123456789 for ptr
+
+    printf("Exited Enclave 2 Successfully\n");  
+    return PrtMkIntValue(ptr);
+   
+}
+
+void P_EnclaveOneSendSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+
+    printf("Entering Enclave1:\n");
+
+    if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
+        printf("Failed to initialize Enclave 1 \n");
+        return 1;
+    }
+
+    if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
+        printf("Failed to initialize Enclave 2 \n");
+        return 1;
+    }
+
+    destination_enclave_id = global_eid2;
+    destination_enclave_num = 2;
+    //TODO This above is hardcoded
+
+    uint32_t ret_status;
+    sgx_status_t status;
+
+    status = test_create_session(global_eid, &ret_status, global_eid, global_eid2);
+            if (status!=SGX_SUCCESS)
+            {
+                printf("Enclave1_test_create_session Ecall failed: Error code is %x", status);
+            }
+            else
+            {
+                if(ret_status==0)
+                {
+                    printf("\nSecure Channel Establishment between Source (E1) and Destination (E2) Enclaves successful !!!");
+                }
+                else
+                {
+                    printf("\nSession establishment and key exchange failure between Source (E1) and Destination (E2): Error code is %x", ret_status);
+                }
+            }
+    //Test message exchange between Enclave1(Source) and Enclave2(Destination)
+            status = test_message_exchange(global_eid, &ret_status, global_eid, global_eid2, "kirat", 6);
+            if (status!=SGX_SUCCESS)
+            {
+                printf("Enclave1_test_message_exchange Ecall failed: Error code is %x", status);
+            }
+            else
+            {
+                if(ret_status==0)
+                {
+                    printf("\nMessage Exchange between Source (E1) and Destination (E2) Enclaves successful !!!");
+                }
+                else
+                {
+                    printf("\nMessage Exchange failure between Source (E1) and Destination (E2): Error code is %x", ret_status);
+                }
+            }
+
+            
+        
+
+            //Test Closing Session between Enclave1(Source) and Enclave2(Destination)
+            status = test_close_session(global_eid, &ret_status, global_eid, global_eid2);
+            if (status!=SGX_SUCCESS)
+            {
+                printf("Enclave1_test_close_session Ecall failed: Error code is %x", status);
+            }
+            else
+            {
+                if(ret_status==0)
+                {
+                    printf("\nClose Session between Source (E1) and Destination (E2) Enclaves successful !!!");
+                }
+                else
+                {
+                    printf("\nClose session failure between Source (E1) and Destination (E2): Error code is %x", ret_status);
+                }
+            }
+
+    printf("Exited Enclave 1 Successfully\n");     
+}
+
 void P_EnclaveCallTwo_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
 
