@@ -430,7 +430,7 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp4 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 123456788 } };
+    PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 12344 } };
     PRT_VALUE** P_LVALUE_2 = &(p_this->varValues[1]);
     PrtFreeValue(*P_LVALUE_2);
     *P_LVALUE_2 = PrtCloneValue((&P_LIT_INT32));
@@ -517,7 +517,7 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp4_1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE P_LIT_INT32_1 = { PRT_VALUE_KIND_INT, { .nt = 123456789 } };
+    PRT_VALUE P_LIT_INT32_1 = { PRT_VALUE_KIND_INT, { .nt = 12345 } };
     PRT_VALUE** P_LVALUE_8 = &(PTMP_tmp0_2);
     PrtFreeValue(*P_LVALUE_8);
     *P_LVALUE_8 = PrtMkBoolValue(PrtIsEqualValue(*P_VAR_payload_1, (&P_LIT_INT32_1)));

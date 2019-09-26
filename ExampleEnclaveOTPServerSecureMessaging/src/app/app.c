@@ -162,7 +162,7 @@ void P_SaveOTPSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
                 }
             }
     //Test message exchange between Enclave1(Source) and Enclave2(Destination)
-            status = test_message_exchange(global_eid, &ret_status, global_eid, global_eid2, "kirat", 6);
+            status = test_message_exchange(global_eid, &ret_status, global_eid, global_eid2, "12344", 6);
             if (status!=SGX_SUCCESS)
             {
                 printf("Enclave1_test_message_exchange Ecall failed: Error code is %x", status);
@@ -279,7 +279,7 @@ void P_EnclaveOneSendSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
                 }
             }
     //Test message exchange between Enclave1(Source) and Enclave2(Destination)
-            status = test_message_exchange(global_eid, &ret_status, global_eid, global_eid2, "kirat", 6);
+            status = test_message_exchange(global_eid, &ret_status, global_eid, global_eid2, "12344", 6);
             if (status!=SGX_SUCCESS)
             {
                 printf("Enclave1_test_message_exchange Ecall failed: Error code is %x", status);

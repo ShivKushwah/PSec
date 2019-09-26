@@ -26,7 +26,7 @@ machine BANK_SERVER
     state GenerateOTPSecret {
         entry {
 			// generate OTP secret 
-			secret = 123456788;
+			secret = 12344;
 			EnclaveCallTwo();
 			EnclaveOneSendSecret();
 			send clientOtpGenerator, OTPSecretMsg, (this, secret);
@@ -41,7 +41,7 @@ machine BANK_SERVER
 	 state ValidateOTPCode {
         entry (payload: int) {
 		  // validate OTP code
-		  if (payload == 123456789) {
+		  if (payload == 12345) {
 			send clientOtpGenerator, OTPCodeValidated;
           	goto Done;  
 		  } else  {
