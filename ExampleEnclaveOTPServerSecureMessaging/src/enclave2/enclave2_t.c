@@ -31,6 +31,10 @@ typedef struct ms_generate_random_number_t {
 	int ms_retval;
 } ms_generate_random_number_t;
 
+typedef struct ms_generate_OTP_code_t {
+	int ms_retval;
+} ms_generate_OTP_code_t;
+
 typedef struct ms_session_request_enclave2_t {
 	uint32_t ms_retval;
 	sgx_enclave_id_t ms_src_enclave_id;
@@ -171,6 +175,24 @@ static sgx_status_t SGX_CDECL sgx_generate_random_number(void* pms)
 
 
 	ms->ms_retval = generate_random_number();
+
+
+	return status;
+}
+
+static sgx_status_t SGX_CDECL sgx_generate_OTP_code(void* pms)
+{
+	CHECK_REF_POINTER(pms, sizeof(ms_generate_OTP_code_t));
+	//
+	// fence after pointer checks
+	//
+	sgx_lfence();
+	ms_generate_OTP_code_t* ms = SGX_CAST(ms_generate_OTP_code_t*, pms);
+	sgx_status_t status = SGX_SUCCESS;
+
+
+
+	ms->ms_retval = generate_OTP_code();
 
 
 	return status;
@@ -485,11 +507,12 @@ static sgx_status_t SGX_CDECL sgx_test_close_session_enclave2(void* pms)
 
 SGX_EXTERNC const struct {
 	size_t nr_ecall;
-	struct {void* ecall_addr; uint8_t is_priv;} ecall_table[9];
+	struct {void* ecall_addr; uint8_t is_priv;} ecall_table[10];
 } g_ecall_table = {
-	9,
+	10,
 	{
 		{(void*)(uintptr_t)sgx_generate_random_number, 0},
+		{(void*)(uintptr_t)sgx_generate_OTP_code, 0},
 		{(void*)(uintptr_t)sgx_session_request_enclave2, 0},
 		{(void*)(uintptr_t)sgx_exchange_report_enclave2, 0},
 		{(void*)(uintptr_t)sgx_generate_response_enclave2, 0},
@@ -503,21 +526,21 @@ SGX_EXTERNC const struct {
 
 SGX_EXTERNC const struct {
 	size_t nr_ocall;
-	uint8_t entry_table[11][9];
+	uint8_t entry_table[11][10];
 } g_dyn_entry_table = {
 	11,
 	{
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, },
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, },
 	}
 };
 

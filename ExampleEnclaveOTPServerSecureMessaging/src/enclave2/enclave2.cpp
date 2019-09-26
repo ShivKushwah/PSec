@@ -1,12 +1,24 @@
 #include "enclave2_t.h"
 #include <sgx_thread.h>
+#include <string.h>
 
 #include "Utility_E1.h"
+
+//NOTE: Change not persisted in other file
+char* secret_string;
 
 
 int generate_random_number() {
     ocall_print("Processing random number generation...");
     return 42;
+}
+
+int generate_OTP_code() {
+    if (strcmp(secret_string, "kirat") == 0) {
+        return 123456789;
+    } else {
+        return 0;
+    }
 }
 
 // Enclave Message Exchange
@@ -70,9 +82,6 @@ uint32_t verify_peer_enclave_trust(sgx_dh_session_enclave_identity_t* peer_encla
 #endif
 
 #define MAX_SESSION_COUNT  16
-
-//NOTE: Change not persisted in other file
-char* secret_string;
 
 //number of open sessions
 uint32_t g_session_count = 0;

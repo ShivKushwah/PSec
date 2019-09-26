@@ -207,6 +207,8 @@ enclave2_t.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/enclave2_t.h
 sgx_thread.h
 -
+string.h
+-
 Utility_E1.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/Utility_E1.h
 sgx_trts.h
