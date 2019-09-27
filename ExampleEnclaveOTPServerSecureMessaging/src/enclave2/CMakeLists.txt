@@ -1,6 +1,3 @@
-add_definitions(-DENCLAVE2)
-
-
 set(ENCLAVE_SOURCE_FILES
         enclave2.cpp
         enclave2_t.c
@@ -8,7 +5,7 @@ set(ENCLAVE_SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/../shared/TrustedMessagingLib.cpp
         )
 
-add_definitions(-DENCLAVE_STD_ALT)
+add_definitions(-DENCLAVE_STD_ALT -DENCLAVE2)
 
 set_directory_properties(PROPERTIES
         ADDITIONAL_MAKE_CLEAN_FILES "enclave2_t.c; enclave2_t.h")
@@ -30,9 +27,7 @@ include_directories(
         ${SGX_SDK}/include
         ${SGX_SDK}/include/tlibc
         ${SGX_SDK}/include/stlport
-        ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include
-        #  ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/LocalAttestationCode
-
+        ${CMAKE_CURRENT_SOURCE_DIR}/../Include
 )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SGX_COMMON_CFLAGS} -nostdinc -fvisibility=hidden -fpie -fstack-protector")

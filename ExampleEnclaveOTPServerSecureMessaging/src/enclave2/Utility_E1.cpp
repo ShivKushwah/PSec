@@ -30,7 +30,6 @@
  */
 
 #include "sgx_eid.h"
-#include "EnclaveMessageExchange.h"
 #include "error_codes.h"
 #include "Utility_E1.h"
 #include "stdlib.h"

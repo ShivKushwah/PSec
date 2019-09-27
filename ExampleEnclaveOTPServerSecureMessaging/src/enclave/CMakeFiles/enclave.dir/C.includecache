@@ -168,18 +168,6 @@ sgx_report.h
 sgx_attributes.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/sgx_attributes.h
 
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/datatypes.h
-sgx_report.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_report.h
-sgx_eid.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_eid.h
-sgx_ecp_types.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_ecp_types.h
-sgx_dh.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_dh.h
-sgx_tseal.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_tseal.h
-
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave_t.c
 enclave_t.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave_t.h
@@ -213,4 +201,16 @@ sgx_tseal.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_tseal.h
 stdlib.h
 -
+
+src/enclave/../Include/datatypes.h
+sgx_report.h
+src/enclave/../Include/sgx_report.h
+sgx_eid.h
+src/enclave/../Include/sgx_eid.h
+sgx_ecp_types.h
+src/enclave/../Include/sgx_ecp_types.h
+sgx_dh.h
+src/enclave/../Include/sgx_dh.h
+sgx_tseal.h
+src/enclave/../Include/sgx_tseal.h
 

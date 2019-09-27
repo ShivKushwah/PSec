@@ -1,8 +1,8 @@
 set(ENCLAVE_SOURCE_FILES
-        Utility_E1.cpp
         enclave.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../shared/TrustedMessagingLib.cpp
         enclave_t.c
+        Utility_E1.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../shared/TrustedMessagingLib.cpp
         sealing/sealing.cpp
         )
 
@@ -28,10 +28,7 @@ include_directories(
         ${SGX_SDK}/include
         ${SGX_SDK}/include/tlibc
         ${SGX_SDK}/include/stlport
-        ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include
-        # ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/LocalAttestationCode
-
-
+        ${CMAKE_CURRENT_SOURCE_DIR}/../Include
 )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SGX_COMMON_CFLAGS} -nostdinc -fvisibility=hidden -fpie -fstack-protector")

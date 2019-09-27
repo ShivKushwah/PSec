@@ -15,7 +15,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "cmake/FindSGXSDK.cmake"
   "cmake/Init.cmake"
   "src/CMakeLists.txt"
-  "src/LocalAttestationCode/CMakeLists.txt"
   "src/app/CMakeLists.txt"
   "src/enclave/CMakeLists.txt"
   "src/enclave2/CMakeLists.txt"
@@ -53,7 +52,6 @@ set(CMAKE_MAKEFILE_OUTPUTS
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   "src/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "src/LocalAttestationCode/CMakeFiles/CMakeDirectoryInformation.cmake"
   "src/enclave/CMakeFiles/CMakeDirectoryInformation.cmake"
   "src/enclave2/CMakeFiles/CMakeDirectoryInformation.cmake"
   "src/app/CMakeFiles/CMakeDirectoryInformation.cmake"

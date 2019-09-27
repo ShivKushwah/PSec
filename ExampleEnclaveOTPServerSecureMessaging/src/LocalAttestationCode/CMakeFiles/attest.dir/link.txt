@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../../lib/attest.a  CMakeFiles/attest.dir/EnclaveMessageExchange.c.o CMakeFiles/attest.dir/LocalAttestationCode_t.c.o
-/usr/bin/ranlib ../../lib/attest.a

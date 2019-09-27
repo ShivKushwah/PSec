@@ -168,18 +168,6 @@ sgx_report.h
 sgx_attributes.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/sgx_attributes.h
 
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/datatypes.h
-sgx_report.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/sgx_report.h
-sgx_eid.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/sgx_eid.h
-sgx_ecp_types.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/sgx_ecp_types.h
-sgx_dh.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/sgx_dh.h
-sgx_tseal.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/sgx_tseal.h
-
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/enclave2_t.c
 enclave2_t.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/enclave2_t.h
@@ -211,4 +199,16 @@ datatypes.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/dh_session_protocol.h
 stdlib.h
 -
+
+src/enclave2/../Include/datatypes.h
+sgx_report.h
+src/enclave2/../Include/sgx_report.h
+sgx_eid.h
+src/enclave2/../Include/sgx_eid.h
+sgx_ecp_types.h
+src/enclave2/../Include/sgx_ecp_types.h
+sgx_dh.h
+src/enclave2/../Include/sgx_dh.h
+sgx_tseal.h
+src/enclave2/../Include/sgx_tseal.h
 

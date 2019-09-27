@@ -28,9 +28,9 @@ src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/stdint.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/wchar.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/dh_session_protocol.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/datatypes.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave_t.c
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave_t.h
+ src/enclave/../Include/datatypes.h
 src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
@@ -51,12 +51,11 @@ src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/_types.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/cdefs.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/stdint.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/EnclaveMessageExchange.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/Utility_E1.cpp
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/Utility_E1.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/datatypes.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/error_codes.h
- src/Include/dh_session_protocol.h
+ src/enclave/../Include/datatypes.h
+ src/enclave/../Include/dh_session_protocol.h
+ src/enclave/../Include/error_codes.h
 src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
@@ -83,10 +82,11 @@ src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/wchar.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/shared/TrustedMessagingLib.cpp
  src/Include/dh_session_protocol.h
+ src/enclave/../Include/datatypes.h
+ src/enclave/../Include/dh_session_protocol.h
+ src/enclave/../Include/error_codes.h
  src/enclave/Utility_E1.h
- src/enclave/datatypes.h
  src/enclave/enclave_t.h
- src/enclave/error_codes.h
 src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave.cpp
 src/enclave/CMakeFiles/enclave.dir/sealing/sealing.cpp.o
@@ -113,5 +113,5 @@ src/enclave/CMakeFiles/enclave.dir/sealing/sealing.cpp.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/wchar.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sealing/sealing.cpp
  src/Include/dh_session_protocol.h
- src/enclave/datatypes.h
+ src/enclave/../Include/datatypes.h
  src/enclave/enclave_t.h

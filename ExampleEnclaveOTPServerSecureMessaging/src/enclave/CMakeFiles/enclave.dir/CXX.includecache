@@ -152,21 +152,9 @@ sys/_types.h
 sys/stdint.h
 -
 
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/EnclaveMessageExchange.h
-datatypes.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/datatypes.h
-sgx_eid.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_eid.h
-sgx_trts.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_trts.h
-dh_session_protocol.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/dh_session_protocol.h
-
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/Utility_E1.cpp
 sgx_eid.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_eid.h
-EnclaveMessageExchange.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/EnclaveMessageExchange.h
 error_codes.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/error_codes.h
 Utility_E1.h
@@ -177,24 +165,18 @@ string.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/string.h
 
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/Utility_E1.h
+datatypes.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/datatypes.h
+sgx_eid.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_eid.h
+sgx_trts.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_trts.h
+dh_session_protocol.h
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/dh_session_protocol.h
 stdint.h
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/stdint.h
 
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/datatypes.h
-sgx_report.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_report.h
-sgx_eid.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_eid.h
-sgx_ecp_types.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_ecp_types.h
-sgx_dh.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_dh.h
-sgx_tseal.h
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sgx_tseal.h
-
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/enclave.cpp
-
-/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/error_codes.h
 
 /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/sealing/sealing.cpp
 sgx_trts.h
@@ -248,21 +230,41 @@ src/Include/sgx_report.h
 sgx_attributes.h
 src/Include/sgx_attributes.h
 
-src/enclave/Utility_E1.h
-stdint.h
-src/enclave/stdint.h
-
-src/enclave/datatypes.h
+src/enclave/../Include/datatypes.h
 sgx_report.h
-src/enclave/sgx_report.h
+src/enclave/../Include/sgx_report.h
+sgx_eid.h
+src/enclave/../Include/sgx_eid.h
+sgx_ecp_types.h
+src/enclave/../Include/sgx_ecp_types.h
+sgx_dh.h
+src/enclave/../Include/sgx_dh.h
+sgx_tseal.h
+src/enclave/../Include/sgx_tseal.h
+
+src/enclave/../Include/dh_session_protocol.h
+sgx_ecp_types.h
+src/enclave/../Include/sgx_ecp_types.h
+sgx_key.h
+src/enclave/../Include/sgx_key.h
+sgx_report.h
+src/enclave/../Include/sgx_report.h
+sgx_attributes.h
+src/enclave/../Include/sgx_attributes.h
+
+src/enclave/../Include/error_codes.h
+
+src/enclave/Utility_E1.h
+datatypes.h
+src/enclave/datatypes.h
 sgx_eid.h
 src/enclave/sgx_eid.h
-sgx_ecp_types.h
-src/enclave/sgx_ecp_types.h
-sgx_dh.h
-src/enclave/sgx_dh.h
-sgx_tseal.h
-src/enclave/sgx_tseal.h
+sgx_trts.h
+src/enclave/sgx_trts.h
+dh_session_protocol.h
+src/enclave/dh_session_protocol.h
+stdint.h
+src/enclave/stdint.h
 
 src/enclave/enclave_t.h
 stdint.h
@@ -283,6 +285,4 @@ sgx_tseal.h
 src/enclave/sgx_tseal.h
 stdlib.h
 -
-
-src/enclave/error_codes.h
 
