@@ -9,7 +9,6 @@
 
 #include "Utility_E1.h"
 
-//NOTE: Change not persisted in other file
 char* secret_string = (char*) malloc(20);
 
 // Enclave Message Exchange
@@ -536,7 +535,6 @@ ATTESTATION_STATUS generate_response(sgx_enclave_id_t src_enclave_id,
                                      secure_message_t* resp_message,
                                      size_t resp_message_size)
 #endif
-
 {
     const uint8_t* plaintext;
     uint32_t plaintext_length;
@@ -833,7 +831,6 @@ uint32_t test_create_session_enclave2(sgx_enclave_id_t src_enclave_id,
 uint32_t test_create_session(sgx_enclave_id_t src_enclave_id,
                          sgx_enclave_id_t dest_enclave_id)
 #endif
-
 {
     ATTESTATION_STATUS ke_status = SUCCESS;
     dh_session_t dest_session_info;
@@ -860,7 +857,6 @@ uint32_t test_enclave_to_enclave_call_enclave2(sgx_enclave_id_t src_enclave_id,
 uint32_t test_enclave_to_enclave_call(sgx_enclave_id_t src_enclave_id,
                                           sgx_enclave_id_t dest_enclave_id)
 #endif
-
 {
     ATTESTATION_STATUS ke_status = SUCCESS;
     uint32_t var1,var2;
@@ -1145,10 +1141,15 @@ extern "C" uint32_t message_exchange_response_generator(char* decrypted_data,
     //     return ATTESTATION_ERROR;
     if(umarshal_message_exchange_request3(inp_really_secret_data,ms) != SUCCESS)
         return ATTESTATION_ERROR;
-    ocall_print("\nENCLAVE2 RECEIVED MESSAGE: ");
+
+    #ifdef ENCLAVE2
+    ocall_print("\nEnclave2 received message: ");
+    #else
+    ocall_print("\nEnclave1 received message: ");
+    #endif
     ocall_print(inp_really_secret_data);
 
-    //TODO: figure out a way to not just store string, NOTE: Change not persisted in other file
+    //TODO: figure out a way to not just store string
     memcpy(secret_string, inp_really_secret_data, strlen(inp_really_secret_data));
     secret_string[strlen(inp_really_secret_data)] = '\0';
 
