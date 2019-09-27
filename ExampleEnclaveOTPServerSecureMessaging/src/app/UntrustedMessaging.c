@@ -3,8 +3,9 @@
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 
-extern sgx_enclave_id_t destination_enclave_id;
-extern uint32_t destination_enclave_num;
+#include "error_codes.h"
+#include "datatypes.h"
+#include "sgx_dh.h"
 
 /*
  * Copyright (C) 2011-2019 Intel Corporation. All rights reserved.
@@ -38,17 +39,10 @@ extern uint32_t destination_enclave_num;
  */
 
 
-// #include "sgx_eid.h"
-#include "error_codes.h"
-#include "datatypes.h"
-// #include "sgx_urts.h"
-// #include "UntrustedEnclaveMessageExchange.h"
-#include "sgx_dh.h"
-//#include <map>
-
-
-
 // std::map<sgx_enclave_id_t, uint32_t>g_enclave_id_map;
+sgx_enclave_id_t destination_enclave_id;
+uint32_t destination_enclave_num;
+//TODO: Hardcoded (for enclave1 -> enclave2) for now, need to implement Map in c code
 
 //Makes an sgx_ecall to the destination enclave to get session id and message1
 ATTESTATION_STATUS session_request_ocall(sgx_enclave_id_t src_enclave_id, sgx_enclave_id_t dest_enclave_id, sgx_dh_msg1_t* dh_msg1, uint32_t* session_id)
@@ -91,6 +85,7 @@ ATTESTATION_STATUS session_request_ocall(sgx_enclave_id_t src_enclave_id, sgx_en
 	    return INVALID_SESSION;
 
 }
+
 //Makes an sgx_ecall to the destination enclave sends message2 from the source enclave and gets message 3 from the destination enclave
 ATTESTATION_STATUS exchange_report_ocall(sgx_enclave_id_t src_enclave_id, sgx_enclave_id_t dest_enclave_id, sgx_dh_msg2_t *dh_msg2, sgx_dh_msg3_t *dh_msg3, uint32_t session_id)
 {

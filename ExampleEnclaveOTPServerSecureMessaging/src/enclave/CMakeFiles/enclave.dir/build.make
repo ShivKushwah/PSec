@@ -109,28 +109,28 @@ src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o.provides: src/enclave/CMakeFile
 src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o.provides.build: src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o
 
 
-src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o: src/enclave/CMakeFiles/enclave.dir/flags.make
-src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o: src/enclave/Utility_E1.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/enclave.dir/Utility_E1.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/Utility_E1.cpp
+src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o: src/enclave/CMakeFiles/enclave.dir/flags.make
+src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o: src/EnclaveUtility/Utility_Enclave.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/EnclaveUtility/Utility_Enclave.cpp
 
-src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/enclave.dir/Utility_E1.cpp.i"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/Utility_E1.cpp > CMakeFiles/enclave.dir/Utility_E1.cpp.i
+src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.i"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/EnclaveUtility/Utility_Enclave.cpp > CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.i
 
-src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/enclave.dir/Utility_E1.cpp.s"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave/Utility_E1.cpp -o CMakeFiles/enclave.dir/Utility_E1.cpp.s
+src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.s"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/EnclaveUtility/Utility_Enclave.cpp -o CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.s
 
-src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o.requires:
+src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o.requires:
 
-.PHONY : src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o.requires
+.PHONY : src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o.requires
 
-src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o.provides: src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o.requires
-	$(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o.provides.build
-.PHONY : src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o.provides
+src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o.provides: src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o.requires
+	$(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o.provides.build
+.PHONY : src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o.provides
 
-src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o.provides.build: src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o
+src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o.provides.build: src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o
 
 
 src/enclave/CMakeFiles/enclave.dir/__/TrustedMessaging/TrustedMessagingLib.cpp.o: src/enclave/CMakeFiles/enclave.dir/flags.make
@@ -185,7 +185,7 @@ src/enclave/CMakeFiles/enclave.dir/sealing/sealing.cpp.o.provides.build: src/enc
 enclave_OBJECTS = \
 "CMakeFiles/enclave.dir/enclave.cpp.o" \
 "CMakeFiles/enclave.dir/enclave_t.c.o" \
-"CMakeFiles/enclave.dir/Utility_E1.cpp.o" \
+"CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o" \
 "CMakeFiles/enclave.dir/__/TrustedMessaging/TrustedMessagingLib.cpp.o" \
 "CMakeFiles/enclave.dir/sealing/sealing.cpp.o"
 
@@ -194,7 +194,7 @@ enclave_EXTERNAL_OBJECTS =
 
 enclave.so: src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o
 enclave.so: src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o
-enclave.so: src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o
+enclave.so: src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o
 enclave.so: src/enclave/CMakeFiles/enclave.dir/__/TrustedMessaging/TrustedMessagingLib.cpp.o
 enclave.so: src/enclave/CMakeFiles/enclave.dir/sealing/sealing.cpp.o
 enclave.so: src/enclave/CMakeFiles/enclave.dir/build.make
@@ -211,7 +211,7 @@ src/enclave/CMakeFiles/enclave.dir/build: enclave.so
 
 src/enclave/CMakeFiles/enclave.dir/requires: src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o.requires
 src/enclave/CMakeFiles/enclave.dir/requires: src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o.requires
-src/enclave/CMakeFiles/enclave.dir/requires: src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o.requires
+src/enclave/CMakeFiles/enclave.dir/requires: src/enclave/CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o.requires
 src/enclave/CMakeFiles/enclave.dir/requires: src/enclave/CMakeFiles/enclave.dir/__/TrustedMessaging/TrustedMessagingLib.cpp.o.requires
 src/enclave/CMakeFiles/enclave.dir/requires: src/enclave/CMakeFiles/enclave.dir/sealing/sealing.cpp.o.requires
 

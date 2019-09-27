@@ -7,7 +7,7 @@
 #include <sgx_thread.h>
 #include <string.h>
 
-#include "Utility_E1.h"
+#include "Utility_Enclave.h"
 
 char* secret_string = (char*) malloc(20);
 

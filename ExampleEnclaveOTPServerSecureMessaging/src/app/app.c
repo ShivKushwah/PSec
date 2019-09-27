@@ -17,17 +17,8 @@ static const char* workspaceConfig;
 
 extern int Delta;
 
-// UNTRUSTED
-
-sgx_enclave_id_t destination_enclave_id;
-uint32_t destination_enclave_num;
-//TODO: Hardcoded (for enclave1 -> enclave2) for now, need to implement Map in c code
-
-// END UNTRUSTED
-
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
-
 sgx_enclave_id_t global_eid2 = 0;
 
 

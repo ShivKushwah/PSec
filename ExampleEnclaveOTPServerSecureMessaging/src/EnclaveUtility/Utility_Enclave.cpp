@@ -31,7 +31,7 @@
 
 #include "sgx_eid.h"
 #include "error_codes.h"
-#include "Utility_E1.h"
+#include "Utility_Enclave.h"
 #include "stdlib.h"
 #include "string.h"
 

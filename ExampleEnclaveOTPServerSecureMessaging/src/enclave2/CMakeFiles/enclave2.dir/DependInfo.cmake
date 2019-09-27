@@ -22,9 +22,10 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc"
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport"
   "src/enclave2/../Include"
+  "src/enclave2/../EnclaveUtility"
   )
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/Utility_E1.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o"
+  "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/EnclaveUtility/Utility_Enclave.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/CMakeFiles/enclave2.dir/__/EnclaveUtility/Utility_Enclave.cpp.o"
   "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/TrustedMessaging/TrustedMessagingLib.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/CMakeFiles/enclave2.dir/__/TrustedMessaging/TrustedMessagingLib.cpp.o"
   "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/enclave2.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/CMakeFiles/enclave2.dir/enclave2.cpp.o"
   )
@@ -43,6 +44,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc"
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport"
   "src/enclave2/../Include"
+  "src/enclave2/../EnclaveUtility"
   )
 
 # Targets to which this target links.

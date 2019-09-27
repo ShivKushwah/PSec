@@ -4,7 +4,7 @@ file(REMOVE_RECURSE
   "enclave_t.c"
   "CMakeFiles/enclave.dir/enclave.cpp.o"
   "CMakeFiles/enclave.dir/enclave_t.c.o"
-  "CMakeFiles/enclave.dir/Utility_E1.cpp.o"
+  "CMakeFiles/enclave.dir/__/EnclaveUtility/Utility_Enclave.cpp.o"
   "CMakeFiles/enclave.dir/__/TrustedMessaging/TrustedMessagingLib.cpp.o"
   "CMakeFiles/enclave.dir/sealing/sealing.cpp.o"
   "../../enclave.pdb"

@@ -2,7 +2,7 @@
 #include <sgx_thread.h>
 #include <string.h>
 
-#include "Utility_E1.h"
+#include "Utility_Enclave.h"
 
 #define ENCLAVE2
 
