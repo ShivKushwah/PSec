@@ -10,6 +10,7 @@
 #include "Utility_Enclave.h"
 
 char* secret_string = (char*) malloc(20);
+char* string_sent = (char*) malloc(20);
 
 // Enclave Message Exchange
 /*
@@ -950,6 +951,9 @@ uint32_t test_message_exchange(sgx_enclave_id_t src_enclave_id,
     size_t max_out_buff_size;
     char* secret_response;
     uint32_t secret_data;
+
+    memcpy(string_sent, message, messagelen);
+    string_sent[messagelen] = '\0';
 
     target_fn_id = 0;
     msg_type = MESSAGE_EXCHANGE;

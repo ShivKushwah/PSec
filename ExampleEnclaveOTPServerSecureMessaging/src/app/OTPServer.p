@@ -9,6 +9,7 @@ fun EnclaveTwoInitialize();
 
 fun EnclaveOneSendSecret(secret: int);
 fun EnclaveTwoGenerateOTPCode(): int;
+fun EnclaveOneVerifyOTPCode(code: int): int;
 
 
 machine BANK_SERVER 
@@ -42,7 +43,7 @@ machine BANK_SERVER
 	 state ValidateOTPCode {
         entry (payload: int) {
 		  // validate OTP code
-		  if (payload == 12345) {
+		  if (EnclaveOneVerifyOTPCode(payload) == 1) {
 			send clientOtpGenerator, OTPCodeValidated;
           	goto Done;  
 		  } else  {

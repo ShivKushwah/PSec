@@ -95,6 +95,23 @@ void P_EnclaveOneSendSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     printf("Exited Enclave 1 Successfully\n");     
 }
 
+PRT_VALUE* P_EnclaveOneVerifyOTPCode_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    int code = PrtPrimGetInt(*P_VAR_payload);
+
+    printf("Entering Enclave1 to verify OTP Code:\n");
+    int ptr;
+    sgx_status_t status = verify_OTP_code(global_eid, &ptr, code);
+    if (status != SGX_SUCCESS) {
+        printf("Enclave1 Error!\n");
+    }
+
+    printf("Exited Enclave 1 Successfully\n");  
+    return PrtMkIntValue(ptr);
+   
+}
+
 
 PRT_VALUE* P_EnclaveTwoGenerateOTPCode_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
