@@ -18,30 +18,30 @@ src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/dh_session_protocol.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/ForeignTypesImpl.c
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/OTPServer.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/Prt.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtConfig.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtExecution.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtLinuxUserConfig.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtProgram.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtTypes.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtValues.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/datatypes.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave_u.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/ext_compat.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sal.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sgx_utils/sgx_utils.h
+ src/app/../PHeaders/Prt.h
+ src/app/../PHeaders/PrtConfig.h
+ src/app/../PHeaders/PrtExecution.h
+ src/app/../PHeaders/PrtLinuxUserConfig.h
+ src/app/../PHeaders/PrtProgram.h
+ src/app/../PHeaders/PrtTypes.h
+ src/app/../PHeaders/PrtValues.h
+ src/app/../PHeaders/ext_compat.h
+ src/app/../PHeaders/sal.h
 src/app/CMakeFiles/app.dir/OTPServer.c.o
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/OTPServer.c
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/OTPServer.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/Prt.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtConfig.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtExecution.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtLinuxUserConfig.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtProgram.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtTypes.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtValues.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/ext_compat.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sal.h
+ src/app/../PHeaders/Prt.h
+ src/app/../PHeaders/PrtConfig.h
+ src/app/../PHeaders/PrtExecution.h
+ src/app/../PHeaders/PrtLinuxUserConfig.h
+ src/app/../PHeaders/PrtProgram.h
+ src/app/../PHeaders/PrtTypes.h
+ src/app/../PHeaders/PrtValues.h
+ src/app/../PHeaders/ext_compat.h
+ src/app/../PHeaders/sal.h
 src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
@@ -58,20 +58,20 @@ src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_urts.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/dh_session_protocol.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/OTPServer.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/Prt.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtConfig.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtExecution.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtLinuxUserConfig.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtProgram.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtTypes.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtValues.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/UntrustedMessaging.c
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/datatypes.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave_u.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/error_codes.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/ext_compat.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sal.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sgx_utils/sgx_utils.h
+ src/app/../PHeaders/Prt.h
+ src/app/../PHeaders/PrtConfig.h
+ src/app/../PHeaders/PrtExecution.h
+ src/app/../PHeaders/PrtLinuxUserConfig.h
+ src/app/../PHeaders/PrtProgram.h
+ src/app/../PHeaders/PrtTypes.h
+ src/app/../PHeaders/PrtValues.h
+ src/app/../PHeaders/ext_compat.h
+ src/app/../PHeaders/sal.h
 src/app/CMakeFiles/app.dir/app.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
@@ -88,20 +88,20 @@ src/app/CMakeFiles/app.dir/app.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_urts.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/dh_session_protocol.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/OTPServer.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/Prt.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtConfig.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtExecution.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtLinuxUserConfig.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtProgram.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtTypes.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/PrtValues.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/app.c
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/datatypes.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave2_u.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave_u.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/ext_compat.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sal.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sgx_utils/sgx_utils.h
+ src/app/../PHeaders/Prt.h
+ src/app/../PHeaders/PrtConfig.h
+ src/app/../PHeaders/PrtExecution.h
+ src/app/../PHeaders/PrtLinuxUserConfig.h
+ src/app/../PHeaders/PrtProgram.h
+ src/app/../PHeaders/PrtTypes.h
+ src/app/../PHeaders/PrtValues.h
+ src/app/../PHeaders/ext_compat.h
+ src/app/../PHeaders/sal.h
 src/app/CMakeFiles/app.dir/enclave2_u.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h

@@ -8,17 +8,9 @@ set(CLIENT_SRC_FILES enclave_u.c enclave2_u.c app.c sgx_utils/sgx_utils.c
         OTPServer.c
         ForeignTypesImpl.c
         UntrustedMessaging.c
-        ext_compat.h
         libhandler.h
         libhandler-internal.h
-        Prt.h
-        PrtConfig.h
-        PrtExecution.h
-        PrtLinuxUserConfig.h
-        PrtProgram.h
-        PrtTypes.h
-        PrtValues.h
-        sal.h)
+        )
 
 set_directory_properties(PROPERTIES
         ADDITIONAL_MAKE_CLEAN_FILES "enclave_u.c; enclave_u.h; enclave2_u.c; enclave2_u.h")
@@ -45,6 +37,7 @@ add_executable(app ${CLIENT_SRC_FILES})
 
 include_directories(
         ${SGXSDK_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../PHeaders
 )
 
 target_link_libraries(app
