@@ -6,5 +6,5 @@ C_FLAGS =  -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes
 
 C_DEFINES = 
 
-C_INCLUDES = -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/../PHeaders 
+C_INCLUDES = -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/../PHeaders -I/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/../PLib -I/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/../Include 
 

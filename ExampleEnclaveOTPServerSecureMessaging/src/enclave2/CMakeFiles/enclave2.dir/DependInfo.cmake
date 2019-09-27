@@ -25,7 +25,7 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   )
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/Utility_E1.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o"
-  "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/shared/TrustedMessagingLib.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/CMakeFiles/enclave2.dir/__/shared/TrustedMessagingLib.cpp.o"
+  "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/TrustedMessaging/TrustedMessagingLib.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/CMakeFiles/enclave2.dir/__/TrustedMessaging/TrustedMessagingLib.cpp.o"
   "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/enclave2.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/enclave2/CMakeFiles/enclave2.dir/enclave2.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

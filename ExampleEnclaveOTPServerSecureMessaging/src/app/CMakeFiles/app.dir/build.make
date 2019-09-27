@@ -254,8 +254,8 @@ app: src/app/CMakeFiles/app.dir/OTPServer.c.o
 app: src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o
 app: src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o
 app: src/app/CMakeFiles/app.dir/build.make
-app: src/app/libPrt_static.a
-app: src/app/libhandler.a
+app: src/app/../PLib/libPrt_static.a
+app: src/app/../PLib/libhandler.a
 app: src/app/CMakeFiles/app.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking C executable ../../app"
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/app.dir/link.txt --verbose=$(VERBOSE)

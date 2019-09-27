@@ -17,9 +17,9 @@ src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: /home/shiv/Research/Intel-SGX-I
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/Include/dh_session_protocol.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/ForeignTypesImpl.c
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/OTPServer.h
-src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/datatypes.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/enclave_u.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/sgx_utils/sgx_utils.h
+src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/../Include/datatypes.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/../PHeaders/Prt.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/../PHeaders/PrtConfig.h
 src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o: src/app/../PHeaders/PrtExecution.h
@@ -58,10 +58,10 @@ src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: /home/shiv/Research/Intel-SGX
 src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/Include/dh_session_protocol.h
 src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/app/OTPServer.h
 src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/app/UntrustedMessaging.c
-src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/app/datatypes.h
 src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/app/enclave_u.h
-src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/app/error_codes.h
 src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/app/sgx_utils/sgx_utils.h
+src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/app/../Include/datatypes.h
+src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/app/../Include/error_codes.h
 src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/app/../PHeaders/Prt.h
 src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/app/../PHeaders/PrtConfig.h
 src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o: src/app/../PHeaders/PrtExecution.h
@@ -88,10 +88,10 @@ src/app/CMakeFiles/app.dir/app.c.o: /home/shiv/Research/Intel-SGX-Installation/l
 src/app/CMakeFiles/app.dir/app.c.o: src/Include/dh_session_protocol.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/OTPServer.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/app.c
-src/app/CMakeFiles/app.dir/app.c.o: src/app/datatypes.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/enclave2_u.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/enclave_u.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/sgx_utils/sgx_utils.h
+src/app/CMakeFiles/app.dir/app.c.o: src/app/../Include/datatypes.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/../PHeaders/Prt.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/../PHeaders/PrtConfig.h
 src/app/CMakeFiles/app.dir/app.c.o: src/app/../PHeaders/PrtExecution.h
@@ -115,9 +115,9 @@ src/app/CMakeFiles/app.dir/enclave2_u.c.o: /home/shiv/Research/Intel-SGX-Install
 src/app/CMakeFiles/app.dir/enclave2_u.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tcrypto.h
 src/app/CMakeFiles/app.dir/enclave2_u.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
 src/app/CMakeFiles/app.dir/enclave2_u.c.o: src/Include/dh_session_protocol.h
-src/app/CMakeFiles/app.dir/enclave2_u.c.o: src/app/datatypes.h
 src/app/CMakeFiles/app.dir/enclave2_u.c.o: src/app/enclave2_u.c
 src/app/CMakeFiles/app.dir/enclave2_u.c.o: src/app/enclave2_u.h
+src/app/CMakeFiles/app.dir/enclave2_u.c.o: src/app/../Include/datatypes.h
 
 src/app/CMakeFiles/app.dir/enclave_u.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
 src/app/CMakeFiles/app.dir/enclave_u.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
@@ -132,9 +132,9 @@ src/app/CMakeFiles/app.dir/enclave_u.c.o: /home/shiv/Research/Intel-SGX-Installa
 src/app/CMakeFiles/app.dir/enclave_u.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tcrypto.h
 src/app/CMakeFiles/app.dir/enclave_u.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
 src/app/CMakeFiles/app.dir/enclave_u.c.o: src/Include/dh_session_protocol.h
-src/app/CMakeFiles/app.dir/enclave_u.c.o: src/app/datatypes.h
 src/app/CMakeFiles/app.dir/enclave_u.c.o: src/app/enclave_u.c
 src/app/CMakeFiles/app.dir/enclave_u.c.o: src/app/enclave_u.h
+src/app/CMakeFiles/app.dir/enclave_u.c.o: src/app/../Include/datatypes.h
 
 src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
 src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h

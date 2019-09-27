@@ -152,32 +152,32 @@ Utility_E1.cpp.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.s
 .PHONY : Utility_E1.cpp.s
 
-__/shared/TrustedMessagingLib.o: __/shared/TrustedMessagingLib.cpp.o
+__/TrustedMessaging/TrustedMessagingLib.o: __/TrustedMessaging/TrustedMessagingLib.cpp.o
 
-.PHONY : __/shared/TrustedMessagingLib.o
+.PHONY : __/TrustedMessaging/TrustedMessagingLib.o
 
 # target to build an object file
-__/shared/TrustedMessagingLib.cpp.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o
-.PHONY : __/shared/TrustedMessagingLib.cpp.o
+__/TrustedMessaging/TrustedMessagingLib.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/__/TrustedMessaging/TrustedMessagingLib.cpp.o
+.PHONY : __/TrustedMessaging/TrustedMessagingLib.cpp.o
 
-__/shared/TrustedMessagingLib.i: __/shared/TrustedMessagingLib.cpp.i
+__/TrustedMessaging/TrustedMessagingLib.i: __/TrustedMessaging/TrustedMessagingLib.cpp.i
 
-.PHONY : __/shared/TrustedMessagingLib.i
+.PHONY : __/TrustedMessaging/TrustedMessagingLib.i
 
 # target to preprocess a source file
-__/shared/TrustedMessagingLib.cpp.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.i
-.PHONY : __/shared/TrustedMessagingLib.cpp.i
+__/TrustedMessaging/TrustedMessagingLib.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/__/TrustedMessaging/TrustedMessagingLib.cpp.i
+.PHONY : __/TrustedMessaging/TrustedMessagingLib.cpp.i
 
-__/shared/TrustedMessagingLib.s: __/shared/TrustedMessagingLib.cpp.s
+__/TrustedMessaging/TrustedMessagingLib.s: __/TrustedMessaging/TrustedMessagingLib.cpp.s
 
-.PHONY : __/shared/TrustedMessagingLib.s
+.PHONY : __/TrustedMessaging/TrustedMessagingLib.s
 
 # target to generate assembly for a file
-__/shared/TrustedMessagingLib.cpp.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.s
-.PHONY : __/shared/TrustedMessagingLib.cpp.s
+__/TrustedMessaging/TrustedMessagingLib.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/enclave/CMakeFiles/enclave.dir/build.make src/enclave/CMakeFiles/enclave.dir/__/TrustedMessaging/TrustedMessagingLib.cpp.s
+.PHONY : __/TrustedMessaging/TrustedMessagingLib.cpp.s
 
 enclave.o: enclave.cpp.o
 
@@ -272,9 +272,9 @@ help:
 	@echo "... Utility_E1.o"
 	@echo "... Utility_E1.i"
 	@echo "... Utility_E1.s"
-	@echo "... __/shared/TrustedMessagingLib.o"
-	@echo "... __/shared/TrustedMessagingLib.i"
-	@echo "... __/shared/TrustedMessagingLib.s"
+	@echo "... __/TrustedMessaging/TrustedMessagingLib.o"
+	@echo "... __/TrustedMessaging/TrustedMessagingLib.i"
+	@echo "... __/TrustedMessaging/TrustedMessagingLib.s"
 	@echo "... enclave.o"
 	@echo "... enclave.i"
 	@echo "... enclave.s"

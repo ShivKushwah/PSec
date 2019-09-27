@@ -2,7 +2,7 @@ set(ENCLAVE_SOURCE_FILES
         enclave.cpp
         enclave_t.c
         Utility_E1.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../shared/TrustedMessagingLib.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../TrustedMessaging/TrustedMessagingLib.cpp
         sealing/sealing.cpp
         )
 

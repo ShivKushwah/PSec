@@ -2,7 +2,7 @@ set(ENCLAVE_SOURCE_FILES
         enclave2.cpp
         enclave2_t.c
         Utility_E1.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../shared/TrustedMessagingLib.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../TrustedMessaging/TrustedMessagingLib.cpp
         )
 
 add_definitions(-DENCLAVE_STD_ALT -DENCLAVE2)

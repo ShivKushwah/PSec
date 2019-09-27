@@ -8,8 +8,6 @@ set(CLIENT_SRC_FILES enclave_u.c enclave2_u.c app.c sgx_utils/sgx_utils.c
         OTPServer.c
         ForeignTypesImpl.c
         UntrustedMessaging.c
-        libhandler.h
-        libhandler-internal.h
         )
 
 set_directory_properties(PROPERTIES
@@ -38,11 +36,13 @@ add_executable(app ${CLIENT_SRC_FILES})
 include_directories(
         ${SGXSDK_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/../PHeaders
+        ${CMAKE_CURRENT_SOURCE_DIR}/../PLib
+        ${CMAKE_CURRENT_SOURCE_DIR}/../Include
 )
 
 target_link_libraries(app
-        ${CMAKE_CURRENT_SOURCE_DIR}/libPrt_static.a
-        ${CMAKE_CURRENT_SOURCE_DIR}/libhandler.a
+        ${CMAKE_CURRENT_SOURCE_DIR}/../PLib/libPrt_static.a
+        ${CMAKE_CURRENT_SOURCE_DIR}/../PLib/libhandler.a
         ${CMAKE_THREAD_LIBS_INIT}
         -L${SGX_LIBRARY_PATH} -l${SGX_URTS_LIB} -l${SGX_USVC_LIB}
         -Wl,-rpath -Wl,/usr/local/lib

@@ -18,9 +18,9 @@ src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/dh_session_protocol.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/ForeignTypesImpl.c
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/OTPServer.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/datatypes.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave_u.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sgx_utils/sgx_utils.h
+ src/app/../Include/datatypes.h
  src/app/../PHeaders/Prt.h
  src/app/../PHeaders/PrtConfig.h
  src/app/../PHeaders/PrtExecution.h
@@ -59,10 +59,10 @@ src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/dh_session_protocol.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/OTPServer.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/UntrustedMessaging.c
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/datatypes.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave_u.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/error_codes.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sgx_utils/sgx_utils.h
+ src/app/../Include/datatypes.h
+ src/app/../Include/error_codes.h
  src/app/../PHeaders/Prt.h
  src/app/../PHeaders/PrtConfig.h
  src/app/../PHeaders/PrtExecution.h
@@ -89,10 +89,10 @@ src/app/CMakeFiles/app.dir/app.c.o
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/dh_session_protocol.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/OTPServer.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/app.c
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/datatypes.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave2_u.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave_u.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/sgx_utils/sgx_utils.h
+ src/app/../Include/datatypes.h
  src/app/../PHeaders/Prt.h
  src/app/../PHeaders/PrtConfig.h
  src/app/../PHeaders/PrtExecution.h
@@ -116,9 +116,9 @@ src/app/CMakeFiles/app.dir/enclave2_u.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tcrypto.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/dh_session_protocol.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/datatypes.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave2_u.c
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave2_u.h
+ src/app/../Include/datatypes.h
 src/app/CMakeFiles/app.dir/enclave_u.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
@@ -133,9 +133,9 @@ src/app/CMakeFiles/app.dir/enclave_u.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tcrypto.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/Include/dh_session_protocol.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/datatypes.h
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave_u.c
  /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/app/enclave_u.h
+ src/app/../Include/datatypes.h
 src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h

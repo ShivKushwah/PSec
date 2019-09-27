@@ -56,7 +56,7 @@ src/enclave2/CMakeFiles/enclave2.dir/Utility_E1.cpp.o
  src/enclave2/../Include/datatypes.h
  src/enclave2/../Include/dh_session_protocol.h
  src/enclave2/../Include/error_codes.h
-src/enclave2/CMakeFiles/enclave2.dir/__/shared/TrustedMessagingLib.cpp.o
+src/enclave2/CMakeFiles/enclave2.dir/__/TrustedMessaging/TrustedMessagingLib.cpp.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h
@@ -80,7 +80,7 @@ src/enclave2/CMakeFiles/enclave2.dir/__/shared/TrustedMessagingLib.cpp.o
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/cdefs.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/stdint.h
  /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/wchar.h
- /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/shared/TrustedMessagingLib.cpp
+ /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/TrustedMessaging/TrustedMessagingLib.cpp
  src/Include/dh_session_protocol.h
  src/enclave2/../Include/datatypes.h
  src/enclave2/../Include/dh_session_protocol.h
