@@ -11,6 +11,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o"
   "CMakeFiles/app.dir/OTPServer.c.o"
   "CMakeFiles/app.dir/ForeignTypesImpl.c.o"
+  "CMakeFiles/app.dir/UntrustedMessaging.c.o"
   "../../app.pdb"
   "../../app"
 )

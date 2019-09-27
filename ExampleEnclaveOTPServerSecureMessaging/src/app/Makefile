@@ -179,6 +179,33 @@ OTPServer.c.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/OTPServer.c.s
 .PHONY : OTPServer.c.s
 
+UntrustedMessaging.o: UntrustedMessaging.c.o
+
+.PHONY : UntrustedMessaging.o
+
+# target to build an object file
+UntrustedMessaging.c.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o
+.PHONY : UntrustedMessaging.c.o
+
+UntrustedMessaging.i: UntrustedMessaging.c.i
+
+.PHONY : UntrustedMessaging.i
+
+# target to preprocess a source file
+UntrustedMessaging.c.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/UntrustedMessaging.c.i
+.PHONY : UntrustedMessaging.c.i
+
+UntrustedMessaging.s: UntrustedMessaging.c.s
+
+.PHONY : UntrustedMessaging.s
+
+# target to generate assembly for a file
+UntrustedMessaging.c.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/UntrustedMessaging.c.s
+.PHONY : UntrustedMessaging.c.s
+
 app.o: app.c.o
 
 .PHONY : app.o
@@ -302,6 +329,9 @@ help:
 	@echo "... OTPServer.o"
 	@echo "... OTPServer.i"
 	@echo "... OTPServer.s"
+	@echo "... UntrustedMessaging.o"
+	@echo "... UntrustedMessaging.i"
+	@echo "... UntrustedMessaging.s"
 	@echo "... app.o"
 	@echo "... app.i"
 	@echo "... app.s"

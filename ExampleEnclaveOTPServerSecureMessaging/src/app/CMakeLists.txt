@@ -7,6 +7,7 @@ find_package (Threads)
 set(CLIENT_SRC_FILES enclave_u.c enclave2_u.c app.c sgx_utils/sgx_utils.c
         OTPServer.c
         ForeignTypesImpl.c
+        UntrustedMessaging.c
         ext_compat.h
         libhandler.h
         libhandler-internal.h

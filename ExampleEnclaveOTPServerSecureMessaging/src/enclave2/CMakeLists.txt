@@ -2,7 +2,7 @@ set(ENCLAVE_SOURCE_FILES
         enclave2.cpp
         enclave2_t.c
         Utility_E1.cpp
-
+        TrustedMessaging.cpp
         )
 
 add_definitions(-DENCLAVE_STD_ALT)
