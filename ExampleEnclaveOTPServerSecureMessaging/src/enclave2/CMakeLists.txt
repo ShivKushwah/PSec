@@ -1,8 +1,11 @@
+add_definitions(-DENCLAVE2)
+
+
 set(ENCLAVE_SOURCE_FILES
         enclave2.cpp
         enclave2_t.c
         Utility_E1.cpp
-        TrustedMessaging.cpp
+        ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/shared/TrustedMessagingLib.cpp
         )
 
 add_definitions(-DENCLAVE_STD_ALT)

@@ -31,38 +31,6 @@ src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o: src/enclave/datatypes.h
 src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o: src/enclave/enclave_t.c
 src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o: src/enclave/enclave_t.h
 
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_dh.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_ecp_types.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_edger8r.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_eid.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_error.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_key.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_report.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tcrypto.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_thread.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_trts.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_utils.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/stddef.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/stdint.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/stdlib.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/string.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/_types.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/cdefs.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/stdint.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/wchar.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: src/Include/dh_session_protocol.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: src/enclave/EnclaveMessageExchange.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: src/enclave/TrustedMessaging.cpp
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: src/enclave/Utility_E1.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: src/enclave/datatypes.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: src/enclave/enclave_t.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: src/enclave/error_codes.h
-src/enclave/CMakeFiles/enclave.dir/TrustedMessaging.cpp.o: src/Include/dh_session_protocol.h
-
 src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
 src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
 src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h
@@ -88,6 +56,36 @@ src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o: src/enclave/Utility_E1.h
 src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o: src/enclave/datatypes.h
 src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o: src/enclave/error_codes.h
 src/enclave/CMakeFiles/enclave.dir/Utility_E1.cpp.o: src/Include/dh_session_protocol.h
+
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_attributes.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_defs.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_dh.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_ecp_types.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_edger8r.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_eid.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_error.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_key.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_report.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tcrypto.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_thread.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_trts.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_tseal.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/sgx_utils.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/stddef.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/stdint.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/stdlib.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/string.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/_types.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/cdefs.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/sys/stdint.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc/wchar.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: src/shared/TrustedMessagingLib.cpp
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: src/Include/dh_session_protocol.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: src/enclave/Utility_E1.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: src/enclave/datatypes.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: src/enclave/enclave_t.h
+src/enclave/CMakeFiles/enclave.dir/__/shared/TrustedMessagingLib.cpp.o: src/enclave/error_codes.h
 
 src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: src/enclave/enclave.cpp
 

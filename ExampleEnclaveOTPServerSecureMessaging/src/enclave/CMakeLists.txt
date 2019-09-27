@@ -1,7 +1,7 @@
 set(ENCLAVE_SOURCE_FILES
         Utility_E1.cpp
         enclave.cpp
-        TrustedMessaging.cpp
+        ~/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/src/shared/TrustedMessagingLib.cpp
         enclave_t.c
         sealing/sealing.cpp
         )

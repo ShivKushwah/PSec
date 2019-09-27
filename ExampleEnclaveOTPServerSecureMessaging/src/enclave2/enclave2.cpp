@@ -4,6 +4,8 @@
 
 #include "Utility_E1.h"
 
+#define ENCLAVE2
+
 extern char* secret_string;
 
 int atoi(char *p) {

@@ -1,3 +1,9 @@
+// #ifdef ENCLAVE2
+// #include "enclave2_t.h"
+// #else
+// #include "enclave_t.h"
+// #endif
+
 #include "enclave2_t.h"
 #include <sgx_thread.h>
 #include <string.h>
