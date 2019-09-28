@@ -62,12 +62,12 @@ machine CLIENT_OTP_GENERATOR
 
     start state Init {
 		entry {
-			EnclaveTwoInitialize(); // Potential Race Condition if 2 isn't intialized right after 1
+			EnclaveTwoInitialize(); //TODO: Potential Race Condition if 2 isn't intialized right after 1
 		}
-        on OTPSecretMsg goto HandleOTPSecret;
+        on OTPSecretMsg goto WaitOTPSecret;
     }
 
-    state HandleOTPSecret {
+    state WaitOTPSecret {
 	    entry (payload: machine) {
 	        bankServer = payload;
 			send bankServer, OTPSecretReceived;
