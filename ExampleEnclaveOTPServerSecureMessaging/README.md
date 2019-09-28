@@ -1,12 +1,9 @@
-# Intel SGX "Hello World"
+# Intel SGX OTP Server
 
-A sample enclave built using CMake.
+source /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment
 
-## Building
+cd src/app && dotnet ~/Research/P/Bld/Drops/Release/Binaries/Pc.dll OTPServer.p && cd .. && cd .. && cmake CMakeLists.txt && make && ./app 
 
-Ensure you have SGX\_SDK set in your environment. You will need to source the SGX setup script.
 
-    $ mkdir build
-    $ cd build
-    $ cmake ..
+cd src/app && dotnet ~/Research/P/Bld/Drops/Release/Binaries/Pc.dll OTPServer.p && cd .. && cd .. && make clean && cmake CMakeLists.txt && make && ./app
 
