@@ -25,6 +25,7 @@ include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${SGX_SDK}/include
+        ${SGX_SDK}/include/libcxx
         ${SGX_SDK}/include/tlibc
         ${SGX_SDK}/include/stlport
         ${CMAKE_CURRENT_SOURCE_DIR}/../Include
@@ -32,7 +33,7 @@ include_directories(
 )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SGX_COMMON_CFLAGS} -nostdinc -fvisibility=hidden -fpie -fstack-protector")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} -std=c++03 -nostdinc++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} -std=c++11 -nostdinc++")
 
 set_target_properties(enclave2 PROPERTIES PREFIX "")
 

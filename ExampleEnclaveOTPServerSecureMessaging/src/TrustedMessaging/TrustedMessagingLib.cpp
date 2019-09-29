@@ -54,7 +54,7 @@ char* string_sent = (char*) malloc(20);
 #include "sgx_thread.h"
 #include <string.h>
 
-//#include <map>
+#include <map>
 #include "dh_session_protocol.h"
 #include "sgx_dh.h"
 #include "sgx_tcrypto.h"

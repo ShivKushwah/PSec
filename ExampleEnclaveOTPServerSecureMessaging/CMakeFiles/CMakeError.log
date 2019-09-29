@@ -53,3 +53,58 @@ Makefile:126: recipe for target 'cmTC_2cd98/fast' failed
 make: *** [cmTC_2cd98/fast] Error 2
 
 
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_99a16/fast"
+/usr/bin/make -f CMakeFiles/cmTC_99a16.dir/build.make CMakeFiles/cmTC_99a16.dir/build
+make[1]: Entering directory '/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_99a16.dir/CheckSymbolExists.c.o
+/usr/bin/cc   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes    -o CMakeFiles/cmTC_99a16.dir/CheckSymbolExists.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_99a16
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_99a16.dir/link.txt --verbose=1
+/usr/bin/cc  -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes     -rdynamic CMakeFiles/cmTC_99a16.dir/CheckSymbolExists.c.o  -o cmTC_99a16 
+CMakeFiles/cmTC_99a16.dir/CheckSymbolExists.c.o: In function `main':
+/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles/CMakeTmp/CheckSymbolExists.c:8: undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_99a16.dir/build.make:97: recipe for target 'cmTC_99a16' failed
+make[1]: *** [cmTC_99a16] Error 1
+make[1]: Leaving directory '/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_99a16/fast' failed
+make: *** [cmTC_99a16/fast] Error 2
+
+File /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_cc9fa/fast"
+/usr/bin/make -f CMakeFiles/cmTC_cc9fa.dir/build.make CMakeFiles/cmTC_cc9fa.dir/build
+make[1]: Entering directory '/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_cc9fa.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_cc9fa.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.10/Modules/CheckFunctionExists.c
+Linking C executable cmTC_cc9fa
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cc9fa.dir/link.txt --verbose=1
+/usr/bin/cc  -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_cc9fa.dir/CheckFunctionExists.c.o  -o cmTC_cc9fa -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_cc9fa.dir/build.make:97: recipe for target 'cmTC_cc9fa' failed
+make[1]: *** [cmTC_cc9fa] Error 1
+make[1]: Leaving directory '/home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_cc9fa/fast' failed
+make: *** [cmTC_cc9fa/fast] Error 2
+
+
