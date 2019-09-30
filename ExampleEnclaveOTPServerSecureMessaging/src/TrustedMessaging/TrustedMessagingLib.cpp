@@ -47,18 +47,15 @@ char* string_sent = (char*) malloc(20);
 
 #include "sgx_trts.h"
 #include "sgx_utils.h"
-//#include "EnclaveMessageExchange.h"
 #include "sgx_eid.h"
 #include "error_codes.h"
 #include "sgx_ecp_types.h"
 #include "sgx_thread.h"
 #include <string.h>
-
 #include <map>
 #include "dh_session_protocol.h"
 #include "sgx_dh.h"
 #include "sgx_tcrypto.h"
-//#include "LocalAttestationCode_t.h"
 
 #ifdef __cplusplus
 extern "C" {
