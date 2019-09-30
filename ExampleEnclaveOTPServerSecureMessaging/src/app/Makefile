@@ -125,32 +125,32 @@ app/fast:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/build
 .PHONY : app/fast
 
-ForeignTypesImpl.o: ForeignTypesImpl.c.o
+ForeignTypesImpl.o: ForeignTypesImpl.cpp.o
 
 .PHONY : ForeignTypesImpl.o
 
 # target to build an object file
-ForeignTypesImpl.c.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.o
-.PHONY : ForeignTypesImpl.c.o
+ForeignTypesImpl.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/ForeignTypesImpl.cpp.o
+.PHONY : ForeignTypesImpl.cpp.o
 
-ForeignTypesImpl.i: ForeignTypesImpl.c.i
+ForeignTypesImpl.i: ForeignTypesImpl.cpp.i
 
 .PHONY : ForeignTypesImpl.i
 
 # target to preprocess a source file
-ForeignTypesImpl.c.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.i
-.PHONY : ForeignTypesImpl.c.i
+ForeignTypesImpl.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/ForeignTypesImpl.cpp.i
+.PHONY : ForeignTypesImpl.cpp.i
 
-ForeignTypesImpl.s: ForeignTypesImpl.c.s
+ForeignTypesImpl.s: ForeignTypesImpl.cpp.s
 
 .PHONY : ForeignTypesImpl.s
 
 # target to generate assembly for a file
-ForeignTypesImpl.c.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/ForeignTypesImpl.c.s
-.PHONY : ForeignTypesImpl.c.s
+ForeignTypesImpl.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/ForeignTypesImpl.cpp.s
+.PHONY : ForeignTypesImpl.cpp.s
 
 OTPServer.o: OTPServer.c.o
 
@@ -179,59 +179,59 @@ OTPServer.c.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/OTPServer.c.s
 .PHONY : OTPServer.c.s
 
-UntrustedMessaging.o: UntrustedMessaging.c.o
+UntrustedMessaging.o: UntrustedMessaging.cpp.o
 
 .PHONY : UntrustedMessaging.o
 
 # target to build an object file
-UntrustedMessaging.c.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/UntrustedMessaging.c.o
-.PHONY : UntrustedMessaging.c.o
+UntrustedMessaging.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/UntrustedMessaging.cpp.o
+.PHONY : UntrustedMessaging.cpp.o
 
-UntrustedMessaging.i: UntrustedMessaging.c.i
+UntrustedMessaging.i: UntrustedMessaging.cpp.i
 
 .PHONY : UntrustedMessaging.i
 
 # target to preprocess a source file
-UntrustedMessaging.c.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/UntrustedMessaging.c.i
-.PHONY : UntrustedMessaging.c.i
+UntrustedMessaging.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/UntrustedMessaging.cpp.i
+.PHONY : UntrustedMessaging.cpp.i
 
-UntrustedMessaging.s: UntrustedMessaging.c.s
+UntrustedMessaging.s: UntrustedMessaging.cpp.s
 
 .PHONY : UntrustedMessaging.s
 
 # target to generate assembly for a file
-UntrustedMessaging.c.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/UntrustedMessaging.c.s
-.PHONY : UntrustedMessaging.c.s
+UntrustedMessaging.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/UntrustedMessaging.cpp.s
+.PHONY : UntrustedMessaging.cpp.s
 
-app.o: app.c.o
+app.o: app.cpp.o
 
 .PHONY : app.o
 
 # target to build an object file
-app.c.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.c.o
-.PHONY : app.c.o
+app.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.cpp.o
+.PHONY : app.cpp.o
 
-app.i: app.c.i
+app.i: app.cpp.i
 
 .PHONY : app.i
 
 # target to preprocess a source file
-app.c.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.c.i
-.PHONY : app.c.i
+app.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.cpp.i
+.PHONY : app.cpp.i
 
-app.s: app.c.s
+app.s: app.cpp.s
 
 .PHONY : app.s
 
 # target to generate assembly for a file
-app.c.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.c.s
-.PHONY : app.c.s
+app.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/app.cpp.s
+.PHONY : app.cpp.s
 
 enclave2_u.o: enclave2_u.c.o
 
@@ -287,32 +287,32 @@ enclave_u.c.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/enclave_u.c.s
 .PHONY : enclave_u.c.s
 
-sgx_utils/sgx_utils.o: sgx_utils/sgx_utils.c.o
+sgx_utils/sgx_utils.o: sgx_utils/sgx_utils.cpp.o
 
 .PHONY : sgx_utils/sgx_utils.o
 
 # target to build an object file
-sgx_utils/sgx_utils.c.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o
-.PHONY : sgx_utils/sgx_utils.c.o
+sgx_utils/sgx_utils.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o
+.PHONY : sgx_utils/sgx_utils.cpp.o
 
-sgx_utils/sgx_utils.i: sgx_utils/sgx_utils.c.i
+sgx_utils/sgx_utils.i: sgx_utils/sgx_utils.cpp.i
 
 .PHONY : sgx_utils/sgx_utils.i
 
 # target to preprocess a source file
-sgx_utils/sgx_utils.c.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.i
-.PHONY : sgx_utils/sgx_utils.c.i
+sgx_utils/sgx_utils.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.i
+.PHONY : sgx_utils/sgx_utils.cpp.i
 
-sgx_utils/sgx_utils.s: sgx_utils/sgx_utils.c.s
+sgx_utils/sgx_utils.s: sgx_utils/sgx_utils.cpp.s
 
 .PHONY : sgx_utils/sgx_utils.s
 
 # target to generate assembly for a file
-sgx_utils/sgx_utils.c.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.c.s
-.PHONY : sgx_utils/sgx_utils.c.s
+sgx_utils/sgx_utils.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/ExampleEnclaveOTPServerSecureMessaging && $(MAKE) -f src/app/CMakeFiles/app.dir/build.make src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.s
+.PHONY : sgx_utils/sgx_utils.cpp.s
 
 # Help Target
 help:

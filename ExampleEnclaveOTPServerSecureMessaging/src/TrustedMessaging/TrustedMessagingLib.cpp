@@ -83,9 +83,7 @@ ATTESTATION_STATUS generate_session_id(uint32_t *session_id);
 session_id_tracker_t *g_session_id_tracker[MAX_SESSION_COUNT];
 
 //Map between the source enclave id and the session information associated with that particular session
-//std::map<sgx_enclave_id_t, dh_session_t>g_dest_session_info_map;
-sgx_enclave_id_t source_enclave_id;
-dh_session_t source_session_t;
+std::map<sgx_enclave_id_t, dh_session_t>g_dest_session_info_map;
 
 //Close a current session
 #ifdef ENCLAVE2
@@ -146,6 +144,7 @@ ATTESTATION_STATUS create_session(sgx_enclave_id_t src_enclave_id,
     {
             return status;
     }
+
     
     //Ocall to request for a session with the destination enclave and obtain session id and Message 1 if successful
     status = session_request_ocall(&retstatus, src_enclave_id, dest_enclave_id, &dh_msg1, &session_id);
@@ -158,6 +157,7 @@ ATTESTATION_STATUS create_session(sgx_enclave_id_t src_enclave_id,
     {
         return ATTESTATION_SE_ERROR;
     }
+
     //Process the message 1 obtained from desination enclave and generate message 2
     status = sgx_dh_initiator_proc_msg1(&dh_msg1, &dh_msg2, &sgx_dh_session);
     if(SGX_SUCCESS != status)
@@ -248,9 +248,7 @@ ATTESTATION_STATUS session_request(sgx_enclave_id_t src_enclave_id,
     }
     memcpy(&session_info.in_progress.dh_session, &sgx_dh_session, sizeof(sgx_dh_session_t));
     //Store the session information under the correspoding source enlave id key
-    source_enclave_id = src_enclave_id;
-    source_session_t = session_info;
-    //g_dest_session_info_map.insert(std::pair<sgx_enclave_id_t, dh_session_t>(, ));
+    g_dest_session_info_map.insert(std::pair<sgx_enclave_id_t, dh_session_t>(src_enclave_id, session_info));
     
     return status;
 }
@@ -284,21 +282,16 @@ ATTESTATION_STATUS exchange_report(sgx_enclave_id_t src_enclave_id,
     do
     {
         //Retreive the session information for the corresponding source enclave id
-        if (src_enclave_id == source_enclave_id) {
-            session_info = (dh_session_t*) &source_session_t;
-
-        } else {
-            status = INVALID_SESSION;
-            break; 
+        std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_dest_session_info_map.find(src_enclave_id);
+        if(it != g_dest_session_info_map.end())
+        {
+            session_info = &it->second;
         }
-        // std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_dest_session_info_map.find(src_enclave_id);
-        // if(it != g_dest_session_info_map.end())
-        // {
-        // }
-        // else
-        // {
-            
-        // }
+        else
+        {
+            status = INVALID_SESSION;
+            break;
+        }
 
         if(session_info->status != IN_PROGRESS)
         {
@@ -561,23 +554,16 @@ ATTESTATION_STATUS generate_response(sgx_enclave_id_t src_enclave_id,
         return INVALID_PARAMETER_ERROR;
     }
 
-    if (src_enclave_id == source_enclave_id) {
-            session_info = (dh_session_t*)&source_session_t;
-
-        } else {
-            return INVALID_SESSION;
-        }
-
     //Get the session information from the map corresponding to the source enclave id
-    // std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_dest_session_info_map.find(src_enclave_id);
-    // if(it != g_dest_session_info_map.end())
-    // {
-    //     session_info = &it->second;
-    // }
-    // else
-    // {
-    //     return INVALID_SESSION;
-    // }
+    std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_dest_session_info_map.find(src_enclave_id);
+    if(it != g_dest_session_info_map.end())
+    {
+        session_info = &it->second;
+    }
+    else
+    {
+        return INVALID_SESSION;
+    }
 
     if(session_info->status != ACTIVE)
     {
@@ -731,28 +717,20 @@ ATTESTATION_STATUS end_session(sgx_enclave_id_t src_enclave_id)
     dh_session_t session_info;
     uint32_t session_id;
 
-    if (src_enclave_id == source_enclave_id) {
-            session_info = source_session_t;
-
-        } else {
-            status = INVALID_SESSION;
-        }
-
     // //Get the session information from the map corresponding to the source enclave id
-    // std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_dest_session_info_map.find(src_enclave_id);
-    // if(it != g_dest_session_info_map.end())
-    // {
-    //     session_info = it->second;
-    // }
-    // else
-    // {
-    //     return INVALID_SESSION;
-    // }
+    std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_dest_session_info_map.find(src_enclave_id);
+    if(it != g_dest_session_info_map.end())
+    {
+        session_info = it->second;
+    }
+    else
+    {
+        return INVALID_SESSION;
+    }
 
     session_id = session_info.session_id;
     //Erase the session information for the current session
-    source_enclave_id = 0;
-    //g_dest_session_info_map.erase(src_enclave_id);
+    g_dest_session_info_map.erase(src_enclave_id);
 
     //Update the session id tracker
     if (g_session_count > 0)
@@ -807,9 +785,7 @@ ATTESTATION_STATUS generate_session_id(uint32_t *session_id)
 
 #define UNUSED(val) (void)(val)
 
-//std::map<sgx_enclave_id_t, dh_session_t>g_src_session_info_map;
-sgx_enclave_id_t destination_enclave_id;
-dh_session_t destination_enclave_session;
+std::map<sgx_enclave_id_t, dh_session_t>g_src_session_info_map;
 
 static uint32_t e1_foo1_wrapper(ms_in_msg_exchange_t *ms, size_t param_lenth, char** resp_buffer, size_t* resp_length);
 
@@ -842,9 +818,7 @@ uint32_t test_create_session(sgx_enclave_id_t src_enclave_id,
     //Insert the session information into the map under the corresponding destination enclave id
     if(ke_status == SUCCESS)
     {
-        destination_enclave_id = dest_enclave_id;
-        destination_enclave_session =dest_session_info;
-        // g_src_session_info_map.insert(std::pair<sgx_enclave_id_t, dh_session_t>(dest_enclave_id, dest_session_info));
+        g_src_session_info_map.insert(std::pair<sgx_enclave_id_t, dh_session_t>(dest_enclave_id, dest_session_info));
     }
     memset(&dest_session_info, 0, sizeof(dh_session_t));
     return ke_status;
@@ -883,25 +857,17 @@ uint32_t test_enclave_to_enclave_call(sgx_enclave_id_t src_enclave_id,
         return ke_status;
     }
 
-    if (destination_enclave_id == dest_enclave_id) {
-        dest_session_info = &destination_enclave_session;
-
-    } else {
+    // //Search the map for the session information associated with the destination enclave id of Enclave2 passed in
+    std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_src_session_info_map.find(dest_enclave_id);
+    if(it != g_src_session_info_map.end())
+    {
+          dest_session_info = &it->second;
+    }
+    else
+    {
         SAFE_FREE(marshalled_inp_buff);
         return INVALID_SESSION;
     }
-
-    // //Search the map for the session information associated with the destination enclave id of Enclave2 passed in
-    // std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_src_session_info_map.find(dest_enclave_id);
-    // if(it != g_src_session_info_map.end())
-    // {
-    //       dest_session_info = &it->second;
-    // }
-    // else
-    // {
-    //     SAFE_FREE(marshalled_inp_buff);
-    //     return INVALID_SESSION;
-    // }
 
     //Core Reference Code function
     ke_status = send_request_receive_response(src_enclave_id, dest_enclave_id, dest_session_info, marshalled_inp_buff,
@@ -974,26 +940,18 @@ uint32_t test_message_exchange(sgx_enclave_id_t src_enclave_id,
     {
         return ke_status;
     }
-
-    if (destination_enclave_id == dest_enclave_id) {
-        dest_session_info = &destination_enclave_session;
-
-    } else {
+   
+    // //Search the map for the session information associated with the destination enclave id passed in
+    std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_src_session_info_map.find(dest_enclave_id);
+    if(it != g_src_session_info_map.end())
+    {
+         dest_session_info = &it->second;
+    }
+    else
+    {
         SAFE_FREE(marshalled_inp_buff);
         return INVALID_SESSION;
     }
-   
-    // //Search the map for the session information associated with the destination enclave id passed in
-    // std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_src_session_info_map.find(dest_enclave_id);
-    // if(it != g_src_session_info_map.end())
-    // {
-    //      dest_session_info = &it->second;
-    // }
-    // else
-    // {
-    //     SAFE_FREE(marshalled_inp_buff);
-    //     return INVALID_SESSION;
-    // }
 
     // char* temp_in_buf = malloc(20);
     // temp_in_buf[0] = 'b';
@@ -1042,22 +1000,16 @@ uint32_t test_close_session(sgx_enclave_id_t src_enclave_id,
     dh_session_t dest_session_info;
     ATTESTATION_STATUS ke_status = SUCCESS;
 
-    if (destination_enclave_id == dest_enclave_id) {
-        dest_session_info = destination_enclave_session;
-
-    } else {
+    // //Search the map for the session information associated with the destination enclave id passed in
+    std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_src_session_info_map.find(dest_enclave_id);
+    if(it != g_src_session_info_map.end())
+    {
+        dest_session_info = it->second;
+    }
+    else
+    {
         return NULL;
     }
-    // //Search the map for the session information associated with the destination enclave id passed in
-    // std::map<sgx_enclave_id_t, dh_session_t>::iterator it = g_src_session_info_map.find(dest_enclave_id);
-    // if(it != g_src_session_info_map.end())
-    // {
-    //     dest_session_info = it->second;
-    // }
-    // else
-    // {
-    //     return NULL;
-    // }
 
     //Core reference code function for closing a session
     #ifdef ENCLAVE2
@@ -1067,8 +1019,7 @@ uint32_t test_close_session(sgx_enclave_id_t src_enclave_id,
     #endif
 
     //Erase the session information associated with the destination enclave id
-    destination_enclave_id = 0;
-    // g_src_session_info_map.erase(dest_enclave_id);
+    g_src_session_info_map.erase(dest_enclave_id);
     return ke_status;
 }
 

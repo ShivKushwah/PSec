@@ -4,10 +4,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} -std=c++11")
 find_package (Threads)
 
 
-set(CLIENT_SRC_FILES enclave_u.c enclave2_u.c app.c sgx_utils/sgx_utils.c
+set(CLIENT_SRC_FILES enclave_u.c enclave2_u.c app.cpp sgx_utils/sgx_utils.cpp
+        ForeignTypesImpl.cpp
         OTPServer.c
-        ForeignTypesImpl.c
-        UntrustedMessaging.c
+        UntrustedMessaging.cpp
         )
 
 set_directory_properties(PROPERTIES

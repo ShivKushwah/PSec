@@ -1,7 +1,10 @@
 #include "OTPServer.h"
 #include "enclave_u.h"
+#include "enclave2_u.h"
+
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
+#include <map>
 
 #include "error_codes.h"
 #include "datatypes.h"
@@ -39,10 +42,7 @@
  */
 
 
-// std::map<sgx_enclave_id_t, uint32_t>g_enclave_id_map;
-sgx_enclave_id_t destination_enclave_id;
-uint32_t destination_enclave_num;
-//TODO: Hardcoded (for enclave1 -> enclave2) for now, need to implement Map in c code
+std::map<sgx_enclave_id_t, uint32_t>g_enclave_id_map;
 
 //Makes an sgx_ecall to the destination enclave to get session id and message1
 ATTESTATION_STATUS session_request_ocall(sgx_enclave_id_t src_enclave_id, sgx_enclave_id_t dest_enclave_id, sgx_dh_msg1_t* dh_msg1, uint32_t* session_id)
@@ -51,23 +51,16 @@ ATTESTATION_STATUS session_request_ocall(sgx_enclave_id_t src_enclave_id, sgx_en
 	sgx_status_t ret = SGX_SUCCESS;
 	uint32_t temp_enclave_no;
 
-	if (destination_enclave_id == dest_enclave_id) {
-		temp_enclave_no = destination_enclave_num;
-
-	} else {
-		return INVALID_SESSION;
-
+	std::map<sgx_enclave_id_t, uint32_t>::iterator it = g_enclave_id_map.find(dest_enclave_id);
+    if(it != g_enclave_id_map.end())
+	{
+		temp_enclave_no = it->second;
 	}
-
-	// std::map<sgx_enclave_id_t, uint32_t>::iterator it = g_enclave_id_map.find(dest_enclave_id);
-    // if(it != g_enclave_id_map.end())
-	// {
-	// 	temp_enclave_no = it->second;
-	// }
-    // else
-	// {
-	// 	return INVALID_SESSION;
-	// }
+    else
+	{
+		ocall_print("BAD BOY");
+		return INVALID_SESSION;
+	}
 
 
 	switch(temp_enclave_no)
@@ -93,23 +86,15 @@ ATTESTATION_STATUS exchange_report_ocall(sgx_enclave_id_t src_enclave_id, sgx_en
 	sgx_status_t ret = SGX_SUCCESS;
 	uint32_t temp_enclave_no;
 
-	if (destination_enclave_id == dest_enclave_id) {
-		temp_enclave_no = destination_enclave_num;
-
-	} else {
-		return INVALID_SESSION;
-
+	std::map<sgx_enclave_id_t, uint32_t>::iterator it = g_enclave_id_map.find(dest_enclave_id);
+    if(it != g_enclave_id_map.end())
+	{
+		temp_enclave_no = it->second;
 	}
-
-	// std::map<sgx_enclave_id_t, uint32_t>::iterator it = g_enclave_id_map.find(dest_enclave_id);
-    // if(it != g_enclave_id_map.end())
-	// {
-	// 	temp_enclave_no = it->second;
-	// }
-    // else
-	// {
-	// 	return INVALID_SESSION;
-	// }
+    else
+	{
+		return INVALID_SESSION;
+	}
 
 
 	switch(temp_enclave_no)
@@ -135,23 +120,15 @@ ATTESTATION_STATUS send_request_ocall(sgx_enclave_id_t src_enclave_id, sgx_encla
     sgx_status_t ret = SGX_SUCCESS;
 	uint32_t temp_enclave_no;
 
-	if (destination_enclave_id == dest_enclave_id) {
-		temp_enclave_no = destination_enclave_num;
-
-	} else {
-		return INVALID_SESSION;
-
+	std::map<sgx_enclave_id_t, uint32_t>::iterator it = g_enclave_id_map.find(dest_enclave_id);
+    if(it != g_enclave_id_map.end())
+	{
+		temp_enclave_no = it->second;
 	}
-
-	// std::map<sgx_enclave_id_t, uint32_t>::iterator it = g_enclave_id_map.find(dest_enclave_id);
-    // if(it != g_enclave_id_map.end())
-	// {
-	// 	temp_enclave_no = it->second;
-	// }
-    // else
-	// {
-	// 	return INVALID_SESSION;
-	// }
+    else
+	{
+		return INVALID_SESSION;
+	}
 
 
 
@@ -178,23 +155,15 @@ ATTESTATION_STATUS end_session_ocall(sgx_enclave_id_t src_enclave_id, sgx_enclav
 	sgx_status_t ret = SGX_SUCCESS;
 	uint32_t temp_enclave_no;
 
-	if (destination_enclave_id == dest_enclave_id) {
-		temp_enclave_no = destination_enclave_num;
-
-	} else {
-		return INVALID_SESSION;
-
+	std::map<sgx_enclave_id_t, uint32_t>::iterator it = g_enclave_id_map.find(dest_enclave_id);
+    if(it != g_enclave_id_map.end())
+	{
+		temp_enclave_no = it->second;
 	}
-
-	// std::map<sgx_enclave_id_t, uint32_t>::iterator it = g_enclave_id_map.find(dest_enclave_id);
-    // if(it != g_enclave_id_map.end())
-	// {
-	// 	temp_enclave_no = it->second;
-	// }
-    // else
-	// {
-	// 	return INVALID_SESSION;
-	// }
+    else
+	{
+		return INVALID_SESSION;
+	}
 
 
 

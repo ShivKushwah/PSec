@@ -1,39 +1,49 @@
 #include "OTPServer.h"
 #include "enclave_u.h"
+#include "enclave2_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
+#include <map>
 
 extern sgx_enclave_id_t global_eid;
 extern sgx_enclave_id_t global_eid2;
 
-extern sgx_enclave_id_t destination_enclave_id;
-extern uint32_t destination_enclave_num;
+extern std::map<sgx_enclave_id_t, uint32_t>g_enclave_id_map;
 
-PRT_VALUE* P_EnclaveOneInitialize_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+int enclave_temp_no = 1;
+
+
+extern "C" void P_EnclaveOneInitialize_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
         printf("Failed to initialize Enclave 1 \n");
     }
+   g_enclave_id_map.insert(std::pair<sgx_enclave_id_t, uint32_t>(global_eid, enclave_temp_no));
+   enclave_temp_no = enclave_temp_no + 1;
    
 }
 
 
-PRT_VALUE* P_EnclaveTwoInitialize_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" void P_EnclaveTwoInitialize_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
         printf("Failed to initialize Enclave 2 \n");
     }
+    g_enclave_id_map.insert(std::pair<sgx_enclave_id_t, uint32_t>(global_eid2, enclave_temp_no));
+       enclave_temp_no = enclave_temp_no + 1;
+
+
    
 }
 
-void P_EnclaveOneSendSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" void P_EnclaveOneSendSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     char* secret = "12344";
 
     printf("Entering Enclave1 to send Secret to Enclave2:\n");
 
-    destination_enclave_id = global_eid2;
-    destination_enclave_num = 2;
+    // destination_enclave_id = global_eid2;
+    // destination_enclave_num = 2;
     //TODO: Hardcoded for now, need to implement Map in c code
 
     uint32_t ret_status;
@@ -95,7 +105,7 @@ void P_EnclaveOneSendSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     printf("Exited Enclave 1 Successfully\n");     
 }
 
-PRT_VALUE* P_EnclaveOneVerifyOTPCode_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" PRT_VALUE* P_EnclaveOneVerifyOTPCode_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE** P_VAR_payload = argRefs[0];
     int code = PrtPrimGetInt(*P_VAR_payload);
@@ -113,7 +123,7 @@ PRT_VALUE* P_EnclaveOneVerifyOTPCode_IMPL(PRT_MACHINEINST* context, PRT_VALUE***
 }
 
 
-PRT_VALUE* P_EnclaveTwoGenerateOTPCode_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" PRT_VALUE* P_EnclaveTwoGenerateOTPCode_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     printf("Entering Enclave2 to generate OTP Code:\n");
 

@@ -4,6 +4,7 @@
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 #include "OTPServer.h"
+#include <map>
 
 static PRT_BOOLEAN cooperative = PRT_FALSE;
 static int threads = 1;
@@ -20,7 +21,6 @@ extern int Delta;
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
 sgx_enclave_id_t global_eid2 = 0;
-
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {

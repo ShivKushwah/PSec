@@ -7,16 +7,16 @@ file(REMOVE_RECURSE
   "enclave2_u.c"
   "CMakeFiles/app.dir/enclave_u.c.o"
   "CMakeFiles/app.dir/enclave2_u.c.o"
-  "CMakeFiles/app.dir/app.c.o"
-  "CMakeFiles/app.dir/sgx_utils/sgx_utils.c.o"
+  "CMakeFiles/app.dir/app.cpp.o"
+  "CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o"
+  "CMakeFiles/app.dir/ForeignTypesImpl.cpp.o"
   "CMakeFiles/app.dir/OTPServer.c.o"
-  "CMakeFiles/app.dir/ForeignTypesImpl.c.o"
-  "CMakeFiles/app.dir/UntrustedMessaging.c.o"
+  "CMakeFiles/app.dir/UntrustedMessaging.cpp.o"
   "../../app.pdb"
   "../../app"
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang C)
+foreach(lang C CXX)
   include(CMakeFiles/app.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()
