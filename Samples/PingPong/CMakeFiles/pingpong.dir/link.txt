@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11 -fPIC -g  -rdynamic CMakeFiles/pingpong.dir/PGenerated/PingPong.c.o CMakeFiles/pingpong.dir/Src/tester.c.o  -o pingpong ../../Submodule/P/Bld/Drops/Prt/lib/libPrt_static.a -lpthread ../../Submodule/P/Ext/libhandler/out/gcc-amd64-linux-gnu/debug/libhandler.a 

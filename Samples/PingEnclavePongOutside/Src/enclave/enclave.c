@@ -139,14 +139,14 @@ int enclave_main(void)
 		if (parg == NULL)
 		{
 			payload = PrtMkNullValue();
-            			payload2 = PrtMkNullValue();
+            payload2 = PrtMkNullValue();
 
 		}
 		else
 		{
 			int i = atoi(parg);
 			payload = PrtMkIntValue(i);
-            			payload2 = PrtMkIntValue(i);
+            payload2 = PrtMkIntValue(i);
 
             
 		}

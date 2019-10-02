@@ -136,11 +136,36 @@ Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cp
 Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o.provides.build: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o
 
 
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/flags.make
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o: Samples/PingEnclavePongOutside/PGenerated/PingPong.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/PGenerated/PingPong.c
+
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.i"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/PGenerated/PingPong.c > CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.i
+
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.s"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/PGenerated/PingPong.c -o CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.s
+
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o.requires:
+
+.PHONY : Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o.requires
+
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o.provides: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o.requires
+	$(MAKE) -f Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o.provides.build
+.PHONY : Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o.provides
+
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o.provides.build: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o
+
+
 # Object files for target app
 app_OBJECTS = \
 "CMakeFiles/app.dir/enclave_u.c.o" \
 "CMakeFiles/app.dir/app.cpp.o" \
-"CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o"
+"CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o" \
+"CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o"
 
 # External object files for target app
 app_EXTERNAL_OBJECTS =
@@ -148,10 +173,12 @@ app_EXTERNAL_OBJECTS =
 Samples/PingEnclavePongOutside/app: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/enclave_u.c.o
 Samples/PingEnclavePongOutside/app: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/app.cpp.o
 Samples/PingEnclavePongOutside/app: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o
+Samples/PingEnclavePongOutside/app: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o
 Samples/PingEnclavePongOutside/app: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/build.make
+Samples/PingEnclavePongOutside/app: Samples/PingEnclavePongOutside/Src/app/libPrt_static.a
 Samples/PingEnclavePongOutside/app: Submodule/P/Ext/libhandler/out/gcc-amd64-linux-gnu/debug/libhandler.a
 Samples/PingEnclavePongOutside/app: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable ../../app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable ../../app"
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/app.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -162,6 +189,7 @@ Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/build: Samples/PingEnc
 Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/enclave_u.c.o.requires
 Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/app.cpp.o.requires
 Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o.requires
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o.requires
 
 .PHONY : Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/requires
 

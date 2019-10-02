@@ -128,6 +128,33 @@ app/fast:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/build
 .PHONY : app/fast
 
+__/__/PGenerated/PingPong.o: __/__/PGenerated/PingPong.c.o
+
+.PHONY : __/__/PGenerated/PingPong.o
+
+# target to build an object file
+__/__/PGenerated/PingPong.c.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o
+.PHONY : __/__/PGenerated/PingPong.c.o
+
+__/__/PGenerated/PingPong.i: __/__/PGenerated/PingPong.c.i
+
+.PHONY : __/__/PGenerated/PingPong.i
+
+# target to preprocess a source file
+__/__/PGenerated/PingPong.c.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.i
+.PHONY : __/__/PGenerated/PingPong.c.i
+
+__/__/PGenerated/PingPong.s: __/__/PGenerated/PingPong.c.s
+
+.PHONY : __/__/PGenerated/PingPong.s
+
+# target to generate assembly for a file
+__/__/PGenerated/PingPong.c.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.s
+.PHONY : __/__/PGenerated/PingPong.c.s
+
 app.o: app.cpp.o
 
 .PHONY : app.o
@@ -218,6 +245,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... app"
 	@echo "... edit_cache"
+	@echo "... __/__/PGenerated/PingPong.o"
+	@echo "... __/__/PGenerated/PingPong.i"
+	@echo "... __/__/PGenerated/PingPong.s"
 	@echo "... app.o"
 	@echo "... app.i"
 	@echo "... app.s"
