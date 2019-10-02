@@ -151,7 +151,7 @@ int enclave_main(void)
             
 		}
 
-        payload2 = PrtMkIntValue(7);
+        //payload2 = PrtMkIntValue(7);
 
 		PrtUpdateAssertFn(MyAssert);
         ocall_print("after update assert fn!\n");
