@@ -162,7 +162,7 @@ dep_enclave: cmake_check_build_system
 
 # fast build rule for target.
 dep_enclave/fast:
-	$(MAKE) -f Samples/PingPongEnclave/Src/enclave/CMakeFiles/dep_enclave.dir/build.make Samples/PingPongEnclave/Src/enclave/CMakeFiles/dep_enclave.dir/build
+	$(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/build
 .PHONY : dep_enclave/fast
 
 #=============================================================================
@@ -175,7 +175,7 @@ enclave: cmake_check_build_system
 
 # fast build rule for target.
 enclave/fast:
-	$(MAKE) -f Samples/PingPongEnclave/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingPongEnclave/Src/enclave/CMakeFiles/enclave.dir/build
+	$(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build
 .PHONY : enclave/fast
 
 #=============================================================================
@@ -188,7 +188,7 @@ app: cmake_check_build_system
 
 # fast build rule for target.
 app/fast:
-	$(MAKE) -f Samples/PingPongEnclave/Src/app/CMakeFiles/app.dir/build.make Samples/PingPongEnclave/Src/app/CMakeFiles/app.dir/build
+	$(MAKE) -f Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/build
 .PHONY : app/fast
 
 # Help Target

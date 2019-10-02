@@ -1,6 +1,6 @@
 # Hashes of file build rules.
-6efd6fc3be882a56ba4de0f24d7d8578 Samples/PingPongEnclave/Src/app/enclave_u.c
-91e4096a3277b6ca14e9a2557666e4fb Samples/PingPongEnclave/Src/enclave/CMakeFiles/dep_enclave
-ff0c1ff524f56f25f224a7a2c54754d9 Samples/PingPongEnclave/Src/enclave/enclave_t.c
+05503e1b9bf7cd6d0fc2d1a9ab3dcc12 Samples/PingEnclavePongOutside/Src/app/enclave_u.c
+39d7f89a169a487077a31711099a4802 Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave
+ebb964e29d5c8d9f1ed0ce02c839b136 Samples/PingEnclavePongOutside/Src/enclave/enclave_t.c
 eb73533e38fe1d543b59d2fc25e0adfd Submodule/P/Src/Prt/CMakeFiles/libhandler
 fbb62b29ad78218e86b75305f9402e44 Submodule/P/Src/Prt/SGXUser/Trusted/PrtEnclave_t.c

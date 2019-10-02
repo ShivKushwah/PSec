@@ -15,9 +15,9 @@ set(CMAKE_MAKEFILE_DEPENDS
   "HelperScripts/ConfigSGX.cmake"
   "HelperScripts/FindSGXSDK.cmake"
   "HelperScripts/Init.cmake"
-  "Samples/PingPongEnclave/CMakeLists.txt"
-  "Samples/PingPongEnclave/Src/app/CMakeLists.txt"
-  "Samples/PingPongEnclave/Src/enclave/CMakeLists.txt"
+  "Samples/PingEnclavePongOutside/CMakeLists.txt"
+  "Samples/PingEnclavePongOutside/Src/app/CMakeLists.txt"
+  "Samples/PingEnclavePongOutside/Src/enclave/CMakeLists.txt"
   "Submodule/P/Src/CMakeLists.txt"
   "Submodule/P/Src/Prt/CMakeLists.txt"
   "/usr/share/cmake-3.10/Modules/CMakeCInformation.cmake"
@@ -54,9 +54,9 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   "Submodule/P/Src/CMakeFiles/CMakeDirectoryInformation.cmake"
   "Submodule/P/Src/Prt/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "Samples/PingPongEnclave/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "Samples/PingPongEnclave/Src/enclave/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "Samples/PingPongEnclave/Src/app/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "Samples/PingEnclavePongOutside/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "Samples/PingEnclavePongOutside/Src/app/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -64,7 +64,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "Submodule/P/Src/Prt/CMakeFiles/Prt_trusted_static.dir/DependInfo.cmake"
   "Submodule/P/Src/Prt/CMakeFiles/libhandler.dir/DependInfo.cmake"
   "Submodule/P/Src/Prt/CMakeFiles/Prt.dir/DependInfo.cmake"
-  "Samples/PingPongEnclave/Src/enclave/CMakeFiles/dep_enclave.dir/DependInfo.cmake"
-  "Samples/PingPongEnclave/Src/enclave/CMakeFiles/enclave.dir/DependInfo.cmake"
-  "Samples/PingPongEnclave/Src/app/CMakeFiles/app.dir/DependInfo.cmake"
+  "Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/DependInfo.cmake"
+  "Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/DependInfo.cmake"
+  "Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/DependInfo.cmake"
   )

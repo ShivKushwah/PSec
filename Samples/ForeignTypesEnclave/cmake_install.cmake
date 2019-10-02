@@ -1,4 +1,4 @@
-# Install script for directory: /home/shiv/Research/temp-del/ProgrammingEnclaves
+# Install script for directory: /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/ForeignTypesEnclave
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,18 +39,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/shiv/Research/temp-del/ProgrammingEnclaves/Submodule/P/Src/cmake_install.cmake")
-  include("/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/cmake_install.cmake")
+  include("/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/ForeignTypesEnclave/Src/enclave/cmake_install.cmake")
+  include("/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/ForeignTypesEnclave/Src/app/cmake_install.cmake")
 
 endif()
 
-if(CMAKE_INSTALL_COMPONENT)
-  set(CMAKE_INSTALL_MANIFEST "install_manifest_${CMAKE_INSTALL_COMPONENT}.txt")
-else()
-  set(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
-endif()
-
-string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
-       "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/shiv/Research/temp-del/ProgrammingEnclaves/${CMAKE_INSTALL_MANIFEST}"
-     "${CMAKE_INSTALL_MANIFEST_CONTENT}")
