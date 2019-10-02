@@ -66,5 +66,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "Submodule/P/Src/Prt/CMakeFiles/Prt.dir/DependInfo.cmake"
   "Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/DependInfo.cmake"
   "Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/DependInfo.cmake"
+  "Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/DependInfo.cmake"
   "Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/DependInfo.cmake"
   )

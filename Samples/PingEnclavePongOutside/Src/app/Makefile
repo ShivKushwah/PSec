@@ -114,6 +114,21 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/rule:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f CMakeFiles/Makefile2 Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/rule
+.PHONY : Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/rule
+
+# Convenience name for target.
+dep_: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/rule
+
+.PHONY : dep_
+
+# fast build rule for target.
+dep_/fast:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/build.make Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/build
+.PHONY : dep_/fast
+
+# Convenience name for target.
 Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/rule:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f CMakeFiles/Makefile2 Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/rule
 .PHONY : Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/rule
@@ -243,8 +258,9 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... app"
+	@echo "... dep_"
 	@echo "... edit_cache"
+	@echo "... app"
 	@echo "... __/__/PGenerated/PingPong.o"
 	@echo "... __/__/PGenerated/PingPong.i"
 	@echo "... __/__/PGenerated/PingPong.s"

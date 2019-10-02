@@ -20,4 +20,5 @@ subdirs(Samples/PingEnclavePongOutside/)
 ##########################################################################
 # Common header files used across project
 ##########################################################################
-INCLUDE_DIRECTORIES(${P_LIB_INCLUDE_PATH})
+#INCLUDE_DIRECTORIES(${P_LIB_INCLUDE_PATH})
+#I recently commented the above line out in order to get PingEnclavePongOutside to compile with provided headers in PHeaders 

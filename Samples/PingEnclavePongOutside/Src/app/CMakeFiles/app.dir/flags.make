@@ -7,11 +7,11 @@ C_FLAGS =  -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes -g
 
 C_DEFINES = -DPRT_PLAT_LINUXUSER
 
-C_INCLUDES = -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Submodule/P/Bld/Drops/Prt/include -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app/../PHeaders 
+C_INCLUDES = -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app/../PHeaders -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app/../../PGenerated 
 
 CXX_FLAGS =  -std=c++11 -fPIC  -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes -std=c++11 -g  
 
 CXX_DEFINES = -DPRT_PLAT_LINUXUSER
 
-CXX_INCLUDES = -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Submodule/P/Bld/Drops/Prt/include -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app/../PHeaders 
+CXX_INCLUDES = -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app/../PHeaders -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app/../../PGenerated 
 

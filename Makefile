@@ -179,6 +179,19 @@ enclave/fast:
 .PHONY : enclave/fast
 
 #=============================================================================
+# Target rules for targets named dep_
+
+# Build rule for target.
+dep_: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 dep_
+.PHONY : dep_
+
+# fast build rule for target.
+dep_/fast:
+	$(MAKE) -f Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/build.make Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/build
+.PHONY : dep_/fast
+
+#=============================================================================
 # Target rules for targets named app
 
 # Build rule for target.
@@ -204,6 +217,7 @@ help:
 	@echo "... Prt"
 	@echo "... dep_enclave"
 	@echo "... enclave"
+	@echo "... dep_"
 	@echo "... app"
 .PHONY : help
 

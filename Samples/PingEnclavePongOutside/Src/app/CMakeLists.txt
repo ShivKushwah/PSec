@@ -9,16 +9,14 @@ add_definitions( -DPRT_PLAT_LINUXUSER )
 
 set(CLIENT_SRC_FILES enclave_u.c app.cpp sgx_utils/sgx_utils.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPong.c)
 
-#FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*)
-#PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/)
-#FILE(GLOB_RECURSE ${projectName}_psources ${CMAKE_CURRENT_SOURCE_DIR}../../PSrc/*)
-#FILE(GLOB_RECURSE ${projectName}_csources ./*)
-#FILE(GLOB_RECURSE ${projectName}_gsources ${CMAKE_CURRENT_SOURCE_DIR}../../PGenerated/*.c)
+FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*)
+PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/)
+FILE(GLOB_RECURSE ${projectName}_psources ${CMAKE_CURRENT_SOURCE_DIR}../../PSrc/*)
+FILE(GLOB_RECURSE ${projectName}_csources ./*)
+FILE(GLOB_RECURSE ${projectName}_gsources ${CMAKE_CURRENT_SOURCE_DIR}../../PGenerated/*.c)
 
-#set (${projectName}_INCLUDE
-#../../PGenerated/
-#../../Includes/
-#)
+set (${projectName}_INCLUDE
+)
 
 
 set_directory_properties(PROPERTIES
@@ -38,6 +36,7 @@ add_executable(app ${CLIENT_SRC_FILES})
 include_directories(
         ${SGXSDK_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/../PHeaders
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated
 
 )
 

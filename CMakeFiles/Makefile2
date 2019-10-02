@@ -255,7 +255,7 @@ Samples/PingEnclavePongOutside/Src/enclave/preinstall:
 Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/all:
 	$(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/depend
 	$(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=14 "Built target dep_enclave"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=15 "Built target dep_enclave"
 .PHONY : Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/all
 
 # Include target in all.
@@ -293,7 +293,7 @@ Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/all: Submodule
 Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/all: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/all
 	$(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/depend
 	$(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=15,16,17,18,19 "Built target enclave"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=16,17,18,19,20 "Built target enclave"
 .PHONY : Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/all
 
 # Include target in all.
@@ -327,11 +327,13 @@ clean: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/clean
 # Directory level rules for directory Samples/PingEnclavePongOutside/Src/app
 
 # Convenience name for "all" pass in the directory.
+Samples/PingEnclavePongOutside/Src/app/all: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/all
 Samples/PingEnclavePongOutside/Src/app/all: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/all
 
 .PHONY : Samples/PingEnclavePongOutside/Src/app/all
 
 # Convenience name for "clean" pass in the directory.
+Samples/PingEnclavePongOutside/Src/app/clean: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/clean
 Samples/PingEnclavePongOutside/Src/app/clean: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir/clean
 
 .PHONY : Samples/PingEnclavePongOutside/Src/app/clean
@@ -340,6 +342,43 @@ Samples/PingEnclavePongOutside/Src/app/clean: Samples/PingEnclavePongOutside/Src
 Samples/PingEnclavePongOutside/Src/app/preinstall:
 
 .PHONY : Samples/PingEnclavePongOutside/Src/app/preinstall
+
+#=============================================================================
+# Target rules for target Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir
+
+# All Build rule for target.
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/all:
+	$(MAKE) -f Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/build.make Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/depend
+	$(MAKE) -f Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/build.make Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=14 "Built target dep_"
+.PHONY : Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/all
+
+# Include target in all.
+all: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles 1
+	$(MAKE) -f CMakeFiles/Makefile2 Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles 0
+.PHONY : Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/rule
+
+# Convenience name for target.
+dep_: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/rule
+
+.PHONY : dep_
+
+# clean rule for target.
+Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/clean:
+	$(MAKE) -f Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/build.make Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/clean
+.PHONY : Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/clean
+
+# clean rule for target.
+clean: Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_.dir/clean
+
+.PHONY : clean
 
 #=============================================================================
 # Target rules for target Samples/PingEnclavePongOutside/Src/app/CMakeFiles/app.dir
