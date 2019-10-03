@@ -6,8 +6,9 @@ machine Ping {
     var pongId: machine;
 
     start state Ping_Init {
-        entry (payload: machine) {
-      	    pongId = payload;
+        entry {
+        //entry (payload: machine) {
+      	    //pongId = payload;
     	    raise Success;   	   
         }
         on Success goto Ping_SendPing;
@@ -15,13 +16,14 @@ machine Ping {
 
     state Ping_SendPing {
         entry {
-    	   send pongId, Ping, this;
+    	   //send pongId, Ping, this;
     	    raise Success;
 	}
         on Success goto Ping_WaitPong;
      }
 
      state Ping_WaitPong {
+        //idea make a foreigntypescall here to enclave.cpp to add the Pong event to the queue
         on Pong goto Done;
      }
 

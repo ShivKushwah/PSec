@@ -118,68 +118,68 @@ int main(int argc, char const *argv[]) {
 
 
 
-    PRT_DBG_START_MEM_BALANCED_REGION
-        {
-           PRT_PROCESS *process;
-		PRT_GUID processGuid;
-		PRT_VALUE *payload;
-        		PRT_VALUE *payload2;
+    // PRT_DBG_START_MEM_BALANCED_REGION
+    //     {
+    //        PRT_PROCESS *process;
+	// 	PRT_GUID processGuid;
+	// 	PRT_VALUE *payload;
+    //     		PRT_VALUE *payload2;
 
 
-		processGuid.data1 = 1;
-		processGuid.data2 = 0;
-		processGuid.data3 = 0;
-		processGuid.data4 = 0;
-		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
-        ocall_print("after start process!\n");
-        if (cooperative)
-        {
-            PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
-        }
-		if (parg == NULL)
-		{
-			payload = PrtMkNullValue();
-            payload2 = PrtMkNullValue();
+	// 	processGuid.data1 = 1;
+	// 	processGuid.data2 = 0;
+	// 	processGuid.data3 = 0;
+	// 	processGuid.data4 = 0;
+	// 	process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
+    //     ocall_print("after start process!\n");
+    //     if (cooperative)
+    //     {
+    //         PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
+    //     }
+	// 	if (parg == NULL)
+	// 	{
+	// 		payload = PrtMkNullValue();
+    //         payload2 = PrtMkNullValue();
 
-		}
-		else
-		{
-			int i = atoi(parg);
-			payload = PrtMkIntValue(i);
-            payload2 = PrtMkIntValue(i);
+	// 	}
+	// 	else
+	// 	{
+	// 		int i = atoi(parg);
+	// 		payload = PrtMkIntValue(i);
+    //         payload2 = PrtMkIntValue(i);
 
             
-		}
+	// 	}
 
-        //payload2 = PrtMkIntValue(7);
+    //     //payload2 = PrtMkIntValue(7);
 
-		PrtUpdateAssertFn(MyAssert);
-        ocall_print("after update assert fn!\n");
+	// 	PrtUpdateAssertFn(MyAssert);
+    //     ocall_print("after update assert fn!\n");
 
-        PRT_UINT32 mainMachine2 = 1;
-		PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
-		PrtAssert(foundMachine2, "No 'Pong' machine found!");
-		PrtMkMachine(process, mainMachine2, 1, &payload2);
+    //     PRT_UINT32 mainMachine2 = 1;
+	// 	PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
+	// 	PrtAssert(foundMachine2, "No 'Pong' machine found!");
+	// 	PrtMkMachine(process, mainMachine2, 1, &payload2);
 
-        PRT_MACHINEID id;
-        id.machineId = mainMachine2;
-	    id.processId = processGuid;
+    //     PRT_MACHINEID id;
+    //     id.machineId = mainMachine2;
+	//     id.processId = processGuid;
 
 
-        payload = PrtMkMachineValue(id);
+    //     payload = PrtMkMachineValue(id);
 
-        PRT_UINT32 mainMachine = 0;
-		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
-		PrtAssert(foundMachine, "No 'Ping' machine found!");
-		PrtMkMachine(process, mainMachine, 1, &payload);
+    //     PRT_UINT32 mainMachine = 0;
+	// 	PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
+	// 	PrtAssert(foundMachine, "No 'Ping' machine found!");
+	// 	PrtMkMachine(process, mainMachine, 1, &payload);
         
-        ocall_print("after mk machine!\n");
+    //     ocall_print("after mk machine!\n");
 
-            ocall_print("mk machine command executed!\n");
-            PrtFreeValue(payload);
-            PrtStopProcess(process);
-        }
-        PRT_DBG_END_MEM_BALANCED_REGION
+    //         ocall_print("mk machine command executed!\n");
+    //         PrtFreeValue(payload);
+    //         PrtStopProcess(process);
+    //     }
+    //     PRT_DBG_END_MEM_BALANCED_REGION
 
 
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {

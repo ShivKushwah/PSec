@@ -156,22 +156,31 @@ int enclave_main(void)
 		PrtUpdateAssertFn(MyAssert);
         ocall_print("after update assert fn!\n");
 
-        PRT_UINT32 mainMachine2 = 1;
-		PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
-		PrtAssert(foundMachine2, "No 'Pong' machine found!");
-		PrtMkMachine(process, mainMachine2, 1, &payload2);
+        // PRT_UINT32 mainMachine2 = 1;
+		// PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
+		// PrtAssert(foundMachine2, "No 'Pong' machine found!");
+		// PrtMkMachine(process, mainMachine2, 1, &payload2);
 
-        PRT_MACHINEID id;
-        id.machineId = mainMachine2;
-	    id.processId = processGuid;
+        // PRT_MACHINEID id;
+        // id.machineId = mainMachine2;
+	    // id.processId = processGuid;
 
 
-        payload = PrtMkMachineValue(id);
+        // payload = PrtMkMachineValue(id);
 
         PRT_UINT32 mainMachine = 0;
 		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
 		PrtAssert(foundMachine, "No 'Ping' machine found!");
-		PrtMkMachine(process, mainMachine, 1, &payload);
+		PRT_MACHINEINST* pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);
+
+        PRT_VALUE *pongPayload = PrtMkNullValue();
+        PRT_VALUE* pongEvent = &P_EVENT_Pong.value;
+
+        PrtSendPrivate(NULL, pingMachine, pongEvent, pongPayload); //THis line works but crashes program. Maybe becuase of NULL?
+
+
+        // PrtEnqueueInOrder(, ,pingMachine, pongEvent, pongPayload);
+
         
         ocall_print("after mk machine!\n");
 
