@@ -19,6 +19,9 @@ static long perfEndTime = 0;
 static const char* parg = NULL;
 static const char* workspaceConfig;
 
+PRT_PROCESS *process;
+
+
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -108,9 +111,14 @@ extern "C" void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 
     PRT_VALUE *pongPayload = PrtMkNullValue();
         PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+                PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
+        PRT_MACHINEID pongId;
+        pongId.machineId = 1;
+
+        PRT_MACHINEINST* pongMachine = PrtGetMachine(process, PrtMkMachineValue(pongId));
         //PRT_MACHINESTATE state;
 	    //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
-        PrtSend(NULL, context, pongEvent, 0);
+        PrtSend(NULL, pongMachine, pingEvent, 0);
     
    
 }
@@ -125,7 +133,7 @@ void ocall_print(const char* str) {
 int main(int argc, char const *argv[]) {
 
 
-    PRT_PROCESS *process;
+    //PRT_PROCESS *process;
 		PRT_GUID processGuid;
 		PRT_VALUE *payload;
         		PRT_VALUE *payload2;
@@ -161,10 +169,10 @@ int main(int argc, char const *argv[]) {
 		PrtUpdateAssertFn(MyAssert);
         ocall_print("after update assert fn!\n");
 
-        // PRT_UINT32 mainMachine2 = 1;
-		// PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
-		// PrtAssert(foundMachine2, "No 'Pong' machine found!");
-		// PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload2);
+        PRT_UINT32 mainMachine2 = 1;
+		PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
+		PrtAssert(foundMachine2, "No 'Pong' machine found!");
+		PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload2);
 
         // PRT_MACHINEID id2;
         // id2.machineId = mainMachine2;
@@ -282,15 +290,15 @@ int main(int argc, char const *argv[]) {
 
 
 
-    if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
-        std::cout << "Fail to initialize enclave." << std::endl;
-        return 1;
-    }
-    int ptr;
-    sgx_status_t status = enclave_main(global_eid, &ptr);
-    std::cout << status << std::endl;
-    if (status != SGX_SUCCESS) {
-        std::cout << "noob" << std::endl;
-    }
+    // if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
+    //     std::cout << "Fail to initialize enclave." << std::endl;
+    //     return 1;
+    // }
+    // int ptr;
+    // sgx_status_t status = enclave_main(global_eid, &ptr);
+    // std::cout << status << std::endl;
+    // if (status != SGX_SUCCESS) {
+    //     std::cout << "noob" << std::endl;
+    // }
     return 0;
 }
