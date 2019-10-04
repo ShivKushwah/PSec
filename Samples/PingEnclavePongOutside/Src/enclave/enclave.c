@@ -115,6 +115,18 @@ static void RunToIdle(void* process)
 	}
 }
 
+void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+
+    PRT_VALUE *pongPayload = PrtMkNullValue();
+        PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+        //PRT_MACHINESTATE state;
+	    //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
+        PrtSend(NULL, context, pongEvent, 0);
+    
+   
+}
+
 extern int Delta;
 
 int enclave_main(void)

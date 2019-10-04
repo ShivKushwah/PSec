@@ -2,6 +2,7 @@
 event Ping assert 2;
 
 event Pong assert 2;
+fun SecureReceive();
 event Success;
 
 machine Ping {
@@ -9,8 +10,7 @@ machine Ping {
 
     start state Ping_Init {
         entry {
-        //entry (payload: machine) {
-      	    //pongId = payload;
+            //pongId = new Pong();
     	    raise Success;   	   
         }
         on Success goto Ping_SendingPing;
@@ -26,12 +26,14 @@ machine Ping {
 
      state Ping_WaitPong {
         //idea make a foreigntypescall here to enclave.cpp to add the Pong event to the queue
+        entry {
+            SecureReceive();
+        }
         on Pong goto Done;
      }
 
     state Done {
         entry {
-            print "Kirat";
             raise Success;
         }
         on Success goto ReallyDone;

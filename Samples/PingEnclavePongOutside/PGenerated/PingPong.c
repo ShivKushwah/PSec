@@ -6,6 +6,8 @@ static PRT_TYPE P_GEND_TYPE_i = { PRT_KIND_INT, { NULL } };
 static PRT_TYPE P_GEND_TYPE_m = { PRT_KIND_MACHINE, { NULL } };
 
 // Function implementation prototypes:
+PRT_VALUE* P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
 
@@ -20,6 +22,9 @@ extern PRT_FUNDECL P_FUNCTION_Anon_3;
 
 PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon_4;
+
+PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_FUNCTION_Anon_5;
 
 
 PRT_EVENTDECL P_EVENT_Ping = 
@@ -45,6 +50,14 @@ PRT_EVENTDECL P_EVENT_Success =
     4294967295U,
     &P_GEND_TYPE_n
 };
+
+PRT_FUNDECL P_FUNCTION_SecureReceive =
+{
+    "SecureReceive",
+    &P_SecureReceive_IMPL,
+    NULL
+};
+
 
 PRT_EVENTDECL* P_Ping_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Ping_RECV =
@@ -207,7 +220,7 @@ PRT_TRANSDECL P_TRANS_2[] =
     &P_EVENTSET_Ping_WaitPong_DOS, \
     P_TRANS_2, \
     NULL, \
-    &_P_NO_OP, \
+    &P_FUNCTION_Anon_2, \
     &_P_NO_OP, \
 }
 
@@ -250,7 +263,7 @@ PRT_TRANSDECL P_TRANS_3[] =
     &P_EVENTSET_Done_DOS, \
     P_TRANS_3, \
     NULL, \
-    &P_FUNCTION_Anon_2, \
+    &P_FUNCTION_Anon_3, \
     &_P_NO_OP, \
 }
 
@@ -360,21 +373,18 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE** _P_GEN_funargs[32];
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
-    PRT_VALUE* PTMP_tmp0_2 = NULL;
-    
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PrtPrintf("Kirat");
-    
-    PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp0_2);
-    PrtFreeValue(*P_LVALUE_2);
-    *P_LVALUE_2 = PrtCloneValue((&P_EVENT_Success.value));
-    
-    PrtRaise(p_this, PTMP_tmp0_2, 0);
-    *(&(PTMP_tmp0_2)) = NULL;
-    goto p_return_2;
+    PrtFreeValue(P_SecureReceive_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_2;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_2;
+    }
     
 p_return_2: ;
-    PrtFreeValue(PTMP_tmp0_2); PTMP_tmp0_2 = NULL;
     return _P_GEN_retval;
 }
 
@@ -386,7 +396,39 @@ PRT_FUNDECL P_FUNCTION_Anon_2 =
 };
 
 
-PRT_FUNDECL* P_Ping_METHODS[] = { &P_FUNCTION_Anon, &P_FUNCTION_Anon_1, &P_FUNCTION_Anon_2 };
+PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    PRT_VALUE* PTMP_tmp0_2 = NULL;
+    
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PrtPrintf("Kirat");
+    
+    PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp0_2);
+    PrtFreeValue(*P_LVALUE_2);
+    *P_LVALUE_2 = PrtCloneValue((&P_EVENT_Success.value));
+    
+    PrtRaise(p_this, PTMP_tmp0_2, 0);
+    *(&(PTMP_tmp0_2)) = NULL;
+    goto p_return_3;
+    
+p_return_3: ;
+    PrtFreeValue(PTMP_tmp0_2); PTMP_tmp0_2 = NULL;
+    return _P_GEN_retval;
+}
+
+PRT_FUNDECL P_FUNCTION_Anon_3 =
+{
+    NULL,
+    &P_Anon_IMPL_3,
+    NULL
+};
+
+
+PRT_FUNDECL* P_Ping_METHODS[] = { &P_FUNCTION_Anon, &P_FUNCTION_Anon_1, &P_FUNCTION_Anon_2, &P_FUNCTION_Anon_3 };
 
 PRT_EVENTDECL* P_Ping_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Ping_RECV_1 =
@@ -413,7 +455,7 @@ PRT_MACHINEDECL P_MACHINE_Ping =
     NULL,
     1U,
     5U,
-    3U,
+    4U,
     4294967295U,
     0U,
     P_Ping_VARS,
@@ -460,7 +502,7 @@ PRT_TRANSDECL P_TRANS_4[] =
     &P_EVENTSET_Pong_WaitPing_DOS, \
     P_TRANS_4, \
     NULL, \
-    &P_FUNCTION_Anon_3, \
+    &P_FUNCTION_Anon_4, \
     &_P_NO_OP, \
 }
 
@@ -503,7 +545,7 @@ PRT_TRANSDECL P_TRANS_5[] =
     &P_EVENTSET_Pong_SendingPong_DOS, \
     P_TRANS_5, \
     NULL, \
-    &P_FUNCTION_Anon_4, \
+    &P_FUNCTION_Anon_5, \
     &_P_NO_OP, \
 }
 
@@ -547,7 +589,7 @@ PRT_EVENTSETDECL P_EVENTSET_Done_DOS_1 =
 
 PRT_STATEDECL P_Pong_STATES[] = { P_STATE_Pong_Pong_WaitPing, P_STATE_Pong_Pong_SendingPong, P_STATE_Pong_Done };
 
-PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -555,19 +597,19 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE** P_VAR_payload = argRefs[0];
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-p_return_3: ;
+p_return_4: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_3 =
+PRT_FUNDECL P_FUNCTION_Anon_4 =
 {
     NULL,
-    &P_Anon_IMPL_3,
+    &P_Anon_IMPL_4,
     &P_GEND_TYPE_i
 };
 
 
-PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -582,22 +624,22 @@ PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PrtRaise(p_this, PTMP_tmp0_3, 0);
     *(&(PTMP_tmp0_3)) = NULL;
-    goto p_return_4;
+    goto p_return_5;
     
-p_return_4: ;
+p_return_5: ;
     PrtFreeValue(PTMP_tmp0_3); PTMP_tmp0_3 = NULL;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_4 =
+PRT_FUNDECL P_FUNCTION_Anon_5 =
 {
     NULL,
-    &P_Anon_IMPL_4,
+    &P_Anon_IMPL_5,
     NULL
 };
 
 
-PRT_FUNDECL* P_Pong_METHODS[] = { &P_FUNCTION_Anon_3, &P_FUNCTION_Anon_4 };
+PRT_FUNDECL* P_Pong_METHODS[] = { &P_FUNCTION_Anon_4, &P_FUNCTION_Anon_5 };
 
 PRT_EVENTDECL* P_Pong_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Pong_RECV_1 =

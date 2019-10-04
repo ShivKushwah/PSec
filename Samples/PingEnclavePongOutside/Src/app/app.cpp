@@ -103,6 +103,18 @@ static void RunToIdle(void* process)
 	}
 }
 
+extern "C" void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+
+    PRT_VALUE *pongPayload = PrtMkNullValue();
+        PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+        //PRT_MACHINESTATE state;
+	    //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
+        PrtSend(NULL, context, pongEvent, 0);
+    
+   
+}
+
 
 
 // OCall implementations
@@ -170,7 +182,7 @@ int main(int argc, char const *argv[]) {
         PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
         //PRT_MACHINESTATE state;
 	    //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
-        PrtSend(NULL, pingMachine, pongEvent, 0);
+        //PrtSend(NULL, pingMachine, pongEvent, 0);
     
         
         printf("after mk machine!\n");
