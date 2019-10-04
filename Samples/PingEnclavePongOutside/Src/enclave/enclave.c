@@ -117,8 +117,7 @@ static void RunToIdle(void* process)
 
 void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    ocall_secure_send();
-   
+    ocall_send_pong();
 }
 
 int send_ping_enclave(void) {

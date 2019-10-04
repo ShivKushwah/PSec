@@ -49,10 +49,10 @@ static sgx_status_t SGX_CDECL enclave_ocall_print(void* pms)
 	return SGX_SUCCESS;
 }
 
-static sgx_status_t SGX_CDECL enclave_ocall_secure_send(void* pms)
+static sgx_status_t SGX_CDECL enclave_ocall_send_pong(void* pms)
 {
 	if (pms != NULL) return SGX_ERROR_INVALID_PARAMETER;
-	ocall_secure_send();
+	ocall_send_pong();
 	return SGX_SUCCESS;
 }
 
@@ -103,7 +103,7 @@ static const struct {
 	7,
 	{
 		(void*)enclave_ocall_print,
-		(void*)enclave_ocall_secure_send,
+		(void*)enclave_ocall_send_pong,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
 		(void*)enclave_sgx_thread_set_untrusted_event_ocall,

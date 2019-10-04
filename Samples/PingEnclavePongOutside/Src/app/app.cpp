@@ -20,6 +20,7 @@ static const char* parg = NULL;
 static const char* workspaceConfig;
 
 PRT_PROCESS *process;
+PRT_MACHINEINST* pingMachine;
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -106,6 +107,9 @@ static void RunToIdle(void* process)
 
 extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
+
+    
+
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
         std::cout << "Fail to initialize enclave." << std::endl;
         // return 1;
@@ -133,8 +137,18 @@ void ocall_print(const char* str) {
     printf("[o] %s\n", str);
 }
 
-void ocall_secure_send(void) {
-    
+void ocall_send_pong(void) {
+
+    PRT_VALUE *pingPayload = PrtMkNullValue();
+    PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+    PRT_MACHINEID pingId;
+    pingId.machineId = 1;
+
+    PRT_MACHINEINST* pingMachinee = PrtGetMachine(process, PrtMkMachineValue(pingId));
+    PrtSend(NULL, pingMachinee, pongEvent, 0);
+
+
+
 }
 
 int main(int argc, char const *argv[]) {
@@ -172,10 +186,11 @@ int main(int argc, char const *argv[]) {
 		PrtUpdateAssertFn(MyAssert);
         ocall_print("after update assert fn!\n");
 
-        PRT_UINT32 mainMachine = 0;
+        PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
+        // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
 		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
 		PrtAssert(foundMachine, "No 'Ping' machine found!");
-		PRT_MACHINEINST* pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);
+		pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);
 
         PRT_VALUE *pongPayload = PrtMkNullValue();
         PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
