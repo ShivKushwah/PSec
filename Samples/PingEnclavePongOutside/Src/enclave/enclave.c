@@ -115,41 +115,9 @@ static void RunToIdle(void* process)
 	}
 }
 
-void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-
-    //  PRT_VALUE *pongPayload = PrtMkNullValue();
-    //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-    //             PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
-    //     PRT_MACHINEID pongId;
-    //     pongId.machineId = 1;
-
-    //     PRT_MACHINEINST* pongMachine = PrtGetMachine(process, PrtMkMachineValue(pongId));
-    //     //PRT_MACHINESTATE state;
-	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
-    //     PrtSend(NULL, pongMachine, pingEvent, 0);
-
-     
-
-
-    //  PRT_VALUE *pongPayload = PrtMkNullValue();
-    //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-    //     //PRT_MACHINESTATE state;
-	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
-    //     PRT_MACHINEID pingId;
-    //     pingId.machineId = 0;
-
-    
-
-    //    PRT_MACHINEINST* pingMachine = context;//PrtGetMachine(process, PrtMkMachineValue(pingId));
-    //     PrtSend(NULL, pingMachine, pongEvent, 0);
-
-    // PRT_VALUE *pongPayload = PrtMkNullValue();
-    //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-    //     //PRT_MACHINESTATE state;
-	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
-    //     PrtSend(NULL, context, pongEvent, 0);
-    
+    ocall_secure_send();
    
 }
 

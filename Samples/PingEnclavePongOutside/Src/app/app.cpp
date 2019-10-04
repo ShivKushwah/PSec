@@ -104,7 +104,7 @@ static void RunToIdle(void* process)
 	}
 }
 
-extern "C" void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
         std::cout << "Fail to initialize enclave." << std::endl;
@@ -131,6 +131,10 @@ extern "C" void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 // OCall implementations
 void ocall_print(const char* str) {
     printf("[o] %s\n", str);
+}
+
+void ocall_secure_send(void) {
+    
 }
 
 int main(int argc, char const *argv[]) {

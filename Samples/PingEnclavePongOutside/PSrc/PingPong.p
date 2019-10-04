@@ -1,8 +1,7 @@
 //event Ping assert 1 : machine;
 event Ping assert 2;
-
 event Pong assert 2;
-fun SecureReceive();
+fun SecureSend();
 event Success;
 
 machine Ping {
@@ -27,7 +26,7 @@ machine Ping {
      state Ping_WaitPong {
         //idea make a foreigntypescall here to enclave.cpp to add the Pong event to the queue
         entry {
-            SecureReceive();
+            SecureSend();
         }
         on Pong goto Done;
      }
