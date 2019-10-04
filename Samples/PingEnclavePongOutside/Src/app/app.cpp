@@ -149,14 +149,14 @@ int main(int argc, char const *argv[]) {
 		PrtUpdateAssertFn(MyAssert);
         ocall_print("after update assert fn!\n");
 
-        PRT_UINT32 mainMachine2 = 1;
-		PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
-		PrtAssert(foundMachine2, "No 'Pong' machine found!");
-		PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload2);
+        // PRT_UINT32 mainMachine2 = 1;
+		// PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
+		// PrtAssert(foundMachine2, "No 'Pong' machine found!");
+		// PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload2);
 
-        PRT_MACHINEID id2;
-        id2.machineId = mainMachine2;
-	    id2.processId = processGuid;
+        // PRT_MACHINEID id2;
+        // id2.machineId = mainMachine2;
+	    // id2.processId = processGuid;
 
 
         // payload = PrtMkMachineValue(id2);
@@ -167,31 +167,11 @@ int main(int argc, char const *argv[]) {
 		PRT_MACHINEINST* pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);
 
         PRT_VALUE *pongPayload = PrtMkNullValue();
-        PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value)); //Is this legal?
-        //PRT_VALUE* state = &P_STATE_Ping_Ping_WaitPong.value;
-        PRT_MACHINESTATE state;
-	    PrtGetMachineState((PRT_MACHINEINST*)pingMachine, (PRT_MACHINESTATE*)&state);
-
-        // PrtSendPrivate(&state, pingMachine, pongEvent, pongPayload); //THis line works but crashes program. Maybe becuase of NULL?
-
-        // PRT_MACHINEID id;
-        // id.machineId = mainMachine;
-	    // id.processId = processGuid;
-
-
-        //PRT_VALUE *pingPayload = PrtMkNullValue();
-        //PRT_VALUE* pingEvent = &P_EVENT_Ping.value;
-       // int bro = PrtMapGet(((PRT_MACHINEINST_PRIV*)pongMachine)->recvMap, PrtMkMachineValue(id2))->valueUnion.nt;
-        //ocall_print("KRIAT: %d", bro);
-        //PRT_VALUE* machineID = PrtMkMachineValue(id2);
-        //PrtSend(&state, pingMachine, pongEvent, 0);
-        PrtSendPrivate(&state, (PRT_MACHINEINST_PRIV*)pingMachine, pongEvent, pongPayload);
-               // PrtSendInternal(pingMachine, pingMachine, pongEvent, 0);
-
-        //PrtEnqueueInOrder(machineID, 5,(PRT_MACHINEINST_PRIV*)pingMachine, pongEvent, pongPayload);
-                //PrtEnqueueInOrder(PrtMkMachineValue(id2), 1,(PRT_MACHINEINST_PRIV*)pongMachine, pingEvent, pingPayload); //seqNum by PrtMapGet?
-
-
+        PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+        //PRT_MACHINESTATE state;
+	    //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
+        PrtSend(NULL, pingMachine, pongEvent, 0);
+    
         
         printf("after mk machine!\n");
 
