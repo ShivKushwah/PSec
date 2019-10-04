@@ -1,5 +1,7 @@
-event Ping assert 1 : machine;
-event Pong assert 1;
+//event Ping assert 1 : machine;
+event Ping assert 2;
+
+event Pong assert 2;
 event Success;
 
 machine Ping {
@@ -11,10 +13,10 @@ machine Ping {
       	    //pongId = payload;
     	    raise Success;   	   
         }
-        on Success goto Ping_SendPing;
+        on Success goto Ping_SendingPing;
     }
 
-    state Ping_SendPing {
+    state Ping_SendingPing {
         entry {
     	   //send pongId, Ping, this;
     	    raise Success;
@@ -27,7 +29,18 @@ machine Ping {
         on Pong goto Done;
      }
 
-    state Done { }
+    state Done {
+        entry {
+            print "Kirat";
+            raise Success;
+        }
+        on Success goto ReallyDone;
+     }
+
+     state ReallyDone {
+     }
+
+
 }
 
 machine Pong {
@@ -38,12 +51,13 @@ machine Pong {
             // }
             // print "Kirat";
          }
-        on Ping goto Pong_SendPong;
+        on Ping goto Pong_SendingPong;
     }
 
-    state Pong_SendPong {
-	entry (payload: machine) {
-	     send payload, Pong;
+    state Pong_SendingPong {
+	//entry (payload: machine) {
+        entry {
+	     //send payload, Pong;
 	     raise Success;		 	  
 	}
         on Success goto Done;

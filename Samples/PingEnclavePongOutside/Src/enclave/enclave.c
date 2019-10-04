@@ -1,4 +1,6 @@
 #include "PingPong.h"
+//#include "PingPong.c"
+
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -118,8 +120,8 @@ extern int Delta;
 int enclave_main(void)
 {
     ocall_print("hello, world!\n");
-	PRT_DBG_START_MEM_BALANCED_REGION
-	{
+	//PRT_DBG_START_MEM_BALANCED_REGION
+	//{
 		PRT_PROCESS *process;
 		PRT_GUID processGuid;
 		PRT_VALUE *payload;
@@ -156,17 +158,17 @@ int enclave_main(void)
 		PrtUpdateAssertFn(MyAssert);
         ocall_print("after update assert fn!\n");
 
-        // PRT_UINT32 mainMachine2 = 1;
-		// PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
-		// PrtAssert(foundMachine2, "No 'Pong' machine found!");
-		// PrtMkMachine(process, mainMachine2, 1, &payload2);
+        PRT_UINT32 mainMachine2 = 1;
+		PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
+		PrtAssert(foundMachine2, "No 'Pong' machine found!");
+		PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload2);
 
-        // PRT_MACHINEID id;
-        // id.machineId = mainMachine2;
-	    // id.processId = processGuid;
+        PRT_MACHINEID id2;
+        id2.machineId = mainMachine2;
+	    id2.processId = processGuid;
 
 
-        // payload = PrtMkMachineValue(id);
+        // payload = PrtMkMachineValue(id2);
 
         PRT_UINT32 mainMachine = 0;
 		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
@@ -175,11 +177,24 @@ int enclave_main(void)
 
         PRT_VALUE *pongPayload = PrtMkNullValue();
         PRT_VALUE* pongEvent = &P_EVENT_Pong.value;
+        //PRT_VALUE* state = &P_STATE_Ping_Ping_WaitPong.value;
+        //PRT_MACHINESTATE state;
+	    //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, &state);
 
-        PrtSendPrivate(NULL, pingMachine, pongEvent, pongPayload); //THis line works but crashes program. Maybe becuase of NULL?
+        // PrtSendPrivate(&state, pingMachine, pongEvent, pongPayload); //THis line works but crashes program. Maybe becuase of NULL?
+
+        PRT_MACHINEID id;
+        id.machineId = mainMachine;
+	    id.processId = processGuid;
 
 
-        // PrtEnqueueInOrder(, ,pingMachine, pongEvent, pongPayload);
+        PRT_VALUE *pingPayload = PrtMkNullValue();
+        PRT_VALUE* pingEvent = &P_EVENT_Ping.value;
+       // int bro = PrtMapGet(((PRT_MACHINEINST_PRIV*)pongMachine)->recvMap, PrtMkMachineValue(id2))->valueUnion.nt;
+        //ocall_print("KRIAT: %d", bro);
+        //PrtEnqueueInOrder(PrtMkMachineValue(id2), 0,pingMachine, pongEvent, pongPayload);
+               // PrtEnqueueInOrder(PrtMkMachineValue(id2), 1,pongMachine, pingEvent, pingPayload); //seqNum by PrtMapGet?
+
 
         
         ocall_print("after mk machine!\n");
@@ -200,10 +215,14 @@ int enclave_main(void)
             }
             */
         }
+        //PrtFreeValue(pongPayload);
+                //PrtFreeValue(pongEvent);
+
+
 		PrtFreeValue(payload);
 		PrtStopProcess(process);
-	}
-	PRT_DBG_END_MEM_BALANCED_REGION
+	//}
+	//PRT_DBG_END_MEM_BALANCED_REGION
 
 	//_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 	//_CrtDumpMemoryLeaks();
