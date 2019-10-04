@@ -9,7 +9,7 @@ add_definitions( -DPRT_PLAT_LINUXUSER )
 
 set(CLIENT_SRC_FILES enclave_u.c app.cpp sgx_utils/sgx_utils.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPong.c)
 
-FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*)
+FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/PingPong.p) #used to be ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*
 PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/)
 FILE(GLOB_RECURSE ${projectName}_psources ${CMAKE_CURRENT_SOURCE_DIR}../../PSrc/*)
 FILE(GLOB_RECURSE ${projectName}_csources ./*)

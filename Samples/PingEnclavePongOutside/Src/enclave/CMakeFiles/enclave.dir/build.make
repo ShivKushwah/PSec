@@ -112,42 +112,42 @@ Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o.
 Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o.provides.build: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o
 
 
-Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/flags.make
-Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o: Samples/PingEnclavePongOutside/PGenerated/PingPong.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/PGenerated/PingPong.c
+Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/flags.make
+Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o: Samples/PingEnclavePongOutside/PGenerated/PingPongEnclave.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/PGenerated/PingPongEnclave.c
 
-Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.i"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/PGenerated/PingPong.c > CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.i
+Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.i"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/PGenerated/PingPongEnclave.c > CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.i
 
-Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.s"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/PGenerated/PingPong.c -o CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.s
+Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.s"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/PGenerated/PingPongEnclave.c -o CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.s
 
-Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o.requires:
+Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o.requires:
 
-.PHONY : Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o.requires
+.PHONY : Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o.requires
 
-Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o.provides: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o.requires
-	$(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o.provides.build
-.PHONY : Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o.provides
+Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o.provides: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o.requires
+	$(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o.provides.build
+.PHONY : Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o.provides
 
-Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o.provides.build: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o
+Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o.provides.build: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o
 
 
 # Object files for target enclave
 enclave_OBJECTS = \
 "CMakeFiles/enclave.dir/enclave.c.o" \
 "CMakeFiles/enclave.dir/enclave_t.c.o" \
-"CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o"
+"CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o"
 
 # External object files for target enclave
 enclave_EXTERNAL_OBJECTS =
 
 Samples/PingEnclavePongOutside/enclave.so: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o
 Samples/PingEnclavePongOutside/enclave.so: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o
-Samples/PingEnclavePongOutside/enclave.so: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o
+Samples/PingEnclavePongOutside/enclave.so: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o
 Samples/PingEnclavePongOutside/enclave.so: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make
 Samples/PingEnclavePongOutside/enclave.so: Submodule/P/Bld/Drops/Prt/lib/libPrt_trusted_static.a
 Samples/PingEnclavePongOutside/enclave.so: Submodule/P/Bld/Drops/Prt/lib/libPrt_trusted_static.a
@@ -165,7 +165,7 @@ Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build: Samples
 
 Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/requires: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o.requires
 Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/requires: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o.requires
-Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/requires: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o.requires
+Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/requires: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o.requires
 
 .PHONY : Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/requires
 

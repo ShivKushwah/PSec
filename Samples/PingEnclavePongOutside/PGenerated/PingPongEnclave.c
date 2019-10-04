@@ -1,4 +1,4 @@
-#include "PingPong.h"
+#include "PingPongEnclave.h"
 
 // Type universe for program:
 static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };

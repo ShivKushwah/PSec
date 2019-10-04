@@ -143,32 +143,32 @@ enclave/fast:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build
 .PHONY : enclave/fast
 
-__/__/PGenerated/PingPong.o: __/__/PGenerated/PingPong.c.o
+__/__/PGenerated/PingPongEnclave.o: __/__/PGenerated/PingPongEnclave.c.o
 
-.PHONY : __/__/PGenerated/PingPong.o
+.PHONY : __/__/PGenerated/PingPongEnclave.o
 
 # target to build an object file
-__/__/PGenerated/PingPong.c.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o
-.PHONY : __/__/PGenerated/PingPong.c.o
+__/__/PGenerated/PingPongEnclave.c.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o
+.PHONY : __/__/PGenerated/PingPongEnclave.c.o
 
-__/__/PGenerated/PingPong.i: __/__/PGenerated/PingPong.c.i
+__/__/PGenerated/PingPongEnclave.i: __/__/PGenerated/PingPongEnclave.c.i
 
-.PHONY : __/__/PGenerated/PingPong.i
+.PHONY : __/__/PGenerated/PingPongEnclave.i
 
 # target to preprocess a source file
-__/__/PGenerated/PingPong.c.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.i
-.PHONY : __/__/PGenerated/PingPong.c.i
+__/__/PGenerated/PingPongEnclave.c.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.i
+.PHONY : __/__/PGenerated/PingPongEnclave.c.i
 
-__/__/PGenerated/PingPong.s: __/__/PGenerated/PingPong.c.s
+__/__/PGenerated/PingPongEnclave.s: __/__/PGenerated/PingPongEnclave.c.s
 
-.PHONY : __/__/PGenerated/PingPong.s
+.PHONY : __/__/PGenerated/PingPongEnclave.s
 
 # target to generate assembly for a file
-__/__/PGenerated/PingPong.c.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.s
-.PHONY : __/__/PGenerated/PingPong.c.s
+__/__/PGenerated/PingPongEnclave.c.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.s
+.PHONY : __/__/PGenerated/PingPongEnclave.c.s
 
 enclave.o: enclave.c.o
 
@@ -234,9 +234,9 @@ help:
 	@echo "... dep_enclave"
 	@echo "... rebuild_cache"
 	@echo "... enclave"
-	@echo "... __/__/PGenerated/PingPong.o"
-	@echo "... __/__/PGenerated/PingPong.i"
-	@echo "... __/__/PGenerated/PingPong.s"
+	@echo "... __/__/PGenerated/PingPongEnclave.o"
+	@echo "... __/__/PGenerated/PingPongEnclave.i"
+	@echo "... __/__/PGenerated/PingPongEnclave.s"
 	@echo "... enclave.o"
 	@echo "... enclave.i"
 	@echo "... enclave.s"

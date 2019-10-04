@@ -282,15 +282,15 @@ int main(int argc, char const *argv[]) {
 
 
 
-    // if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
-    //     std::cout << "Fail to initialize enclave." << std::endl;
-    //     return 1;
-    // }
-    // int ptr;
-    // sgx_status_t status = enclave_main(global_eid, &ptr);
-    // std::cout << status << std::endl;
-    // if (status != SGX_SUCCESS) {
-    //     std::cout << "noob" << std::endl;
-    // }
+    if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
+        std::cout << "Fail to initialize enclave." << std::endl;
+        return 1;
+    }
+    int ptr;
+    sgx_status_t status = enclave_main(global_eid, &ptr);
+    std::cout << status << std::endl;
+    if (status != SGX_SUCCESS) {
+        std::cout << "noob" << std::endl;
+    }
     return 0;
 }

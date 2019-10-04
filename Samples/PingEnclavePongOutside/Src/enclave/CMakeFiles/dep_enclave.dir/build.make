@@ -57,8 +57,8 @@ CMAKE_BINARY_DIR = /home/shiv/Research/temp-del/ProgrammingEnclaves
 include Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/progress.make
 
 Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building P /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave/../../PSrc/PingPong.p ..."
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/PGenerated && dotnet /home/shiv/Research/temp-del/ProgrammingEnclaves/Submodule/P/Bld/Drops/Release/Binaries/Pc.dll /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave/../../PSrc/PingPong.p -outputDir:/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave/../../PGenerated/
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building P /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave/../../PSrc/PingPongEnclave.p ..."
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/PGenerated && dotnet /home/shiv/Research/temp-del/ProgrammingEnclaves/Submodule/P/Bld/Drops/Release/Binaries/Pc.dll /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave/../../PSrc/PingPongEnclave.p -outputDir:/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/enclave/../../PGenerated/
 
 dep_enclave: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave
 dep_enclave: Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave.dir/build.make

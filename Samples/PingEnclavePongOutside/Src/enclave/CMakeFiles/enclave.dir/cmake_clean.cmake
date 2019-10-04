@@ -4,7 +4,7 @@ file(REMOVE_RECURSE
   "enclave_t.c"
   "CMakeFiles/enclave.dir/enclave.c.o"
   "CMakeFiles/enclave.dir/enclave_t.c.o"
-  "CMakeFiles/enclave.dir/__/__/PGenerated/PingPong.c.o"
+  "CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o"
   "../../enclave.pdb"
   "../../enclave.so"
 )

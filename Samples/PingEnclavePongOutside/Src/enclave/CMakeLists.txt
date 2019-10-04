@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(pingpong)
 
 set(projectName enclave)
-FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*)
+FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/PingPongEnclave.p) #used to be ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*
 PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/)
 
 
@@ -30,7 +30,7 @@ set (${projectName}_INCLUDE
 set(ENCLAVE_SOURCE_FILES
         enclave.c
         enclave_t.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPong.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPongEnclave.c
         #/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c
         #~/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c
         )
