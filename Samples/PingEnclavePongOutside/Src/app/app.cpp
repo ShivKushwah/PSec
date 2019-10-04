@@ -20,10 +20,6 @@ static const char* parg = NULL;
 static const char* workspaceConfig;
 
 PRT_PROCESS *process;
-PRT_MACHINEINST* pongMachine;
-                PRT_MACHINEINST* pingMachine;
-
-
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -110,42 +106,6 @@ static void RunToIdle(void* process)
 
 extern "C" void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-
-    // PRT_VALUE *pongPayload = PrtMkNullValue();
-    //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-    //             PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
-    //     PRT_MACHINEID pongId;
-    //     pongId.machineId = 1;
-
-    //     PRT_MACHINEINST* pongMachine = PrtGetMachine(process, PrtMkMachineValue(pongId));
-    //     //PRT_MACHINESTATE state;
-	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
-    //     PrtSend(NULL, pongMachine, pingEvent, 0);
-
-    // PRT_VALUE *pongPayload = PrtMkNullValue();
-    //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-    //     //PRT_MACHINESTATE state;
-	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
-    //     PRT_MACHINEID pingId;
-    //     pingId.machineId = 0;
-
-    //     //printf("KIRAT : %d", pingMachine->id);
-
-    
-
-    //    PRT_MACHINEINST* pingMachinee = PrtGetMachine(context->process, PrtMkMachineValue(pingId));
-    //     PrtSend(NULL, pingMachinee, pongEvent, 0);
-
-    // PRT_VALUE *pongPayload = PrtMkNullValue();
-    //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-    //     //PRT_MACHINESTATE state;
-	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
-    //     PRT_MACHINEID pingId;
-    //     pingId.machineId = 0;
-
-    //    PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
-    //     PrtSend(NULL, pingMachine, pongEvent, 0);
-
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
         std::cout << "Fail to initialize enclave." << std::endl;
         // return 1;
@@ -156,18 +116,6 @@ extern "C" void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     if (status != SGX_SUCCESS) {
         std::cout << "noob" << std::endl;
     }
-
-    // // PRT_VALUE *pongPayload = PrtMkNullValue();
-    // //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-    // //             PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
-    // //     PRT_MACHINEID pongId;
-    // //     pongId.machineId = 1;
-
-    // //     PRT_MACHINEINST* pongMachine = PrtGetMachine(process, PrtMkMachineValue(pongId));
-    // //     //PRT_MACHINESTATE state;
-	// //     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
-    // //     PrtSend(NULL, pongMachine, pingEvent, 0);
-
         int ret_status;
 
         status = send_ping_enclave(global_eid, &ret_status);
@@ -175,8 +123,7 @@ extern "C" void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
         {
             printf("Failure: Error code %x\n", status);
         }
-    
-   
+
 }
 
 
@@ -188,11 +135,9 @@ void ocall_print(const char* str) {
 
 int main(int argc, char const *argv[]) {
 
-
-    //PRT_PROCESS *process;
 		PRT_GUID processGuid;
 		PRT_VALUE *payload;
-        		PRT_VALUE *payload2;
+        PRT_VALUE *payload2;
 
 
 		processGuid.data1 = 1;
@@ -220,33 +165,16 @@ int main(int argc, char const *argv[]) {
             
 		}
 
-        //payload2 = PrtMkIntValue(7);
-
 		PrtUpdateAssertFn(MyAssert);
         ocall_print("after update assert fn!\n");
-
-        PRT_UINT32 mainMachine2 = 1;
-		PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
-		PrtAssert(foundMachine2, "No 'Pong' machine found!");
-		pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload2);
-
-        // PRT_MACHINEID id2;
-        // id2.machineId = mainMachine2;
-	    // id2.processId = processGuid;
-
-
-        // payload = PrtMkMachineValue(id2);
 
         PRT_UINT32 mainMachine = 0;
 		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
 		PrtAssert(foundMachine, "No 'Ping' machine found!");
-		 pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);
+		PRT_MACHINEINST* pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);
 
         PRT_VALUE *pongPayload = PrtMkNullValue();
         PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-        //PRT_MACHINESTATE state;
-	    //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
-        //PrtSend(NULL, pingMachine, pongEvent, 0);
     
         
         printf("after mk machine!\n");
@@ -267,85 +195,6 @@ int main(int argc, char const *argv[]) {
             }
             */
         }
-        //PrtFreeValue(pongPayload);
-                //PrtFreeValue(pongEvent);
-
-
-		//PrtFreeValue(payload);
-		//PrtStopProcess(process);
-
-
-
-
-
-
-
-    // PRT_DBG_START_MEM_BALANCED_REGION
-    //     {
-    //        PRT_PROCESS *process;
-	// 	PRT_GUID processGuid;
-	// 	PRT_VALUE *payload;
-    //     		PRT_VALUE *payload2;
-
-
-	// 	processGuid.data1 = 1;
-	// 	processGuid.data2 = 0;
-	// 	processGuid.data3 = 0;
-	// 	processGuid.data4 = 0;
-	// 	process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
-    //     ocall_print("after start process!\n");
-    //     if (cooperative)
-    //     {
-    //         PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
-    //     }
-	// 	if (parg == NULL)
-	// 	{
-	// 		payload = PrtMkNullValue();
-    //         payload2 = PrtMkNullValue();
-
-	// 	}
-	// 	else
-	// 	{
-	// 		int i = atoi(parg);
-	// 		payload = PrtMkIntValue(i);
-    //         payload2 = PrtMkIntValue(i);
-
-            
-	// 	}
-
-    //     //payload2 = PrtMkIntValue(7);
-
-	// 	PrtUpdateAssertFn(MyAssert);
-    //     ocall_print("after update assert fn!\n");
-
-    //     PRT_UINT32 mainMachine2 = 1;
-	// 	PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
-	// 	PrtAssert(foundMachine2, "No 'Pong' machine found!");
-	// 	PrtMkMachine(process, mainMachine2, 1, &payload2);
-
-    //     PRT_MACHINEID id;
-    //     id.machineId = mainMachine2;
-	//     id.processId = processGuid;
-
-
-    //     payload = PrtMkMachineValue(id);
-
-    //     PRT_UINT32 mainMachine = 0;
-	// 	PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
-	// 	PrtAssert(foundMachine, "No 'Ping' machine found!");
-	// 	PrtMkMachine(process, mainMachine, 1, &payload);
-        
-    //     ocall_print("after mk machine!\n");
-
-    //         ocall_print("mk machine command executed!\n");
-    //         PrtFreeValue(payload);
-    //         PrtStopProcess(process);
-    //     }
-    //     PRT_DBG_END_MEM_BALANCED_REGION
-
-
-
-
     
     return 0;
 }
