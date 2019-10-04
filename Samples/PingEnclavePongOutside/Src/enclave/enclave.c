@@ -2,6 +2,9 @@
 //#include "PingPong.c"
 
 		PRT_PROCESS *process;
+        PRT_MACHINEINST* pongMachine;
+                PRT_MACHINEINST* pingMachine;
+
 
 
 
@@ -121,6 +124,32 @@ static void RunToIdle(void* process)
 void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
 
+    //  PRT_VALUE *pongPayload = PrtMkNullValue();
+    //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+    //             PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
+    //     PRT_MACHINEID pongId;
+    //     pongId.machineId = 1;
+
+    //     PRT_MACHINEINST* pongMachine = PrtGetMachine(process, PrtMkMachineValue(pongId));
+    //     //PRT_MACHINESTATE state;
+	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
+    //     PrtSend(NULL, pongMachine, pingEvent, 0);
+
+     
+
+
+    //  PRT_VALUE *pongPayload = PrtMkNullValue();
+    //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+    //     //PRT_MACHINESTATE state;
+	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
+    //     PRT_MACHINEID pingId;
+    //     pingId.machineId = 0;
+
+    
+
+    //    PRT_MACHINEINST* pingMachine = context;//PrtGetMachine(process, PrtMkMachineValue(pingId));
+    //     PrtSend(NULL, pingMachine, pongEvent, 0);
+
     // PRT_VALUE *pongPayload = PrtMkNullValue();
     //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
     //     //PRT_MACHINESTATE state;
@@ -132,7 +161,7 @@ void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 
 int send_ping_enclave(void) {
 
-    PRT_VALUE *pongPayload = PrtMkNullValue();
+     PRT_VALUE *pongPayload = PrtMkNullValue();
         PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
                 PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
         PRT_MACHINEID pongId;
@@ -142,6 +171,43 @@ int send_ping_enclave(void) {
         //PRT_MACHINESTATE state;
 	    //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
         PrtSend(NULL, pongMachine, pingEvent, 0);
+
+   
+
+    // PRT_VALUE *pongPayload = PrtMkNullValue();
+    //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+    //     //PRT_MACHINESTATE state;
+	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
+    //     PRT_MACHINEID pingId;
+    //     pingId.machineId = 0;
+
+    
+
+    //   // PRT_MACHINEINST* pingMachine = context;//PrtGetMachine(process, PrtMkMachineValue(pingId));
+    //     PrtSend(NULL, pingMachine, pongEvent, 0);
+
+    // PRT_VALUE *pongPayload = PrtMkNullValue();
+    //     PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
+    //     //PRT_MACHINESTATE state;
+	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
+    // //     PRT_MACHINEID pingId;
+    // //     pingId.machineId = 0;
+
+    
+
+    // //    PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
+    //     PrtSend(NULL, pongMachine, pingEvent, 0);
+
+    // PRT_VALUE *pongPayload = PrtMkNullValue();
+    //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+    //             PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
+    //     PRT_MACHINEID pongId;
+    //     pongId.machineId = 1;
+
+    //     PRT_MACHINEINST* pongMachine = PrtGetMachine(process, PrtMkMachineValue(pongId));
+    //     //PRT_MACHINESTATE state;
+	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
+    //     PrtSend(NULL, pongMachine, pingEvent, 0);
 
         return 0;
 
@@ -194,7 +260,7 @@ int enclave_main(void)
         PRT_UINT32 mainMachine2 = 1;
 		PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
 		PrtAssert(foundMachine2, "No 'Pong' machine found!");
-		PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload2);
+		pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload2);
 
         PRT_MACHINEID id2;
         id2.machineId = mainMachine2;
@@ -206,7 +272,7 @@ int enclave_main(void)
         PRT_UINT32 mainMachine = 0;
 		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
 		PrtAssert(foundMachine, "No 'Ping' machine found!");
-		PRT_MACHINEINST* pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);
+		 pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);
 
         PRT_VALUE *pongPayload = PrtMkNullValue();
         PRT_VALUE* pongEvent = &P_EVENT_Pong.value;
@@ -252,8 +318,8 @@ int enclave_main(void)
                 //PrtFreeValue(pongEvent);
 
 
-		PrtFreeValue(payload);
-		PrtStopProcess(process);
+		//PrtFreeValue(payload);
+		//PrtStopProcess(process);
 	//}
 	//PRT_DBG_END_MEM_BALANCED_REGION
 
