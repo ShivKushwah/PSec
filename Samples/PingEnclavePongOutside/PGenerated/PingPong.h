@@ -11,9 +11,7 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_Pong;
     extern PRT_EVENTDECL P_EVENT_Success;
     extern PRT_INTERFACEDECL P_I_Ping;
-    extern PRT_INTERFACEDECL P_I_Pong;
     extern PRT_MACHINEDECL P_MACHINE_Ping;
-    extern PRT_MACHINEDECL P_MACHINE_Pong;
     extern PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl;
     
 #ifdef __cplusplus
