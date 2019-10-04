@@ -5,6 +5,10 @@ typedef struct ms_enclave_main_t {
 	int ms_retval;
 } ms_enclave_main_t;
 
+typedef struct ms_send_ping_enclave_t {
+	int ms_retval;
+} ms_send_ping_enclave_t;
+
 typedef struct ms_ocall_print_t {
 	const char* ms_str;
 } ms_ocall_print_t;
@@ -104,6 +108,15 @@ sgx_status_t enclave_main(sgx_enclave_id_t eid, int* retval)
 	sgx_status_t status;
 	ms_enclave_main_t ms;
 	status = sgx_ecall(eid, 0, &ocall_table_enclave, &ms);
+	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
+	return status;
+}
+
+sgx_status_t send_ping_enclave(sgx_enclave_id_t eid, int* retval)
+{
+	sgx_status_t status;
+	ms_send_ping_enclave_t ms;
+	status = sgx_ecall(eid, 1, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }

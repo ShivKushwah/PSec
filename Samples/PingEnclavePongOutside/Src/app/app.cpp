@@ -109,6 +109,17 @@ static void RunToIdle(void* process)
 extern "C" void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
 
+    if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
+        std::cout << "Fail to initialize enclave." << std::endl;
+        // return 1;
+    }
+    int ptr;
+    sgx_status_t status = enclave_main(global_eid, &ptr);
+    std::cout << status << std::endl;
+    if (status != SGX_SUCCESS) {
+        std::cout << "noob" << std::endl;
+    }
+
     PRT_VALUE *pongPayload = PrtMkNullValue();
         PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
                 PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
@@ -119,6 +130,14 @@ extern "C" void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
         //PRT_MACHINESTATE state;
 	    //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
         PrtSend(NULL, pongMachine, pingEvent, 0);
+
+        int ret_status;
+
+        status = send_ping_enclave(global_eid, &ret_status);
+        if (status!=SGX_SUCCESS)
+        {
+            printf("Failure: Error code %x\n", status);
+        }
     
    
 }
@@ -290,15 +309,6 @@ int main(int argc, char const *argv[]) {
 
 
 
-    // if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
-    //     std::cout << "Fail to initialize enclave." << std::endl;
-    //     return 1;
-    // }
-    // int ptr;
-    // sgx_status_t status = enclave_main(global_eid, &ptr);
-    // std::cout << status << std::endl;
-    // if (status != SGX_SUCCESS) {
-    //     std::cout << "noob" << std::endl;
-    // }
+    
     return 0;
 }

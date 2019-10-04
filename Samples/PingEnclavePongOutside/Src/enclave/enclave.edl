@@ -4,6 +4,8 @@ enclave {
     trusted {
         /* define ECALLs here. */
         public int enclave_main(void);
+        public int send_ping_enclave(void);
+
     };
 
     untrusted {

@@ -1,6 +1,9 @@
 #include "PingPongEnclave.h"
 //#include "PingPong.c"
 
+		PRT_PROCESS *process;
+
+
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -118,14 +121,33 @@ static void RunToIdle(void* process)
 void P_SecureReceive_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
 
-    PRT_VALUE *pongPayload = PrtMkNullValue();
-        PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-        //PRT_MACHINESTATE state;
-	    //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
-        PrtSend(NULL, context, pongEvent, 0);
+    // PRT_VALUE *pongPayload = PrtMkNullValue();
+    //     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+    //     //PRT_MACHINESTATE state;
+	//     //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
+    //     PrtSend(NULL, context, pongEvent, 0);
     
    
 }
+
+int send_ping_enclave(void) {
+
+    PRT_VALUE *pongPayload = PrtMkNullValue();
+        PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+                PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
+        PRT_MACHINEID pongId;
+        pongId.machineId = 1;
+
+        PRT_MACHINEINST* pongMachine = PrtGetMachine(process, PrtMkMachineValue(pongId));
+        //PRT_MACHINESTATE state;
+	    //PrtGetMachineState((PRT_MACHINEINST*)pongMachine, (PRT_MACHINESTATE*)&state);
+        PrtSend(NULL, pongMachine, pingEvent, 0);
+
+        return 0;
+
+
+}
+
 
 extern int Delta;
 
@@ -134,7 +156,6 @@ int enclave_main(void)
     ocall_print("hello, world!\n");
 	//PRT_DBG_START_MEM_BALANCED_REGION
 	//{
-		PRT_PROCESS *process;
 		PRT_GUID processGuid;
 		PRT_VALUE *payload;
         		PRT_VALUE *payload2;

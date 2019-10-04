@@ -42,6 +42,7 @@ int SGX_UBRIDGE(SGX_CDECL, sgx_thread_set_multiple_untrusted_events_ocall, (cons
 #endif
 
 sgx_status_t enclave_main(sgx_enclave_id_t eid, int* retval);
+sgx_status_t send_ping_enclave(sgx_enclave_id_t eid, int* retval);
 
 #ifdef __cplusplus
 }
