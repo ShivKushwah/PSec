@@ -2,16 +2,12 @@
 
 // Type universe for program:
 static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
-static PRT_TYPE P_GEND_TYPE_i = { PRT_KIND_INT, { NULL } };
 
 // Function implementation prototypes:
 PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
-
-PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-extern PRT_FUNDECL P_FUNCTION_Anon_1;
 
 
 PRT_EVENTDECL P_EVENT_Ping = 
@@ -58,7 +54,7 @@ PRT_INTERFACEDECL P_I_Pong =
 {
     0U,
     "Pong",
-    &P_GEND_TYPE_i,
+    &P_GEND_TYPE_n,
     &P_EVENTSET_Pong_RECV
 };
 
@@ -101,7 +97,7 @@ PRT_TRANSDECL P_TRANS[] =
     &P_EVENTSET_Pong_WaitPing_DOS, \
     P_TRANS, \
     NULL, \
-    &P_FUNCTION_Anon, \
+    &_P_NO_OP, \
     &_P_NO_OP, \
 }
 
@@ -144,7 +140,7 @@ PRT_TRANSDECL P_TRANS_1[] =
     &P_EVENTSET_Pong_SendingPong_DOS, \
     P_TRANS_1, \
     NULL, \
-    &P_FUNCTION_Anon_1, \
+    &P_FUNCTION_Anon, \
     &_P_NO_OP, \
 }
 
@@ -194,37 +190,17 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE** _P_GEN_funargs[32];
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-p_return: ;
-    return _P_GEN_retval;
-}
-
-PRT_FUNDECL P_FUNCTION_Anon =
-{
-    NULL,
-    &P_Anon_IMPL,
-    &P_GEND_TYPE_i
-};
-
-
-PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE* _P_GEN_funval = NULL;
-    PRT_VALUE** _P_GEN_funargs[32];
-    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
-    PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE* PTMP_tmp0 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
-        goto p_return_1;
+        goto p_return;
     }
     if (p_this->isHalted == PRT_TRUE) {
         PrtFreeValue(_P_GEN_retval);
         _P_GEN_retval = NULL;
-        goto p_return_1;
+        goto p_return;
     }
     
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
@@ -233,22 +209,22 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PrtRaise(p_this, PTMP_tmp0, 0);
     *(&(PTMP_tmp0)) = NULL;
-    goto p_return_1;
+    goto p_return;
     
-p_return_1: ;
+p_return: ;
     PrtFreeValue(PTMP_tmp0); PTMP_tmp0 = NULL;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_1 =
+PRT_FUNDECL P_FUNCTION_Anon =
 {
     NULL,
-    &P_Anon_IMPL_1,
+    &P_Anon_IMPL,
     NULL
 };
 
 
-PRT_FUNDECL* P_Pong_METHODS[] = { &P_FUNCTION_Anon, &P_FUNCTION_Anon_1 };
+PRT_FUNDECL* P_Pong_METHODS[] = { &P_FUNCTION_Anon };
 
 PRT_EVENTDECL* P_Pong_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Pong_RECV_1 =
@@ -275,7 +251,7 @@ PRT_MACHINEDECL P_MACHINE_Pong =
     NULL,
     0U,
     3U,
-    2U,
+    1U,
     4294967295U,
     0U,
     NULL,

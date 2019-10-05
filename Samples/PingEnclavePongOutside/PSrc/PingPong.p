@@ -1,4 +1,3 @@
-//event Ping assert 1 : machine;
 event Ping assert 2;
 event Pong assert 2;
 fun SecureSend();
@@ -9,7 +8,6 @@ machine Ping {
 
     start state Ping_Init {
         entry {
-            //pongId = new Pong();
     	    raise Success;   	   
         }
         on Success goto Ping_SendingPing;
@@ -17,29 +15,16 @@ machine Ping {
 
     state Ping_SendingPing {
         entry {
-    	   //send pongId, Ping, this;
+            SecureSend(); //Send Ping to the enclave's Pong machine
     	    raise Success;
-	}
+	    }
         on Success goto Ping_WaitPong;
-     }
+    }
 
-     state Ping_WaitPong {
-        //idea make a foreigntypescall here to enclave.cpp to add the Pong event to the queue
-        entry {
-            SecureSend();
-        }
-        on Pong goto Done;
-     }
+    state Ping_WaitPong {
+        on Pong goto Done; //Receives this message from the Pong machine in the enclave
+    }
 
-    state Done {
-        entry {
-            raise Success;
-        }
-        on Success goto ReallyDone;
-     }
-
-     state ReallyDone {
-     }
-
+    state Done {  }
 
 }
