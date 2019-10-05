@@ -38,8 +38,6 @@ void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 
 }
 
-
-
 static PRT_BOOLEAN cooperative = PRT_FALSE;
 static int threads = 1;
 
@@ -122,16 +120,13 @@ void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 
 int send_ping_enclave(void) {
 
-    PRT_VALUE *pongPayload = PrtMkNullValue();
-    PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-            PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
+    PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
     PRT_MACHINEID pongId;
     pongId.machineId = 1;
 
     PRT_MACHINEINST* pongMachine = PrtGetMachine(process, PrtMkMachineValue(pongId));
     PrtSend(NULL, pongMachine, pingEvent, 0);
     return 0;
-
 
 }
 
@@ -145,8 +140,6 @@ int enclave_main(void)
 	//{
 		PRT_GUID processGuid;
 		PRT_VALUE *payload;
-        		PRT_VALUE *payload2;
-
 
 		processGuid.data1 = 1;
 		processGuid.data2 = 0;
@@ -161,15 +154,12 @@ int enclave_main(void)
 		if (parg == NULL)
 		{
 			payload = PrtMkNullValue();
-            payload2 = PrtMkNullValue();
 
 		}
 		else
 		{
 			int i = atoi(parg);
 			payload = PrtMkIntValue(i);
-            payload2 = PrtMkIntValue(i);
-
             
 		}
 
@@ -179,11 +169,7 @@ int enclave_main(void)
         PRT_UINT32 mainMachine2 = 1;
 		PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
 		PrtAssert(foundMachine2, "No 'Pong' machine found!");
-		PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload2);
-
-        PRT_MACHINEID id2;
-        id2.machineId = mainMachine2;
-	    id2.processId = processGuid;
+		PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload);
 
         ocall_print("after mk machine!\n");
 

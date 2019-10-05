@@ -20,7 +20,6 @@ static const char* parg = NULL;
 static const char* workspaceConfig;
 
 PRT_PROCESS *process;
-PRT_MACHINEINST* pingMachine;
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -107,9 +106,6 @@ static void RunToIdle(void* process)
 
 extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-
-    
-
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
         std::cout << "Fail to initialize enclave." << std::endl;
         // return 1;
@@ -120,13 +116,13 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     if (status != SGX_SUCCESS) {
         std::cout << "noob" << std::endl;
     }
-        int ret_status;
+    int ret_status;
 
-        status = send_ping_enclave(global_eid, &ret_status);
-        if (status!=SGX_SUCCESS)
-        {
-            printf("Failure: Error code %x\n", status);
-        }
+    status = send_ping_enclave(global_eid, &ret_status);
+    if (status!=SGX_SUCCESS)
+    {
+        printf("Failure: Error code %x\n", status);
+    }
 
 }
 
@@ -139,15 +135,12 @@ void ocall_print(const char* str) {
 
 void ocall_send_pong(void) {
 
-    PRT_VALUE *pingPayload = PrtMkNullValue();
     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
     PRT_MACHINEID pingId;
     pingId.machineId = 1;
 
-    PRT_MACHINEINST* pingMachinee = PrtGetMachine(process, PrtMkMachineValue(pingId));
-    PrtSend(NULL, pingMachinee, pongEvent, 0);
-
-
+    PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
+    PrtSend(NULL, pingMachine, pongEvent, 0);
 
 }
 
@@ -190,11 +183,7 @@ int main(int argc, char const *argv[]) {
         // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
 		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
 		PrtAssert(foundMachine, "No 'Ping' machine found!");
-		pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);
-
-        PRT_VALUE *pongPayload = PrtMkNullValue();
-        PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-    
+		PRT_MACHINEINST* pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);    
         
         printf("after mk machine!\n");
 
