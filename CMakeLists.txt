@@ -14,7 +14,8 @@ include(HelperScripts/CMakeLists.txt)
 #subdirs(Samples/PingPongEnclave/)
 #subdirs(Samples/VotingSystem/)
 #subdirs(Samples/ForeignTypesEnclave/)
-subdirs(Samples/PingEnclavePongOutside/)
+#subdirs(Samples/PingEnclavePongOutside/)
+subdirs(Samples/PingEnclavePongOutsideRemoteAttestation/)
 
 
 ##########################################################################

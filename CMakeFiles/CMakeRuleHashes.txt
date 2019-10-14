@@ -1,7 +1,8 @@
 # Hashes of file build rules.
-74bef6136f38e885a86169a57a163175 Samples/PingEnclavePongOutside/Src/app/CMakeFiles/dep_
 05503e1b9bf7cd6d0fc2d1a9ab3dcc12 Samples/PingEnclavePongOutside/Src/app/enclave_u.c
-34d11aa26e2d30f24071e90648f4f4dd Samples/PingEnclavePongOutside/Src/enclave/CMakeFiles/dep_enclave
-ebb964e29d5c8d9f1ed0ce02c839b136 Samples/PingEnclavePongOutside/Src/enclave/enclave_t.c
+f1a9a941e8729a6a572cef9c231d5dee Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/dep_
+f3a6e19537610dade4c697565cf6bc1a Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/enclave_u.c
+9b4b559f803acf6ac27fcae3ed4a1946 Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/dep_enclave
+f0fcc70311d725a1ba3813059c7c1e24 Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/enclave_t.c
 eb73533e38fe1d543b59d2fc25e0adfd Submodule/P/Src/Prt/CMakeFiles/libhandler
 fbb62b29ad78218e86b75305f9402e44 Submodule/P/Src/Prt/SGXUser/Trusted/PrtEnclave_t.c
