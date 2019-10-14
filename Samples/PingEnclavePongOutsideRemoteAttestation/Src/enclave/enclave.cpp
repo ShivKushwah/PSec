@@ -1,4 +1,5 @@
 #include "PingPongEnclave.h"
+#include "enclave_t.h"
 
 PRT_PROCESS *process;
 
@@ -99,12 +100,12 @@ static void RunToIdle(void* process)
     PRT_PROCESS_PRIV* privateProcess = (PRT_PROCESS_PRIV*)process;
 	while (privateProcess->terminating == PRT_FALSE)
 	{
-		PRT_STEP_RESULT result = PrtStepProcess(process);
+		PRT_STEP_RESULT result = PrtStepProcess((PRT_PROCESS*)process);
 		switch (result) {
 		case PRT_STEP_TERMINATING:
 			break;
 		case PRT_STEP_IDLE:
-			PrtWaitForWork(process);
+			PrtWaitForWork((PRT_PROCESS*) process);
 			break;
 		case PRT_STEP_MORE:
 			PrtYieldThread();
@@ -113,7 +114,7 @@ static void RunToIdle(void* process)
 	}
 }
 
-void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     ocall_send_pong();
 }

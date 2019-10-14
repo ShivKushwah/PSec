@@ -170,32 +170,32 @@ __/__/PGenerated/PingPongEnclave.c.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.s
 .PHONY : __/__/PGenerated/PingPongEnclave.c.s
 
-enclave.o: enclave.c.o
+enclave.o: enclave.cpp.o
 
 .PHONY : enclave.o
 
 # target to build an object file
-enclave.c.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o
-.PHONY : enclave.c.o
+enclave.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o
+.PHONY : enclave.cpp.o
 
-enclave.i: enclave.c.i
+enclave.i: enclave.cpp.i
 
 .PHONY : enclave.i
 
 # target to preprocess a source file
-enclave.c.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.i
-.PHONY : enclave.c.i
+enclave.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.i
+.PHONY : enclave.cpp.i
 
-enclave.s: enclave.c.s
+enclave.s: enclave.cpp.s
 
 .PHONY : enclave.s
 
 # target to generate assembly for a file
-enclave.c.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.s
-.PHONY : enclave.c.s
+enclave.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.s
+.PHONY : enclave.cpp.s
 
 enclave_t.o: enclave_t.c.o
 

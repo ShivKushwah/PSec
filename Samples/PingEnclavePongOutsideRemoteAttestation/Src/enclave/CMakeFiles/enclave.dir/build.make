@@ -64,28 +64,28 @@ Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/enclave_t.c: Samples
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating enclave_t.c"
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave && /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/bin/x64/sgx_edger8r --trusted enclave.edl --search-path /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include --search-path /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/flags.make
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/enclave.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/enclave.dir/enclave.c.o   -c /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/enclave.c
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/flags.make
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/enclave.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/enclave.dir/enclave.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/enclave.cpp
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/enclave.dir/enclave.c.i"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/enclave.c > CMakeFiles/enclave.dir/enclave.c.i
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/enclave.dir/enclave.cpp.i"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/enclave.cpp > CMakeFiles/enclave.dir/enclave.cpp.i
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/enclave.dir/enclave.c.s"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/enclave.c -o CMakeFiles/enclave.dir/enclave.c.s
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/enclave.dir/enclave.cpp.s"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/enclave.cpp -o CMakeFiles/enclave.dir/enclave.cpp.s
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o.requires:
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o.requires:
 
-.PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o.requires
+.PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o.requires
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o.provides: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o.requires
-	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o.provides.build
-.PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o.provides
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o.provides: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o.requires
+	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o.provides.build
+.PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o.provides
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o.provides.build: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o.provides.build: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o
 
 
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/flags.make
@@ -138,14 +138,14 @@ Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.d
 
 # Object files for target enclave
 enclave_OBJECTS = \
-"CMakeFiles/enclave.dir/enclave.c.o" \
+"CMakeFiles/enclave.dir/enclave.cpp.o" \
 "CMakeFiles/enclave.dir/enclave_t.c.o" \
 "CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o"
 
 # External object files for target enclave
 enclave_EXTERNAL_OBJECTS =
 
-Samples/PingEnclavePongOutsideRemoteAttestation/enclave.so: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o
+Samples/PingEnclavePongOutsideRemoteAttestation/enclave.so: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o
 Samples/PingEnclavePongOutsideRemoteAttestation/enclave.so: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o
 Samples/PingEnclavePongOutsideRemoteAttestation/enclave.so: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o
 Samples/PingEnclavePongOutsideRemoteAttestation/enclave.so: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make
@@ -163,7 +163,7 @@ Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.d
 
 .PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.c.o.requires
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o.requires
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave_t.c.o.requires
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o.requires
 
