@@ -144,68 +144,68 @@ void ocall_send_pong(void) {
 
 }
 
-// int main(int argc, char const *argv[]) {
+int main(int argc, char const *argv[]) {
 
-// 		PRT_GUID processGuid;
-// 		PRT_VALUE *payload;
-//         PRT_VALUE *payload2;
+		PRT_GUID processGuid;
+		PRT_VALUE *payload;
+        PRT_VALUE *payload2;
 
 
-// 		processGuid.data1 = 1;
-// 		processGuid.data2 = 0;
-// 		processGuid.data3 = 0;
-// 		processGuid.data4 = 0;
-// 		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
-//         ocall_print("after start process!\n");
-//         if (cooperative)
-//         {
-//             PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
-//         }
-// 		if (parg == NULL)
-// 		{
-// 			payload = PrtMkNullValue();
-//             payload2 = PrtMkNullValue();
+		processGuid.data1 = 1;
+		processGuid.data2 = 0;
+		processGuid.data3 = 0;
+		processGuid.data4 = 0;
+		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
+        ocall_print("after start process!\n");
+        if (cooperative)
+        {
+            PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
+        }
+		if (parg == NULL)
+		{
+			payload = PrtMkNullValue();
+            payload2 = PrtMkNullValue();
 
-// 		}
-// 		else
-// 		{
-// 			int i = atoi(parg);
-// 			payload = PrtMkIntValue(i);
-//             payload2 = PrtMkIntValue(i);
+		}
+		else
+		{
+			int i = atoi(parg);
+			payload = PrtMkIntValue(i);
+            payload2 = PrtMkIntValue(i);
 
             
-// 		}
+		}
 
-// 		PrtUpdateAssertFn(MyAssert);
-//         ocall_print("after update assert fn!\n");
+		PrtUpdateAssertFn(MyAssert);
+        ocall_print("after update assert fn!\n");
 
-//         PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
-//         // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
-// 		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
-// 		PrtAssert(foundMachine, "No 'Ping' machine found!");
-// 		PRT_MACHINEINST* pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);    
+        PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
+        // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
+		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
+		PrtAssert(foundMachine, "No 'Ping' machine found!");
+		PRT_MACHINEINST* pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);    
         
-//         printf("after mk machine!\n");
+        printf("after mk machine!\n");
 
-//         if (cooperative)
-//         {
-//             // test some multithreading across state machines.
-//             /*
-//             typedef void *(*start_routine) (void *);
-//             pthread_t tid[threads];
-//             for (int i = 0; i < threads; i++)
-//             {
-//                 pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
-//             }
-//             for (int i = 0; i < threads; i++)
-//             {
-//                 pthread_join(tid[i], NULL);
-//             }
-//             */
-//         }
+        if (cooperative)
+        {
+            // test some multithreading across state machines.
+            /*
+            typedef void *(*start_routine) (void *);
+            pthread_t tid[threads];
+            for (int i = 0; i < threads; i++)
+            {
+                pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
+            }
+            for (int i = 0; i < threads; i++)
+            {
+                pthread_join(tid[i], NULL);
+            }
+            */
+        }
     
-//     return 0;
-// }
+    return 0;
+}
 
 
 
@@ -380,9 +380,10 @@ void PRINT_ATTESTATION_SERVICE_RESPONSE(
 // attestation. Since the enclave can be lost due S3 transitions, apps
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
-#define _T(x) x
-int main(int argc, char* argv[])
-{
+int ocall_enclave_start_attestation() {
+// #define _T(x) x
+// int main(int argc, char* argv[])
+// {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -402,33 +403,33 @@ int main(int argc, char* argv[])
 
     FILE* OUTPUT = stdout;
 
-#define VERIFICATION_INDEX_IS_VALID() (verify_index > 0 && \
-                                       verify_index <= verification_samples)
-#define GET_VERIFICATION_ARRAY_INDEX() (verify_index-1)
+// #define VERIFICATION_INDEX_IS_VALID() (verify_index > 0 && \
+//                                        verify_index <= verification_samples)
+// #define GET_VERIFICATION_ARRAY_INDEX() (verify_index-1)
 
-    if(argc > 1)
-    {
+//     if(argc > 1)
+//     {
 
-        verify_index = atoi(argv[1]);
+//         verify_index = atoi(argv[1]);
 
-        if( VERIFICATION_INDEX_IS_VALID())
-        {
-            fprintf(OUTPUT, "\nVerifying precomputed attestation messages "
-                            "using precomputed values# %d\n", verify_index);
-        }
-        else
-        {
-            fprintf(OUTPUT, "\nValid invocations are:\n");
-            fprintf(OUTPUT, "\n\tisv_app\n");
-            fprintf(OUTPUT, "\n\tisv_app <verification index>\n");
-            fprintf(OUTPUT, "\nValid indices are [1 - %d]\n",
-                    verification_samples);
-            fprintf(OUTPUT, "\nUsing a verification index uses precomputed "
-                    "messages to assist debugging the remote attestation "
-                    "service provider.\n");
-            return -1;
-        }
-    }
+//         if( VERIFICATION_INDEX_IS_VALID())
+//         {
+//             fprintf(OUTPUT, "\nVerifying precomputed attestation messages "
+//                             "using precomputed values# %d\n", verify_index);
+//         }
+//         else
+//         {
+//             fprintf(OUTPUT, "\nValid invocations are:\n");
+//             fprintf(OUTPUT, "\n\tisv_app\n");
+//             fprintf(OUTPUT, "\n\tisv_app <verification index>\n");
+//             fprintf(OUTPUT, "\nValid indices are [1 - %d]\n",
+//                     verification_samples);
+//             fprintf(OUTPUT, "\nUsing a verification index uses precomputed "
+//                     "messages to assist debugging the remote attestation "
+//                     "service provider.\n");
+//             return -1;
+//         }
+//     }
 
     // Preparation for remote attestation by configuring extended epid group id.
     {
@@ -551,18 +552,18 @@ int main(int argc, char* argv[])
 
         }
 
-        if(VERIFICATION_INDEX_IS_VALID())
-        {
+        // if(VERIFICATION_INDEX_IS_VALID())
+        // {
 
-            memcpy_s(p_msg1_full->body, p_msg1_full->size,
-                     msg1_samples[GET_VERIFICATION_ARRAY_INDEX()],
-                     p_msg1_full->size);
+        //     memcpy_s(p_msg1_full->body, p_msg1_full->size,
+        //              msg1_samples[GET_VERIFICATION_ARRAY_INDEX()],
+        //              p_msg1_full->size);
 
-            fprintf(OUTPUT, "\nInstead of using the recently generated MSG1, "
-                            "we will use the following precomputed MSG1 -\n");
+        //     fprintf(OUTPUT, "\nInstead of using the recently generated MSG1, "
+        //                     "we will use the following precomputed MSG1 -\n");
 
-            PRINT_BYTE_ARRAY(OUTPUT, p_msg1_full->body, p_msg1_full->size);
-        }
+        //     PRINT_BYTE_ARRAY(OUTPUT, p_msg1_full->body, p_msg1_full->size);
+        // }
 
 
         // The ISV application sends msg1 to the SP to get msg2,
@@ -580,37 +581,37 @@ int main(int argc, char* argv[])
         {
             fprintf(OUTPUT, "\nError, ra_network_send_receive for msg1 failed "
                             "[%s].", __FUNCTION__);
-            if(VERIFICATION_INDEX_IS_VALID())
-            {
-                fprintf(OUTPUT, "\nBecause we are in verification mode we will "
-                                "ignore this error.\n");
-                fprintf(OUTPUT, "\nInstead, we will pretend we received the "
-                                "following MSG2 - \n");
+            // if(VERIFICATION_INDEX_IS_VALID())
+            // {
+            //     fprintf(OUTPUT, "\nBecause we are in verification mode we will "
+            //                     "ignore this error.\n");
+            //     fprintf(OUTPUT, "\nInstead, we will pretend we received the "
+            //                     "following MSG2 - \n");
 
-                SAFE_FREE(p_msg2_full);
-                ra_samp_response_header_t* precomputed_msg2 =
-                    (ra_samp_response_header_t*)msg2_samples[
-                        GET_VERIFICATION_ARRAY_INDEX()];
-                const size_t msg2_full_size = sizeof(ra_samp_response_header_t)
-                                              +  precomputed_msg2->size;
-                p_msg2_full =
-                    (ra_samp_response_header_t*)malloc(msg2_full_size);
-                if(NULL == p_msg2_full)
-                {
-                    ret = -1;
-                    goto CLEANUP;
-                }
-                memcpy_s(p_msg2_full, msg2_full_size, precomputed_msg2,
-                         msg2_full_size);
+            //     SAFE_FREE(p_msg2_full);
+            //     ra_samp_response_header_t* precomputed_msg2 =
+            //         (ra_samp_response_header_t*)msg2_samples[
+            //             GET_VERIFICATION_ARRAY_INDEX()];
+            //     const size_t msg2_full_size = sizeof(ra_samp_response_header_t)
+            //                                   +  precomputed_msg2->size;
+            //     p_msg2_full =
+            //         (ra_samp_response_header_t*)malloc(msg2_full_size);
+            //     if(NULL == p_msg2_full)
+            //     {
+            //         ret = -1;
+            //         goto CLEANUP;
+            //     }
+            //     memcpy_s(p_msg2_full, msg2_full_size, precomputed_msg2,
+            //              msg2_full_size);
 
-                PRINT_BYTE_ARRAY(OUTPUT, p_msg2_full,
-                                 (uint32_t)sizeof(ra_samp_response_header_t)
-                                 + p_msg2_full->size);
-            }
-            else
-            {
+            //     PRINT_BYTE_ARRAY(OUTPUT, p_msg2_full,
+            //                      (uint32_t)sizeof(ra_samp_response_header_t)
+            //                      + p_msg2_full->size);
+            // }
+            // else
+            // {
                 goto CLEANUP;
-            }
+            // }
         }
         else
         {
@@ -622,15 +623,15 @@ int main(int argc, char* argv[])
                 fprintf(OUTPUT, "\nError, didn't get MSG2 in response to MSG1. "
                                 "[%s].", __FUNCTION__);
 
-                if(VERIFICATION_INDEX_IS_VALID())
-                {
-                    fprintf(OUTPUT, "\nBecause we are in verification mode we "
-                                    "will ignore this error.");
-                }
-                else
-                {
+                // if(VERIFICATION_INDEX_IS_VALID())
+                // {
+                //     fprintf(OUTPUT, "\nBecause we are in verification mode we "
+                //                     "will ignore this error.");
+                // }
+                // else
+                // {
                     goto CLEANUP;
-                }
+                // }
             }
 
             fprintf(OUTPUT, "\nSent MSG1 to remote attestation service "
@@ -642,35 +643,35 @@ int main(int argc, char* argv[])
             fprintf(OUTPUT, "\nA more descriptive representation of MSG2:\n");
             PRINT_ATTESTATION_SERVICE_RESPONSE(OUTPUT, p_msg2_full);
 
-            if( VERIFICATION_INDEX_IS_VALID() )
-            {
-                // The response should match the precomputed MSG2:
-                ra_samp_response_header_t* precomputed_msg2 =
-                    (ra_samp_response_header_t *)
-                    msg2_samples[GET_VERIFICATION_ARRAY_INDEX()];
-                if(MSG2_BODY_SIZE !=
-                    sizeof(ra_samp_response_header_t) + p_msg2_full->size ||
-                    memcmp( precomputed_msg2, p_msg2_full,
-                        sizeof(ra_samp_response_header_t) + p_msg2_full->size))
-                {
-                    fprintf(OUTPUT, "\nVerification ERROR. Our precomputed "
-                                    "value for MSG2 does NOT match.\n");
-                    fprintf(OUTPUT, "\nPrecomputed value for MSG2:\n");
-                    PRINT_BYTE_ARRAY(OUTPUT, precomputed_msg2,
-                                     (uint32_t)sizeof(ra_samp_response_header_t)
-                                     + precomputed_msg2->size);
-                    fprintf(OUTPUT, "\nA more descriptive representation "
-                                    "of precomputed value for MSG2:\n");
-                    PRINT_ATTESTATION_SERVICE_RESPONSE(OUTPUT,
-                                                       precomputed_msg2);
-                }
-                else
-                {
-                    fprintf(OUTPUT, "\nVerification COMPLETE. Remote "
-                                    "attestation service provider generated a "
-                                    "matching MSG2.\n");
-                }
-            }
+            // if( VERIFICATION_INDEX_IS_VALID() )
+            // {
+            //     // The response should match the precomputed MSG2:
+            //     ra_samp_response_header_t* precomputed_msg2 =
+            //         (ra_samp_response_header_t *)
+            //         msg2_samples[GET_VERIFICATION_ARRAY_INDEX()];
+            //     if(MSG2_BODY_SIZE !=
+            //         sizeof(ra_samp_response_header_t) + p_msg2_full->size ||
+            //         memcmp( precomputed_msg2, p_msg2_full,
+            //             sizeof(ra_samp_response_header_t) + p_msg2_full->size))
+            //     {
+            //         fprintf(OUTPUT, "\nVerification ERROR. Our precomputed "
+            //                         "value for MSG2 does NOT match.\n");
+            //         fprintf(OUTPUT, "\nPrecomputed value for MSG2:\n");
+            //         PRINT_BYTE_ARRAY(OUTPUT, precomputed_msg2,
+            //                          (uint32_t)sizeof(ra_samp_response_header_t)
+            //                          + precomputed_msg2->size);
+            //         fprintf(OUTPUT, "\nA more descriptive representation "
+            //                         "of precomputed value for MSG2:\n");
+            //         PRINT_ATTESTATION_SERVICE_RESPONSE(OUTPUT,
+            //                                            precomputed_msg2);
+            //     }
+            //     else
+            //     {
+            //         fprintf(OUTPUT, "\nVerification COMPLETE. Remote "
+            //                         "attestation service provider generated a "
+            //                         "matching MSG2.\n");
+            //     }
+            // }
 
         }
 
@@ -679,24 +680,24 @@ int main(int argc, char* argv[])
 
 
         uint32_t msg3_size = 0;
-        if( VERIFICATION_INDEX_IS_VALID())
-        {
-            // We cannot generate a valid MSG3 using the precomputed messages
-            // we have been using. We will use the precomputed msg3 instead.
-            msg3_size = MSG3_BODY_SIZE;
-            p_msg3 = (sgx_ra_msg3_t*)malloc(msg3_size);
-            if(NULL == p_msg3)
-            {
-                ret = -1;
-                goto CLEANUP;
-            }
-            memcpy_s(p_msg3, msg3_size,
-                     msg3_samples[GET_VERIFICATION_ARRAY_INDEX()], msg3_size);
-            fprintf(OUTPUT, "\nBecause MSG1 was a precomputed value, the MSG3 "
-                            "we use will also be. PRECOMPUTED MSG3 - \n");
-        }
-        else
-        {
+        // if( VERIFICATION_INDEX_IS_VALID())
+        // {
+        //     // We cannot generate a valid MSG3 using the precomputed messages
+        //     // we have been using. We will use the precomputed msg3 instead.
+        //     msg3_size = MSG3_BODY_SIZE;
+        //     p_msg3 = (sgx_ra_msg3_t*)malloc(msg3_size);
+        //     if(NULL == p_msg3)
+        //     {
+        //         ret = -1;
+        //         goto CLEANUP;
+        //     }
+        //     memcpy_s(p_msg3, msg3_size,
+        //              msg3_samples[GET_VERIFICATION_ARRAY_INDEX()], msg3_size);
+        //     fprintf(OUTPUT, "\nBecause MSG1 was a precomputed value, the MSG3 "
+        //                     "we use will also be. PRECOMPUTED MSG3 - \n");
+        // }
+        // else
+        // {
             busy_retry_time = 2;
             // The ISV app now calls uKE sgx_ra_proc_msg2,
             // The ISV app is responsible for freeing the returned p_msg3!!
@@ -730,7 +731,7 @@ int main(int argc, char* argv[])
                 fprintf(OUTPUT, "\nCall sgx_ra_proc_msg2 success.\n");
                 fprintf(OUTPUT, "\nMSG3 - \n");
             }
-        }
+        // }
 
         PRINT_BYTE_ARRAY(OUTPUT, p_msg3, msg3_size);
 
@@ -786,22 +787,22 @@ int main(int argc, char* argv[])
         {
             fprintf(OUTPUT, "\nSent MSG3 successfully. Received an attestation "
                             "result message back\n.");
-            if( VERIFICATION_INDEX_IS_VALID() )
-            {
-                if(ATTESTATION_MSG_BODY_SIZE != p_att_result_msg_full->size ||
-                    memcmp(p_att_result_msg_full->body,
-                        attestation_msg_samples[GET_VERIFICATION_ARRAY_INDEX()],
-                        p_att_result_msg_full->size) )
-                {
-                    fprintf(OUTPUT, "\nSent MSG3 successfully. Received an "
-                                    "attestation result message back that did "
-                                    "NOT match the expected value.\n");
-                    fprintf(OUTPUT, "\nEXPECTED ATTESTATION RESULT -");
-                    PRINT_BYTE_ARRAY(OUTPUT,
-                        attestation_msg_samples[GET_VERIFICATION_ARRAY_INDEX()],
-                        ATTESTATION_MSG_BODY_SIZE);
-                }
-            }
+            // if( VERIFICATION_INDEX_IS_VALID() )
+            // {
+            //     if(ATTESTATION_MSG_BODY_SIZE != p_att_result_msg_full->size ||
+            //         memcmp(p_att_result_msg_full->body,
+            //             attestation_msg_samples[GET_VERIFICATION_ARRAY_INDEX()],
+            //             p_att_result_msg_full->size) )
+            //     {
+            //         fprintf(OUTPUT, "\nSent MSG3 successfully. Received an "
+            //                         "attestation result message back that did "
+            //                         "NOT match the expected value.\n");
+            //         fprintf(OUTPUT, "\nEXPECTED ATTESTATION RESULT -");
+            //         PRINT_BYTE_ARRAY(OUTPUT,
+            //             attestation_msg_samples[GET_VERIFICATION_ARRAY_INDEX()],
+            //             ATTESTATION_MSG_BODY_SIZE);
+            //     }
+            // }
         }
 
         fprintf(OUTPUT, "\nATTESTATION RESULT RECEIVED - ");
@@ -809,14 +810,14 @@ int main(int argc, char* argv[])
                          p_att_result_msg_full->size);
 
 
-        if( VERIFICATION_INDEX_IS_VALID() )
-        {
-            fprintf(OUTPUT, "\nBecause we used precomputed values for the "
-                            "messages, the attestation result message will "
-                            "not pass further verification tests, so we will "
-                            "skip them.\n");
-            goto CLEANUP;
-        }
+        // if( VERIFICATION_INDEX_IS_VALID() )
+        // {
+        //     fprintf(OUTPUT, "\nBecause we used precomputed values for the "
+        //                     "messages, the attestation result message will "
+        //                     "not pass further verification tests, so we will "
+        //                     "skip them.\n");
+        //     goto CLEANUP;
+        // }
 
         // Check the MAC using MK on the attestation result message.
         // The format of the attestation result message is ISV specific.
