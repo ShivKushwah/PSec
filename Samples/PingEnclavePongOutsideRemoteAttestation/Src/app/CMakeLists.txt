@@ -46,7 +46,7 @@ set(LIBHANDLERLIB_PATH ${P_LIBHANDLER_PATH}/out/gcc-amd64-linux-gnu/debug/libhan
 #set_target_properties(Prt_static PROPERTIES LINKER_LANGUAGE C)
 
 target_link_libraries(app
-        -L${SGX_LIBRARY_PATH} -l${SGX_URTS_LIB} -l${SGX_USVC_LIB}
+        -L${SGX_LIBRARY_PATH} -l${SGX_URTS_LIB} -l${SGX_USVC_LIB} -lsgx_ukey_exchange
         ~/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/libsample_libcrypto.so
         ~/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app/libPrt_static.a
         ${LIBHANDLERLIB_PATH}

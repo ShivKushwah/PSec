@@ -485,12 +485,13 @@ int main(int argc, char* argv[])
         // ISV application creates the ISV enclave.
         do
         {
-            ret = sgx_create_enclave(_T(ENCLAVE_PATH),
-                                     SGX_DEBUG_FLAG,
-                                     NULL,
-                                     NULL,
-                                     &enclave_id, NULL);
-            if(SGX_SUCCESS != ret)
+            int ret = initialize_enclave(&enclave_id, "enclave.token", "enclave.signed.so");  
+            // ret = sgx_create_enclave(_T(ENCLAVE_PATH),
+            //                          SGX_DEBUG_FLAG,
+            //                          NULL,
+            //                          NULL,
+            //                          &enclave_id, NULL);
+            if(0 != ret)
             {
                 ret = -1;
                 fprintf(OUTPUT, "\nError, call sgx_create_enclave fail [%s].",
@@ -499,10 +500,10 @@ int main(int argc, char* argv[])
             }
             fprintf(OUTPUT, "\nCall sgx_create_enclave success.");
 
-            // ret = enclave_init_ra(enclave_id,  TODO KIRAT
-            //                       &status,
-            //                       false,
-            //                       &context);
+            ret = enclave_init_ra(enclave_id,
+                                  &status,
+                                  false,
+                                  &context);
         //Ideally, this check would be around the full attestation flow.
         } while (SGX_ERROR_ENCLAVE_LOST == ret && enclave_lost_retry_time--);
 
@@ -528,9 +529,9 @@ int main(int argc, char* argv[])
         p_msg1_full->size = sizeof(sgx_ra_msg1_t);
         do
         {
-            // ret = sgx_ra_get_msg1(context, enclave_id, sgx_ra_get_ga, TODO KIRAT
-            //                       (sgx_ra_msg1_t*)((uint8_t*)p_msg1_full
-            //                       + sizeof(ra_samp_request_header_t)));
+            ret = sgx_ra_get_msg1(context, enclave_id, sgx_ra_get_ga,
+                                  (sgx_ra_msg1_t*)((uint8_t*)p_msg1_full
+                                  + sizeof(ra_samp_request_header_t)));
             sleep(3); // Wait 3s between retries
         } while (SGX_ERROR_BUSY == ret && busy_retry_time--);
         if(SGX_SUCCESS != ret)
@@ -701,14 +702,14 @@ int main(int argc, char* argv[])
             // The ISV app is responsible for freeing the returned p_msg3!!
             do
             {
-                // ret = sgx_ra_proc_msg2(context, TODO KIRAT
-                //                    enclave_id,
-                //                    sgx_ra_proc_msg2_trusted,
-                //                    sgx_ra_get_msg3_trusted,
-                //                    p_msg2_body,
-                //                    p_msg2_full->size,
-                //                    &p_msg3,
-                //                    &msg3_size);
+                ret = sgx_ra_proc_msg2(context,
+                                   enclave_id,
+                                   sgx_ra_proc_msg2_trusted,
+                                   sgx_ra_get_msg3_trusted,
+                                   p_msg2_body,
+                                   p_msg2_full->size,
+                                   &p_msg3,
+                                   &msg3_size);
             } while (SGX_ERROR_BUSY == ret && busy_retry_time--);
             if(!p_msg3)
             {
@@ -821,13 +822,13 @@ int main(int argc, char* argv[])
         // The format of the attestation result message is ISV specific.
         // This is a simple form for demonstration. In a real product,
         // the ISV may want to communicate more information.
-        // ret = verify_att_result_mac(enclave_id, TODO KIRAT
-        //         &status,
-        //         context,
-        //         (uint8_t*)&p_att_result_msg_body->platform_info_blob,
-        //         sizeof(ias_platform_info_blob_t),
-        //         (uint8_t*)&p_att_result_msg_body->mac,
-        //         sizeof(sgx_mac_t));
+        ret = verify_att_result_mac(enclave_id,
+                &status,
+                context,
+                (uint8_t*)&p_att_result_msg_body->platform_info_blob,
+                sizeof(ias_platform_info_blob_t),
+                (uint8_t*)&p_att_result_msg_body->mac,
+                sizeof(sgx_mac_t));
         if((SGX_SUCCESS != ret) ||
            (SGX_SUCCESS != status))
         {
@@ -869,12 +870,12 @@ int main(int argc, char* argv[])
         // passed)
         if(attestation_passed)
         {
-            // ret = put_secret_data(enclave_id, TODO KIRAT
-            //                       &status,
-            //                       context,
-            //                       p_att_result_msg_body->secret.payload,
-            //                       p_att_result_msg_body->secret.payload_size,
-            //                       p_att_result_msg_body->secret.payload_tag);
+            ret = put_secret_data(enclave_id,
+                                  &status,
+                                  context,
+                                  p_att_result_msg_body->secret.payload,
+                                  p_att_result_msg_body->secret.payload_size,
+                                  p_att_result_msg_body->secret.payload_tag);
             if((SGX_SUCCESS != ret)  || (SGX_SUCCESS != status))
             {
                 fprintf(OUTPUT, "\nError, attestation result message secret "
@@ -894,7 +895,7 @@ CLEANUP:
     if(INT_MAX != context)
     {
         int ret_save = ret;
-        // ret = enclave_ra_close(enclave_id, &status, context); TODO KIRAT
+        ret = enclave_ra_close(enclave_id, &status, context); 
         if(SGX_SUCCESS != ret || status)
         {
             ret = -1;
