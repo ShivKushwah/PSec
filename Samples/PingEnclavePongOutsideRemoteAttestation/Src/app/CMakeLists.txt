@@ -7,7 +7,7 @@ add_definitions( -DPRT_PLAT_LINUXUSER )
 
 
 
-set(CLIENT_SRC_FILES enclave_u.c app.cpp sgx_utils/sgx_utils.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPong.c)
+set(CLIENT_SRC_FILES enclave_u.c app.cpp sgx_utils/sgx_utils.cpp network_ra.cpp service_provider.cpp ias_ra.cpp ecp.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPong.c)
 
 FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/PingPong.p) #used to be ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*
 PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/)
@@ -47,6 +47,7 @@ set(LIBHANDLERLIB_PATH ${P_LIBHANDLER_PATH}/out/gcc-amd64-linux-gnu/debug/libhan
 
 target_link_libraries(app
         -L${SGX_LIBRARY_PATH} -l${SGX_URTS_LIB} -l${SGX_USVC_LIB}
+        ~/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/libsample_libcrypto.so
         ~/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app/libPrt_static.a
         ${LIBHANDLERLIB_PATH}
         -Wl,-rpath -Wl,/usr/local/lib

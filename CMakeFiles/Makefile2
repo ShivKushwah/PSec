@@ -255,7 +255,7 @@ Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/preinstall:
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/dep_enclave.dir/all:
 	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/dep_enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/dep_enclave.dir/depend
 	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/dep_enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/dep_enclave.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=15 "Built target dep_enclave"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=19 "Built target dep_enclave"
 .PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/dep_enclave.dir/all
 
 # Include target in all.
@@ -293,7 +293,7 @@ Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.d
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/all: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/dep_enclave.dir/all
 	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/depend
 	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=16,17,18,19,20 "Built target enclave"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=20,21,22,23,24 "Built target enclave"
 .PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/all
 
 # Include target in all.
@@ -350,7 +350,7 @@ Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/preinstall:
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/dep_.dir/all:
 	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/dep_.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/dep_.dir/depend
 	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/dep_.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/dep_.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=14 "Built target dep_"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=18 "Built target dep_"
 .PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/dep_.dir/all
 
 # Include target in all.
@@ -387,7 +387,7 @@ clean: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/dep_.d
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/all: Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/all
 	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/depend
 	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=8,9,10,11,12,13 "Built target app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=8,9,10,11,12,13,14,15,16,17 "Built target app"
 .PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/all
 
 # Include target in all.
@@ -397,7 +397,7 @@ all: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/
 
 # Build rule for subdir invocation for target.
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles 19
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles 23
 	$(MAKE) -f CMakeFiles/Makefile2 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles 0
 .PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/rule
