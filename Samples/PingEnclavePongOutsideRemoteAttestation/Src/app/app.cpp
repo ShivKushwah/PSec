@@ -118,12 +118,26 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     }
     int ret_status;
 
-    status = send_ping_enclave(global_eid, &ret_status);
-    if (status!=SGX_SUCCESS)
-    {
-        printf("Failure: Error code %x\n", status);
+    //Establish connection and attest before sending
+    //Assume service_provider.cpp is part of the Ping machine
+    //TODO: Change this so that we send a message request to the pong enclave
+    //to establish a connection, and then the pong enclave calls ocall_atttestation
+    //Also, we need to change the service_provider.cpp secret to be the payload that we
+    //want to send instead of this 2 part sending
+
+    if (ocall_enclave_start_attestation() == 0) {
+        printf("\nAttestation Succesful! Sending Message.\n");
+        status = send_ping_enclave(global_eid, &ret_status);
+        if (status!=SGX_SUCCESS)
+        {
+            printf("Failure: Error code %x\n", status);
+        }
+    } else {
+        printf("\nERROR IN ATTESTATION. Message not sent!\n");
     }
 
+
+    
 }
 
 
@@ -912,7 +926,7 @@ CLEANUP:
         fprintf(OUTPUT, "\nCall enclave_ra_close success.");
     }
 
-    sgx_destroy_enclave(enclave_id);
+    // sgx_destroy_enclave(enclave_id); TODO NOTE: I commented this out
 
 
     ra_free_network_response_buffer(p_msg0_resp_full);
@@ -924,8 +938,8 @@ CLEANUP:
     SAFE_FREE(p_msg3_full);
     SAFE_FREE(p_msg1_full);
     SAFE_FREE(p_msg0_full);
-    printf("\nEnter a character before exit ...\n");
-    getchar();
+    // printf("\nEnter a character before exit ...\n");
+    // getchar();
     return ret;
 }
 

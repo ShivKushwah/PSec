@@ -25,6 +25,10 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_print, (const char* str));
 #define OCALL_SEND_PONG_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_send_pong, (void));
 #endif
+#ifndef OCALL_ENCLAVE_START_ATTESTATION_DEFINED__
+#define OCALL_ENCLAVE_START_ATTESTATION_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_enclave_start_attestation, (void));
+#endif
 #ifndef SGX_OC_CPUIDEX_DEFINED__
 #define SGX_OC_CPUIDEX_DEFINED__
 void SGX_UBRIDGE(SGX_CDECL, sgx_oc_cpuidex, (int cpuinfo[4], int leaf, int subleaf));

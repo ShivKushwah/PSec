@@ -571,13 +571,16 @@ sgx_status_t put_secret_data(
 
         uint32_t i;
         bool secret_match = true;
-        for(i=0;i<secret_size;i++)
-        {
-            if(g_secret[i] != i)
-            {
-                secret_match = false;
-            }
+        if (strcmp((char*)g_secret, "hello") != 0) {
+            secret_match = false;
         }
+        // for(i=1;i<secret_size;i++)
+        // {
+        //     if(g_secret[i] != i || g_secret[0] != 'h')
+        //     {
+        //         secret_match = false;
+        //     }
+        // }
 
         if(!secret_match)
         {

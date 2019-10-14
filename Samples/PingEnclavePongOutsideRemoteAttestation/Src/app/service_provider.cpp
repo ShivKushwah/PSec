@@ -702,6 +702,10 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             break;
         }
 
+        //NOTE: I added this
+        strcpy((char*)g_secret, "hello");
+
+
         // Generate shared secret and encrypt it with SK, if attestation passed.
         uint8_t aes_gcm_iv[SAMPLE_SP_IV_SIZE] = {0};
         p_att_result_msg->secret.payload_size = 8;
