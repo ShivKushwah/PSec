@@ -305,6 +305,33 @@ enclave_u.c.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/enclave_u.c.s
 .PHONY : enclave_u.c.s
 
+ping_attestation.o: ping_attestation.cpp.o
+
+.PHONY : ping_attestation.o
+
+# target to build an object file
+ping_attestation.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o
+.PHONY : ping_attestation.cpp.o
+
+ping_attestation.i: ping_attestation.cpp.i
+
+.PHONY : ping_attestation.i
+
+# target to preprocess a source file
+ping_attestation.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.i
+.PHONY : ping_attestation.cpp.i
+
+ping_attestation.s: ping_attestation.cpp.s
+
+.PHONY : ping_attestation.s
+
+# target to generate assembly for a file
+ping_attestation.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.s
+.PHONY : ping_attestation.cpp.s
+
 pong_enclave_attestation.o: pong_enclave_attestation.cpp.o
 
 .PHONY : pong_enclave_attestation.o
@@ -331,33 +358,6 @@ pong_enclave_attestation.s: pong_enclave_attestation.cpp.s
 pong_enclave_attestation.cpp.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/pong_enclave_attestation.cpp.s
 .PHONY : pong_enclave_attestation.cpp.s
-
-service_provider.o: service_provider.cpp.o
-
-.PHONY : service_provider.o
-
-# target to build an object file
-service_provider.cpp.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o
-.PHONY : service_provider.cpp.o
-
-service_provider.i: service_provider.cpp.i
-
-.PHONY : service_provider.i
-
-# target to preprocess a source file
-service_provider.cpp.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.i
-.PHONY : service_provider.cpp.i
-
-service_provider.s: service_provider.cpp.s
-
-.PHONY : service_provider.s
-
-# target to generate assembly for a file
-service_provider.cpp.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.s
-.PHONY : service_provider.cpp.s
 
 sgx_utils/sgx_utils.o: sgx_utils/sgx_utils.cpp.o
 
@@ -414,12 +414,12 @@ help:
 	@echo "... enclave_u.o"
 	@echo "... enclave_u.i"
 	@echo "... enclave_u.s"
+	@echo "... ping_attestation.o"
+	@echo "... ping_attestation.i"
+	@echo "... ping_attestation.s"
 	@echo "... pong_enclave_attestation.o"
 	@echo "... pong_enclave_attestation.i"
 	@echo "... pong_enclave_attestation.s"
-	@echo "... service_provider.o"
-	@echo "... service_provider.i"
-	@echo "... service_provider.s"
 	@echo "... sgx_utils/sgx_utils.o"
 	@echo "... sgx_utils/sgx_utils.i"
 	@echo "... sgx_utils/sgx_utils.s"

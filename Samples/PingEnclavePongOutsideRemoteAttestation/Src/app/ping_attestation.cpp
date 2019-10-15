@@ -31,7 +31,7 @@
 
 
 
-#include "service_provider.h"
+#include "ping_attestation.h"
 
 #include "sample_libcrypto.h"
 

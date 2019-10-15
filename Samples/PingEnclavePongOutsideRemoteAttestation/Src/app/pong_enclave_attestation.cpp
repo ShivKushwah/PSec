@@ -64,7 +64,7 @@ extern sgx_enclave_id_t global_eid;
 // Needed to query extended epid group id.
 #include "sgx_uae_service.h"
 
-#include "service_provider.h"
+#include "ping_attestation.h"
 
 #ifndef SAFE_FREE
 #define SAFE_FREE(ptr) {if (NULL != (ptr)) {free(ptr); (ptr) = NULL;}}

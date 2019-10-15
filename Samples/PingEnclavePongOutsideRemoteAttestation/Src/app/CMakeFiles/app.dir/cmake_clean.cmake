@@ -7,7 +7,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/app.dir/pong_enclave_attestation.cpp.o"
   "CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o"
   "CMakeFiles/app.dir/attestation_utils/network_ra.cpp.o"
-  "CMakeFiles/app.dir/service_provider.cpp.o"
+  "CMakeFiles/app.dir/ping_attestation.cpp.o"
   "CMakeFiles/app.dir/attestation_utils/ias_ra.cpp.o"
   "CMakeFiles/app.dir/attestation_utils/ecp.cpp.o"
   "CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o"

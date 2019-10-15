@@ -184,28 +184,28 @@ Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attes
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/network_ra.cpp.o.provides.build: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/network_ra.cpp.o
 
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/flags.make
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/service_provider.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/app.dir/service_provider.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/service_provider.cpp
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/flags.make
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/ping_attestation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/shiv/Research/temp-del/ProgrammingEnclaves/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/app.dir/ping_attestation.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/ping_attestation.cpp
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/app.dir/service_provider.cpp.i"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/service_provider.cpp > CMakeFiles/app.dir/service_provider.cpp.i
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/app.dir/ping_attestation.cpp.i"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/ping_attestation.cpp > CMakeFiles/app.dir/ping_attestation.cpp.i
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/app.dir/service_provider.cpp.s"
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/service_provider.cpp -o CMakeFiles/app.dir/service_provider.cpp.s
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/app.dir/ping_attestation.cpp.s"
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/ping_attestation.cpp -o CMakeFiles/app.dir/ping_attestation.cpp.s
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o.requires:
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o.requires:
 
-.PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o.requires
+.PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o.requires
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o.provides: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o.requires
-	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o.provides.build
-.PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o.provides
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o.provides: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o.requires
+	$(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o.provides.build
+.PHONY : Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o.provides
 
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o.provides.build: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o.provides.build: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o
 
 
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ias_ra.cpp.o: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/flags.make
@@ -287,7 +287,7 @@ app_OBJECTS = \
 "CMakeFiles/app.dir/pong_enclave_attestation.cpp.o" \
 "CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o" \
 "CMakeFiles/app.dir/attestation_utils/network_ra.cpp.o" \
-"CMakeFiles/app.dir/service_provider.cpp.o" \
+"CMakeFiles/app.dir/ping_attestation.cpp.o" \
 "CMakeFiles/app.dir/attestation_utils/ias_ra.cpp.o" \
 "CMakeFiles/app.dir/attestation_utils/ecp.cpp.o" \
 "CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o"
@@ -300,7 +300,7 @@ Samples/PingEnclavePongOutsideRemoteAttestation/app: Samples/PingEnclavePongOuts
 Samples/PingEnclavePongOutsideRemoteAttestation/app: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/pong_enclave_attestation.cpp.o
 Samples/PingEnclavePongOutsideRemoteAttestation/app: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o
 Samples/PingEnclavePongOutsideRemoteAttestation/app: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/network_ra.cpp.o
-Samples/PingEnclavePongOutsideRemoteAttestation/app: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o
+Samples/PingEnclavePongOutsideRemoteAttestation/app: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o
 Samples/PingEnclavePongOutsideRemoteAttestation/app: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ias_ra.cpp.o
 Samples/PingEnclavePongOutsideRemoteAttestation/app: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ecp.cpp.o
 Samples/PingEnclavePongOutsideRemoteAttestation/app: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o
@@ -322,7 +322,7 @@ Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/requi
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/pong_enclave_attestation.cpp.o.requires
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o.requires
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/network_ra.cpp.o.requires
-Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o.requires
+Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ping_attestation.cpp.o.requires
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ias_ra.cpp.o.requires
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ecp.cpp.o.requires
 Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/requires: Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/__/__/PGenerated/PingPong.c.o.requires
