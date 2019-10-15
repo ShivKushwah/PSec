@@ -130,6 +130,10 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
                         uint32_t msg3_size,
                         ra_samp_response_header_t **pp_att_result_msg, bool receive_message);
 
+int receive_encrypted_message(uint8_t *p_secret, 
+                                uint32_t secret_size,
+                                 uint8_t *p_gcm_mac);
+
 int sp_ra_free_msg2(
     sample_ra_msg2_t *p_msg2);
 

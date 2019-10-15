@@ -749,5 +749,11 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 }
 
 
+int receive_encrypted_message(uint8_t *p_secret, 
+                                uint32_t secret_size,
+                                 uint8_t *p_gcm_mac) {
+                                     return 0;
+                                 }
+
 
 

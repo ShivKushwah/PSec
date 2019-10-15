@@ -3,7 +3,7 @@ file(REMOVE_RECURSE
   " enclave_t.h"
   "enclave_t.c"
   "CMakeFiles/enclave.dir/enclave.cpp.o"
-  "CMakeFiles/enclave.dir/ping_enclave_internal_attestation.cpp.o"
+  "CMakeFiles/enclave.dir/pong_enclave_internal_attestation.cpp.o"
   "CMakeFiles/enclave.dir/enclave_t.c.o"
   "CMakeFiles/enclave.dir/__/__/PGenerated/PingPongEnclave.c.o"
   "../../enclave.pdb"

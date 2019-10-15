@@ -33,7 +33,7 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   )
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/enclave.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave.cpp.o"
-  "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/ping_enclave_internal_attestation.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/ping_enclave_internal_attestation.cpp.o"
+  "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/pong_enclave_internal_attestation.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/pong_enclave_internal_attestation.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

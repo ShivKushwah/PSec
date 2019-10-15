@@ -29,7 +29,7 @@ set (${projectName}_INCLUDE
 
 set(ENCLAVE_SOURCE_FILES
         enclave.cpp
-        ping_enclave_internal_attestation.cpp
+        pong_enclave_internal_attestation.cpp
         enclave_t.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPongEnclave.c
         #/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c
