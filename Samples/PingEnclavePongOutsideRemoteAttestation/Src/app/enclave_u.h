@@ -31,7 +31,7 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_enclave_start_attestation, (int receive_
 #endif
 #ifndef CALL_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
 #define CALL_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, call_enclave_attestation_in_thread, (void));
+int SGX_UBRIDGE(SGX_NOCONVENTION, call_enclave_attestation_in_thread, (int receive_message));
 #endif
 #ifndef SGX_OC_CPUIDEX_DEFINED__
 #define SGX_OC_CPUIDEX_DEFINED__

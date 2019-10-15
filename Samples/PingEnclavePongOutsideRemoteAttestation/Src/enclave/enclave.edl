@@ -29,6 +29,6 @@ enclave {
         void ocall_print([in, string]const char* str);
         void ocall_send_pong(void);
         int ocall_enclave_start_attestation(int receive_message);
-        int call_enclave_attestation_in_thread();
+        int call_enclave_attestation_in_thread(int receive_message);
     };
 };

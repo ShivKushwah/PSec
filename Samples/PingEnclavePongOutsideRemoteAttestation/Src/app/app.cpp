@@ -108,16 +108,16 @@ static void RunToIdle(void* process)
 	}
 }
 
-void* attestation_thread(void* temp) {
-    return (void*) ocall_enclave_start_attestation(1);
+void* attestation_thread(void* receive_message) {
+    return (void*) ocall_enclave_start_attestation(*((int*)(&receive_message)));
 }
 
-int call_enclave_attestation_in_thread() {
+int call_enclave_attestation_in_thread(int receive_message) {
 
     void* thread_ret;
     pthread_t thread_id; 
     printf("\nBefore Thread\n"); 
-    pthread_create(&thread_id, NULL, attestation_thread, NULL);
+    pthread_create(&thread_id, NULL, attestation_thread, (void*) receive_message);
     pthread_join(thread_id, &thread_ret); 
     printf("\nAfter Thread\n"); 
 
@@ -159,7 +159,7 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
    
 
 
-    if (call_enclave_attestation_in_thread() == 0) {
+    if (call_enclave_attestation_in_thread(1) == 0) {
         printf("\nAttestation Succesful! Ping Event has been Sent!\n");
     } else {
         printf("\nERROR IN ATTESTATION. Message not sent!\n");

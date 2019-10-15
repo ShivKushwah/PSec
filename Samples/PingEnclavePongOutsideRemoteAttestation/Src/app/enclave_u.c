@@ -76,6 +76,7 @@ typedef struct ms_ocall_enclave_start_attestation_t {
 
 typedef struct ms_call_enclave_attestation_in_thread_t {
 	int ms_retval;
+	int ms_receive_message;
 } ms_call_enclave_attestation_in_thread_t;
 
 typedef struct ms_sgx_oc_cpuidex_t {
@@ -165,7 +166,7 @@ static sgx_status_t SGX_CDECL enclave_ocall_enclave_start_attestation(void* pms)
 static sgx_status_t SGX_CDECL enclave_call_enclave_attestation_in_thread(void* pms)
 {
 	ms_call_enclave_attestation_in_thread_t* ms = SGX_CAST(ms_call_enclave_attestation_in_thread_t*, pms);
-	ms->ms_retval = call_enclave_attestation_in_thread();
+	ms->ms_retval = call_enclave_attestation_in_thread(ms->ms_receive_message);
 
 	return SGX_SUCCESS;
 }

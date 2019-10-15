@@ -118,7 +118,7 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
 {  
     //TODO uncomment the below after adding threading to ocall_enclave_start_attestation
     int ret;
-    call_enclave_attestation_in_thread(&ret);
+    call_enclave_attestation_in_thread(&ret, 0);
     // ocall_send_pong();
 }
 
