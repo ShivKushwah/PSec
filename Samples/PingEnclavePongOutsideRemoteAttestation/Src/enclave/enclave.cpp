@@ -575,7 +575,7 @@ sgx_status_t put_secret_data(
             secret_match = false;
         } else {
             secret_match = true;
-            //send_ping_enclave();
+            send_ping_enclave();
         }
         // for(i=1;i<secret_size;i++)
         // {

@@ -127,11 +127,11 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
 
     if (ocall_initialize_enclave_and_start_attestation() == 0) {
         printf("\nAttestation Succesful! Ping Event has been Sent!\n");
-        status = send_ping_enclave(global_eid, &ret_status);
-        if (status!=SGX_SUCCESS)
-        {
-            printf("Failure: Error code %x\n", status);
-        }
+        // status = send_ping_enclave(global_eid, &ret_status);
+        // if (status!=SGX_SUCCESS)
+        // {
+        //     printf("Failure: Error code %x\n", status);
+        // }
     } else {
         printf("\nERROR IN ATTESTATION. Message not sent!\n");
     }
