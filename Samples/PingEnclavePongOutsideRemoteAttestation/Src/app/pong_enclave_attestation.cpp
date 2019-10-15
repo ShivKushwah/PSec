@@ -683,6 +683,7 @@ int enclave_start_attestation(int receive_message) {
                     goto CLEANUP;
                 }
             } else {
+                //TODO make this actually send a message like "PONG", and not hardcode ocall_send_pong
                 ocall_send_pong();
             }
         }

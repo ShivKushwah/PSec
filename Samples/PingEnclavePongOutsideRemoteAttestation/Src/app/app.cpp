@@ -8,7 +8,6 @@
 #include <pthread.h> 
 #include "pong_enclave_attestation.h"
 
-
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
 
@@ -109,7 +108,8 @@ static void RunToIdle(void* process)
 	}
 }
 
-void* attestation_thread(void* receive_message) {
+void* attestation_thread(void* receive_message) { //receive_message should be true when the enclave is receiving the message
+                                                  //false when the enclave wants to send a message
     return (void*) enclave_start_attestation(*((int*)(&receive_message)));
 }
 
@@ -117,13 +117,13 @@ int call_enclave_attestation_in_thread(int receive_message) {
 
     void* thread_ret;
     pthread_t thread_id; 
-    printf("\nBefore Thread\n"); 
+    printf("\n Calling Attestation Thread\n"); 
     pthread_create(&thread_id, NULL, attestation_thread, (void*) receive_message);
+    //TODO look into not calling pthread_join but actually let this run asynchoronous
     pthread_join(thread_id, &thread_ret); 
-    printf("\nAfter Thread\n"); 
+    printf("\n Finished Attestation Thread\n"); 
 
-    return 0;//*((int*)(&thread_ret));
-
+    return 0;
 
 }
 
@@ -132,7 +132,6 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     //TODO Enclave should be intialized and ready to go before SecureSend is called
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
         std::cout << "Fail to initialize enclave." << std::endl;
-        // return 1;
     }
     int ptr;
     sgx_status_t status = enclave_main(global_eid, &ptr); //Start up PrtTrusted inside enclave
@@ -144,23 +143,10 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
 
     strcpy(secure_message, "PING"); //Make secure payload to be "PING"
 
-    //Establish connection and attest before sending
-    //Assume service_provider.cpp is part of the Ping machine
-    //TODO: Change this so that we send a message request to the pong enclave
-    //to establish a connection, and then the pong enclave calls ocall_atttestation
-    //TODO: Uncomment below when I figure out how to do nested ecalls or move 
-    //ocall_enclave_start_attestation logic within the enclave
-    // status = enclave_request_attestation(global_eid, &ptr);
-    // if (status == SGX_SUCCESS && ptr == 0) {
-    //     printf("\nAttestation Succesful! Ping Event has been Sent!\n");
-    // } else {
-    //     printf("\nERROR IN ATTESTATION. Message not sent!\n");
-    // }
-
-   
-
-
-    if (call_enclave_attestation_in_thread(1) == 0) {
+    //Request the enclave to start the attestation and secure channel process so that
+    // we can send the enclave a secure message
+    status = enclave_request_attestation(global_eid, &ptr);
+    if (status == SGX_SUCCESS && ptr == 0) {
         printf("\nAttestation Succesful! Ping Event has been Sent!\n");
     } else {
         printf("\nERROR IN ATTESTATION. Message not sent!\n");
@@ -168,15 +154,12 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     
 }
 
-
-
 // OCall implementations
 void ocall_print(const char* str) {
     printf("[o] %s\n", str);
 }
 
 void ocall_send_pong(void) {
-    //TODO: Make this part perform RemoteAttestation before sending as well
     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
     PRT_MACHINEID pingId;
     pingId.machineId = 1;
