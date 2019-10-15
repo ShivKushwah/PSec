@@ -571,7 +571,7 @@ sgx_status_t put_secret_data(
 
         uint32_t i;
         bool secret_match = true;
-        if (strcmp((char*)g_secret, "hello") != 0) {
+        if (strcmp((char*)g_secret, "PING") != 0) {
             secret_match = false;
         } else {
             secret_match = true;

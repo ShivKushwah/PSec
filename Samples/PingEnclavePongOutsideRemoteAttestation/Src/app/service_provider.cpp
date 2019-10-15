@@ -48,6 +48,8 @@
 #define SAFE_FREE(ptr) {if (NULL != (ptr)) {free(ptr); (ptr) = NULL;}}
 #endif
 
+char secure_message[8];
+
 // This is supported extended epid group of SP. SP can support more than one
 // extended epid group with different extended epid group id and credentials.
 static const sample_extended_epid_group g_extended_epid_groups[] = {
@@ -703,7 +705,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         }
 
         //NOTE: I added this
-        strcpy((char*)g_secret, "hello");
+        strcpy((char*)g_secret, secure_message);
 
 
         // Generate shared secret and encrypt it with SK, if attestation passed.

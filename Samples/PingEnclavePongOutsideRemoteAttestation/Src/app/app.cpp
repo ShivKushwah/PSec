@@ -19,6 +19,8 @@ static long perfEndTime = 0;
 static const char* parg = NULL;
 static const char* workspaceConfig;
 
+extern char secure_message[8];
+
 PRT_PROCESS *process;
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
@@ -118,6 +120,8 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     }
     int ret_status;
 
+    strcpy(secure_message, "PING");
+
     //Establish connection and attest before sending
     //Assume service_provider.cpp is part of the Ping machine
     //TODO: Change this so that we send a message request to the pong enclave
@@ -125,7 +129,7 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     //Also, we need to change the service_provider.cpp secret to be the payload that we
     //want to send instead of this 2 part sending
 
-    if (ocall_initialize_enclave_and_start_attestation() == 0) {
+    if (ocall_enclave_start_attestation() == 0) {
         printf("\nAttestation Succesful! Ping Event has been Sent!\n");
         // status = send_ping_enclave(global_eid, &ret_status);
         // if (status!=SGX_SUCCESS)
@@ -400,7 +404,7 @@ void PRINT_ATTESTATION_SERVICE_RESPONSE(
 // attestation. Since the enclave can be lost due S3 transitions, apps
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
-int ocall_initialize_enclave_and_start_attestation() {
+int ocall_enclave_start_attestation() {
 // #define _T(x) x
 // int main(int argc, char* argv[])
 // {
