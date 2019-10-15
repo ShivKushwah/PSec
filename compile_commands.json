@@ -51,6 +51,11 @@
 },
 {
   "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app",
+  "command": "/usr/bin/c++  -DPRT_PLAT_LINUXUSER -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/../PHeaders -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/../../PGenerated   -std=c++11 -fPIC  -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes -std=c++11 -g   -o CMakeFiles/app.dir/pong_enclave_attestation.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/pong_enclave_attestation.cpp",
+  "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/pong_enclave_attestation.cpp"
+},
+{
+  "directory": "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app",
   "command": "/usr/bin/c++  -DPRT_PLAT_LINUXUSER -I/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/../PHeaders -I/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/../../PGenerated   -std=c++11 -fPIC  -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes -std=c++11 -g   -o CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o -c /home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/sgx_utils/sgx_utils.cpp",
   "file": "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/sgx_utils/sgx_utils.cpp"
 },

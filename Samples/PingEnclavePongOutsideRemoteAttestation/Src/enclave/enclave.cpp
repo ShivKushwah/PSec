@@ -192,6 +192,12 @@ int enclave_main(void)
         }
 }
 
+int enclave_request_attestation() {
+    int ret;
+    ocall_enclave_start_attestation(&ret);
+    return ret;
+}
+
 //isv_enclave.cpp
 
 /*

@@ -305,6 +305,33 @@ network_ra.cpp.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/network_ra.cpp.s
 .PHONY : network_ra.cpp.s
 
+pong_enclave_attestation.o: pong_enclave_attestation.cpp.o
+
+.PHONY : pong_enclave_attestation.o
+
+# target to build an object file
+pong_enclave_attestation.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/pong_enclave_attestation.cpp.o
+.PHONY : pong_enclave_attestation.cpp.o
+
+pong_enclave_attestation.i: pong_enclave_attestation.cpp.i
+
+.PHONY : pong_enclave_attestation.i
+
+# target to preprocess a source file
+pong_enclave_attestation.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/pong_enclave_attestation.cpp.i
+.PHONY : pong_enclave_attestation.cpp.i
+
+pong_enclave_attestation.s: pong_enclave_attestation.cpp.s
+
+.PHONY : pong_enclave_attestation.s
+
+# target to generate assembly for a file
+pong_enclave_attestation.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/pong_enclave_attestation.cpp.s
+.PHONY : pong_enclave_attestation.cpp.s
+
 service_provider.o: service_provider.cpp.o
 
 .PHONY : service_provider.o
@@ -387,6 +414,9 @@ help:
 	@echo "... network_ra.o"
 	@echo "... network_ra.i"
 	@echo "... network_ra.s"
+	@echo "... pong_enclave_attestation.o"
+	@echo "... pong_enclave_attestation.i"
+	@echo "... pong_enclave_attestation.s"
 	@echo "... service_provider.o"
 	@echo "... service_provider.i"
 	@echo "... service_provider.s"

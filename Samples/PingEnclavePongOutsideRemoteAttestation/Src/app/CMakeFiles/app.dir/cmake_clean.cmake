@@ -4,6 +4,7 @@ file(REMOVE_RECURSE
   "enclave_u.c"
   "CMakeFiles/app.dir/enclave_u.c.o"
   "CMakeFiles/app.dir/app.cpp.o"
+  "CMakeFiles/app.dir/pong_enclave_attestation.cpp.o"
   "CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o"
   "CMakeFiles/app.dir/network_ra.cpp.o"
   "CMakeFiles/app.dir/service_provider.cpp.o"
