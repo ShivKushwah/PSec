@@ -197,32 +197,86 @@ app.cpp.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/app.cpp.s
 .PHONY : app.cpp.s
 
-ecp.o: ecp.cpp.o
+attestation_utils/ecp.o: attestation_utils/ecp.cpp.o
 
-.PHONY : ecp.o
+.PHONY : attestation_utils/ecp.o
 
 # target to build an object file
-ecp.cpp.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ecp.cpp.o
-.PHONY : ecp.cpp.o
+attestation_utils/ecp.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ecp.cpp.o
+.PHONY : attestation_utils/ecp.cpp.o
 
-ecp.i: ecp.cpp.i
+attestation_utils/ecp.i: attestation_utils/ecp.cpp.i
 
-.PHONY : ecp.i
+.PHONY : attestation_utils/ecp.i
 
 # target to preprocess a source file
-ecp.cpp.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ecp.cpp.i
-.PHONY : ecp.cpp.i
+attestation_utils/ecp.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ecp.cpp.i
+.PHONY : attestation_utils/ecp.cpp.i
 
-ecp.s: ecp.cpp.s
+attestation_utils/ecp.s: attestation_utils/ecp.cpp.s
 
-.PHONY : ecp.s
+.PHONY : attestation_utils/ecp.s
 
 # target to generate assembly for a file
-ecp.cpp.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ecp.cpp.s
-.PHONY : ecp.cpp.s
+attestation_utils/ecp.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ecp.cpp.s
+.PHONY : attestation_utils/ecp.cpp.s
+
+attestation_utils/ias_ra.o: attestation_utils/ias_ra.cpp.o
+
+.PHONY : attestation_utils/ias_ra.o
+
+# target to build an object file
+attestation_utils/ias_ra.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ias_ra.cpp.o
+.PHONY : attestation_utils/ias_ra.cpp.o
+
+attestation_utils/ias_ra.i: attestation_utils/ias_ra.cpp.i
+
+.PHONY : attestation_utils/ias_ra.i
+
+# target to preprocess a source file
+attestation_utils/ias_ra.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ias_ra.cpp.i
+.PHONY : attestation_utils/ias_ra.cpp.i
+
+attestation_utils/ias_ra.s: attestation_utils/ias_ra.cpp.s
+
+.PHONY : attestation_utils/ias_ra.s
+
+# target to generate assembly for a file
+attestation_utils/ias_ra.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ias_ra.cpp.s
+.PHONY : attestation_utils/ias_ra.cpp.s
+
+attestation_utils/network_ra.o: attestation_utils/network_ra.cpp.o
+
+.PHONY : attestation_utils/network_ra.o
+
+# target to build an object file
+attestation_utils/network_ra.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/network_ra.cpp.o
+.PHONY : attestation_utils/network_ra.cpp.o
+
+attestation_utils/network_ra.i: attestation_utils/network_ra.cpp.i
+
+.PHONY : attestation_utils/network_ra.i
+
+# target to preprocess a source file
+attestation_utils/network_ra.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/network_ra.cpp.i
+.PHONY : attestation_utils/network_ra.cpp.i
+
+attestation_utils/network_ra.s: attestation_utils/network_ra.cpp.s
+
+.PHONY : attestation_utils/network_ra.s
+
+# target to generate assembly for a file
+attestation_utils/network_ra.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/network_ra.cpp.s
+.PHONY : attestation_utils/network_ra.cpp.s
 
 enclave_u.o: enclave_u.c.o
 
@@ -250,60 +304,6 @@ enclave_u.s: enclave_u.c.s
 enclave_u.c.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/enclave_u.c.s
 .PHONY : enclave_u.c.s
-
-ias_ra.o: ias_ra.cpp.o
-
-.PHONY : ias_ra.o
-
-# target to build an object file
-ias_ra.cpp.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ias_ra.cpp.o
-.PHONY : ias_ra.cpp.o
-
-ias_ra.i: ias_ra.cpp.i
-
-.PHONY : ias_ra.i
-
-# target to preprocess a source file
-ias_ra.cpp.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ias_ra.cpp.i
-.PHONY : ias_ra.cpp.i
-
-ias_ra.s: ias_ra.cpp.s
-
-.PHONY : ias_ra.s
-
-# target to generate assembly for a file
-ias_ra.cpp.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ias_ra.cpp.s
-.PHONY : ias_ra.cpp.s
-
-network_ra.o: network_ra.cpp.o
-
-.PHONY : network_ra.o
-
-# target to build an object file
-network_ra.cpp.o:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/network_ra.cpp.o
-.PHONY : network_ra.cpp.o
-
-network_ra.i: network_ra.cpp.i
-
-.PHONY : network_ra.i
-
-# target to preprocess a source file
-network_ra.cpp.i:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/network_ra.cpp.i
-.PHONY : network_ra.cpp.i
-
-network_ra.s: network_ra.cpp.s
-
-.PHONY : network_ra.s
-
-# target to generate assembly for a file
-network_ra.cpp.s:
-	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/network_ra.cpp.s
-.PHONY : network_ra.cpp.s
 
 pong_enclave_attestation.o: pong_enclave_attestation.cpp.o
 
@@ -402,18 +402,18 @@ help:
 	@echo "... app.o"
 	@echo "... app.i"
 	@echo "... app.s"
-	@echo "... ecp.o"
-	@echo "... ecp.i"
-	@echo "... ecp.s"
+	@echo "... attestation_utils/ecp.o"
+	@echo "... attestation_utils/ecp.i"
+	@echo "... attestation_utils/ecp.s"
+	@echo "... attestation_utils/ias_ra.o"
+	@echo "... attestation_utils/ias_ra.i"
+	@echo "... attestation_utils/ias_ra.s"
+	@echo "... attestation_utils/network_ra.o"
+	@echo "... attestation_utils/network_ra.i"
+	@echo "... attestation_utils/network_ra.s"
 	@echo "... enclave_u.o"
 	@echo "... enclave_u.i"
 	@echo "... enclave_u.s"
-	@echo "... ias_ra.o"
-	@echo "... ias_ra.i"
-	@echo "... ias_ra.s"
-	@echo "... network_ra.o"
-	@echo "... network_ra.i"
-	@echo "... network_ra.s"
 	@echo "... pong_enclave_attestation.o"
 	@echo "... pong_enclave_attestation.i"
 	@echo "... pong_enclave_attestation.s"

@@ -20,12 +20,14 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include"
   "Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/../PHeaders"
   "Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/../../PGenerated"
+  "Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/attestation_utils"
+  "Samples/PingEnclavePongOutsideRemoteAttestation/Src/app"
   )
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/app.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/app.cpp.o"
-  "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/ecp.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ecp.cpp.o"
-  "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/ias_ra.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/ias_ra.cpp.o"
-  "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/network_ra.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/network_ra.cpp.o"
+  "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/attestation_utils/ecp.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ecp.cpp.o"
+  "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/attestation_utils/ias_ra.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/ias_ra.cpp.o"
+  "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/attestation_utils/network_ra.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/attestation_utils/network_ra.cpp.o"
   "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/pong_enclave_attestation.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/pong_enclave_attestation.cpp.o"
   "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/service_provider.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/service_provider.cpp.o"
   "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/sgx_utils/sgx_utils.cpp" "/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/CMakeFiles/app.dir/sgx_utils/sgx_utils.cpp.o"
@@ -42,6 +44,8 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include"
   "Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/../PHeaders"
   "Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/../../PGenerated"
+  "Samples/PingEnclavePongOutsideRemoteAttestation/Src/app/attestation_utils"
+  "Samples/PingEnclavePongOutsideRemoteAttestation/Src/app"
   )
 
 # Targets to which this target links.
