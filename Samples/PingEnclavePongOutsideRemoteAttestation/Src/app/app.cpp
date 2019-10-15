@@ -108,19 +108,20 @@ static void RunToIdle(void* process)
 
 extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
+    //TODO Enclave should be intialized and ready to go before SecureSend is called
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
         std::cout << "Fail to initialize enclave." << std::endl;
         // return 1;
     }
     int ptr;
-    sgx_status_t status = enclave_main(global_eid, &ptr);
+    sgx_status_t status = enclave_main(global_eid, &ptr); //Start up PrtTrusted inside enclave
     std::cout << status << std::endl;
     if (status != SGX_SUCCESS) {
         std::cout << "noob" << std::endl;
     }
     int ret_status;
 
-    strcpy(secure_message, "PING");
+    strcpy(secure_message, "PING"); //Make secure payload to be "PING"
 
     //Establish connection and attest before sending
     //Assume service_provider.cpp is part of the Ping machine
@@ -143,15 +144,13 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     
 }
 
-
-
 // OCall implementations
 void ocall_print(const char* str) {
     printf("[o] %s\n", str);
 }
 
 void ocall_send_pong(void) {
-
+    //TODO: Make this part perform RemoteAttestation before sending as well
     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
     PRT_MACHINEID pingId;
     pingId.machineId = 1;
@@ -166,7 +165,6 @@ int main(int argc, char const *argv[]) {
 		PRT_GUID processGuid;
 		PRT_VALUE *payload;
         PRT_VALUE *payload2;
-
 
 		processGuid.data1 = 1;
 		processGuid.data2 = 0;

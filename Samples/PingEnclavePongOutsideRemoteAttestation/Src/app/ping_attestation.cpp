@@ -30,7 +30,6 @@
  */
 
 
-
 #include "ping_attestation.h"
 
 #include "sample_libcrypto.h"
@@ -48,9 +47,13 @@
 #define SAFE_FREE(ptr) {if (NULL != (ptr)) {free(ptr); (ptr) = NULL;}}
 #endif
 
-char secure_message[8];
+//NOTE: in certain parts of this file, SP refers to the Ping machine
 
-// This is supported extended epid group of SP. SP can support more than one
+const int SIZE_OF_MESSAGE = 8;
+char secure_message[SIZE_OF_MESSAGE]; //This represents the message we are going to send to the Pong enclave after
+// a successful attestation. We write to this value in app.cpp
+
+// This is supported extended epid group of Ping machine. Ping machine can support more than one
 // extended epid group with different extended epid group id and credentials.
 static const sample_extended_epid_group g_extended_epid_groups[] = {
     {
@@ -61,8 +64,8 @@ static const sample_extended_epid_group g_extended_epid_groups[] = {
     }
 };
 
-// This is the private EC key of SP, the corresponding public EC key is
-// hard coded in isv_enclave. It is based on NIST P-256 curve.
+// This is the private part of the capability key. This is used to sign the authenticated
+// DH between Ping machine and Pong enclave
 static const sample_ec256_private_t g_sp_priv_key = {
     {
         0x90, 0xe7, 0x6c, 0xbb, 0x2d, 0x52, 0xa1, 0xce,
@@ -72,8 +75,7 @@ static const sample_ec256_private_t g_sp_priv_key = {
     }
 };
 
-// This is the public EC key of SP, this key is hard coded in isv_enclave.
-// It is based on NIST P-256 curve. Not used in the SP code.
+// This is the public part of the capability key
 static const sample_ec_pub_t g_sp_pub_key = {
     {
         0x72, 0x12, 0x8a, 0x7a, 0x17, 0x52, 0x6e, 0xbf,
@@ -89,7 +91,7 @@ static const sample_ec_pub_t g_sp_pub_key = {
     }
 };
 
-// This is a context data structure used on SP side
+// This is a context data structure used for Ping Machine
 typedef struct _sp_db_item_t
 {
     sample_ec_pub_t             g_a;
@@ -108,7 +110,7 @@ static bool g_is_sp_registered = false;
 static int g_sp_credentials = 0;
 static int g_authentication_token = 0;
 
-uint8_t g_secret[8] = {0,1,2,3,4,5,6,7};
+uint8_t g_secret[SIZE_OF_MESSAGE] = {0,1,2,3,4,5,6,7};
 
 sample_spid_t g_spid;
 
@@ -137,7 +139,7 @@ int sp_ra_proc_msg0_req(const sample_ra_msg0_t *p_msg0,
             if (g_extended_epid_groups[i].extended_epid_group_id == extended_epid_group_id)
             {
                 g_sp_extended_epid_group_id = &(g_extended_epid_groups[i]);
-                // In the product, the SP will establish a mutually
+                // In the product, the Ping Machine will establish a mutually
                 // authenticated SSL channel. During the enrollment process, the ISV
                 // registers it exchanges TLS certs with attestation server and obtains an SPID and
                 // Report Key from the attestation server.
@@ -704,7 +706,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             break;
         }
 
-        //NOTE: I added this
+        //NOTE: I added this to customize the secure message payload
         strcpy((char*)g_secret, secure_message);
 
 

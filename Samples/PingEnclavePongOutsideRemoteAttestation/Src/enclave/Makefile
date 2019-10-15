@@ -224,6 +224,33 @@ enclave_t.c.s:
 	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/enclave_t.c.s
 .PHONY : enclave_t.c.s
 
+ping_enclave_internal_attestation.o: ping_enclave_internal_attestation.cpp.o
+
+.PHONY : ping_enclave_internal_attestation.o
+
+# target to build an object file
+ping_enclave_internal_attestation.cpp.o:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/ping_enclave_internal_attestation.cpp.o
+.PHONY : ping_enclave_internal_attestation.cpp.o
+
+ping_enclave_internal_attestation.i: ping_enclave_internal_attestation.cpp.i
+
+.PHONY : ping_enclave_internal_attestation.i
+
+# target to preprocess a source file
+ping_enclave_internal_attestation.cpp.i:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/ping_enclave_internal_attestation.cpp.i
+.PHONY : ping_enclave_internal_attestation.cpp.i
+
+ping_enclave_internal_attestation.s: ping_enclave_internal_attestation.cpp.s
+
+.PHONY : ping_enclave_internal_attestation.s
+
+# target to generate assembly for a file
+ping_enclave_internal_attestation.cpp.s:
+	cd /home/shiv/Research/temp-del/ProgrammingEnclaves && $(MAKE) -f Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/build.make Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave/CMakeFiles/enclave.dir/ping_enclave_internal_attestation.cpp.s
+.PHONY : ping_enclave_internal_attestation.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -243,6 +270,9 @@ help:
 	@echo "... enclave_t.o"
 	@echo "... enclave_t.i"
 	@echo "... enclave_t.s"
+	@echo "... ping_enclave_internal_attestation.o"
+	@echo "... ping_enclave_internal_attestation.i"
+	@echo "... ping_enclave_internal_attestation.s"
 .PHONY : help
 
 

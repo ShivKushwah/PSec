@@ -177,9 +177,6 @@ void PRINT_ATTESTATION_SERVICE_RESPONSE(
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
 int ocall_enclave_start_attestation() {
-// #define _T(x) x
-// int main(int argc, char* argv[])
-// {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -297,13 +294,6 @@ int ocall_enclave_start_attestation() {
                 goto CLEANUP;
             }
             fprintf(OUTPUT, "\nCall sgx_create_enclave success.");
-            // int ptr;
-            // status = enclave_main(enclave_id, &ptr);
-            // //std::cout << status << std::endl;
-            // if (status != SGX_SUCCESS) {
-            //     std::cout << "Failed to start PRT inside enclave!" << std::endl;
-            // }
-
             ret = enclave_init_ra(enclave_id,
                                   &status,
                                   false,
