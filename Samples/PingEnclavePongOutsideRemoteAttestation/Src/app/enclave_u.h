@@ -25,10 +25,6 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_print, (const char* str));
 #define OCALL_SEND_PONG_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_send_pong, (void));
 #endif
-#ifndef OCALL_ENCLAVE_START_ATTESTATION_DEFINED__
-#define OCALL_ENCLAVE_START_ATTESTATION_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_enclave_start_attestation, (int receive_message));
-#endif
 #ifndef CALL_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
 #define CALL_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
 int SGX_UBRIDGE(SGX_NOCONVENTION, call_enclave_attestation_in_thread, (int receive_message));

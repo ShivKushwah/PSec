@@ -116,10 +116,8 @@ static void RunToIdle(void* process)
 
 extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {  
-    //TODO uncomment the below after adding threading to ocall_enclave_start_attestation
     int ret;
     call_enclave_attestation_in_thread(&ret, 0);
-    // ocall_send_pong();
 }
 
 int send_ping_enclave(void) {
@@ -196,6 +194,6 @@ int enclave_main(void)
 
 int enclave_request_attestation() {
     int ret;
-    ocall_enclave_start_attestation(&ret, 1);
+    //ocall_enclave_start_attestation(&ret, 1);
     return ret;
 }

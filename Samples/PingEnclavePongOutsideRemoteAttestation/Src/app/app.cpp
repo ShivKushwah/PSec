@@ -6,6 +6,7 @@
 #include "sgx_utils/sgx_utils.h"
 #include "PingPong.h"
 #include <pthread.h> 
+#include "pong_enclave_attestation.h"
 
 
 /* Global EID shared by multiple threads */
@@ -109,7 +110,7 @@ static void RunToIdle(void* process)
 }
 
 void* attestation_thread(void* receive_message) {
-    return (void*) ocall_enclave_start_attestation(*((int*)(&receive_message)));
+    return (void*) enclave_start_attestation(*((int*)(&receive_message)));
 }
 
 int call_enclave_attestation_in_thread(int receive_message) {
