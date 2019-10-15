@@ -97,7 +97,8 @@ int ra_network_send_receive(const char *server_url,
         ret =sp_ra_proc_msg3_req((const sample_ra_msg3_t*)((size_t)p_req +
             sizeof(ra_samp_request_header_t)),
             p_req->size,
-            &p_resp_msg);
+            &p_resp_msg,
+            false);
         if(0 != ret)
         {
             fprintf(stderr, "\nError, call sp_ra_proc_msg3_req fail [%s].",

@@ -136,7 +136,7 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     //     printf("\nERROR IN ATTESTATION. Message not sent!\n");
     // }
 
-    if (ocall_enclave_start_attestation() == 0) {
+    if (ocall_enclave_start_attestation(1) == 0) {
         printf("\nAttestation Succesful! Ping Event has been Sent!\n");
     } else {
         printf("\nERROR IN ATTESTATION. Message not sent!\n");

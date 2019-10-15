@@ -128,7 +128,7 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
 
 int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
                         uint32_t msg3_size,
-                        ra_samp_response_header_t **pp_att_result_msg);
+                        ra_samp_response_header_t **pp_att_result_msg, bool receive_message);
 
 int sp_ra_free_msg2(
     sample_ra_msg2_t *p_msg2);

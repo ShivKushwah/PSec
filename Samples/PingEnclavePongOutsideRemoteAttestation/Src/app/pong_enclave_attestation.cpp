@@ -176,7 +176,7 @@ void PRINT_ATTESTATION_SERVICE_RESPONSE(
 // attestation. Since the enclave can be lost due S3 transitions, apps
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
-int ocall_enclave_start_attestation() {
+int ocall_enclave_start_attestation(int receive_message) {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -665,7 +665,7 @@ int ocall_enclave_start_attestation() {
 
         // Get the shared secret sent by the server using SK (if attestation
         // passed)
-        if(attestation_passed)
+        if(attestation_passed && receive_message)
         {
             ret = put_secret_data(enclave_id,
                                   &status,

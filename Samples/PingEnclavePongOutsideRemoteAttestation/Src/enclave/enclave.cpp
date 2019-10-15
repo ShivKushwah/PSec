@@ -193,6 +193,6 @@ int enclave_main(void)
 
 int enclave_request_attestation() {
     int ret;
-    ocall_enclave_start_attestation(&ret);
+    ocall_enclave_start_attestation(&ret, 1);
     return ret;
 }

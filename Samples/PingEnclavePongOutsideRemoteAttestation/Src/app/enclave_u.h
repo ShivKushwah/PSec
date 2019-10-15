@@ -27,7 +27,7 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_send_pong, (void));
 #endif
 #ifndef OCALL_ENCLAVE_START_ATTESTATION_DEFINED__
 #define OCALL_ENCLAVE_START_ATTESTATION_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_enclave_start_attestation, (void));
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_enclave_start_attestation, (int receive_message));
 #endif
 #ifndef SGX_OC_CPUIDEX_DEFINED__
 #define SGX_OC_CPUIDEX_DEFINED__

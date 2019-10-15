@@ -441,7 +441,8 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
 // Process remote attestation message 3
 int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
                         uint32_t msg3_size,
-                        ra_samp_response_header_t **pp_att_result_msg)
+                        ra_samp_response_header_t **pp_att_result_msg,
+                        bool receive_message)
 {
     int ret = 0;
     sample_status_t sample_ret = SAMPLE_SUCCESS;
@@ -706,27 +707,32 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             break;
         }
 
-        //NOTE: I added this to customize the secure message payload
-        strcpy((char*)g_secret, secure_message);
+        if (!receive_message) { //We need to send the secure message in this case
+            //NOTE: I added this to customize the secure message payload
+            strcpy((char*)g_secret, secure_message);
 
 
-        // Generate shared secret and encrypt it with SK, if attestation passed.
-        uint8_t aes_gcm_iv[SAMPLE_SP_IV_SIZE] = {0};
-        p_att_result_msg->secret.payload_size = 8;
-        if((IAS_QUOTE_OK == attestation_report.status) &&
-           (IAS_PSE_OK == attestation_report.pse_status) &&
-           (isv_policy_passed == true))
-        {
-            ret = sample_rijndael128GCM_encrypt(&g_sp_db.sk_key,
-                        &g_secret[0],
-                        p_att_result_msg->secret.payload_size,
-                        p_att_result_msg->secret.payload,
-                        &aes_gcm_iv[0],
-                        SAMPLE_SP_IV_SIZE,
-                        NULL,
-                        0,
-                        &p_att_result_msg->secret.payload_tag);
+            // Generate shared secret and encrypt it with SK, if attestation passed.
+            uint8_t aes_gcm_iv[SAMPLE_SP_IV_SIZE] = {0};
+            p_att_result_msg->secret.payload_size = 8;
+            if((IAS_QUOTE_OK == attestation_report.status) &&
+            (IAS_PSE_OK == attestation_report.pse_status) &&
+            (isv_policy_passed == true))
+            {
+                ret = sample_rijndael128GCM_encrypt(&g_sp_db.sk_key,
+                            &g_secret[0],
+                            p_att_result_msg->secret.payload_size,
+                            p_att_result_msg->secret.payload,
+                            &aes_gcm_iv[0],
+                            SAMPLE_SP_IV_SIZE,
+                            NULL,
+                            0,
+                            &p_att_result_msg->secret.payload_tag);
+            }
+
         }
+
+        
     }while(0);
 
     if(ret)
