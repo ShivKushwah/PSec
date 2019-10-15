@@ -573,6 +573,9 @@ sgx_status_t put_secret_data(
         bool secret_match = true;
         if (strcmp((char*)g_secret, "hello") != 0) {
             secret_match = false;
+        } else {
+            secret_match = true;
+            //send_ping_enclave();
         }
         // for(i=1;i<secret_size;i++)
         // {

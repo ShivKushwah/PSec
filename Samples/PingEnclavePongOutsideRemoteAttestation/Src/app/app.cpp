@@ -125,8 +125,8 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     //Also, we need to change the service_provider.cpp secret to be the payload that we
     //want to send instead of this 2 part sending
 
-    if (ocall_enclave_start_attestation() == 0) {
-        printf("\nAttestation Succesful! Sending Message.\n");
+    if (ocall_initialize_enclave_and_start_attestation() == 0) {
+        printf("\nAttestation Succesful! Ping Event has been Sent!\n");
         status = send_ping_enclave(global_eid, &ret_status);
         if (status!=SGX_SUCCESS)
         {
@@ -135,6 +135,12 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     } else {
         printf("\nERROR IN ATTESTATION. Message not sent!\n");
     }
+
+    // status = send_ping_enclave(global_eid, &ret_status);
+    //     if (status!=SGX_SUCCESS)
+    //     {
+    //         printf("Failure: Error code %x\n", status);
+    //     }
 
 
     
@@ -394,7 +400,7 @@ void PRINT_ATTESTATION_SERVICE_RESPONSE(
 // attestation. Since the enclave can be lost due S3 transitions, apps
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
-int ocall_enclave_start_attestation() {
+int ocall_initialize_enclave_and_start_attestation() {
 // #define _T(x) x
 // int main(int argc, char* argv[])
 // {
@@ -405,7 +411,7 @@ int ocall_enclave_start_attestation() {
     ra_samp_response_header_t *p_msg2_full = NULL;
     sgx_ra_msg3_t *p_msg3 = NULL;
     ra_samp_response_header_t* p_att_result_msg_full = NULL;
-    sgx_enclave_id_t enclave_id = 0;
+    sgx_enclave_id_t enclave_id = global_eid;
     int enclave_lost_retry_time = 1;
     int busy_retry_time = 4;
     sgx_ra_context_t context = INT_MAX;
@@ -500,7 +506,8 @@ int ocall_enclave_start_attestation() {
         // ISV application creates the ISV enclave.
         do
         {
-            int ret = initialize_enclave(&enclave_id, "enclave.token", "enclave.signed.so");  
+            ret = 0;
+            //int ret = initialize_enclave(&enclave_id, "enclave.token", "enclave.signed.so");  
             // ret = sgx_create_enclave(_T(ENCLAVE_PATH),
             //                          SGX_DEBUG_FLAG,
             //                          NULL,
@@ -514,6 +521,12 @@ int ocall_enclave_start_attestation() {
                 goto CLEANUP;
             }
             fprintf(OUTPUT, "\nCall sgx_create_enclave success.");
+            // int ptr;
+            // status = enclave_main(enclave_id, &ptr);
+            // //std::cout << status << std::endl;
+            // if (status != SGX_SUCCESS) {
+            //     std::cout << "Failed to start PRT inside enclave!" << std::endl;
+            // }
 
             ret = enclave_init_ra(enclave_id,
                                   &status,

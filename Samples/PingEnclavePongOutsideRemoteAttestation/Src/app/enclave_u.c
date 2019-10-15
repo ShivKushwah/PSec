@@ -65,9 +65,9 @@ typedef struct ms_ocall_print_t {
 	const char* ms_str;
 } ms_ocall_print_t;
 
-typedef struct ms_ocall_enclave_start_attestation_t {
+typedef struct ms_ocall_initialize_enclave_and_start_attestation_t {
 	int ms_retval;
-} ms_ocall_enclave_start_attestation_t;
+} ms_ocall_initialize_enclave_and_start_attestation_t;
 
 typedef struct ms_sgx_oc_cpuidex_t {
 	int* ms_cpuinfo;
@@ -145,10 +145,10 @@ static sgx_status_t SGX_CDECL enclave_ocall_send_pong(void* pms)
 	return SGX_SUCCESS;
 }
 
-static sgx_status_t SGX_CDECL enclave_ocall_enclave_start_attestation(void* pms)
+static sgx_status_t SGX_CDECL enclave_ocall_initialize_enclave_and_start_attestation(void* pms)
 {
-	ms_ocall_enclave_start_attestation_t* ms = SGX_CAST(ms_ocall_enclave_start_attestation_t*, pms);
-	ms->ms_retval = ocall_enclave_start_attestation();
+	ms_ocall_initialize_enclave_and_start_attestation_t* ms = SGX_CAST(ms_ocall_initialize_enclave_and_start_attestation_t*, pms);
+	ms->ms_retval = ocall_initialize_enclave_and_start_attestation();
 
 	return SGX_SUCCESS;
 }
@@ -233,7 +233,7 @@ static const struct {
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_send_pong,
-		(void*)enclave_ocall_enclave_start_attestation,
+		(void*)enclave_ocall_initialize_enclave_and_start_attestation,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
 		(void*)enclave_sgx_thread_set_untrusted_event_ocall,
