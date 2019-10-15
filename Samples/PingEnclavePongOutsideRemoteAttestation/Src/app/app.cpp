@@ -5,6 +5,8 @@
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 #include "PingPong.h"
+#include <pthread.h> 
+
 
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
@@ -106,6 +108,24 @@ static void RunToIdle(void* process)
 	}
 }
 
+void* attestation_thread(void* temp) {
+    return (void*) ocall_enclave_start_attestation(1);
+}
+
+int call_enclave_attestation_in_thread() {
+
+    void* thread_ret;
+    pthread_t thread_id; 
+    printf("\nBefore Thread\n"); 
+    pthread_create(&thread_id, NULL, attestation_thread, NULL);
+    pthread_join(thread_id, &thread_ret); 
+    printf("\nAfter Thread\n"); 
+
+    return 0;//*((int*)(&thread_ret));
+
+
+}
+
 extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     //TODO Enclave should be intialized and ready to go before SecureSend is called
@@ -136,13 +156,18 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     //     printf("\nERROR IN ATTESTATION. Message not sent!\n");
     // }
 
-    if (ocall_enclave_start_attestation(1) == 0) {
+   
+
+
+    if (call_enclave_attestation_in_thread() == 0) {
         printf("\nAttestation Succesful! Ping Event has been Sent!\n");
     } else {
         printf("\nERROR IN ATTESTATION. Message not sent!\n");
     }
     
 }
+
+
 
 // OCall implementations
 void ocall_print(const char* str) {

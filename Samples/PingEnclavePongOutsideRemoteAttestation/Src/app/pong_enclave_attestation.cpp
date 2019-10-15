@@ -293,7 +293,7 @@ int ocall_enclave_start_attestation(int receive_message) {
                         __FUNCTION__);
                 goto CLEANUP;
             }
-            fprintf(OUTPUT, "\nCall sgx_create_enclave success.");
+            //fprintf(OUTPUT, "\nCall sgx_create_enclave success.");
             ret = enclave_init_ra(enclave_id,
                                   &status,
                                   false,
@@ -665,21 +665,25 @@ int ocall_enclave_start_attestation(int receive_message) {
 
         // Get the shared secret sent by the server using SK (if attestation
         // passed)
-        if(attestation_passed && receive_message)
+        if(attestation_passed)
         {
-            ret = put_secret_data(enclave_id,
-                                  &status,
-                                  context,
-                                  p_att_result_msg_body->secret.payload,
-                                  p_att_result_msg_body->secret.payload_size,
-                                  p_att_result_msg_body->secret.payload_tag);
-            if((SGX_SUCCESS != ret)  || (SGX_SUCCESS != status))
-            {
-                fprintf(OUTPUT, "\nError, attestation result message secret "
-                                "using SK based AESGCM failed in [%s]. ret = "
-                                "0x%0x. status = 0x%0x", __FUNCTION__, ret,
-                                 status);
-                goto CLEANUP;
+            if (receive_message) {
+                ret = put_secret_data(enclave_id,
+                                    &status,
+                                    context,
+                                    p_att_result_msg_body->secret.payload,
+                                    p_att_result_msg_body->secret.payload_size,
+                                    p_att_result_msg_body->secret.payload_tag);
+                if((SGX_SUCCESS != ret)  || (SGX_SUCCESS != status))
+                {
+                    fprintf(OUTPUT, "\nError, attestation result message secret "
+                                    "using SK based AESGCM failed in [%s]. ret = "
+                                    "0x%0x. status = 0x%0x", __FUNCTION__, ret,
+                                    status);
+                    goto CLEANUP;
+                }
+            } else {
+                ocall_send_pong();
             }
         }
         fprintf(OUTPUT, "\nSecret successfully received from server.");
