@@ -683,19 +683,12 @@ int enclave_start_attestation(int receive_message) {
                     goto CLEANUP;
                 }
             } else {
-                //TODO make this actually send a message like "PONG", and not hardcode ocall_send_pong
-                char *p_secret = "PONG";
-                uint32_t secret_size = 8;
-                uint8_t *p_gcm_mac;
-                //TODO make it call the enclaves sgx_encrypt instead of the untrusted one in sample
-                //TODO move this entire secret logic inside pong_internal_attestation bc the secret should never
-                // be in untrusted world, which this part is
+                //TODO make this return the encrypted secret and then pass it to an network ra method that 
+                //forwards it to the ping machine
 
-                ret = encrypt_secret(enclave_id,
+                ret = encrypt_secret_message_and_send(enclave_id,
                                     &status,
-                                    context,
-                                    (uint8_t *)p_secret,
-                                    secret_size);
+                                    context);
                 
             }
         }

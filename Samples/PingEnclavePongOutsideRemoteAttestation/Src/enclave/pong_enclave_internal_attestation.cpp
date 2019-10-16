@@ -406,11 +406,11 @@ sgx_status_t put_secret_data(
 }
 
 
-sgx_status_t encrypt_secret(
-    sgx_ra_context_t context,
-    uint8_t *p_secret,
-    uint32_t secret_size)
+sgx_status_t encrypt_secret_message_and_send(
+    sgx_ra_context_t context)
 {
+    char* p_secret = "PONG";
+    uint32_t secret_size = 8;
     sgx_status_t ret = SGX_SUCCESS;
     sgx_ec_key_128bit_t sk_key;
 
@@ -431,7 +431,7 @@ sgx_status_t encrypt_secret(
         uint8_t payload_tag[16];
         uint8_t encrypted_string[8] = {0};
         ret = sgx_rijndael128GCM_encrypt(&sk_key,
-                                         p_secret,
+                                         (uint8_t*)p_secret,
                                          secret_size,
                                          &encrypted_string[0],
                                          &aes_gcm_iv[0],

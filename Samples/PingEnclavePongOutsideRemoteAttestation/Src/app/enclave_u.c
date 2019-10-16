@@ -37,12 +37,10 @@ typedef struct ms_put_secret_data_t {
 	uint8_t* ms_gcm_mac;
 } ms_put_secret_data_t;
 
-typedef struct ms_encrypt_secret_t {
+typedef struct ms_encrypt_secret_message_and_send_t {
 	sgx_status_t ms_retval;
 	sgx_ra_context_t ms_context;
-	uint8_t* ms_p_secret;
-	uint32_t ms_secret_size;
-} ms_encrypt_secret_t;
+} ms_encrypt_secret_message_and_send_t;
 
 typedef struct ms_enclave_request_attestation_t {
 	int ms_retval;
@@ -339,13 +337,11 @@ sgx_status_t put_secret_data(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_
 	return status;
 }
 
-sgx_status_t encrypt_secret(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* p_secret, uint32_t secret_size)
+sgx_status_t encrypt_secret_message_and_send(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context)
 {
 	sgx_status_t status;
-	ms_encrypt_secret_t ms;
+	ms_encrypt_secret_message_and_send_t ms;
 	ms.ms_context = context;
-	ms.ms_p_secret = p_secret;
-	ms.ms_secret_size = secret_size;
 	status = sgx_ecall(eid, 6, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;

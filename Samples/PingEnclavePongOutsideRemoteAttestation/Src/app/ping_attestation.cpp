@@ -777,26 +777,9 @@ int ocall_receive_encrypted_message(uint8_t *p_secret,
         } else {
             secret_match = true;
             ocall_send_pong();
-
-                   // printf("Secret is %s\n" , (char*)g_secret);
-
-            //send_ping_enclave();
         }
-
-        // printf("Secret is %s\n" , (char*)p_secret);
-                            
-        // ret = sample_rijndael128GCM_decrypt(&sk_key,
-        //                                  p_secret,
-        //                                  secret_size,
-        //                                  &g_secret[0],
-        //                                  &aes_gcm_iv[0],
-        //                                  12,
-        //                                  NULL,
-        //                                  0,
-        //                                  (const sgx_aes_gcm_128bit_tag_t *)
-        //                                     (p_gcm_mac));
-                                     return 0;
-                                 }
+        return 0;
+}
 
 
 
