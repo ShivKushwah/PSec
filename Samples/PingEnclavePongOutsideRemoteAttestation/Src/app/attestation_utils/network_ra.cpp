@@ -57,9 +57,10 @@ extern sgx_enclave_id_t global_eid;
 
 int ra_network_send_receive(const char *server_url,
     const ra_samp_request_header_t *p_req,
-    ra_samp_response_header_t **p_resp)
+    ra_samp_response_header_t **p_resp,
+    Encrypted_Message optional_Message)
 {
-    if (strcmp(server_url, "PingMachine") == 0) {
+    if (strcmp(server_url, "PingMachine") == 0 && optional_Message.secret_size == 0) {
         int ret = 0;
         ra_samp_response_header_t* p_resp_msg;
 
@@ -125,6 +126,14 @@ int ra_network_send_receive(const char *server_url,
         }
 
         return ret;
+
+
+     } else if (strcmp(server_url, "PingMachine") == 0 && optional_Message.secret_size > 0) {
+         ocall_ping_machine_receive_encrypted_message(
+                                (uint8_t*)optional_Message.encrypted_message, 
+                                optional_Message.secret_size,
+                                 optional_Message.payload_tag);
+
     } else if (strcmp(server_url, "PongMachine") == 0) {
         int ptr;
         sgx_status_t status = pong_enclave_request_attestation(global_eid, &ptr);

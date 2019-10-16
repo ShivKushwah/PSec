@@ -696,12 +696,12 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
                                     payload_tag);
 
                 //Send encrypted message to Ping machine
-                
-                ocall_ping_machine_receive_encrypted_message(
-                                (uint8_t*)encrypted_string, 
-                                secret_size,
-                                 payload_tag);
+                struct Encrypted_Message emsg = {encrypted_string, secret_size, payload_tag};
 
+                ret = ra_network_send_receive(receiving_machine_name,
+                                      NULL,
+                                      NULL,
+                                      emsg);
                 
             }
         }

@@ -32,7 +32,17 @@
 
 
 #ifndef _NETWORK_RA_H
+
 #define _NETWORK_RA_H
+
+
+struct Encrypted_Message{
+    uint8_t* encrypted_message;
+    uint32_t secret_size;
+    uint8_t* payload_tag;
+};
+
+static const Encrypted_Message default_Encrypted_Message = {NULL, 0, NULL};
 
 
 /* Enum for all possible message types between the ISV app and
@@ -85,7 +95,8 @@ extern "C" {
 
 int ra_network_send_receive(const char *server_url,
                             const ra_samp_request_header_t *req,
-                            ra_samp_response_header_t **p_resp);
+                            ra_samp_response_header_t **p_resp,
+                            Encrypted_Message optional_Message = default_Encrypted_Message);
 void ra_free_network_response_buffer(ra_samp_response_header_t *resp);
 
 #ifdef  __cplusplus
