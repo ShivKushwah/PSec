@@ -4,6 +4,7 @@
 #include "enclave_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
+#include "network_ra.h"
 #include "PingPong.h"
 #include <pthread.h> 
 #include "pong_enclave_attestation.h"
@@ -110,7 +111,7 @@ static void RunToIdle(void* process)
 
 void* attestation_thread(void* receive_message) { //receive_message should be true when the enclave is receiving the message
                                                   //false when the enclave wants to send a message
-    return (void*) enclave_start_attestation(*((int*)(&receive_message)));
+    return (void*) enclave_start_attestation("PingMachine", *((int*)(&receive_message)));
 }
 
 int ocall_enclave_attestation_in_thread(int receive_message) {
@@ -129,6 +130,9 @@ int ocall_enclave_attestation_in_thread(int receive_message) {
 
 extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
+    //TODO Make Secure Send take in a parameter that is the receiving machine's name
+    char* receiving_machine_name = "PongMachine";
+
     //TODO Enclave should be intialized and ready to go before SecureSend is called
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
         std::cout << "Fail to initialize enclave." << std::endl;
@@ -145,11 +149,12 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
 
     //Request the enclave to start the attestation and secure channel process so that
     // we can send the enclave a secure message
-    status = enclave_request_attestation(global_eid, &ptr);
-    if (status == SGX_SUCCESS && ptr == 0) {
+    if (ra_network_send_receive(receiving_machine_name, NULL, NULL) == 0) {
         printf("\nAttestation Succesful! Ping Event has been Sent!\n");
+
     } else {
         printf("\nERROR IN ATTESTATION. Message not sent!\n");
+
     }
     
 }

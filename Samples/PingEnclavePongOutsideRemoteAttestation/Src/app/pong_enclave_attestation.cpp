@@ -176,7 +176,8 @@ void PRINT_ATTESTATION_SERVICE_RESPONSE(
 // attestation. Since the enclave can be lost due S3 transitions, apps
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
-int enclave_start_attestation(int receive_message) {
+//TODO rename pong_enclave_start_attestation
+int enclave_start_attestation(const char* receiving_machine_name, int receive_message) {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -260,7 +261,7 @@ int enclave_start_attestation(int receive_message) {
         // The ISV decides whether to support this extended epid group id.
         fprintf(OUTPUT, "\nSending msg0 to remote attestation service provider.\n");
 
-        ret = ra_network_send_receive("http://SampleServiceProvider.intel.com/",
+        ret = ra_network_send_receive(receiving_machine_name,
             p_msg0_full,
             &p_msg0_resp_full);
         if (ret != 0)
@@ -369,7 +370,7 @@ int enclave_start_attestation(int receive_message) {
                         "Expecting msg2 back.\n");
 
 
-        ret = ra_network_send_receive("http://SampleServiceProvider.intel.com/",
+        ret = ra_network_send_receive(receiving_machine_name,
                                       p_msg1_full,
                                       &p_msg2_full);
 
@@ -556,7 +557,7 @@ int enclave_start_attestation(int receive_message) {
         // demonstration.  Note that the attestation result message makes use
         // of both the MK for the MAC and the SK for the secret. These keys are
         // established from the SIGMA secure channel binding.
-        ret = ra_network_send_receive("http://SampleServiceProvider.intel.com/",
+        ret = ra_network_send_receive(receiving_machine_name,
                                       p_msg3_full,
                                       &p_att_result_msg_full);
         if(ret || !p_att_result_msg_full)
