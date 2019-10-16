@@ -1,12 +1,3 @@
-#include <stdio.h>
-#include <iostream>
-#include <assert.h>
-#include "enclave_u.h"
-#include "sgx_urts.h"
-#include "sgx_utils/sgx_utils.h"
-
-extern sgx_enclave_id_t global_eid;
-
 /*
  * Copyright (C) 2011-2019 Intel Corporation. All rights reserved.
  *
@@ -41,7 +32,12 @@ extern sgx_enclave_id_t global_eid;
 // This sample is confined to the communication between a SGX client platform
 // and an ISV Application Server. 
 
-
+#include <stdio.h>
+#include <iostream>
+#include <assert.h>
+#include "enclave_u.h"
+#include "sgx_urts.h"
+#include "sgx_utils/sgx_utils.h"
 
 #include <stdio.h>
 #include <limits.h>
@@ -63,7 +59,7 @@ extern sgx_enclave_id_t global_eid;
 
 // Needed to query extended epid group id.
 #include "sgx_uae_service.h"
-
+#include "pong_enclave_attestation.h"
 #include "ping_attestation.h"
 
 #ifndef SAFE_FREE
@@ -75,6 +71,7 @@ extern sgx_enclave_id_t global_eid;
 // messages and the information flow.
 #include "sample_messages.h"
 
+extern sgx_enclave_id_t global_eid;
 
 #define ENCLAVE_PATH "isv_enclave.signed.so"
 
@@ -176,8 +173,7 @@ void PRINT_ATTESTATION_SERVICE_RESPONSE(
 // attestation. Since the enclave can be lost due S3 transitions, apps
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
-//TODO rename pong_enclave_start_attestation
-int enclave_start_attestation(const char* receiving_machine_name, int receive_message) {
+int pong_enclave_start_attestation(const char* receiving_machine_name, int receive_message) {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -734,5 +730,27 @@ CLEANUP:
     // printf("\nEnter a character before exit ...\n");
     // getchar();
     return ret;
+}
+
+
+void* attestation_thread(void* parameters) { //receive_message should be true when the enclave is receiving the message
+                                                  //false when the enclave wants to send a message
+    struct Enclave_start_attestation_wrapper_arguments* p = (struct Enclave_start_attestation_wrapper_arguments*)parameters;
+    //*((int*)(&receive_message))
+    return (void*) pong_enclave_start_attestation(p->machineName,  p->receive_message);
+}
+
+int ocall_pong_enclave_attestation_in_thread(char* other_machine_name, uint32_t size, int receive_message) {
+    struct Enclave_start_attestation_wrapper_arguments parameters = {other_machine_name, receive_message};
+    void* thread_ret;
+    pthread_t thread_id; 
+    printf("\n Calling Attestation Thread\n"); 
+    pthread_create(&thread_id, NULL, attestation_thread, (void*) &parameters);
+    //TODO look into not calling pthread_join but actually let this run asynchoronous
+    pthread_join(thread_id, &thread_ret); 
+    printf("\n Finished Attestation Thread\n"); 
+
+    return 0;
+
 }
 
