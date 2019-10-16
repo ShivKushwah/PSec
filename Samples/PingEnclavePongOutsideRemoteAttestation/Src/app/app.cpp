@@ -109,7 +109,7 @@ static void RunToIdle(void* process)
 	}
 }
 
-extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     //TODO Make Secure Send take in a parameter that is the receiving machine's name
     char* receiving_machine_name = "PongMachine";
@@ -119,17 +119,17 @@ extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
         std::cout << "Fail to initialize enclave." << std::endl;
     }
     int ptr;
-    sgx_status_t status = enclave_main(global_eid, &ptr); //Start up PrtTrusted inside enclave
+    //Start up PrtTrusted inside enclave
+    sgx_status_t status = enclave_main(global_eid, &ptr); 
     std::cout << status << std::endl;
     if (status != SGX_SUCCESS) {
-        std::cout << "noob" << std::endl;
+        std::cout << "Error in Starting PrtTrusted" << std::endl;
     }
-    int ret_status;
 
-    strcpy(secure_message, "PING"); //Make secure payload to be "PING"
+    //Make secure payload to be "PING"
+    strcpy(secure_message, "PING"); 
 
-    //Request the enclave to start the attestation and secure channel process so that
-    // we can send the enclave a secure message
+    //Send "network" request to Pong enclave to start the remote attestation channel creation process
     if (ra_network_send_receive(receiving_machine_name, NULL, NULL) == 0) {
         printf("\nAttestation Succesful! Ping Event has been Sent!\n");
 

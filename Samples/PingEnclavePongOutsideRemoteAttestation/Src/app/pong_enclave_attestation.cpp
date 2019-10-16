@@ -45,8 +45,6 @@
 // Needed for definition of remote attestation messages.
 #include "remote_attestation_result.h"
 
-// #include "isv_enclave_u.h"
-
 // Needed to call untrusted key exchange library APIs, i.e. sgx_ra_proc_msg2.
 #include "sgx_ukey_exchange.h"
 
@@ -173,6 +171,7 @@ void PRINT_ATTESTATION_SERVICE_RESPONSE(
 // attestation. Since the enclave can be lost due S3 transitions, apps
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
+// This method makes network_ra call to have the pong enclave attest to the ping machine
 int pong_enclave_start_attestation(const char* receiving_machine_name, int message_from_machine_to_enclave) {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;

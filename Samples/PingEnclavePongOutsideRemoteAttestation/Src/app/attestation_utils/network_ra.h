@@ -44,7 +44,6 @@ struct Encrypted_Message{
 
 static const Encrypted_Message default_Encrypted_Message = {NULL, 0, NULL};
 
-
 /* Enum for all possible message types between the ISV app and
  * the ISV SP. Requests and responses in the remote attestation
  * sample.

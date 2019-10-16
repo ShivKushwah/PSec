@@ -1,6 +1,6 @@
 event Ping assert 2;
 event Pong assert 2;
-fun SecureSend();
+fun SecureSendPingEventToPongEnclave();
 event Success;
 
 machine Ping {
@@ -15,7 +15,7 @@ machine Ping {
 
     state Ping_SendingPing {
         entry {
-            SecureSend(); //Send Ping to the enclave's Pong machine
+            SecureSendPingEventToPongEnclave(); //Send Ping to the enclave's Pong machine
     	    raise Success;
 	    }
         on Success goto Ping_WaitPong;

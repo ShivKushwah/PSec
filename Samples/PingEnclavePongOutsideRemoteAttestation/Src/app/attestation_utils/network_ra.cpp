@@ -29,8 +29,6 @@
  *
  */
 
-
-
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -60,6 +58,7 @@ int ra_network_send_receive(const char *server_url,
     ra_samp_response_header_t **p_resp,
     Encrypted_Message optional_Message)
 {
+    //Request to PingMachine to initialize attestation channel
     if (strcmp(server_url, "PingMachine") == 0 && optional_Message.secret_size == 0) {
         int ret = 0;
         ra_samp_response_header_t* p_resp_msg;
@@ -127,13 +126,14 @@ int ra_network_send_receive(const char *server_url,
 
         return ret;
 
-
+     //Request to PingMachine to send encrypted data based on previous secure channel
      } else if (strcmp(server_url, "PingMachine") == 0 && optional_Message.secret_size > 0) {
          ocall_ping_machine_receive_encrypted_message(
                                 (uint8_t*)optional_Message.encrypted_message, 
                                 optional_Message.secret_size,
                                  optional_Message.payload_tag);
 
+    //Request to PongMachine to initialize a secure attestation channel
     } else if (strcmp(server_url, "PongMachine") == 0) {
         int ptr;
         sgx_status_t status = pong_enclave_request_attestation(global_eid, &ptr);

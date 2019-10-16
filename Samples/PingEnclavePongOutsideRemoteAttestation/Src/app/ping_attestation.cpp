@@ -33,7 +33,6 @@
 #include "ping_attestation.h"
 #include "enclave_u.h"
 
-
 #include "sample_libcrypto.h"
 
 #include "ecp.h"
@@ -52,8 +51,10 @@
 //NOTE: in certain parts of this file, SP refers to the Ping machine
 
 const int SIZE_OF_MESSAGE = 8;
-char secure_message[SIZE_OF_MESSAGE]; //This represents the message we are going to send to the Pong enclave after
-// a successful attestation. We write to this value in app.cpp
+
+//This represents the payload we are going to send to the enclave after a succesful attestation
+//We write to this value in app.cpp before the ping machine initiates the attestation request with Pong enclave
+char secure_message[SIZE_OF_MESSAGE]; 
 
 // This is supported extended epid group of Ping machine. Ping machine can support more than one
 // extended epid group with different extended epid group id and credentials.
@@ -710,8 +711,9 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             break;
         }
 
-        if (!message_from_machine_to_enclave) { //We need to send the secure message in this case
-            //NOTE: I added this to customize the secure message payload
+        //We need to send the secure message in this case to the enclave 
+        if (!message_from_machine_to_enclave) { 
+
             strcpy((char*)g_secret, secure_message);
 
 
@@ -751,7 +753,8 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
     return ret;
 }
 
-//When Ping machine receives encrypted secret
+//When Ping machine receives an encrypted secret from the Pong enclave
+//We have already created an attestation channel before this point
 int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,  
                                 uint32_t secret_size,
                                  uint8_t *p_gcm_mac) {
@@ -767,7 +770,7 @@ int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,
                             NULL,
                             0,
                             (sample_aes_gcm_128bit_tag_t *)p_gcm_mac);
-        printf("Secret is %s\n" , (char*)g_secret);
+        //printf("Secret is %s\n" , (char*)g_secret);
 
         uint32_t i;
         bool secret_match = true;
