@@ -405,9 +405,15 @@ sgx_status_t put_secret_data(
     return ret;
 }
 
+//TODO: change P_IMPL_SecureSend to P_IMPL_seucreSendToPongMachinePingEvent
 
-sgx_status_t encrypt_secret_message_and_send(
-    sgx_ra_context_t context)
+// Writes the results to the parameters
+sgx_status_t encrypt_secure_message(
+    sgx_ra_context_t context,
+    uint8_t* return_encrypted_string,
+    uint32_t* return_secret_size,
+    uint8_t* return_payload_tag
+    )
 {
     char* p_secret = "PONG";
     uint32_t secret_size = 8;
@@ -440,11 +446,12 @@ sgx_status_t encrypt_secret_message_and_send(
                                          0,
                                          (sgx_aes_gcm_128bit_tag_t *)
                                             (payload_tag));
-        int return_int;
-        ocall_ping_machine_receive_encrypted_message(&return_int,
-                                (uint8_t*)encrypted_string, 
-                                secret_size,
-                                 payload_tag);
+        
+        memcpy(return_encrypted_string, encrypted_string, secret_size);
+        memcpy(return_secret_size, &secret_size, sizeof(uint32_t));
+        memcpy(return_payload_tag, payload_tag, sizeof(uint8_t) * 16);
+        // return_encrypted_string[8] = 0;
+        // payload_tag[16] = 0;
 
     } while(0);
     return ret;
