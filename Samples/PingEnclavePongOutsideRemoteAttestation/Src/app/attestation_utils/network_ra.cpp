@@ -127,7 +127,7 @@ int ra_network_send_receive(const char *server_url,
         return ret;
     } else if (strcmp(server_url, "PongMachine") == 0) {
         int ptr;
-        sgx_status_t status = enclave_request_attestation(global_eid, &ptr);
+        sgx_status_t status = pong_enclave_request_attestation(global_eid, &ptr);
         if (status == SGX_SUCCESS && ptr == 0) {
             return ptr;
         } else {

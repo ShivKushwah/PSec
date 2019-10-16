@@ -108,13 +108,13 @@ static void RunToIdle(void* process)
 		}
 	}
 }
-
+//TODO move this to pong_enclave_attesation as well as methdod below
 void* attestation_thread(void* receive_message) { //receive_message should be true when the enclave is receiving the message
                                                   //false when the enclave wants to send a message
     return (void*) enclave_start_attestation("PingMachine", *((int*)(&receive_message)));
 }
 
-int ocall_enclave_attestation_in_thread(int receive_message) {
+int ocall_pong_enclave_attestation_in_thread(char* other_machine_name, uint32_t size, int receive_message) {
 
     void* thread_ret;
     pthread_t thread_id; 

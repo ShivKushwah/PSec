@@ -21,7 +21,7 @@ enclave {
                                             uint32_t secret_size,
                                             [in,count=16] uint8_t* gcm_mac);
         public sgx_status_t encrypt_secret_message_and_send(sgx_ra_context_t context);
-        public int enclave_request_attestation(void);
+        public int pong_enclave_request_attestation(void);
 
     };
 
@@ -29,7 +29,9 @@ enclave {
         /* define OCALLs here. */
         void ocall_print([in, string]const char* str);
         void ocall_send_pong(void);
-        int ocall_enclave_attestation_in_thread(int receive_message);
+        int ocall_pong_enclave_attestation_in_thread([in,size=other_machine_name_size] char* other_machine_name, 
+                                                    uint32_t other_machine_name_size,
+                                                    int receive_message);
         int ocall_ping_machine_receive_encrypted_message([in,size=secret_size] uint8_t *p_secret, 
                                 uint32_t secret_size,
                                  [in,count=16] uint8_t *p_gcm_mac);

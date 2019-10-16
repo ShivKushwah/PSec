@@ -42,9 +42,9 @@ typedef struct ms_encrypt_secret_message_and_send_t {
 	sgx_ra_context_t ms_context;
 } ms_encrypt_secret_message_and_send_t;
 
-typedef struct ms_enclave_request_attestation_t {
+typedef struct ms_pong_enclave_request_attestation_t {
 	int ms_retval;
-} ms_enclave_request_attestation_t;
+} ms_pong_enclave_request_attestation_t;
 
 typedef struct ms_sgx_ra_get_ga_t {
 	sgx_status_t ms_retval;
@@ -74,10 +74,12 @@ typedef struct ms_ocall_print_t {
 	const char* ms_str;
 } ms_ocall_print_t;
 
-typedef struct ms_ocall_enclave_attestation_in_thread_t {
+typedef struct ms_ocall_pong_enclave_attestation_in_thread_t {
 	int ms_retval;
+	char* ms_other_machine_name;
+	uint32_t ms_other_machine_name_size;
 	int ms_receive_message;
-} ms_ocall_enclave_attestation_in_thread_t;
+} ms_ocall_pong_enclave_attestation_in_thread_t;
 
 typedef struct ms_ocall_ping_machine_receive_encrypted_message_t {
 	int ms_retval;
@@ -162,10 +164,10 @@ static sgx_status_t SGX_CDECL enclave_ocall_send_pong(void* pms)
 	return SGX_SUCCESS;
 }
 
-static sgx_status_t SGX_CDECL enclave_ocall_enclave_attestation_in_thread(void* pms)
+static sgx_status_t SGX_CDECL enclave_ocall_pong_enclave_attestation_in_thread(void* pms)
 {
-	ms_ocall_enclave_attestation_in_thread_t* ms = SGX_CAST(ms_ocall_enclave_attestation_in_thread_t*, pms);
-	ms->ms_retval = ocall_enclave_attestation_in_thread(ms->ms_receive_message);
+	ms_ocall_pong_enclave_attestation_in_thread_t* ms = SGX_CAST(ms_ocall_pong_enclave_attestation_in_thread_t*, pms);
+	ms->ms_retval = ocall_pong_enclave_attestation_in_thread(ms->ms_other_machine_name, ms->ms_other_machine_name_size, ms->ms_receive_message);
 
 	return SGX_SUCCESS;
 }
@@ -258,7 +260,7 @@ static const struct {
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_send_pong,
-		(void*)enclave_ocall_enclave_attestation_in_thread,
+		(void*)enclave_ocall_pong_enclave_attestation_in_thread,
 		(void*)enclave_ocall_ping_machine_receive_encrypted_message,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
@@ -347,10 +349,10 @@ sgx_status_t encrypt_secret_message_and_send(sgx_enclave_id_t eid, sgx_status_t*
 	return status;
 }
 
-sgx_status_t enclave_request_attestation(sgx_enclave_id_t eid, int* retval)
+sgx_status_t pong_enclave_request_attestation(sgx_enclave_id_t eid, int* retval)
 {
 	sgx_status_t status;
-	ms_enclave_request_attestation_t ms;
+	ms_pong_enclave_request_attestation_t ms;
 	status = sgx_ecall(eid, 7, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;

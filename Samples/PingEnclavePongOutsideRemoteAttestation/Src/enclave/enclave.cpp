@@ -1,5 +1,6 @@
 #include "PingPongEnclave.h"
 #include "enclave_t.h"
+#include "string.h"
 
 PRT_PROCESS *process;
 
@@ -117,7 +118,8 @@ static void RunToIdle(void* process)
 extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {  
     int ret;
-    ocall_enclave_attestation_in_thread(&ret, 0);
+    char* other_machine_name = "PingMachine";
+    ocall_pong_enclave_attestation_in_thread(&ret, other_machine_name, strlen(other_machine_name), 0);
 }
 
 int send_ping_enclave(void) {
@@ -192,8 +194,9 @@ int enclave_main(void)
         }
 }
 
-int enclave_request_attestation() {
+int pong_enclave_request_attestation() {
     int ret;
-    ocall_enclave_attestation_in_thread(&ret, 1);
+    char* other_machine_name = "PingMachine";
+    ocall_pong_enclave_attestation_in_thread(&ret, other_machine_name, strlen(other_machine_name), 1);
     return ret;
 }

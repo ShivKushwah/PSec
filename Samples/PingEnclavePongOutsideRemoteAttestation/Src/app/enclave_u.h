@@ -25,9 +25,9 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_print, (const char* str));
 #define OCALL_SEND_PONG_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_send_pong, (void));
 #endif
-#ifndef OCALL_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
-#define OCALL_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_enclave_attestation_in_thread, (int receive_message));
+#ifndef OCALL_PONG_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
+#define OCALL_PONG_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_pong_enclave_attestation_in_thread, (char* other_machine_name, uint32_t other_machine_name_size, int receive_message));
 #endif
 #ifndef OCALL_PING_MACHINE_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
 #define OCALL_PING_MACHINE_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
@@ -77,7 +77,7 @@ sgx_status_t enclave_ra_close(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra
 sgx_status_t verify_att_result_mac(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* message, size_t message_size, uint8_t* mac, size_t mac_size);
 sgx_status_t put_secret_data(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* p_secret, uint32_t secret_size, uint8_t* gcm_mac);
 sgx_status_t encrypt_secret_message_and_send(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context);
-sgx_status_t enclave_request_attestation(sgx_enclave_id_t eid, int* retval);
+sgx_status_t pong_enclave_request_attestation(sgx_enclave_id_t eid, int* retval);
 sgx_status_t sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a);
 sgx_status_t sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, const sgx_ra_msg2_t* p_msg2, const sgx_target_info_t* p_qe_target, sgx_report_t* p_report, sgx_quote_nonce_t* p_nonce);
 sgx_status_t sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint32_t quote_size, sgx_report_t* qe_report, sgx_ra_msg3_t* p_msg3, uint32_t msg3_size);
