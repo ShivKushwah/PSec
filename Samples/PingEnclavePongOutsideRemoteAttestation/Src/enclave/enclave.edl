@@ -29,8 +29,8 @@ enclave {
         /* define OCALLs here. */
         void ocall_print([in, string]const char* str);
         void ocall_send_pong(void);
-        int call_enclave_attestation_in_thread(int receive_message);
-        int ocall_receive_encrypted_message([in,size=secret_size] uint8_t *p_secret, 
+        int ocall_enclave_attestation_in_thread(int receive_message);
+        int ocall_ping_machine_receive_encrypted_message([in,size=secret_size] uint8_t *p_secret, 
                                 uint32_t secret_size,
                                  [in,count=16] uint8_t *p_gcm_mac);
     };

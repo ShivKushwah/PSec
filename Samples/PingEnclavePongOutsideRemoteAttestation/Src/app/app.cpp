@@ -113,7 +113,7 @@ void* attestation_thread(void* receive_message) { //receive_message should be tr
     return (void*) enclave_start_attestation(*((int*)(&receive_message)));
 }
 
-int call_enclave_attestation_in_thread(int receive_message) {
+int ocall_enclave_attestation_in_thread(int receive_message) {
 
     void* thread_ret;
     pthread_t thread_id; 

@@ -441,37 +441,11 @@ sgx_status_t encrypt_secret_message_and_send(
                                          (sgx_aes_gcm_128bit_tag_t *)
                                             (payload_tag));
         int return_int;
-        ocall_receive_encrypted_message(&return_int,
+        ocall_ping_machine_receive_encrypted_message(&return_int,
                                 (uint8_t*)encrypted_string, 
                                 secret_size,
                                  payload_tag);
 
-
-        // uint32_t i;
-        // bool secret_match = true;
-        // if (strcmp((char*)g_secret, "PING") != 0) {
-        //     secret_match = false;
-        // } else {
-        //     secret_match = true;
-        //     send_ping_enclave();
-        // }
-        // for(i=1;i<secret_size;i++)
-        // {
-        //     if(g_secret[i] != i || g_secret[0] != 'h')
-        //     {
-        //         secret_match = false;
-        //     }
-        // }
-
-        // if(!secret_match)
-        // {
-        //     ret = SGX_ERROR_UNEXPECTED;
-        // }
-
-        // Once the server has the shared secret, it should be sealed to
-        // persistent storage for future use. This will prevents having to
-        // perform remote attestation until the secret goes stale. Once the
-        // enclave is created again, the secret can be unsealed.
     } while(0);
     return ret;
 }

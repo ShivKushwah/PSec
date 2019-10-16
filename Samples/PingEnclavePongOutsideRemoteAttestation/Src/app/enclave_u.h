@@ -25,13 +25,13 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_print, (const char* str));
 #define OCALL_SEND_PONG_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_send_pong, (void));
 #endif
-#ifndef CALL_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
-#define CALL_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, call_enclave_attestation_in_thread, (int receive_message));
+#ifndef OCALL_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
+#define OCALL_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_enclave_attestation_in_thread, (int receive_message));
 #endif
-#ifndef OCALL_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
-#define OCALL_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_receive_encrypted_message, (uint8_t* p_secret, uint32_t secret_size, uint8_t* p_gcm_mac));
+#ifndef OCALL_PING_MACHINE_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
+#define OCALL_PING_MACHINE_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_ping_machine_receive_encrypted_message, (uint8_t* p_secret, uint32_t secret_size, uint8_t* p_gcm_mac));
 #endif
 #ifndef SGX_OC_CPUIDEX_DEFINED__
 #define SGX_OC_CPUIDEX_DEFINED__

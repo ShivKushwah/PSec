@@ -74,17 +74,17 @@ typedef struct ms_ocall_print_t {
 	const char* ms_str;
 } ms_ocall_print_t;
 
-typedef struct ms_call_enclave_attestation_in_thread_t {
+typedef struct ms_ocall_enclave_attestation_in_thread_t {
 	int ms_retval;
 	int ms_receive_message;
-} ms_call_enclave_attestation_in_thread_t;
+} ms_ocall_enclave_attestation_in_thread_t;
 
-typedef struct ms_ocall_receive_encrypted_message_t {
+typedef struct ms_ocall_ping_machine_receive_encrypted_message_t {
 	int ms_retval;
 	uint8_t* ms_p_secret;
 	uint32_t ms_secret_size;
 	uint8_t* ms_p_gcm_mac;
-} ms_ocall_receive_encrypted_message_t;
+} ms_ocall_ping_machine_receive_encrypted_message_t;
 
 typedef struct ms_sgx_oc_cpuidex_t {
 	int* ms_cpuinfo;
@@ -162,18 +162,18 @@ static sgx_status_t SGX_CDECL enclave_ocall_send_pong(void* pms)
 	return SGX_SUCCESS;
 }
 
-static sgx_status_t SGX_CDECL enclave_call_enclave_attestation_in_thread(void* pms)
+static sgx_status_t SGX_CDECL enclave_ocall_enclave_attestation_in_thread(void* pms)
 {
-	ms_call_enclave_attestation_in_thread_t* ms = SGX_CAST(ms_call_enclave_attestation_in_thread_t*, pms);
-	ms->ms_retval = call_enclave_attestation_in_thread(ms->ms_receive_message);
+	ms_ocall_enclave_attestation_in_thread_t* ms = SGX_CAST(ms_ocall_enclave_attestation_in_thread_t*, pms);
+	ms->ms_retval = ocall_enclave_attestation_in_thread(ms->ms_receive_message);
 
 	return SGX_SUCCESS;
 }
 
-static sgx_status_t SGX_CDECL enclave_ocall_receive_encrypted_message(void* pms)
+static sgx_status_t SGX_CDECL enclave_ocall_ping_machine_receive_encrypted_message(void* pms)
 {
-	ms_ocall_receive_encrypted_message_t* ms = SGX_CAST(ms_ocall_receive_encrypted_message_t*, pms);
-	ms->ms_retval = ocall_receive_encrypted_message(ms->ms_p_secret, ms->ms_secret_size, ms->ms_p_gcm_mac);
+	ms_ocall_ping_machine_receive_encrypted_message_t* ms = SGX_CAST(ms_ocall_ping_machine_receive_encrypted_message_t*, pms);
+	ms->ms_retval = ocall_ping_machine_receive_encrypted_message(ms->ms_p_secret, ms->ms_secret_size, ms->ms_p_gcm_mac);
 
 	return SGX_SUCCESS;
 }
@@ -258,8 +258,8 @@ static const struct {
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_send_pong,
-		(void*)enclave_call_enclave_attestation_in_thread,
-		(void*)enclave_ocall_receive_encrypted_message,
+		(void*)enclave_ocall_enclave_attestation_in_thread,
+		(void*)enclave_ocall_ping_machine_receive_encrypted_message,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
 		(void*)enclave_sgx_thread_set_untrusted_event_ocall,
