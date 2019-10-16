@@ -27,7 +27,7 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_send_pong, (void));
 #endif
 #ifndef OCALL_PONG_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
 #define OCALL_PONG_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_pong_enclave_attestation_in_thread, (char* other_machine_name, uint32_t other_machine_name_size, int receive_message));
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_pong_enclave_attestation_in_thread, (char* other_machine_name, uint32_t other_machine_name_size, int message_from_machine_to_enclave));
 #endif
 #ifndef OCALL_PING_MACHINE_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
 #define OCALL_PING_MACHINE_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__

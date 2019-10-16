@@ -444,7 +444,8 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
 int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
                         uint32_t msg3_size,
                         ra_samp_response_header_t **pp_att_result_msg,
-                        bool receive_message)
+                        int message_from_machine_to_enclave) //message_from_machine_to_enclave is 1 when the enclave is supposed to receive a message
+                                                             //0 when the enclave is suppposed to send a message
 {
     int ret = 0;
     sample_status_t sample_ret = SAMPLE_SUCCESS;
@@ -709,7 +710,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             break;
         }
 
-        if (!receive_message) { //We need to send the secure message in this case
+        if (!message_from_machine_to_enclave) { //We need to send the secure message in this case
             //NOTE: I added this to customize the secure message payload
             strcpy((char*)g_secret, secure_message);
 

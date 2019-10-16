@@ -173,7 +173,7 @@ void PRINT_ATTESTATION_SERVICE_RESPONSE(
 // attestation. Since the enclave can be lost due S3 transitions, apps
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
-int pong_enclave_start_attestation(const char* receiving_machine_name, int receive_message) {
+int pong_enclave_start_attestation(const char* receiving_machine_name, int message_from_machine_to_enclave) {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -664,7 +664,7 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int recei
         // passed)
         if(attestation_passed)
         {
-            if (receive_message) {
+            if (message_from_machine_to_enclave) { //If Ping machine wants to send the enclave a secure message
                 ret = put_secret_data(enclave_id,
                                     &status,
                                     context,
@@ -679,7 +679,7 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int recei
                                     status);
                     goto CLEANUP;
                 }
-            } else {
+            } else { //If Pong enclave wants to send a secure message to Ping machine
                 //TODO make this return the encrypted secret and then pass it to an network ra method that 
                 //forwards it to the ping machine
 
@@ -733,15 +733,14 @@ CLEANUP:
 }
 
 
-void* attestation_thread(void* parameters) { //receive_message should be true when the enclave is receiving the message
+void* attestation_thread(void* parameters) { //message_from_machine_to_enclave should be true when the enclave is receiving the message
                                                   //false when the enclave wants to send a message
     struct Enclave_start_attestation_wrapper_arguments* p = (struct Enclave_start_attestation_wrapper_arguments*)parameters;
-    //*((int*)(&receive_message))
-    return (void*) pong_enclave_start_attestation(p->machineName,  p->receive_message);
+    return (void*) pong_enclave_start_attestation(p->machineName,  p->message_from_machine_to_enclave);
 }
 
-int ocall_pong_enclave_attestation_in_thread(char* other_machine_name, uint32_t size, int receive_message) {
-    struct Enclave_start_attestation_wrapper_arguments parameters = {other_machine_name, receive_message};
+int ocall_pong_enclave_attestation_in_thread(char* other_machine_name, uint32_t size, int message_from_machine_to_enclave) {
+    struct Enclave_start_attestation_wrapper_arguments parameters = {other_machine_name, message_from_machine_to_enclave};
     void* thread_ret;
     pthread_t thread_id; 
     printf("\n Calling Attestation Thread\n"); 
