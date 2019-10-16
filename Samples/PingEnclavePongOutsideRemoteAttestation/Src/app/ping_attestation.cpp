@@ -31,6 +31,8 @@
 
 
 #include "ping_attestation.h"
+#include "enclave_u.h"
+
 
 #include "sample_libcrypto.h"
 
@@ -749,9 +751,50 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 }
 
 
-int receive_encrypted_message(uint8_t *p_secret, 
+int ocall_receive_encrypted_message(uint8_t *p_secret, 
                                 uint32_t secret_size,
                                  uint8_t *p_gcm_mac) {
+
+        uint8_t aes_gcm_iv[12] = {0};
+        int ret = 0;
+        sample_rijndael128GCM_encrypt(&g_sp_db.sk_key, //used to decrypt in this case
+                            p_secret,
+                            secret_size,
+                            &g_secret[0],
+                            &aes_gcm_iv[0],
+                            SAMPLE_SP_IV_SIZE,
+                            NULL,
+                            0,
+                            (sample_aes_gcm_128bit_tag_t *)p_gcm_mac);
+        printf("Secret is %s\n" , (char*)g_secret);
+
+        uint32_t i;
+        bool secret_match = true;
+        if (strcmp((char*)g_secret, "PONG") != 0) {
+            secret_match = false;
+            printf("Wrong Secret :(\n");
+
+        } else {
+            secret_match = true;
+            ocall_send_pong();
+
+                   // printf("Secret is %s\n" , (char*)g_secret);
+
+            //send_ping_enclave();
+        }
+
+        // printf("Secret is %s\n" , (char*)p_secret);
+                            
+        // ret = sample_rijndael128GCM_decrypt(&sk_key,
+        //                                  p_secret,
+        //                                  secret_size,
+        //                                  &g_secret[0],
+        //                                  &aes_gcm_iv[0],
+        //                                  12,
+        //                                  NULL,
+        //                                  0,
+        //                                  (const sgx_aes_gcm_128bit_tag_t *)
+        //                                     (p_gcm_mac));
                                      return 0;
                                  }
 

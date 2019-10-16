@@ -29,6 +29,10 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_send_pong, (void));
 #define CALL_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
 int SGX_UBRIDGE(SGX_NOCONVENTION, call_enclave_attestation_in_thread, (int receive_message));
 #endif
+#ifndef OCALL_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
+#define OCALL_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_receive_encrypted_message, (uint8_t* p_secret, uint32_t secret_size, uint8_t* p_gcm_mac));
+#endif
 #ifndef SGX_OC_CPUIDEX_DEFINED__
 #define SGX_OC_CPUIDEX_DEFINED__
 void SGX_UBRIDGE(SGX_CDECL, sgx_oc_cpuidex, (int cpuinfo[4], int leaf, int subleaf));
@@ -72,6 +76,7 @@ sgx_status_t enclave_init_ra(sgx_enclave_id_t eid, sgx_status_t* retval, int b_p
 sgx_status_t enclave_ra_close(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context);
 sgx_status_t verify_att_result_mac(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* message, size_t message_size, uint8_t* mac, size_t mac_size);
 sgx_status_t put_secret_data(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* p_secret, uint32_t secret_size, uint8_t* gcm_mac);
+sgx_status_t encrypt_secret(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* p_secret, uint32_t secret_size);
 sgx_status_t enclave_request_attestation(sgx_enclave_id_t eid, int* retval);
 sgx_status_t sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a);
 sgx_status_t sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, const sgx_ra_msg2_t* p_msg2, const sgx_target_info_t* p_qe_target, sgx_report_t* p_report, sgx_quote_nonce_t* p_nonce);

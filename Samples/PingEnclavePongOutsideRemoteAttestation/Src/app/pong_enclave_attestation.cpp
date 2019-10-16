@@ -684,7 +684,19 @@ int enclave_start_attestation(int receive_message) {
                 }
             } else {
                 //TODO make this actually send a message like "PONG", and not hardcode ocall_send_pong
-                ocall_send_pong();
+                char *p_secret = "PONG";
+                uint32_t secret_size = 8;
+                uint8_t *p_gcm_mac;
+                //TODO make it call the enclaves sgx_encrypt instead of the untrusted one in sample
+                //TODO move this entire secret logic inside pong_internal_attestation bc the secret should never
+                // be in untrusted world, which this part is
+
+                ret = encrypt_secret(enclave_id,
+                                    &status,
+                                    context,
+                                    (uint8_t *)p_secret,
+                                    secret_size);
+                
             }
         }
         fprintf(OUTPUT, "\nSecret successfully received from server.");

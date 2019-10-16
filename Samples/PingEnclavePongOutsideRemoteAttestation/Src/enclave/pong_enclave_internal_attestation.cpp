@@ -404,3 +404,76 @@ sgx_status_t put_secret_data(
     } while(0);
     return ret;
 }
+
+
+sgx_status_t encrypt_secret(
+    sgx_ra_context_t context,
+    uint8_t *p_secret,
+    uint32_t secret_size)
+{
+    sgx_status_t ret = SGX_SUCCESS;
+    sgx_ec_key_128bit_t sk_key;
+
+    do {
+        if(secret_size != 8)
+        {
+            ret = SGX_ERROR_INVALID_PARAMETER;
+            break;
+        }
+
+        ret = sgx_ra_get_keys(context, SGX_RA_KEY_SK, &sk_key);
+        if(SGX_SUCCESS != ret)
+        {
+            break;
+        }
+
+        uint8_t aes_gcm_iv[12] = {0};
+        uint8_t payload_tag[16];
+        uint8_t encrypted_string[8] = {0};
+        ret = sgx_rijndael128GCM_encrypt(&sk_key,
+                                         p_secret,
+                                         secret_size,
+                                         &encrypted_string[0],
+                                         &aes_gcm_iv[0],
+                                         12,
+                                         NULL,
+                                         0,
+                                         (sgx_aes_gcm_128bit_tag_t *)
+                                            (payload_tag));
+        int return_int;
+        ocall_receive_encrypted_message(&return_int,
+                                (uint8_t*)encrypted_string, 
+                                secret_size,
+                                 payload_tag);
+
+
+        // uint32_t i;
+        // bool secret_match = true;
+        // if (strcmp((char*)g_secret, "PING") != 0) {
+        //     secret_match = false;
+        // } else {
+        //     secret_match = true;
+        //     send_ping_enclave();
+        // }
+        // for(i=1;i<secret_size;i++)
+        // {
+        //     if(g_secret[i] != i || g_secret[0] != 'h')
+        //     {
+        //         secret_match = false;
+        //     }
+        // }
+
+        // if(!secret_match)
+        // {
+        //     ret = SGX_ERROR_UNEXPECTED;
+        // }
+
+        // Once the server has the shared secret, it should be sealed to
+        // persistent storage for future use. This will prevents having to
+        // perform remote attestation until the secret goes stale. Once the
+        // enclave is created again, the secret can be unsealed.
+    } while(0);
+    return ret;
+}
+
+
