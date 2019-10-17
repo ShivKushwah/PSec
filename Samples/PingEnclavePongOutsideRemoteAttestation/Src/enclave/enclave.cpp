@@ -115,7 +115,7 @@ static void RunToIdle(void* process)
 	}
 }
 
-extern "C" void P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" void P_SecureSendPongEventToPingMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {  
     int ret;
     char* other_machine_name = "PingMachine";
@@ -194,9 +194,8 @@ int enclave_main(void)
         }
 }
 
-int pong_enclave_request_attestation() {
+int pong_enclave_request_attestation(const char* other_machine_name) {
     int ret;
-    char* other_machine_name = "PingMachine";
-    ocall_pong_enclave_attestation_in_thread(&ret, other_machine_name, strlen(other_machine_name)+1, 1);
+    ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, 1);
     return ret;
 }

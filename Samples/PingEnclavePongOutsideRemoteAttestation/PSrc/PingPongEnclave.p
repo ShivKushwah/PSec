@@ -1,6 +1,6 @@
 event Ping assert 2;
 event Pong assert 2;
-fun SecureSend();
+fun SecureSendPongEventToPingMachine();
 event Success;
 
 //@secure
@@ -11,7 +11,7 @@ machine Pong {
 
     state Pong_SendingPong {
         entry {
-	        SecureSend(); //Send Pong to app.cpp's Ping machine
+	        SecureSendPongEventToPingMachine(); //Send Pong to app.cpp's Ping machine
 	        raise Success;		 	  
 	    }
         on Success goto Done;

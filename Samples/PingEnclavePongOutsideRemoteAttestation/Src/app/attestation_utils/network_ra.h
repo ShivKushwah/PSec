@@ -92,7 +92,8 @@ typedef struct _ra_samp_response_header_t{
 extern "C" {
 #endif
 
-int ra_network_send_receive(const char *server_url,
+int ra_network_send_receive(const char *sending_machine_name, 
+                            const char *receiving_machine_name,
                             const ra_samp_request_header_t *req,
                             ra_samp_response_header_t **p_resp,
                             Encrypted_Message optional_Message = default_Encrypted_Message);

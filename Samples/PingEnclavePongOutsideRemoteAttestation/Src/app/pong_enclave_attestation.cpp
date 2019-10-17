@@ -186,6 +186,7 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
     sgx_ra_context_t context = INT_MAX;
     sgx_status_t status = SGX_SUCCESS;
     ra_samp_request_header_t* p_msg3_full = NULL;
+    char* current_machine_name = "PongMachine";
 
     int32_t verify_index = -1;
     int32_t verification_samples = sizeof(msg1_samples)/sizeof(msg1_samples[0]);
@@ -256,7 +257,8 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
         // The ISV decides whether to support this extended epid group id.
         fprintf(OUTPUT, "\nSending msg0 to remote attestation service provider.\n");
 
-        ret = ra_network_send_receive(receiving_machine_name,
+        ret = ra_network_send_receive(current_machine_name,
+            receiving_machine_name,
             p_msg0_full,
             &p_msg0_resp_full);
         if (ret != 0)
@@ -365,7 +367,8 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
                         "Expecting msg2 back.\n");
 
 
-        ret = ra_network_send_receive(receiving_machine_name,
+        ret = ra_network_send_receive(current_machine_name,
+                                      receiving_machine_name,
                                       p_msg1_full,
                                       &p_msg2_full);
 
@@ -552,7 +555,8 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
         // demonstration.  Note that the attestation result message makes use
         // of both the MK for the MAC and the SK for the secret. These keys are
         // established from the SIGMA secure channel binding.
-        ret = ra_network_send_receive(receiving_machine_name,
+        ret = ra_network_send_receive(current_machine_name,
+                                      receiving_machine_name,
                                       p_msg3_full,
                                       &p_att_result_msg_full);
         if(ret || !p_att_result_msg_full)
@@ -697,7 +701,8 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
                 //Send encrypted message to Ping machine
                 struct Encrypted_Message emsg = {encrypted_string, secret_size, payload_tag};
 
-                ret = ra_network_send_receive(receiving_machine_name,
+                ret = ra_network_send_receive(current_machine_name,
+                                      receiving_machine_name,
                                       NULL,
                                       NULL,
                                       emsg);
@@ -748,7 +753,7 @@ CLEANUP:
 }
 
 
-void* attestation_thread(void* parameters) { //message_from_machine_to_enclave should be true when the enclave is receiving the message
+void* pong_enclave_attestation_thread(void* parameters) { //message_from_machine_to_enclave should be true when the enclave is receiving the message
                                                   //false when the enclave wants to send a message
     struct Enclave_start_attestation_wrapper_arguments* p = (struct Enclave_start_attestation_wrapper_arguments*)parameters;
     return (void*) pong_enclave_start_attestation(p->machineName,  p->message_from_machine_to_enclave);
@@ -759,7 +764,7 @@ int ocall_pong_enclave_attestation_in_thread(char* other_machine_name, uint32_t 
     void* thread_ret;
     pthread_t thread_id; 
     printf("\n Calling Attestation Thread\n"); 
-    pthread_create(&thread_id, NULL, attestation_thread, (void*) &parameters);
+    pthread_create(&thread_id, NULL, pong_enclave_attestation_thread, (void*) &parameters);
     //TODO look into not calling pthread_join but actually let this run asynchoronous
     pthread_join(thread_id, &thread_ret); 
     printf("\n Finished Attestation Thread\n"); 

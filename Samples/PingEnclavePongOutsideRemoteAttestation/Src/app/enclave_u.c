@@ -47,6 +47,7 @@ typedef struct ms_encrypt_secure_message_t {
 
 typedef struct ms_pong_enclave_request_attestation_t {
 	int ms_retval;
+	const char* ms_other_machine_name;
 } ms_pong_enclave_request_attestation_t;
 
 typedef struct ms_sgx_ra_get_ga_t {
@@ -355,10 +356,11 @@ sgx_status_t encrypt_secure_message(sgx_enclave_id_t eid, sgx_status_t* retval, 
 	return status;
 }
 
-sgx_status_t pong_enclave_request_attestation(sgx_enclave_id_t eid, int* retval)
+sgx_status_t pong_enclave_request_attestation(sgx_enclave_id_t eid, int* retval, const char* other_machine_name)
 {
 	sgx_status_t status;
 	ms_pong_enclave_request_attestation_t ms;
+	ms.ms_other_machine_name = other_machine_name;
 	status = sgx_ecall(eid, 7, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;

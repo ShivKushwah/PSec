@@ -47,23 +47,24 @@ extern sgx_enclave_id_t global_eid;
 // ISV service provider.  This would be modified in a real
 // product to use the proper IP communication.
 //
-// @param server_url String name of the server URL
+// @param receiving_machine_name String name of the server URL
 // @param p_req Pointer to the message to be sent.
 // @param p_resp Pointer to a pointer of the response message.
 
 // @return int
 
-int ra_network_send_receive(const char *server_url,
+int ra_network_send_receive(const char *sending_machine_name, 
+    const char *receiving_machine_name,
     const ra_samp_request_header_t *p_req,
     ra_samp_response_header_t **p_resp,
     Encrypted_Message optional_Message)
 {
     //Request to PingMachine to initialize attestation channel
-    if (strcmp(server_url, "PingMachine") == 0 && optional_Message.secret_size == 0) {
+    if (strcmp(receiving_machine_name, "PingMachine") == 0 && optional_Message.secret_size == 0) {
         int ret = 0;
         ra_samp_response_header_t* p_resp_msg;
 
-        if((NULL == server_url) ||
+        if((NULL == receiving_machine_name) ||
             (NULL == p_req) ||
             (NULL == p_resp))
         {
@@ -127,16 +128,16 @@ int ra_network_send_receive(const char *server_url,
         return ret;
 
      //Request to PingMachine to send encrypted data based on previous secure channel
-     } else if (strcmp(server_url, "PingMachine") == 0 && optional_Message.secret_size > 0) {
+     } else if (strcmp(receiving_machine_name, "PingMachine") == 0 && optional_Message.secret_size > 0) {
          ocall_ping_machine_receive_encrypted_message(
                                 (uint8_t*)optional_Message.encrypted_message, 
                                 optional_Message.secret_size,
                                  optional_Message.payload_tag);
 
     //Request to PongMachine to initialize a secure attestation channel
-    } else if (strcmp(server_url, "PongMachine") == 0) {
+    } else if (strcmp(receiving_machine_name, "PongMachine") == 0) {
         int ptr;
-        sgx_status_t status = pong_enclave_request_attestation(global_eid, &ptr);
+        sgx_status_t status = pong_enclave_request_attestation(global_eid, &ptr, sending_machine_name);
         if (status == SGX_SUCCESS && ptr == 0) {
             return ptr;
         } else {

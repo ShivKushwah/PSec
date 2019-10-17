@@ -112,7 +112,8 @@ static void RunToIdle(void* process)
 extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     //TODO Make Secure Send take in a parameter that is the receiving machine's name
-    char* receiving_machine_name = "PongMachine";
+    const char* receiving_machine_name = "PongMachine";
+    const char* current_machine_name = "PingMachine";
 
     //TODO Enclave should be intialized and ready to go before SecureSend is called
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
@@ -130,7 +131,7 @@ extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context
     strcpy(secure_message, "PING"); 
 
     //Send "network" request to Pong enclave to start the remote attestation channel creation process
-    if (ra_network_send_receive(receiving_machine_name, NULL, NULL) == 0) {
+    if (ra_network_send_receive(current_machine_name, receiving_machine_name, NULL, NULL) == 0) {
         printf("\nAttestation Succesful! Ping Event has been Sent!\n");
 
     } else {

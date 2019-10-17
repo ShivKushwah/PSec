@@ -24,7 +24,7 @@ enclave {
                                                             [out, size=8] uint8_t* return_encrypted_string,
                                                             [out, size=4] uint32_t* return_secret_size,
                                                             [out, size=16] uint8_t* return_payload_tag);
-        public int pong_enclave_request_attestation(void);
+        public int pong_enclave_request_attestation([in, size=16] const char* other_machine_name);
 
     };
 

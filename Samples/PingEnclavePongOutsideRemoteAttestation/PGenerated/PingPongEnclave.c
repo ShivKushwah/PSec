@@ -4,7 +4,7 @@
 static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
 
 // Function implementation prototypes:
-PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+PRT_VALUE* P_SecureSendPongEventToPingMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
@@ -34,10 +34,10 @@ PRT_EVENTDECL P_EVENT_Success =
     &P_GEND_TYPE_n
 };
 
-PRT_FUNDECL P_FUNCTION_SecureSend =
+PRT_FUNDECL P_FUNCTION_SecureSendPongEventToPingMachine =
 {
-    "SecureSend",
-    &P_SecureSend_IMPL,
+    "SecureSendPongEventToPingMachine",
+    &P_SecureSendPongEventToPingMachine_IMPL,
     NULL
 };
 
@@ -193,7 +193,7 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_SecureSendPongEventToPingMachine_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
     }
