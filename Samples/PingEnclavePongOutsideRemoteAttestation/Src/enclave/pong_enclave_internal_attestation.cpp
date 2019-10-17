@@ -50,6 +50,8 @@
 // must have a unique SP public key. Delivery of the SP public key is
 // determined by the ISV. The TKE SIGMA protocl expects an Elliptical Curve key
 // based on NIST P-256
+
+//Public part of capability key
 static const sgx_ec256_public_t g_sp_pub_key = {
     {
         0x72, 0x12, 0x8a, 0x7a, 0x17, 0x52, 0x6e, 0xbf,
@@ -405,8 +407,6 @@ sgx_status_t put_secret_data(
     return ret;
 }
 
-//TODO: change P_IMPL_SecureSend to P_IMPL_seucreSendToPongMachinePingEvent
-
 // Writes the results to the parameters
 sgx_status_t encrypt_secure_message(
     sgx_ra_context_t context,
@@ -454,6 +454,12 @@ sgx_status_t encrypt_secure_message(
         // payload_tag[16] = 0;
 
     } while(0);
+    return ret;
+}
+
+int pong_enclave_request_attestation(const char* other_machine_name) {
+    int ret;
+    ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, 1);
     return ret;
 }
 

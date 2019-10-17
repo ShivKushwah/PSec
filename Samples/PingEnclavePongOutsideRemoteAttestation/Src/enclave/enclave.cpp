@@ -193,9 +193,3 @@ int enclave_main(void)
             */
         }
 }
-
-int pong_enclave_request_attestation(const char* other_machine_name) {
-    int ret;
-    ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, 1);
-    return ret;
-}

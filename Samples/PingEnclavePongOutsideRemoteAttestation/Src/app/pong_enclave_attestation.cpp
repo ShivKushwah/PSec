@@ -667,7 +667,8 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
         // passed)
         if(attestation_passed)
         {
-            if (message_from_machine_to_enclave) { //If Ping machine wants to send the enclave a secure message
+            //If Ping machine wants to send the enclave a secure message
+            if (message_from_machine_to_enclave) { 
                 ret = put_secret_data(enclave_id,
                                     &status,
                                     context,
@@ -682,15 +683,13 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
                                     status);
                     goto CLEANUP;
                 }
-            } else { //If Pong enclave wants to send a secure message to Ping machine
-                //TODO make  the encrypted secret pass to an network ra method that 
-                //forwards it to the ping machine
-
+            //If Pong enclave wants to send a secure message to Ping machine
+            } else { 
                 uint8_t payload_tag[16];
                 uint8_t* encrypted_string = (uint8_t *) malloc(sizeof(uint8_t) * 8);
                 uint32_t secret_size;
 
-
+                //Encrypt message using enclave
                 ret = encrypt_secure_message(enclave_id,
                                     &status,
                                     context,
