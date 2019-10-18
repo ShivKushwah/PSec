@@ -118,6 +118,61 @@ uint8_t g_secret[SIZE_OF_MESSAGE] = {0,1,2,3,4,5,6,7};
 sample_spid_t g_spid;
 
 
+//Code for parsing signed files to obtain expected measurement of enclave
+#define MAX_LINE 4096
+char* extract_measurement(FILE* fp)
+{
+  char *linha = (char*) malloc(MAX_LINE);
+  int s, t;
+  char lemma[100];
+  bool match_found = false;
+  char* measurement = (char*) malloc(100);
+  int i = 0;
+  while(fgets(linha, MAX_LINE, fp))
+  {
+      //printf("%s", linha);
+    if (strcmp(linha, "metadata->enclave_css.body.isv_prod_id: 0x0\n") == 0) {
+        //printf("%s", linha);
+        //printf("%s", measurement);
+        //printf("\nEnd found!\n");
+        measurement[i] = '\0';
+        return measurement;
+    }
+    if (match_found == true) {
+        int len = strlen( linha );
+        bool skip = true;
+        for (int k = 0; k < len; k++) {
+            if (linha[k] == '\\') {
+                break;
+            }
+            if (linha[k] == ' ') {
+                continue;
+            }
+            if (skip) {
+                skip = false;
+                k++;
+            } else {
+                skip = true;
+                measurement[i] = linha[k];
+                i++;
+                k++;
+                measurement[i] = linha[k];
+                i++;
+            }
+            
+        }
+    }
+    if (strcmp(linha, "metadata->enclave_css.body.enclave_hash.m:\n") == 0) {
+        //printf("MATCH FOUND\n");
+        match_found = true;
+    }   
+   }
+
+   return NULL;
+}
+//
+
+
 // Verify message 0 then configure extended epid group.
 int sp_ra_proc_msg0_req(const sample_ra_msg0_t *p_msg0,
     uint32_t msg0_size)
@@ -581,6 +636,41 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             ret = SP_INTEGRITY_FAILED;
             break;
         }
+
+
+        //Verify the measurement of the enclave is the same as the expected measurement from the file
+        system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
+
+        FILE *fp1 = fopen("metadata_info.txt", "r"); 
+        if (fp1 == NULL) 
+        { 
+            printf("Error : File not open"); 
+            exit(0); 
+        } 
+
+        char* expected_measurement = extract_measurement(fp1);
+        char* actual_measurement = (char*) malloc(100);
+        char* ptr = actual_measurement;
+
+        printf("Expected Measurement is: %s\n", expected_measurement);
+
+        for(i=0;i<sizeof(sample_measurement_t);i++)
+        {
+            sprintf(ptr, "%02x",p_quote->report_body.mr_enclave[i]);
+            ptr += 2;
+        }
+        ptr[i] = '\0';
+
+        printf("Actual Measurement is: %s\n", actual_measurement);
+
+        //If measurements differ, we need to abort this connection
+        if (!(strcmp(expected_measurement, actual_measurement) == 0)) {
+            ret = SP_QUOTE_VERIFICATION_FAILED;
+            break;
+        }    
+        fclose(fp1); 
+
+
 
         // Verify Enclave policy (an attestation server may provide an API for this if we
         // registered an Enclave policy)
