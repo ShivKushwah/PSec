@@ -158,6 +158,10 @@ void ocall_send_pong(void) {
 
 int main(int argc, char const *argv[]) {
 
+        // Place the measurement of the enclave into metadata_info.txt
+        system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
+
+
 		PRT_GUID processGuid;
 		PRT_VALUE *payload;
         PRT_VALUE *payload2;

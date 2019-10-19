@@ -639,8 +639,6 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 
 
         //Verify the measurement of the enclave is the same as the expected measurement from the file
-        system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
-
         FILE *fp1 = fopen("metadata_info.txt", "r"); 
         if (fp1 == NULL) 
         { 
