@@ -147,6 +147,7 @@ void ocall_print(const char* str) {
 }
 
 void ocall_send_pong(void) {
+    //printf("Pong Event Value is: %d", &P_EVENT_Pong.value);
     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
     PRT_MACHINEID pingId;
     pingId.machineId = 1;

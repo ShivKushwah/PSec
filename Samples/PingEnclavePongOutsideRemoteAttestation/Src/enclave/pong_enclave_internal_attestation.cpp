@@ -68,10 +68,12 @@ static const sgx_ec256_public_t g_sp_pub_key = {
 
 };
 
+const int SIZE_OF_MESSAGE = 20;
+
 // Used to store the secret passed by the SP in the sample code. The
 // size is forced to be 8 bytes. Expected value is
 // 0x01,0x02,0x03,0x04,0x0x5,0x0x6,0x0x7
-uint8_t g_secret[8] = {0};
+uint8_t g_secret[SIZE_OF_MESSAGE] = {0};
 
 
 #ifdef SUPPLIED_KEY_DERIVATION
@@ -354,7 +356,7 @@ sgx_status_t put_secret_data(
     sgx_ec_key_128bit_t sk_key;
 
     do {
-        if(secret_size != 8)
+        if(secret_size != SIZE_OF_MESSAGE)
         {
             ret = SGX_ERROR_INVALID_PARAMETER;
             break;
@@ -411,17 +413,18 @@ sgx_status_t put_secret_data(
 sgx_status_t encrypt_secure_message(
     sgx_ra_context_t context,
     uint8_t* return_encrypted_string,
+    uint32_t requested_secret_size,
     uint32_t* return_secret_size,
     uint8_t* return_payload_tag
     )
 {
     char* p_secret = "PONG";
-    uint32_t secret_size = 8;
+    uint32_t secret_size = SIZE_OF_MESSAGE;
     sgx_status_t ret = SGX_SUCCESS;
     sgx_ec_key_128bit_t sk_key;
 
     do {
-        if(secret_size != 8)
+        if(secret_size != SIZE_OF_MESSAGE)
         {
             ret = SGX_ERROR_INVALID_PARAMETER;
             break;
@@ -435,7 +438,7 @@ sgx_status_t encrypt_secure_message(
 
         uint8_t aes_gcm_iv[12] = {0};
         uint8_t payload_tag[16];
-        uint8_t encrypted_string[8] = {0};
+        uint8_t encrypted_string[SIZE_OF_MESSAGE] = {0};
         ret = sgx_rijndael128GCM_encrypt(&sk_key,
                                          (uint8_t*)p_secret,
                                          secret_size,

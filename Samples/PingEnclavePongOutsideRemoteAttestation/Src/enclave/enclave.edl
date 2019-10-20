@@ -21,7 +21,8 @@ enclave {
                                             uint32_t secret_size,
                                             [in,count=16] uint8_t* gcm_mac);
         public sgx_status_t encrypt_secure_message(sgx_ra_context_t context,
-                                                            [out, size=8] uint8_t* return_encrypted_string,
+                                                            [out, size=requested_secret_size] uint8_t* return_encrypted_string,
+                                                            uint32_t requested_secret_size,
                                                             [out, size=4] uint32_t* return_secret_size,
                                                             [out, size=16] uint8_t* return_payload_tag);
         public int pong_enclave_request_attestation([in, size=16] const char* other_machine_name);

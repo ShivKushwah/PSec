@@ -50,7 +50,7 @@
 
 //NOTE: in certain parts of this file, SP refers to the Ping machine
 
-const int SIZE_OF_MESSAGE = 8;
+const int SIZE_OF_MESSAGE = 20;
 
 //This represents the payload we are going to send to the enclave after a succesful attestation
 //We write to this value in app.cpp before the ping machine initiates the attestation request with Pong enclave
@@ -807,7 +807,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 
             // Generate shared secret and encrypt it with SK, if attestation passed.
             uint8_t aes_gcm_iv[SAMPLE_SP_IV_SIZE] = {0};
-            p_att_result_msg->secret.payload_size = 8;
+            p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE;
             if((IAS_QUOTE_OK == attestation_report.status) &&
             (IAS_PSE_OK == attestation_report.pse_status) &&
             (isv_policy_passed == true))

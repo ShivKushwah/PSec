@@ -69,6 +69,8 @@
 // messages and the information flow.
 #include "sample_messages.h"
 
+const int SIZE_OF_MESSAGE = 20;
+
 extern sgx_enclave_id_t global_eid;
 
 #define ENCLAVE_PATH "isv_enclave.signed.so"
@@ -686,7 +688,7 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
             //If Pong enclave wants to send a secure message to Ping machine
             } else { 
                 uint8_t payload_tag[16];
-                uint8_t* encrypted_string = (uint8_t *) malloc(sizeof(uint8_t) * 8);
+                uint8_t* encrypted_string = (uint8_t *) malloc(sizeof(uint8_t) * SIZE_OF_MESSAGE);
                 uint32_t secret_size;
 
                 //Encrypt message using enclave
@@ -694,6 +696,7 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
                                     &status,
                                     context,
                                     encrypted_string,
+                                    SIZE_OF_MESSAGE,
                                     &secret_size,
                                     payload_tag);
 
