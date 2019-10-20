@@ -127,8 +127,8 @@ extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context
         std::cout << "Error in Starting PrtTrusted" << std::endl;
     }
 
-    //Make secure payload to be "PING"
-    strcpy(secure_message, "PING"); 
+    //Make secure payload to be the Ping's event unique identifier
+    sprintf(secure_message, "%d", P_EVENT_Ping.value.valueUnion.ev);
 
     //Send "network" request to Pong enclave to start the remote attestation channel creation process
     if (ra_network_send_receive(current_machine_name, receiving_machine_name, NULL, NULL) == 0) {
@@ -147,7 +147,6 @@ void ocall_print(const char* str) {
 }
 
 void ocall_send_pong(void) {
-    //printf("Pong Event Value is: %d", &P_EVENT_Pong.value);
     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
     PRT_MACHINEID pingId;
     pingId.machineId = 1;

@@ -1,5 +1,6 @@
 #include "PingPongEnclave.h"
 #include "enclave_t.h"
+#include "enclave.h"
 
 /*
  * Copyright (C) 2011-2019 Intel Corporation. All rights reserved.
@@ -74,6 +75,15 @@ const int SIZE_OF_MESSAGE = 20;
 // size is forced to be 8 bytes. Expected value is
 // 0x01,0x02,0x03,0x04,0x0x5,0x0x6,0x0x7
 uint8_t g_secret[SIZE_OF_MESSAGE] = {0};
+
+int atoi(char *p) {
+    int k = 0;
+    while (*p) {
+        k = (k << 3) + (k << 1) + (*p) - '0';
+        p++;
+     }
+     return k;
+}
 
 
 #ifdef SUPPLIED_KEY_DERIVATION
@@ -382,20 +392,8 @@ sgx_status_t put_secret_data(
 
         uint32_t i;
         bool secret_match = true;
-        if (strcmp((char*)g_secret, "PING") != 0) {
-            secret_match = false;
-        } else {
-            secret_match = true;
-            send_ping_enclave();
-        }
-        // for(i=1;i<secret_size;i++)
-        // {
-        //     if(g_secret[i] != i || g_secret[0] != 'h')
-        //     {
-        //         secret_match = false;
-        //     }
-        // }
-
+        handle_incoming_events_pong_enclave(atoi((char*) g_secret));
+  
         if(!secret_match)
         {
             ret = SGX_ERROR_UNEXPECTED;

@@ -1,6 +1,7 @@
 #include "PingPongEnclave.h"
 #include "enclave_t.h"
 #include "string.h"
+#include "enclave.h"
 
 PRT_PROCESS *process;
 
@@ -122,16 +123,14 @@ extern "C" void P_SecureSendPongEventToPingMachine_IMPL(PRT_MACHINEINST* context
     ocall_pong_enclave_attestation_in_thread(&ret, other_machine_name, strlen(other_machine_name)+1, 0);
 }
 
-int send_ping_enclave(void) {
-
-    PRT_VALUE* pingEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Ping.value));
+int handle_incoming_events_pong_enclave(PRT_UINT32 eventIdentifier) {
+    PRT_VALUE* pingEvent = PrtMkEventValue(eventIdentifier);
     PRT_MACHINEID pongId;
     pongId.machineId = 1;
 
     PRT_MACHINEINST* pongMachine = PrtGetMachine(process, PrtMkMachineValue(pongId));
     PrtSend(NULL, pongMachine, pingEvent, 0);
     return 0;
-
 }
 
 extern int Delta;
