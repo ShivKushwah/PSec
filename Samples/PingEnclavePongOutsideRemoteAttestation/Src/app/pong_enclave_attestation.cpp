@@ -736,7 +736,7 @@ CLEANUP:
         fprintf(OUTPUT, "\nCall enclave_ra_close success.");
     }
 
-    // sgx_destroy_enclave(enclave_id); TODO NOTE: I commented this out
+    // sgx_destroy_enclave(enclave_id); NOTE: I commented this out
 
 
     ra_free_network_response_buffer(p_msg0_resp_full);
@@ -755,7 +755,7 @@ CLEANUP:
 
 
 void* pong_enclave_attestation_thread(void* parameters) { //message_from_machine_to_enclave should be true when the enclave is receiving the message
-                                                  //false when the enclave wants to send a message
+                                                          //false when the enclave wants to send a message
     struct Enclave_start_attestation_wrapper_arguments* p = (struct Enclave_start_attestation_wrapper_arguments*)parameters;
     return (void*) pong_enclave_start_attestation(p->machineName,  p->message_from_machine_to_enclave);
 }
