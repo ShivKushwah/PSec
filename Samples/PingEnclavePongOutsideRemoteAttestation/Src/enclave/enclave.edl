@@ -31,7 +31,6 @@ enclave {
     untrusted {
         /* define OCALLs here. */
         void ocall_print([in, string]const char* str);
-        void ocall_send_pong(void);
         int ocall_pong_enclave_attestation_in_thread([in,size=other_machine_name_size] char* other_machine_name, 
                                                     uint32_t other_machine_name_size,
                                                     int message_from_machine_to_enclave);

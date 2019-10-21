@@ -85,6 +85,63 @@ int atoi(char *p) {
      return k;
 }
 
+void reverse(char str[], int length) 
+{ 
+    int start = 0; 
+    int end = length -1; 
+    while (start < end) 
+    { 
+        char temp = *(str+start);
+        *(str+start) = *(str+end);
+        *(str+end) = temp;
+        //swap(*(str+start), *(str+end)); 
+        start++; 
+        end--; 
+    } 
+} 
+  
+// Implementation of itoa() 
+char* itoa(int num, char* str, int base) 
+{ 
+    int i = 0; 
+    bool isNegative = false; 
+  
+    /* Handle 0 explicitely, otherwise empty string is printed for 0 */
+    if (num == 0) 
+    { 
+        str[i++] = '0'; 
+        str[i] = '\0'; 
+        return str; 
+    } 
+  
+    // In standard itoa(), negative numbers are handled only with  
+    // base 10. Otherwise numbers are considered unsigned. 
+    if (num < 0 && base == 10) 
+    { 
+        isNegative = true; 
+        num = -num; 
+    } 
+  
+    // Process individual digits 
+    while (num != 0) 
+    { 
+        int rem = num % base; 
+        str[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0'; 
+        num = num/base; 
+    } 
+  
+    // If number is negative, append '-' 
+    if (isNegative) 
+        str[i++] = '-'; 
+  
+    str[i] = '\0'; // Append string terminator 
+  
+    // Reverse the string 
+    reverse(str, i); 
+  
+    return str; 
+} 
+
 
 #ifdef SUPPLIED_KEY_DERIVATION
 
@@ -416,7 +473,9 @@ sgx_status_t encrypt_secure_message(
     uint8_t* return_payload_tag
     )
 {
-    char* p_secret = "PONG";
+    char p_secret[SIZE_OF_MESSAGE];
+    itoa(P_EVENT_Pong.value.valueUnion.ev, p_secret, 10);
+     //TODO Have SendSecureMessage pass this value in TODO put this outside maybe = "PONG"; P_EVENT_Ping.value.valueUnion.ev
     uint32_t secret_size = SIZE_OF_MESSAGE;
     sgx_status_t ret = SGX_SUCCESS;
     sgx_ec_key_128bit_t sk_key;

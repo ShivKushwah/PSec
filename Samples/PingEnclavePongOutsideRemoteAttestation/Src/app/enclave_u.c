@@ -158,13 +158,6 @@ static sgx_status_t SGX_CDECL enclave_ocall_print(void* pms)
 	return SGX_SUCCESS;
 }
 
-static sgx_status_t SGX_CDECL enclave_ocall_send_pong(void* pms)
-{
-	if (pms != NULL) return SGX_ERROR_INVALID_PARAMETER;
-	ocall_send_pong();
-	return SGX_SUCCESS;
-}
-
 static sgx_status_t SGX_CDECL enclave_ocall_pong_enclave_attestation_in_thread(void* pms)
 {
 	ms_ocall_pong_enclave_attestation_in_thread_t* ms = SGX_CAST(ms_ocall_pong_enclave_attestation_in_thread_t*, pms);
@@ -255,12 +248,11 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[13];
+	void * table[12];
 } ocall_table_enclave = {
-	13,
+	12,
 	{
 		(void*)enclave_ocall_print,
-		(void*)enclave_ocall_send_pong,
 		(void*)enclave_ocall_pong_enclave_attestation_in_thread,
 		(void*)enclave_ocall_ping_machine_receive_encrypted_message,
 		(void*)enclave_sgx_oc_cpuidex,

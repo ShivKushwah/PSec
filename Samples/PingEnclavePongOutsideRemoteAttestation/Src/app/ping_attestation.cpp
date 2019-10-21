@@ -43,6 +43,7 @@
 #include <time.h>
 #include <string.h>
 #include "ias_ra.h"
+#include "app.h"
 
 #ifndef SAFE_FREE
 #define SAFE_FREE(ptr) {if (NULL != (ptr)) {free(ptr); (ptr) = NULL;}}
@@ -862,14 +863,7 @@ int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,
 
         uint32_t i;
         bool secret_match = true;
-        if (strcmp((char*)g_secret, "PONG") != 0) {
-            secret_match = false;
-            printf("Wrong Secret :(\n");
-
-        } else {
-            secret_match = true;
-            ocall_send_pong();
-        }
+        handle_incoming_events_ping_machine(atoi((char*) g_secret));
         return 0;
 }
 

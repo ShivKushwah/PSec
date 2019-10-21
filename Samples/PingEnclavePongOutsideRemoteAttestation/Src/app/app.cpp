@@ -8,6 +8,7 @@
 #include "PingPong.h"
 #include <pthread.h> 
 #include "pong_enclave_attestation.h"
+#include "app.h"
 
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
@@ -146,14 +147,14 @@ void ocall_print(const char* str) {
     printf("[o] %s\n", str);
 }
 
-void ocall_send_pong(void) {
-    PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
+    PRT_VALUE* pongEvent = PrtMkEventValue(eventIdentifier);
     PRT_MACHINEID pingId;
     pingId.machineId = 1;
 
     PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
     PrtSend(NULL, pingMachine, pongEvent, 0);
-
+    return 0;
 }
 
 int main(int argc, char const *argv[]) {
