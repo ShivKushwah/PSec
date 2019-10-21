@@ -689,15 +689,14 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
             } else { 
                 uint8_t payload_tag[16];
                 uint8_t* encrypted_string = (uint8_t *) malloc(sizeof(uint8_t) * SIZE_OF_MESSAGE);
-                uint32_t secret_size;
+                uint32_t secret_size = SIZE_OF_MESSAGE;
 
                 //Encrypt message using enclave
                 ret = encrypt_secure_message(enclave_id,
                                     &status,
                                     context,
                                     encrypted_string,
-                                    SIZE_OF_MESSAGE,
-                                    &secret_size,
+                                    secret_size,
                                     payload_tag);
 
                 //Send encrypted message to Ping machine

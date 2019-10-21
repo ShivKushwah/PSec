@@ -38,7 +38,6 @@ typedef struct ms_encrypt_secure_message_t {
 	sgx_ra_context_t ms_context;
 	uint8_t* ms_return_encrypted_string;
 	uint32_t ms_requested_secret_size;
-	uint32_t* ms_return_secret_size;
 	uint8_t* ms_return_payload_tag;
 } ms_encrypt_secure_message_t;
 
@@ -323,14 +322,13 @@ sgx_status_t put_secret_data(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_
 	return status;
 }
 
-sgx_status_t encrypt_secure_message(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* return_encrypted_string, uint32_t requested_secret_size, uint32_t* return_secret_size, uint8_t* return_payload_tag)
+sgx_status_t encrypt_secure_message(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* return_encrypted_string, uint32_t requested_secret_size, uint8_t* return_payload_tag)
 {
 	sgx_status_t status;
 	ms_encrypt_secure_message_t ms;
 	ms.ms_context = context;
 	ms.ms_return_encrypted_string = return_encrypted_string;
 	ms.ms_requested_secret_size = requested_secret_size;
-	ms.ms_return_secret_size = return_secret_size;
 	ms.ms_return_payload_tag = return_payload_tag;
 	status = sgx_ecall(eid, 5, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;

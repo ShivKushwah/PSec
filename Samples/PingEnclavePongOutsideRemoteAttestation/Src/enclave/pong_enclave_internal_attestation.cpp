@@ -69,7 +69,7 @@ static const sgx_ec256_public_t g_sp_pub_key = {
 
 };
 
-const int SIZE_OF_MESSAGE = 20;
+char secure_message[SIZE_OF_MESSAGE]; 
 
 // Used to store the secret passed by the SP in the sample code. The
 // size is forced to be 8 bytes. Expected value is
@@ -469,13 +469,9 @@ sgx_status_t encrypt_secure_message(
     sgx_ra_context_t context,
     uint8_t* return_encrypted_string,
     uint32_t requested_secret_size,
-    uint32_t* return_secret_size,
     uint8_t* return_payload_tag
     )
 {
-    char p_secret[SIZE_OF_MESSAGE];
-    itoa(P_EVENT_Pong.value.valueUnion.ev, p_secret, 10);
-     //TODO Have SendSecureMessage pass this value in TODO put this outside maybe = "PONG"; P_EVENT_Ping.value.valueUnion.ev
     uint32_t secret_size = SIZE_OF_MESSAGE;
     sgx_status_t ret = SGX_SUCCESS;
     sgx_ec_key_128bit_t sk_key;
@@ -497,7 +493,7 @@ sgx_status_t encrypt_secure_message(
         uint8_t payload_tag[16];
         uint8_t encrypted_string[SIZE_OF_MESSAGE] = {0};
         ret = sgx_rijndael128GCM_encrypt(&sk_key,
-                                         (uint8_t*)p_secret,
+                                         (uint8_t*)secure_message,
                                          secret_size,
                                          &encrypted_string[0],
                                          &aes_gcm_iv[0],
@@ -508,7 +504,6 @@ sgx_status_t encrypt_secure_message(
                                             (payload_tag));
         
         memcpy(return_encrypted_string, encrypted_string, secret_size);
-        memcpy(return_secret_size, &secret_size, sizeof(uint32_t));
         memcpy(return_payload_tag, payload_tag, sizeof(uint8_t) * 16);
         // return_encrypted_string[8] = 0;
         // payload_tag[16] = 0;

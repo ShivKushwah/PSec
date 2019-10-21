@@ -5,6 +5,8 @@
 
 PRT_PROCESS *process;
 
+extern char secure_message[SIZE_OF_MESSAGE]; 
+
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
     if (status == PRT_STATUS_ASSERT)
@@ -120,6 +122,8 @@ extern "C" void P_SecureSendPongEventToPingMachine_IMPL(PRT_MACHINEINST* context
 {  
     int ret;
     char* other_machine_name = "PingMachine";
+    // Copy the Pong event's ID as the message to be sent
+    memcpy(secure_message, itoa(P_EVENT_Pong.value.valueUnion.ev, secure_message, 10), SIZE_OF_MESSAGE);
     ocall_pong_enclave_attestation_in_thread(&ret, other_machine_name, strlen(other_machine_name)+1, 0);
 }
 
