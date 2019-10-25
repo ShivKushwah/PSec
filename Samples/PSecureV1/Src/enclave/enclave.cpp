@@ -1,11 +1,9 @@
-#include "PingPongEnclave.h"
-#include "enclave_t.h"
-#include "string.h"
 #include "enclave.h"
 
 PRT_PROCESS *process;
 
 extern char secure_message[SIZE_OF_MESSAGE]; 
+unordered_map<int, identityKeyPair> identityDictionary;
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -177,6 +175,7 @@ int enclave_main(void)
 		PrtAssert(foundMachine2, "No 'Pong' machine found!");
 		PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload);
 
+
         ocall_print("after mk machine!\n");
 
         if (cooperative)
@@ -196,3 +195,29 @@ int enclave_main(void)
             */
         }
 }
+
+
+extern "C" void P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{  
+    string secureChildPublicID;
+    string secureChildPrivateID;
+    generateIdentity(secureChildPublicID, secureChildPrivateID);
+    int PMachineID = createMachine("SecureChild", "test", "testing");
+    identityDictionary[PMachineID] = make_tuple(secureChildPublicID, secureChildPrivateID);
+}
+
+//publicID and privateID must be allocated by the caller
+void generateIdentity(string& publicID, string& privateID) {
+    publicID = "SecureChildPublic";
+    privateID = "SecureChildPrivate";
+} 
+
+int createMachine(char* machineType, char* untrustedHostID, char* parentTrustedMachineID) {
+    PRT_VALUE *payload = PrtMkNullValue();
+    PRT_UINT32 mainMachine2 = 2;
+	PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName(machineType, &mainMachine2);
+	PrtAssert(foundMachine2, "No machine found!");
+	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload);
+    return mainMachine2;
+}
+

@@ -112,14 +112,6 @@ static void RunToIdle(void* process)
 
 extern "C" void P_InitializePongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-
-    
-    
-}
-
-
-extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
     //TODO move initalization code in InitializePongEnclave method
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
         std::cout << "Fail to initialize enclave." << std::endl;
@@ -132,6 +124,14 @@ extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context
     if (status != SGX_SUCCESS) {
         std::cout << "Error in Starting PrtTrusted" << std::endl;
     }
+    
+    
+}
+
+
+extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    
 
     const char* current_machine_name = "PingMachine";
     const char* receiving_machine_name = "PongMachine";
