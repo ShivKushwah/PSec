@@ -185,10 +185,10 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 COMPILE_EXAMPLES:BOOL=NO
 
 //Value Computed by CMake
-ExampleEnclave_BINARY_DIR:STATIC=/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation
+ExampleEnclave_BINARY_DIR:STATIC=/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PSecureV1
 
 //Value Computed by CMake
-ExampleEnclave_SOURCE_DIR:STATIC=/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation
+ExampleEnclave_SOURCE_DIR:STATIC=/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PSecureV1
 
 //Dependencies for target
 KIRAT_LIB_DEPENDS:STATIC=
@@ -221,10 +221,10 @@ SGX_MODE:STRING=SIM
 enclave_LIB_DEPENDS:STATIC=general;Prt_trusted_static;general;-m64 -O0 -g -Wl,--no-undefined -nostdlib -nodefaultlibs -nostartfiles -L/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/lib64 -Wl,--whole-archive -lsgx_trts_sim -Wl,--no-whole-archive -Wl,--start-group -lsgx_tstdc -lsgx_tcxx -lsgx_tkey_exchange -lsgx_tcrypto -lsgx_tservice_sim -Wl,--end-group -Wl,-Bstatic -Wl,-Bsymbolic -Wl,--no-undefined -Wl,-pie,-eenclave_entry -Wl,--export-dynamic -Wl,--defsym,__ImageBase=0;general;Prt_trusted_static;general;/home/shiv/Research/temp-del/ProgrammingEnclaves/Submodule/P/Ext/libhandler/out/gcc-amd64-linux-gnu/debug/libhandler.a;general;-lsgx_tstdc;
 
 //Value Computed by CMake
-pingpong_BINARY_DIR:STATIC=/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave
+pingpong_BINARY_DIR:STATIC=/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PSecureV1/Src/enclave
 
 //Value Computed by CMake
-pingpong_SOURCE_DIR:STATIC=/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutsideRemoteAttestation/Src/enclave
+pingpong_SOURCE_DIR:STATIC=/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PSecureV1/Src/enclave
 
 //Value Computed by CMake
 programmingenclaves_BINARY_DIR:STATIC=/home/shiv/Research/temp-del/ProgrammingEnclaves
