@@ -46,12 +46,12 @@ typedef struct ms_pong_enclave_request_attestation_t {
 	const char* ms_other_machine_name;
 } ms_pong_enclave_request_attestation_t;
 
-typedef struct ms_createMachine_t {
+typedef struct ms_createMachineAPI_t {
 	int ms_retval;
 	char* ms_machineName;
 	char* ms_untrustedHostID;
 	char* ms_parentTrustedMachineID;
-} ms_createMachine_t;
+} ms_createMachineAPI_t;
 
 typedef struct ms_sgx_ra_get_ga_t {
 	sgx_status_t ms_retval;
@@ -352,10 +352,10 @@ sgx_status_t pong_enclave_request_attestation(sgx_enclave_id_t eid, int* retval,
 	return status;
 }
 
-sgx_status_t createMachine(sgx_enclave_id_t eid, int* retval, char* machineName, char* untrustedHostID, char* parentTrustedMachineID)
+sgx_status_t createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineName, char* untrustedHostID, char* parentTrustedMachineID)
 {
 	sgx_status_t status;
-	ms_createMachine_t ms;
+	ms_createMachineAPI_t ms;
 	ms.ms_machineName = machineName;
 	ms.ms_untrustedHostID = untrustedHostID;
 	ms.ms_parentTrustedMachineID = parentTrustedMachineID;

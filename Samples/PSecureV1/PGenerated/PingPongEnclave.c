@@ -445,10 +445,21 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE** _P_GEN_funargs[32];
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
+    PRT_VALUE* PTMP_tmp0_1 = NULL;
+    
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PrtPrintf("Kirat");
     
+    PRT_VALUE** P_LVALUE_1 = &(PTMP_tmp0_1);
+    PrtFreeValue(*P_LVALUE_1);
+    *P_LVALUE_1 = PrtCloneValue((&P_EVENT_Ping.value));
+    
+    PrtRaise(p_this, PTMP_tmp0_1, 0);
+    *(&(PTMP_tmp0_1)) = NULL;
+    goto p_return_2;
+    
 p_return_2: ;
+    PrtFreeValue(PTMP_tmp0_1); PTMP_tmp0_1 = NULL;
     return _P_GEN_retval;
 }
 
@@ -466,19 +477,19 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE** _P_GEN_funargs[32];
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
-    PRT_VALUE* PTMP_tmp0_1 = NULL;
+    PRT_VALUE* PTMP_tmp0_2 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE** P_LVALUE_1 = &(PTMP_tmp0_1);
-    PrtFreeValue(*P_LVALUE_1);
-    *P_LVALUE_1 = PrtCloneValue((&P_EVENT_Success.value));
+    PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp0_2);
+    PrtFreeValue(*P_LVALUE_2);
+    *P_LVALUE_2 = PrtCloneValue((&P_EVENT_Success.value));
     
-    PrtRaise(p_this, PTMP_tmp0_1, 0);
-    *(&(PTMP_tmp0_1)) = NULL;
+    PrtRaise(p_this, PTMP_tmp0_2, 0);
+    *(&(PTMP_tmp0_2)) = NULL;
     goto p_return_3;
     
 p_return_3: ;
-    PrtFreeValue(PTMP_tmp0_1); PTMP_tmp0_1 = NULL;
+    PrtFreeValue(PTMP_tmp0_2); PTMP_tmp0_2 = NULL;
     return _P_GEN_retval;
 }
 

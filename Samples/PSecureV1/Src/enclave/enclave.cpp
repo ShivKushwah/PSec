@@ -199,10 +199,14 @@ int enclave_main(void)
 
 extern "C" void P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {  
+    createMachineAPI("SecureChild", "test", "testing");
+}
+
+int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrustedMachineID) {
     string secureChildPublicID;
     string secureChildPrivateID;
     generateIdentity(secureChildPublicID, secureChildPrivateID);
-    int PMachineID = createMachine("SecureChild", "test", "testing");
+    int PMachineID = createMachine(machineType, untrustedHostID, parentTrustedMachineID);
     identityDictionary[PMachineID] = make_tuple(secureChildPublicID, secureChildPrivateID);
 }
 
