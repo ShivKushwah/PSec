@@ -223,6 +223,12 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
 //         }
 //     }
 
+    //Set up KPS api
+    ra_network_send_receive(current_machine_name,
+                                      "KPS",
+                                      NULL,
+                                      NULL);
+
     // Preparation for remote attestation by configuring extended epid group id.
     {
         uint32_t extended_epid_group_id = 0;

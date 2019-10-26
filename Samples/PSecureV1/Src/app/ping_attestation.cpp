@@ -49,9 +49,20 @@
 #define SAFE_FREE(ptr) {if (NULL != (ptr)) {free(ptr); (ptr) = NULL;}}
 #endif
 
+using namespace std;
+
+//TODO: Create a wrapper for the KPS, have it have the API, and basically
+// when you call establishInitialConnection with KPS, you get a connectoin ID
+// and the KPS is running on a thread, and whenever it gets a message with the correct
+// connection ID, it calls the correct methods in thsi file and returns the results,
+// if there are mulitple messages sent by mutiple connections, put them in a thred pool
+
 //NOTE: in certain parts of this file, SP refers to the Ping machine
 
 const int SIZE_OF_MESSAGE = 20;
+
+unordered_map<string, string> capabilityKeyDictionary;
+
 
 //This represents the payload we are going to send to the enclave after a succesful attestation
 //We write to this value in app.cpp before the ping machine initiates the attestation request with Pong enclave
@@ -869,3 +880,7 @@ int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,
 
 
 
+int createCapabilityKey(char* newMachineID, char* parentTrustedMachineID) {
+    sprintf(secure_message, "%s", "CAPTAINKEY");
+    capabilityKeyDictionary[string(newMachineID)] = string(parentTrustedMachineID);
+}

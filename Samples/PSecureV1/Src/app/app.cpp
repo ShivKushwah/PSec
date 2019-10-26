@@ -9,6 +9,7 @@
 #include <pthread.h> 
 #include "pong_enclave_attestation.h"
 #include "app.h"
+#include <string>
 
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
@@ -154,6 +155,10 @@ extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context
 // OCall implementations
 void ocall_print(const char* str) {
     printf("[o] %s\n", str);
+}
+
+void ocall_print_int(int intPrint) {
+    printf("Value is: %d\n", intPrint);
 }
 
 int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {

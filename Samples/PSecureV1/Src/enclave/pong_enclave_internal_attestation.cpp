@@ -449,7 +449,7 @@ sgx_status_t put_secret_data(
 
         uint32_t i;
         bool secret_match = true;
-        handle_incoming_events_pong_enclave(atoi((char*) g_secret));
+        //handle_incoming_events_pong_enclave(atoi((char*) g_secret));
   
         if(!secret_match)
         {

@@ -143,8 +143,10 @@ int ra_network_send_receive(const char *sending_machine_name,
         } else {
             printf("\nEnclave Request Attestation SGX Error!\n");
         }
-    }
-    else {
+    } else if (strcmp(receiving_machine_name, "KPS") == 0) {
+        createCapabilityKey("", "");
+
+    } else {
         return -1;
     }
 }

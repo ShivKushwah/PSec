@@ -51,6 +51,8 @@ typedef struct ms_createMachineAPI_t {
 	char* ms_machineName;
 	char* ms_untrustedHostID;
 	char* ms_parentTrustedMachineID;
+	char* ms_returnNewMachineID;
+	uint32_t ms_ID_SIZE;
 } ms_createMachineAPI_t;
 
 typedef struct ms_sgx_ra_get_ga_t {
@@ -80,6 +82,10 @@ typedef struct ms_sgx_ra_get_msg3_trusted_t {
 typedef struct ms_ocall_print_t {
 	const char* ms_str;
 } ms_ocall_print_t;
+
+typedef struct ms_ocall_print_int_t {
+	int ms_intPrint;
+} ms_ocall_print_int_t;
 
 typedef struct ms_ocall_pong_enclave_attestation_in_thread_t {
 	int ms_retval;
@@ -160,6 +166,14 @@ static sgx_status_t SGX_CDECL enclave_ocall_print(void* pms)
 {
 	ms_ocall_print_t* ms = SGX_CAST(ms_ocall_print_t*, pms);
 	ocall_print(ms->ms_str);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL enclave_ocall_print_int(void* pms)
+{
+	ms_ocall_print_int_t* ms = SGX_CAST(ms_ocall_print_int_t*, pms);
+	ocall_print_int(ms->ms_intPrint);
 
 	return SGX_SUCCESS;
 }
@@ -254,11 +268,12 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[12];
+	void * table[13];
 } ocall_table_enclave = {
-	12,
+	13,
 	{
 		(void*)enclave_ocall_print,
+		(void*)enclave_ocall_print_int,
 		(void*)enclave_ocall_pong_enclave_attestation_in_thread,
 		(void*)enclave_ocall_ping_machine_receive_encrypted_message,
 		(void*)enclave_sgx_oc_cpuidex,
@@ -352,13 +367,15 @@ sgx_status_t pong_enclave_request_attestation(sgx_enclave_id_t eid, int* retval,
 	return status;
 }
 
-sgx_status_t createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineName, char* untrustedHostID, char* parentTrustedMachineID)
+sgx_status_t createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineName, char* untrustedHostID, char* parentTrustedMachineID, char* returnNewMachineID, uint32_t ID_SIZE)
 {
 	sgx_status_t status;
 	ms_createMachineAPI_t ms;
 	ms.ms_machineName = machineName;
 	ms.ms_untrustedHostID = untrustedHostID;
 	ms.ms_parentTrustedMachineID = parentTrustedMachineID;
+	ms.ms_returnNewMachineID = returnNewMachineID;
+	ms.ms_ID_SIZE = ID_SIZE;
 	status = sgx_ecall(eid, 7, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;

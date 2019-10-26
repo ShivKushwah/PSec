@@ -37,10 +37,18 @@
 #include "remote_attestation_result.h"
 #include "ias_ra.h"
 #include "network_ra.h"
+#include <unordered_map>
+#include <string>
+
+using namespace std;
+
+extern unordered_map<string, string> capabilityKeyDictionary;
 
 #ifdef  __cplusplus
 extern "C" {
 #endif
+
+
 
 typedef enum {
     SP_OK,
@@ -134,6 +142,9 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 int receive_encrypted_message(uint8_t *p_secret, 
                                 uint32_t secret_size,
                                  uint8_t *p_gcm_mac);
+
+int createCapabilityKey(char* newMachineID, char* parentTrustedMachineID);
+
 
 int sp_ra_free_msg2(
     sample_ra_msg2_t *p_msg2);

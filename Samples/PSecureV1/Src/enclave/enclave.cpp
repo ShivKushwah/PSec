@@ -3,7 +3,9 @@
 PRT_PROCESS *process;
 
 extern char secure_message[SIZE_OF_MESSAGE]; 
-unordered_map<int, identityKeyPair> identityDictionary;
+unordered_map<int, identityKeyPair> PMachineIDToIdentityDictionary;
+unordered_map<string, int> PublicIdentityKeyToPMachineIDDictionary;
+unordered_map<int, string> PMachineIDtoCapabilityKeyDictionary;
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -170,8 +172,9 @@ int enclave_main(void)
 		PrtUpdateAssertFn(MyAssert);
         ocall_print("after update assert fn!\n");
 
-        PRT_UINT32 mainMachine2 = 1;
+        PRT_UINT32 mainMachine2;
 		PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Pong", &mainMachine2);
+        ocall_print_int(mainMachine2);
 		PrtAssert(foundMachine2, "No 'Pong' machine found!");
 		PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload);
 
@@ -199,15 +202,34 @@ int enclave_main(void)
 
 extern "C" void P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {  
-    createMachineAPI("SecureChild", "test", "testing");
+    char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+    createMachineAPI("SecureChild", "test", "testing", newMachineID, SIZE_OF_IDENTITY_STRING);
 }
 
-int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrustedMachineID) {
+int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrustedMachineID, char* returnNewMachineID, uint32_t ID_SIZE) {
     string secureChildPublicID;
     string secureChildPrivateID;
     generateIdentity(secureChildPublicID, secureChildPrivateID);
     int PMachineID = createMachine(machineType, untrustedHostID, parentTrustedMachineID);
-    identityDictionary[PMachineID] = make_tuple(secureChildPublicID, secureChildPrivateID);
+    PMachineIDToIdentityDictionary[PMachineID] = make_tuple(secureChildPublicID, secureChildPrivateID);
+    PublicIdentityKeyToPMachineIDDictionary[secureChildPublicID] = PMachineID;
+
+    //TODO: Make call to ra network send receive to contact KPS
+    string capabilityKeyReceived = receiveCapabilityKey();
+    ocall_print("Capability Key: ");
+    ocall_print(capabilityKeyReceived.c_str());
+    PMachineIDtoCapabilityKeyDictionary[PMachineID] = capabilityKeyReceived;
+    memcpy(returnNewMachineID, secureChildPublicID.c_str(), secureChildPublicID.length() + 1);
+   // return secureChildPublicID;
+}
+
+char* receiveCapabilityKey() {
+    int ret;
+    char* other_machine_name = "PingMachine"; //TODO: make this a network request and change this to KPS
+    ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, 1);
+    char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
+    memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
+    return capabilityKey;
 }
 
 //publicID and privateID must be allocated by the caller
@@ -218,8 +240,9 @@ void generateIdentity(string& publicID, string& privateID) {
 
 int createMachine(char* machineType, char* untrustedHostID, char* parentTrustedMachineID) {
     PRT_VALUE *payload = PrtMkNullValue();
-    PRT_UINT32 mainMachine2 = 2;
+    PRT_UINT32 mainMachine2;
 	PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName(machineType, &mainMachine2);
+    ocall_print_int(mainMachine2);
 	PrtAssert(foundMachine2, "No machine found!");
 	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload);
     return mainMachine2;
