@@ -35,6 +35,8 @@
 
 #define _NETWORK_RA_H
 
+const int SIZE_OF_IDENTITY_STRING = 20;
+
 
 struct Encrypted_Message{
     uint8_t* encrypted_message;
@@ -98,7 +100,9 @@ int ra_network_send_receive(const char *sending_machine_name,
                             ra_samp_response_header_t **p_resp,
                             Encrypted_Message optional_Message = default_Encrypted_Message);
 void ra_free_network_response_buffer(ra_samp_response_header_t *resp);
-char* network_request(char* request);
+char* send_network_request_API(char* request);
+void* network_request_thread_wrapper(void* request);
+char* network_request_logic(char* request);
 
 #ifdef  __cplusplus
 }

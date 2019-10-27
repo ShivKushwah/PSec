@@ -165,11 +165,38 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
     }
 }
 
-char* network_request(char* request) {
+char* network_request_logic(char* request) {
     char* split = strtok(request, ":");
     if (strcmp(split, "Create") == 0) {
-        return "Create Message found!";
+        char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+        split = strtok(NULL, ":");
+        char* machineType = split;
+        int ptr;
+        //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
+        sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, "test", "testing", newMachineID, SIZE_OF_IDENTITY_STRING);
+
+        return newMachineID;
     } else {
         return "Command Not Found";
     }
 }
+
+
+void* network_request_thread_wrapper(void* request) { 
+    return (void*) network_request_logic((char*) request);
+}
+
+//TODO change this API to take in who is sending the request
+char* send_network_request_API(char* request) {
+    void* thread_ret;
+    pthread_t thread_id; 
+    printf("\n Calling Network Request Thread\n"); 
+    pthread_create(&thread_id, NULL, network_request_thread_wrapper, (void*) request);
+    //TODO look into not calling pthread_join but actually let this run asynchoronous
+    pthread_join(thread_id, &thread_ret); 
+    printf("\n Finished Network Request Thread\n"); 
+
+    return (char*) thread_ret;
+
+}
+
