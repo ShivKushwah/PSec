@@ -203,6 +203,14 @@ int enclave_main(void)
 extern "C" void P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {  
     char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+    //TODO: Call ra send network
+    char* response = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    char* createMachineRequest = "Create:SecureChild";
+    int ret_value;
+    ocall_network_request(&ret_value, createMachineRequest, response, SIZE_OF_IDENTITY_STRING);
+    //TODO save the newMachineID in a struct of some sort and associate the machine that asked for it with it
+    ocall_print(response);
+    ocall_print("KIRAT RWACHED");
     createMachineAPI("SecureChild", "test", "testing", newMachineID, SIZE_OF_IDENTITY_STRING);
 }
 

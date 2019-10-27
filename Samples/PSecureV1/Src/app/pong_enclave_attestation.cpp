@@ -781,3 +781,14 @@ int ocall_pong_enclave_attestation_in_thread(char* other_machine_name, uint32_t 
 
 }
 
+int ocall_network_request(char* request, char* response, uint32_t RESPONSE_SIZE) {
+    char* result = network_request(request);
+    printf("harjolt: %s\n", result);
+    if (strlen(result) + 1 > RESPONSE_SIZE) {
+        printf("ERROR. Message too big!\n");
+    }
+    memcpy(response, result, strlen(result) + 1);
+    return 1;
+
+}
+

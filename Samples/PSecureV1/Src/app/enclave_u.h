@@ -33,6 +33,10 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_pong_enclave_attestation_in_thread, (cha
 #define OCALL_PING_MACHINE_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
 int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_ping_machine_receive_encrypted_message, (uint8_t* p_secret, uint32_t secret_size, uint8_t* p_gcm_mac));
 #endif
+#ifndef OCALL_NETWORK_REQUEST_DEFINED__
+#define OCALL_NETWORK_REQUEST_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_network_request, (char* request, char* response, uint32_t RESPONSE_SIZE));
+#endif
 #ifndef SGX_OC_CPUIDEX_DEFINED__
 #define SGX_OC_CPUIDEX_DEFINED__
 void SGX_UBRIDGE(SGX_CDECL, sgx_oc_cpuidex, (int cpuinfo[4], int leaf, int subleaf));

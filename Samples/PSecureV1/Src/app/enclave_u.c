@@ -101,6 +101,13 @@ typedef struct ms_ocall_ping_machine_receive_encrypted_message_t {
 	uint8_t* ms_p_gcm_mac;
 } ms_ocall_ping_machine_receive_encrypted_message_t;
 
+typedef struct ms_ocall_network_request_t {
+	int ms_retval;
+	char* ms_request;
+	char* ms_response;
+	uint32_t ms_RESPONSE_SIZE;
+} ms_ocall_network_request_t;
+
 typedef struct ms_sgx_oc_cpuidex_t {
 	int* ms_cpuinfo;
 	int ms_leaf;
@@ -194,6 +201,14 @@ static sgx_status_t SGX_CDECL enclave_ocall_ping_machine_receive_encrypted_messa
 	return SGX_SUCCESS;
 }
 
+static sgx_status_t SGX_CDECL enclave_ocall_network_request(void* pms)
+{
+	ms_ocall_network_request_t* ms = SGX_CAST(ms_ocall_network_request_t*, pms);
+	ms->ms_retval = ocall_network_request(ms->ms_request, ms->ms_response, ms->ms_RESPONSE_SIZE);
+
+	return SGX_SUCCESS;
+}
+
 static sgx_status_t SGX_CDECL enclave_sgx_oc_cpuidex(void* pms)
 {
 	ms_sgx_oc_cpuidex_t* ms = SGX_CAST(ms_sgx_oc_cpuidex_t*, pms);
@@ -268,14 +283,15 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[13];
+	void * table[14];
 } ocall_table_enclave = {
-	13,
+	14,
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_print_int,
 		(void*)enclave_ocall_pong_enclave_attestation_in_thread,
 		(void*)enclave_ocall_ping_machine_receive_encrypted_message,
+		(void*)enclave_ocall_network_request,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
 		(void*)enclave_sgx_thread_set_untrusted_event_ocall,

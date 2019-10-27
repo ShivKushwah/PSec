@@ -164,3 +164,12 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
         free(resp);
     }
 }
+
+char* network_request(char* request) {
+    char* split = strtok(request, ":");
+    if (strcmp(split, "Create") == 0) {
+        return "Create Message found!";
+    } else {
+        return "Command Not Found";
+    }
+}
