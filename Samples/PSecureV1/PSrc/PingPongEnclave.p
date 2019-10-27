@@ -1,14 +1,16 @@
 event Ping assert 2;
 event Pong assert 2;
 fun SecureSendPongEventToPingMachine();
-fun CreateMachineSecureChild();
+fun CreateMachineSecureChild(): int; //have this return a string
 event Success;
 
 //@secure
 machine Pong {
+    var secureChildID: int;
     start state Pong_WaitPing {
         entry {
-            CreateMachineSecureChild(); //have this return a childID
+            secureChildID = CreateMachineSecureChild();
+            //Call SecureSendMessage();
         }
         on Ping goto Pong_SendingPong; //Receives this event from the Ping Machine in App.cpp
     }
@@ -27,9 +29,6 @@ machine Pong {
 //@secure
 machine SecureChild {
     start state Pong_WaitPing {
-        entry {
-            print "Kirat";
-        }
         on Ping goto Pong_SendingPong; //Receives this event from the Ping Machine in App.cpp
     }
 

@@ -42,6 +42,7 @@
 
 using namespace std;
 
+extern unordered_map<string, string> capabilityKeyAccessDictionary;
 extern unordered_map<string, string> capabilityKeyDictionary;
 
 #ifdef  __cplusplus
@@ -144,6 +145,7 @@ int receive_encrypted_message(uint8_t *p_secret,
                                  uint8_t *p_gcm_mac);
 
 int createCapabilityKey(char* newMachineID, char* parentTrustedMachineID);
+char* retrieveCapabilityKey(char* currentMachineID, char* childMachineID);
 
 
 int sp_ra_free_msg2(

@@ -61,6 +61,7 @@ using namespace std;
 
 const int SIZE_OF_MESSAGE = 20;
 
+unordered_map<string, string> capabilityKeyAccessDictionary;
 unordered_map<string, string> capabilityKeyDictionary;
 
 
@@ -879,8 +880,32 @@ int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,
 }
 
 
-
+//TODO should return the new capability key intead of just storing it
+//TODO this should call createMachineAPI
 int createCapabilityKey(char* newMachineID, char* parentTrustedMachineID) {
+    //TODO Make this generate a random key
+    //TODO only allow this to be called after a successful attestation
     sprintf(secure_message, "%s", "CAPTAINKEY");
-    capabilityKeyDictionary[string(newMachineID)] = string(parentTrustedMachineID);
+    capabilityKeyDictionary[string(newMachineID)] = string(secure_message);
+    printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
+
+    capabilityKeyAccessDictionary[string(newMachineID)] = string(parentTrustedMachineID);
+    printf("New machine ID: %s\n", newMachineID);
+
+}
+
+char* retrieveCapabilityKey(char* currentMachineID, char* childMachineID) {
+    //TODO need to perform attestation first and encrypt the result
+    printf("Current machine ID: %s\n", currentMachineID);
+    printf("Child machine ID: %s\n", childMachineID);
+    if (capabilityKeyAccessDictionary[string(childMachineID)].compare(string(currentMachineID)) == 0) {
+        //printf("The capability key is : %s", capabilityKeyDictionary[string(childMachineID)].c_str());
+        char* returnCapabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
+        memcpy(returnCapabilityKey, capabilityKeyDictionary[string(childMachineID)].c_str(), SIZE_OF_CAPABILITYKEY);
+        return (char*) returnCapabilityKey;
+    } else {
+        return "Access Prohibited!";
+    }
+    
+
 }

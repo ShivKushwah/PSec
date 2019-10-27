@@ -200,17 +200,23 @@ int enclave_main(void)
 }
 
 
-extern "C" void P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
-    //TODO: Call ra send network
-    char* response = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     char* createMachineRequest = "Create:SecureChild";
     int ret_value;
-    ocall_network_request(&ret_value, createMachineRequest, response, SIZE_OF_IDENTITY_STRING);
-    //TODO save the newMachineID in a struct of some sort and associate the machine that asked for it with it
-    ocall_print(response);
-    ocall_print("KIRAT RWACHED");
+    ocall_network_request(&ret_value, createMachineRequest, newMachineID, SIZE_OF_IDENTITY_STRING);
+    //TODO return the newMachineID and it is the responsibility of the P Secure machine to save it and use it to send messages later
+    ocall_print("New Machine ID is: ");
+    ocall_print(newMachineID);
+
+    //Now, need to retrieve capabilityKey for this machineID and store (thisMachineID, newMachineID) -> capabilityKey
+    char* getChildMachineIDRequest = "GetKey:PongPublic:SecureChildPublic";
+    char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY); 
+    ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
+    ocall_print("Pong Machine has received capability key for secure child: ");
+    ocall_print(capabilityKey);
+    return PrtMkIntValue(70);
 }
 
 int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrustedMachineID, char* returnNewMachineID, uint32_t ID_SIZE) {
@@ -223,7 +229,7 @@ int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrust
 
     //TODO: Make call to ra network send receive to contact KPS
     string capabilityKeyReceived = receiveCapabilityKey();
-    ocall_print("Capability Key: ");
+    ocall_print("Capability Key is: ");
     ocall_print(capabilityKeyReceived.c_str());
     PMachineIDtoCapabilityKeyDictionary[PMachineID] = capabilityKeyReceived;
     memcpy(returnNewMachineID, secureChildPublicID.c_str(), secureChildPublicID.length() + 1);
@@ -241,6 +247,7 @@ char* receiveCapabilityKey() {
 
 //publicID and privateID must be allocated by the caller
 void generateIdentity(string& publicID, string& privateID) {
+    //TODO Make this generate a random pk sk pair
     publicID = "SecureChildPublic";
     privateID = "SecureChildPrivate";
 } 

@@ -144,7 +144,7 @@ int ra_network_send_receive(const char *sending_machine_name,
             printf("\nEnclave Request Attestation SGX Error!\n");
         }
     } else if (strcmp(receiving_machine_name, "KPS") == 0) {
-        createCapabilityKey("", "");
+        createCapabilityKey("SecureChildPublic", "PongPublic"); //TODO unhardcode this
 
     } else {
         return -1;
@@ -173,16 +173,27 @@ char* network_request_logic(char* request) {
         char* machineType = split;
         int ptr;
         //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
-        sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, "test", "testing", newMachineID, SIZE_OF_IDENTITY_STRING);
+        //TODO make this forward message to KPS directly, which then calls createMachineAPI
+        sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, "test", "PongPublic", newMachineID, SIZE_OF_IDENTITY_STRING);
 
         return newMachineID;
+    }  else if (strcmp(split, "GetKey") == 0) {
+        split = strtok(NULL, ":");
+        char currentMachineID[SIZE_OF_IDENTITY_STRING];
+        //TODO add check that split is not too big
+        memcpy(currentMachineID, split, strlen(split) + 1);
+        split = strtok(NULL, ":");
+        char childMachineID[SIZE_OF_IDENTITY_STRING];
+        memcpy(childMachineID, split, strlen(split) + 1);
+        return retrieveCapabilityKey(currentMachineID, childMachineID);
+
     } else {
         return "Command Not Found";
     }
 }
 
 
-void* network_request_thread_wrapper(void* request) { 
+void* network_request_thread_wrapper(void* request) {
     return (void*) network_request_logic((char*) request);
 }
 
