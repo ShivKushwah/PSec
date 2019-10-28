@@ -207,7 +207,8 @@ int enclave_main(void)
 extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     uint32_t currentMachineID = context->id->valueUnion.mid->machineId;
-    char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+    char* newMachineID = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    //TODO extract the newMachineType from the argument
     char* createMachineRequest = "Create:SecureChild";
     int ret_value;
     ocall_network_request(&ret_value, createMachineRequest, newMachineID, SIZE_OF_IDENTITY_STRING);
@@ -271,4 +272,62 @@ int createMachine(char* machineType, char* untrustedHostID, char* parentTrustedM
 	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload);
     return mainMachine2;
 }
+
+
+//String Class
+
+extern "C" void P_FREE_StringType_IMPL(PRT_UINT64 frgnVal)
+{
+	PrtFree((PRT_STRING)frgnVal);
+}
+
+extern "C" PRT_BOOLEAN P_ISEQUAL_StringType_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
+{
+	return strcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2) == 0 ? PRT_TRUE : PRT_FALSE;
+}
+
+extern "C" PRT_STRING P_TOSTRING_StringType_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, "String : %lld", frgnVal);
+	return str;
+}
+
+extern "C" PRT_UINT32 P_GETHASHCODE_StringType_IMPL(PRT_UINT64 frgnVal)
+{
+	return (PRT_UINT32)frgnVal;
+}
+
+extern "C" PRT_UINT64 P_MKDEF_StringType_IMPL(void)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, "xyx$12");
+	return (PRT_UINT64)str;
+}
+
+extern "C" PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, (PRT_STRING)frgnVal);
+	return (PRT_UINT64)str;
+}
+
+extern "C" PRT_VALUE* P_GetDefaultString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+	return PrtMkDefaultValue(P_TYPEDEF_StringType);
+}
+
+extern "C" void P_ReadString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    ocall_print("String value in P is:");
+    ocall_print((char*) val);
+    
+    //PrtMkStringTypeValue();
+    //PrtPrim
+   // int secret = PrtPrimGetInt(*P_VAR_payload);
+}
+
+
 

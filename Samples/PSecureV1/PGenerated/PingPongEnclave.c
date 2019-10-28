@@ -3,11 +3,32 @@
 // Type universe for program:
 static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
 static PRT_TYPE P_GEND_TYPE_i = { PRT_KIND_INT, { NULL } };
+extern PRT_UINT64 P_MKDEF_StringType_IMPL(void);
+extern PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64);
+extern void P_FREE_StringType_IMPL(PRT_UINT64);
+extern PRT_UINT32 P_GETHASHCODE_StringType_IMPL(PRT_UINT64);
+extern PRT_BOOLEAN P_ISEQUAL_StringType_IMPL(PRT_UINT64, PRT_UINT64);
+extern PRT_STRING P_TOSTRING_StringType_IMPL(PRT_UINT64);
+static PRT_FOREIGNTYPEDECL P_StringType = {
+    0U,
+    "StringType",
+    P_MKDEF_StringType_IMPL,
+    P_CLONE_StringType_IMPL,
+    P_FREE_StringType_IMPL,
+    P_GETHASHCODE_StringType_IMPL,
+    P_ISEQUAL_StringType_IMPL,
+    P_TOSTRING_StringType_IMPL,
+};
+PRT_TYPE P_GEND_TYPE_StringType = { PRT_KIND_FOREIGN, { .foreignType = &P_StringType } };
 
 // Function implementation prototypes:
 PRT_VALUE* P_SecureSendPongEventToPingMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_GetDefaultString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_ReadString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
@@ -59,6 +80,22 @@ PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild =
 };
 
 
+PRT_FUNDECL P_FUNCTION_GetDefaultString =
+{
+    "GetDefaultString",
+    &P_GetDefaultString_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_ReadString =
+{
+    "ReadString",
+    &P_ReadString_IMPL,
+    NULL
+};
+
+
 PRT_EVENTDECL* P_Pong_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Pong_RECV =
 {
@@ -92,7 +129,8 @@ PRT_INTERFACEDECL P_I_SecureChild =
 };
 
 PRT_VARDECL P_Pong_VARS[] = {
-    { "secureChildID", &P_GEND_TYPE_i }
+    { "secureChildID", &P_GEND_TYPE_i },
+    { "tempString", &P_GEND_TYPE_StringType }
 };
 
 PRT_EVENTDECL* P_Pong_WaitPing_DEFERS_INNER[] = { NULL };
@@ -228,11 +266,13 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE* PTMP_tmp0 = NULL;
+    PRT_VALUE* PTMP_tmp1 = NULL;
+    PRT_VALUE* PTMP_tmp2 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
-    *P_LVALUE = ((_P_GEN_funval = P_CreateMachineSecureChild_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE = ((_P_GEN_funval = P_GetDefaultString_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
     }
@@ -243,14 +283,52 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     }
     
     {
-        PRT_VALUE** P_LVALUE_1 = &(p_this->varValues[0]);
+        PRT_VALUE** P_LVALUE_1 = &(p_this->varValues[1]);
         PrtFreeValue(*P_LVALUE_1);
         *P_LVALUE_1 = PTMP_tmp0;
         PTMP_tmp0 = NULL;
     }
     
+    PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp1);
+    PrtFreeValue(*P_LVALUE_2);
+    *P_LVALUE_2 = PrtCloneValue(p_this->varValues[1]);
+    
+    _P_GEN_funargs[0] = &(PTMP_tmp1);
+    PrtFreeValue(P_ReadString_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(PTMP_tmp1);
+    PTMP_tmp1 = NULL;
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
+    PRT_VALUE** P_LVALUE_3 = &(PTMP_tmp2);
+    PrtFreeValue(*P_LVALUE_3);
+    *P_LVALUE_3 = ((_P_GEN_funval = P_CreateMachineSecureChild_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
+    {
+        PRT_VALUE** P_LVALUE_4 = &(p_this->varValues[0]);
+        PrtFreeValue(*P_LVALUE_4);
+        *P_LVALUE_4 = PTMP_tmp2;
+        PTMP_tmp2 = NULL;
+    }
+    
 p_return: ;
     PrtFreeValue(PTMP_tmp0); PTMP_tmp0 = NULL;
+    PrtFreeValue(PTMP_tmp1); PTMP_tmp1 = NULL;
+    PrtFreeValue(PTMP_tmp2); PTMP_tmp2 = NULL;
     return _P_GEN_retval;
 }
 
@@ -271,9 +349,9 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp0_1);
-    PrtFreeValue(*P_LVALUE_2);
-    *P_LVALUE_2 = PrtCloneValue((&P_EVENT_Success.value));
+    PRT_VALUE** P_LVALUE_5 = &(PTMP_tmp0_1);
+    PrtFreeValue(*P_LVALUE_5);
+    *P_LVALUE_5 = PrtCloneValue((&P_EVENT_Success.value));
     
     PrtRaise(p_this, PTMP_tmp0_1, 0);
     *(&(PTMP_tmp0_1)) = NULL;
@@ -317,7 +395,7 @@ PRT_MACHINEDECL P_MACHINE_Pong =
     &P_EVENTSET_Pong_RECV_1,
     &P_EVENTSET_Pong_SEND,
     NULL,
-    1U,
+    2U,
     3U,
     2U,
     4294967295U,
@@ -462,9 +540,9 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_2 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE** P_LVALUE_3 = &(PTMP_tmp0_2);
-    PrtFreeValue(*P_LVALUE_3);
-    *P_LVALUE_3 = PrtCloneValue((&P_EVENT_Success.value));
+    PRT_VALUE** P_LVALUE_6 = &(PTMP_tmp0_2);
+    PrtFreeValue(*P_LVALUE_6);
+    *P_LVALUE_6 = PrtCloneValue((&P_EVENT_Success.value));
     
     PrtRaise(p_this, PTMP_tmp0_2, 0);
     *(&(PTMP_tmp0_2)) = NULL;
@@ -518,11 +596,12 @@ PRT_MACHINEDECL P_MACHINE_SecureChild =
     P_SecureChild_METHODS
 };
 
+PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
 PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_Pong, &P_MACHINE_SecureChild };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_Pong, &P_I_SecureChild };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
-PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { NULL };
+PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_StringType };
 int P_DefaultImpl_LME_0[] = { -1,-1 };
 int P_DefaultImpl_LME_1[] = { -1,-1 };
 int* P_DefaultImpl_LINKMAP[] = { P_DefaultImpl_LME_0, P_DefaultImpl_LME_1 };
@@ -532,7 +611,7 @@ PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl = {
     2U,
     2U,
     0U,
-    0U,
+    1U,
     P_ALL_EVENTS,
     P_ALL_MACHINES,
     P_ALL_INTERFACES,

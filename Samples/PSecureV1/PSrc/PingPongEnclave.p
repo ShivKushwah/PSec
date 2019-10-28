@@ -1,14 +1,25 @@
+type StringType;
+
 event Ping assert 2;
 event Pong assert 2;
 fun SecureSendPongEventToPingMachine();
 fun CreateMachineSecureChild(): int; //have this return a string
+fun GetDefaultString() : StringType;
+fun ReadString(inputString : StringType);
 event Success;
 
 //@secure
 machine Pong {
     var secureChildID: int;
+    var tempString: StringType;
+
     start state Pong_WaitPing {
         entry {
+            tempString = GetDefaultString();
+           // print "Temp String is";
+            //print "{0}: success!", tempString; 
+            ReadString(tempString);
+            
             secureChildID = CreateMachineSecureChild();
             //Call SecureSendMessage();
         }
