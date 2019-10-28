@@ -52,7 +52,7 @@ extern sgx_enclave_id_t global_eid;
 // @param p_resp Pointer to a pointer of the response message.
 
 // @return int
-
+//TODO consolidate this and the other network call method
 int ra_network_send_receive(const char *sending_machine_name, 
     const char *receiving_machine_name,
     const ra_samp_request_header_t *p_req,
@@ -143,9 +143,6 @@ int ra_network_send_receive(const char *sending_machine_name,
         } else {
             printf("\nEnclave Request Attestation SGX Error!\n");
         }
-    } else if (strcmp(receiving_machine_name, "KPS") == 0) {
-        createCapabilityKey("SecureChildPublic", "PongPublic"); //TODO unhardcode this
-
     } else {
         return -1;
     }
@@ -173,11 +170,14 @@ char* network_request_logic(char* request) {
         char* machineType = split;
         int ptr;
         //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
-        //TODO make this forward message to KPS directly, which then calls createMachineAPI
+        //TODO actually make this call a method in untrusted host
+        // application of this enclave and have that make an ecall to createMachineAPi
         sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, "test", "PongPublic", newMachineID, SIZE_OF_IDENTITY_STRING);
 
         return newMachineID;
     }  else if (strcmp(split, "GetKey") == 0) {
+        //TODO move this segmant of code into other ra method because attestation needs to occur first and then call retrieveCapabilityKey
+        //TODO might need to verify the currentMachineIDs signagure before we call attestation, so we need to do that first?
         split = strtok(NULL, ":");
         char currentMachineID[SIZE_OF_IDENTITY_STRING];
         //TODO add check that split is not too big
@@ -186,6 +186,9 @@ char* network_request_logic(char* request) {
         char childMachineID[SIZE_OF_IDENTITY_STRING];
         memcpy(childMachineID, split, strlen(split) + 1);
         return retrieveCapabilityKey(currentMachineID, childMachineID);
+
+    
+    }  else if (strcmp(split, "AttestEnclave") == 0) {
 
     } else {
         return "Command Not Found";

@@ -4,6 +4,7 @@
 #include <string>
 #include <tuple>
 #include <unordered_map> 
+#include <map> 
 #include <list> 
 using namespace std;
 
@@ -12,9 +13,14 @@ const int SIZE_OF_MESSAGE = 20;
 const int SIZE_OF_IDENTITY_STRING = 20;
 const int SIZE_OF_CAPABILITYKEY = 20;
 
+//For Enclave Internal Methods
+typedef tuple <uint32_t,string> PMachineChildPair; //parentMachineID, childPublicKey
+extern map<PMachineChildPair, string> PMachineToChildCapabilityKey;
+
+
+//For Enclave API
 typedef tuple <string,string> identityKeyPair;
 typedef tuple <string,string> capabilityKey;
-
 extern unordered_map<int, identityKeyPair> PMachineIDToIdentityDictionary;
 extern unordered_map<string, int> PublicIdentityKeyToPMachineIDDictionary;
 extern unordered_map<int, string> PMachineIDtoCapabilityKeyDictionary;

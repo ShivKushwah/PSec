@@ -815,6 +815,10 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         //We need to send the secure message in this case to the enclave 
         if (!message_from_machine_to_enclave) { 
 
+            //TODO Unharcode these values
+            //Generate the capability key
+            createCapabilityKey("SecureChildPublic1", "PongPublic");
+
             strcpy((char*)g_secret, secure_message);
 
 
@@ -887,17 +891,17 @@ int createCapabilityKey(char* newMachineID, char* parentTrustedMachineID) {
     //TODO only allow this to be called after a successful attestation
     sprintf(secure_message, "%s", "CAPTAINKEY");
     capabilityKeyDictionary[string(newMachineID)] = string(secure_message);
-    printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
+    //printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
 
     capabilityKeyAccessDictionary[string(newMachineID)] = string(parentTrustedMachineID);
-    printf("New machine ID: %s\n", newMachineID);
+    //printf("New machine ID: %s\n", newMachineID);
 
 }
 
 char* retrieveCapabilityKey(char* currentMachineID, char* childMachineID) {
     //TODO need to perform attestation first and encrypt the result
-    printf("Current machine ID: %s\n", currentMachineID);
-    printf("Child machine ID: %s\n", childMachineID);
+    //printf("Current machine ID: %s\n", currentMachineID);
+    //printf("Child machine ID: %s\n", childMachineID);
     if (capabilityKeyAccessDictionary[string(childMachineID)].compare(string(currentMachineID)) == 0) {
         //printf("The capability key is : %s", capabilityKeyDictionary[string(childMachineID)].c_str());
         char* returnCapabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);

@@ -7,6 +7,10 @@ unordered_map<int, identityKeyPair> PMachineIDToIdentityDictionary;
 unordered_map<string, int> PublicIdentityKeyToPMachineIDDictionary;
 unordered_map<int, string> PMachineIDtoCapabilityKeyDictionary;
 
+map<PMachineChildPair, string> PMachineToChildCapabilityKey;
+
+int ID_GENERATOR_SEED = 1;
+
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
     if (status == PRT_STATUS_ASSERT)
@@ -202,6 +206,7 @@ int enclave_main(void)
 
 extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
+    uint32_t currentMachineID = context->id->valueUnion.mid->machineId;
     char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
     char* createMachineRequest = "Create:SecureChild";
     int ret_value;
@@ -211,11 +216,14 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     ocall_print(newMachineID);
 
     //Now, need to retrieve capabilityKey for this machineID and store (thisMachineID, newMachineID) -> capabilityKey
-    char* getChildMachineIDRequest = "GetKey:PongPublic:SecureChildPublic";
+    char* getChildMachineIDRequest = "GetKey:PongPublic:SecureChildPublic1";
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY); 
     ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
     ocall_print("Pong Machine has received capability key for secure child: ");
     ocall_print(capabilityKey);
+
+    PMachineToChildCapabilityKey[make_tuple(currentMachineID, string(newMachineID))] = string(capabilityKey);
+
     return PrtMkIntValue(70);
 }
 
@@ -239,6 +247,7 @@ int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrust
 char* receiveCapabilityKey() {
     int ret;
     char* other_machine_name = "PingMachine"; //TODO: make this a network request and change this to KPS
+    //TODO change ocall_pong_enclave_attestaion so that it first calls createCapabilityKey or smth
     ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, 1);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
@@ -248,8 +257,9 @@ char* receiveCapabilityKey() {
 //publicID and privateID must be allocated by the caller
 void generateIdentity(string& publicID, string& privateID) {
     //TODO Make this generate a random pk sk pair
-    publicID = "SecureChildPublic";
-    privateID = "SecureChildPrivate";
+    publicID = "SecureChildPublic" + to_string(ID_GENERATOR_SEED);
+    privateID = "SecureChildPrivate" + to_string(ID_GENERATOR_SEED);
+    ID_GENERATOR_SEED += 1;
 } 
 
 int createMachine(char* machineType, char* untrustedHostID, char* parentTrustedMachineID) {
