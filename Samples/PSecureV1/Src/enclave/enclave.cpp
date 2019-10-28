@@ -314,7 +314,9 @@ extern "C" PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64 frgnVal)
 
 extern "C" PRT_VALUE* P_GetDefaultString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-	return PrtMkDefaultValue(P_TYPEDEF_StringType);
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, "KiratStringWorks!");
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
 extern "C" void P_ReadString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -324,9 +326,6 @@ extern "C" void P_ReadString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     ocall_print("String value in P is:");
     ocall_print((char*) val);
     
-    //PrtMkStringTypeValue();
-    //PrtPrim
-   // int secret = PrtPrimGetInt(*P_VAR_payload);
 }
 
 
