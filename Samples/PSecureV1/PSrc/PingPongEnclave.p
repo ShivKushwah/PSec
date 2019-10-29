@@ -3,24 +3,19 @@ type StringType;
 event Ping assert 2;
 event Pong assert 2;
 fun SecureSendPongEventToPingMachine();
-fun CreateMachineSecureChild(): int; //have this return a string
-fun GetDefaultString() : StringType;
-fun ReadString(inputString : StringType);
+fun CreateMachineSecureChild(): StringType; //have this return a string
+fun PrintString(inputString : StringType);
 event Success;
 
 //@secure
 machine Pong {
-    var secureChildID: int;
+    var secureChildID: StringType;
     var tempString: StringType;
 
     start state Pong_WaitPing {
-        entry {
-            tempString = GetDefaultString();
-           // print "Temp String is";
-            //print "{0}: success!", tempString; 
-            ReadString(tempString);
-            
+        entry { 
             secureChildID = CreateMachineSecureChild();
+            PrintString(secureChildID);
             //Call SecureSendMessage();
         }
         on Ping goto Pong_SendingPong; //Receives this event from the Ping Machine in App.cpp

@@ -212,7 +212,6 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     char* createMachineRequest = "Create:SecureChild";
     int ret_value;
     ocall_network_request(&ret_value, createMachineRequest, newMachineID, SIZE_OF_IDENTITY_STRING);
-    //TODO return the newMachineID and it is the responsibility of the P Secure machine to save it and use it to send messages later
     ocall_print("New Machine ID is: ");
     ocall_print(newMachineID);
 
@@ -225,7 +224,10 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 
     PMachineToChildCapabilityKey[make_tuple(currentMachineID, string(newMachineID))] = string(capabilityKey);
 
-    return PrtMkIntValue(70);
+    //Return the newMachineID and it is the responsibility of the P Secure machine to save it and use it to send messages later
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, newMachineID);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
 int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrustedMachineID, char* returnNewMachineID, uint32_t ID_SIZE) {
@@ -236,19 +238,18 @@ int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrust
     PMachineIDToIdentityDictionary[PMachineID] = make_tuple(secureChildPublicID, secureChildPrivateID);
     PublicIdentityKeyToPMachineIDDictionary[secureChildPublicID] = PMachineID;
 
-    //TODO: Make call to ra network send receive to contact KPS
+    //Contacting KPS for capability key
     string capabilityKeyReceived = receiveCapabilityKey();
     ocall_print("Capability Key is: ");
     ocall_print(capabilityKeyReceived.c_str());
     PMachineIDtoCapabilityKeyDictionary[PMachineID] = capabilityKeyReceived;
     memcpy(returnNewMachineID, secureChildPublicID.c_str(), secureChildPublicID.length() + 1);
-   // return secureChildPublicID;
 }
 
 char* receiveCapabilityKey() {
     int ret;
-    char* other_machine_name = "PingMachine"; //TODO: make this a network request and change this to KPS
-    //TODO change ocall_pong_enclave_attestaion so that it first calls createCapabilityKey or smth
+    char* other_machine_name = "PingMachine"; //TODO change this to KPS, bc this is actually assuming PingAttestion.c is KPS
+    //TODO change the last int (1 or 0) to denote KPS createCpabilityKey or getCapabilityKey etc
     ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, 1);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
@@ -312,18 +313,11 @@ extern "C" PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64 frgnVal)
 	return (PRT_UINT64)str;
 }
 
-extern "C" PRT_VALUE* P_GetDefaultString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, "KiratStringWorks!");
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-}
-
-extern "C" void P_ReadString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" void P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE** P_VAR_payload = argRefs[0];
     PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-    ocall_print("String value in P is:");
+    ocall_print("String P value is:");
     ocall_print((char*) val);
     
 }
