@@ -232,7 +232,7 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 
 char* retrieveCapabilityKey() {
     int ret;
-    char* other_machine_name = "PingMachine"; //TODO change this to KPS, bc this is actually assuming PingAttestion.c is KPS
+    char* other_machine_name = "KPS"; //TODO change this to KPS, bc this is actually assuming PingAttestion.c is KPS
     //TODO change the last int (1 or 0) to denote KPS createCpabilityKey or getCapabilityKey etc
     ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, 2);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
@@ -258,7 +258,7 @@ int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrust
 
 char* receiveCapabilityKey() {
     int ret;
-    char* other_machine_name = "PingMachine"; //TODO change this to KPS, bc this is actually assuming PingAttestion.c is KPS
+    char* other_machine_name = "KPS"; //TODO change this to KPS, bc this is actually assuming PingAttestion.c is KPS
     //TODO change the last int (1 or 0) to denote KPS createCpabilityKey or getCapabilityKey etc
     ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, 1);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);

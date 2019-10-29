@@ -59,8 +59,8 @@ int ra_network_send_receive(const char *sending_machine_name,
     ra_samp_response_header_t **p_resp,
     Encrypted_Message optional_Message)
 {
-    //Request to PingMachine to initialize attestation channel
-    if (strcmp(receiving_machine_name, "PingMachine") == 0 && optional_Message.secret_size == 0) {
+    //Request to KPS to initialize attestation channel
+    if (strcmp(receiving_machine_name, "KPS") == 0 && optional_Message.secret_size == 0) {
         int ret = 0;
         ra_samp_response_header_t* p_resp_msg;
 
@@ -106,7 +106,7 @@ int ra_network_send_receive(const char *sending_machine_name,
                 sizeof(ra_samp_request_header_t)),
                 p_req->size,
                 &p_resp_msg,
-                0);
+                *(optional_Message.encrypted_message));
             if(0 != ret)
             {
                 fprintf(stderr, "\nError, call sp_ra_proc_msg3_req fail [%s].",
@@ -127,8 +127,8 @@ int ra_network_send_receive(const char *sending_machine_name,
 
         return ret;
 
-     //Request to PingMachine to send encrypted data based on previous secure channel
-     } else if (strcmp(receiving_machine_name, "PingMachine") == 0 && optional_Message.secret_size > 0) {
+     //Request to KPS to send encrypted data based on previous secure channel
+     } else if (strcmp(receiving_machine_name, "KPS") == 0 && optional_Message.secret_size > 0) {
          ocall_ping_machine_receive_encrypted_message(
                                 (uint8_t*)optional_Message.encrypted_message, 
                                 optional_Message.secret_size,

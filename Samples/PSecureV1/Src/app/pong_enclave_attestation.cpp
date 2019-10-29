@@ -557,10 +557,14 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
         // demonstration.  Note that the attestation result message makes use
         // of both the MK for the MAC and the SK for the secret. These keys are
         // established from the SIGMA secure channel binding.
+        struct Encrypted_Message temp = {(uint8_t*)&message_from_machine_to_enclave, 0, NULL};
+        //TODO change name from encrypted_message to like normal message? idk tho
+
         ret = ra_network_send_receive(current_machine_name,
                                       receiving_machine_name,
                                       p_msg3_full,
-                                      &p_att_result_msg_full);
+                                      &p_att_result_msg_full,
+                                      temp);
         if(ret || !p_att_result_msg_full)
         {
             ret = -1;
@@ -670,7 +674,7 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
         if(attestation_passed)
         {
             //If Ping machine wants to send the enclave a secure message
-            if (message_from_machine_to_enclave) { 
+            if (message_from_machine_to_enclave) { // message_from_machine_to_enclave == 1 or == 2
                 ret = put_secret_data(enclave_id,
                                     &status,
                                     context,
@@ -686,7 +690,11 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
                     goto CLEANUP;
                 }
             //If Pong enclave wants to send a secure message to Ping machine
-            } else { 
+            } else { //if message_from_machine_to_enclave == 0
+                //TODO Comment this case out since only KPS sends messages to us, not us to KPS
+                //TODO think about use case where we don't want anyone knowing our requests so we
+                //first perform attestaion to get secure channel, get a session ID, and then send our
+                //request to create the capability Key and stuff
                 uint8_t payload_tag[16];
                 uint8_t* encrypted_string = (uint8_t *) malloc(sizeof(uint8_t) * SIZE_OF_MESSAGE);
                 uint32_t secret_size = SIZE_OF_MESSAGE;
