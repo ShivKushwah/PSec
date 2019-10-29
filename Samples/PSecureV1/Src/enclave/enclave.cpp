@@ -128,7 +128,7 @@ extern "C" void P_SecureSendPongEventToPingMachine_IMPL(PRT_MACHINEINST* context
     char* other_machine_name = "PingMachine";
     // Copy the Pong event's ID as the message to be sent
     memcpy(secure_message, itoa(P_EVENT_Pong.value.valueUnion.ev, secure_message, 10), SIZE_OF_MESSAGE);
-    ocall_pong_enclave_attestation_in_thread(&ret, other_machine_name, strlen(other_machine_name)+1, 0);
+    ocall_pong_enclave_attestation_in_thread(&ret, other_machine_name, strlen(other_machine_name)+1, 0, "");
 }
 
 int handle_incoming_events_pong_enclave(PRT_UINT32 eventIdentifier) {
@@ -234,8 +234,7 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 char* retrieveCapabilityKeyForChildFromKPS() {
     int ret;
     char* other_machine_name = "KPS";
-    //TODO change the last int (1 or 0) to denote KPS createCpabilityKey or getCapabilityKey etc
-    ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, RETRIEVE_CAPABLITY_KEY_CONSTANT);
+    ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, RETRIEVE_CAPABLITY_KEY_CONSTANT, "");
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;
@@ -259,9 +258,9 @@ int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrust
 
 char* receiveNewCapabilityKeyFromKPS() {
     int ret;
-    char* other_machine_name = "KPS"; //TODO change this to KPS, bc this is actually assuming PingAttestion.c is KPS
-    //TODO change the last int (1 or 0) to denote KPS createCpabilityKey or getCapabilityKey etc
-    ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, CREATE_CAPABILITY_KEY_CONSTANT);
+    char* other_machine_name = "KPS";
+    char* requestString = "SecureChildPublic1:PongPublic"; //TODO unhardcode this
+    ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, CREATE_CAPABILITY_KEY_CONSTANT, requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;

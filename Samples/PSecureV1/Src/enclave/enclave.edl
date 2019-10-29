@@ -39,7 +39,8 @@ enclave {
         void ocall_print_int(int intPrint);
         int ocall_pong_enclave_attestation_in_thread([in,size=other_machine_name_size] char* other_machine_name, 
                                                     uint32_t other_machine_name_size,
-                                                    int message_from_machine_to_enclave);
+                                                    int message_from_machine_to_enclave,
+                                                    [in,string] char* optional_message);
         int ocall_ping_machine_receive_encrypted_message([in,size=secret_size] uint8_t *p_secret, 
                                 uint32_t secret_size,
                                  [in,count=16] uint8_t *p_gcm_mac);

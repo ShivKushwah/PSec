@@ -57,7 +57,8 @@ int ra_network_send_receive(const char *sending_machine_name,
     const char *receiving_machine_name,
     const ra_samp_request_header_t *p_req,
     ra_samp_response_header_t **p_resp,
-    Encrypted_Message optional_Message)
+    Encrypted_Message optional_Message,
+    char* plain_text_message)
 {
     //Request to KPS to initialize attestation channel
     if (strcmp(receiving_machine_name, "KPS") == 0 && optional_Message.secret_size == 0) {
@@ -106,7 +107,8 @@ int ra_network_send_receive(const char *sending_machine_name,
                 sizeof(ra_samp_request_header_t)),
                 p_req->size,
                 &p_resp_msg,
-                *(optional_Message.encrypted_message));
+                *(optional_Message.encrypted_message),
+                plain_text_message);
             if(0 != ret)
             {
                 fprintf(stderr, "\nError, call sp_ra_proc_msg3_req fail [%s].",

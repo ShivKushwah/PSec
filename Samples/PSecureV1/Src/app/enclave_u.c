@@ -92,6 +92,7 @@ typedef struct ms_ocall_pong_enclave_attestation_in_thread_t {
 	char* ms_other_machine_name;
 	uint32_t ms_other_machine_name_size;
 	int ms_message_from_machine_to_enclave;
+	char* ms_optional_message;
 } ms_ocall_pong_enclave_attestation_in_thread_t;
 
 typedef struct ms_ocall_ping_machine_receive_encrypted_message_t {
@@ -188,7 +189,7 @@ static sgx_status_t SGX_CDECL enclave_ocall_print_int(void* pms)
 static sgx_status_t SGX_CDECL enclave_ocall_pong_enclave_attestation_in_thread(void* pms)
 {
 	ms_ocall_pong_enclave_attestation_in_thread_t* ms = SGX_CAST(ms_ocall_pong_enclave_attestation_in_thread_t*, pms);
-	ms->ms_retval = ocall_pong_enclave_attestation_in_thread(ms->ms_other_machine_name, ms->ms_other_machine_name_size, ms->ms_message_from_machine_to_enclave);
+	ms->ms_retval = ocall_pong_enclave_attestation_in_thread(ms->ms_other_machine_name, ms->ms_other_machine_name_size, ms->ms_message_from_machine_to_enclave, ms->ms_optional_message);
 
 	return SGX_SUCCESS;
 }

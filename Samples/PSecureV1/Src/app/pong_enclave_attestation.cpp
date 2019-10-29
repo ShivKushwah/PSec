@@ -174,7 +174,7 @@ void PRINT_ATTESTATION_SERVICE_RESPONSE(
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
 // This method makes network_ra call to have the pong enclave attest to the ping machine
-int pong_enclave_start_attestation(const char* receiving_machine_name, int message_from_machine_to_enclave) {
+int pong_enclave_start_attestation(const char* receiving_machine_name, int message_from_machine_to_enclave, char* optional_message) {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -564,7 +564,8 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
                                       receiving_machine_name,
                                       p_msg3_full,
                                       &p_att_result_msg_full,
-                                      temp);
+                                      temp,
+                                    optional_message);
         if(ret || !p_att_result_msg_full)
         {
             ret = -1;
@@ -766,11 +767,11 @@ CLEANUP:
 void* pong_enclave_attestation_thread(void* parameters) { //message_from_machine_to_enclave should be true when the enclave is receiving the message
                                                           //false when the enclave wants to send a message
     struct Enclave_start_attestation_wrapper_arguments* p = (struct Enclave_start_attestation_wrapper_arguments*)parameters;
-    return (void*) pong_enclave_start_attestation(p->machineName,  p->message_from_machine_to_enclave);
+    return (void*) pong_enclave_start_attestation(p->machineName,  p->message_from_machine_to_enclave, p->optional_message);
 }
 
-int ocall_pong_enclave_attestation_in_thread(char* other_machine_name, uint32_t size, int message_from_machine_to_enclave) {
-    struct Enclave_start_attestation_wrapper_arguments parameters = {other_machine_name, message_from_machine_to_enclave};
+int ocall_pong_enclave_attestation_in_thread(char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, char* optional_message) {
+    struct Enclave_start_attestation_wrapper_arguments parameters = {other_machine_name, message_from_machine_to_enclave, optional_message};
     void* thread_ret;
     pthread_t thread_id; 
     printf("\n Calling Attestation Thread\n"); 
