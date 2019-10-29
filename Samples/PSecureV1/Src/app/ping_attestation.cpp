@@ -816,6 +816,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         if (!message_from_machine_to_enclave) { 
 
             //TODO Unharcode these values
+            //TODO add a string optional message to this function so you can take these values
             //Generate the capability key
             createCapabilityKey("SecureChildPublic1", "PongPublic");
 

@@ -177,6 +177,7 @@ char* network_request_logic(char* request) {
         return newMachineID;
     }  else if (strcmp(split, "GetKey") == 0) {
         //TODO move this segmant of code into other ra method because attestation needs to occur first and then call retrieveCapabilityKey
+        //TODO move this and use the messageFromMachine int
         //TODO might need to verify the currentMachineIDs signagure before we call attestation, so we need to do that first?
         split = strtok(NULL, ":");
         char currentMachineID[SIZE_OF_IDENTITY_STRING];
