@@ -217,8 +217,8 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 
     //Now, need to retrieve capabilityKey for this machineID and store (thisMachineID, newMachineID) -> capabilityKey
     char* getChildMachineIDRequest = "GetKey:PongPublic:SecureChildPublic1";
-    char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY); 
-    ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
+    char* capabilityKey = retrieveCapabilityKey();//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
+    //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
     ocall_print("Pong Machine has received capability key for secure child: ");
     ocall_print(capabilityKey);
 
@@ -228,6 +228,16 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
 	sprintf_s(str, 100, newMachineID);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+}
+
+char* retrieveCapabilityKey() {
+    int ret;
+    char* other_machine_name = "PingMachine"; //TODO change this to KPS, bc this is actually assuming PingAttestion.c is KPS
+    //TODO change the last int (1 or 0) to denote KPS createCpabilityKey or getCapabilityKey etc
+    ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, 2);
+    char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
+    memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
+    return capabilityKey;
 }
 
 int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrustedMachineID, char* returnNewMachineID, uint32_t ID_SIZE) {

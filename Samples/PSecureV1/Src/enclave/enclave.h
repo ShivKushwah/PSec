@@ -33,3 +33,4 @@ void generateIdentity(string& publicID, string& privateID);
 char* itoa(int num, char* str, int base);
 int createMachine(char* machineType, char* untrustedHostID, char* parentTrustedMachineID);
 char* receiveCapabilityKey();
+char* retrieveCapabilityKey();

@@ -175,21 +175,21 @@ char* network_request_logic(char* request) {
         sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, "test", "PongPublic", newMachineID, SIZE_OF_IDENTITY_STRING);
 
         return newMachineID;
-    }  else if (strcmp(split, "GetKey") == 0) {
-        //TODO move this segmant of code into other ra method because attestation needs to occur first and then call retrieveCapabilityKey
-        //TODO move this and use the messageFromMachine int
-        //TODO might need to verify the currentMachineIDs signagure before we call attestation, so we need to do that first?
-        split = strtok(NULL, ":");
-        char currentMachineID[SIZE_OF_IDENTITY_STRING];
-        //TODO add check that split is not too big
-        memcpy(currentMachineID, split, strlen(split) + 1);
-        split = strtok(NULL, ":");
-        char childMachineID[SIZE_OF_IDENTITY_STRING];
-        memcpy(childMachineID, split, strlen(split) + 1);
-        return retrieveCapabilityKey(currentMachineID, childMachineID);
+    // }  else if (strcmp(split, "GetKey") == 0) {
+    //     //TODO move this segmant of code into other ra method because attestation needs to occur first and then call retrieveCapabilityKey
+    //     //TODO move this and use the messageFromMachine int
+    //     //TODO might need to verify the currentMachineIDs signagure before we call attestation, so we need to do that first?
+    //     split = strtok(NULL, ":");
+    //     char currentMachineID[SIZE_OF_IDENTITY_STRING];
+    //     //TODO add check that split is not too big
+    //     memcpy(currentMachineID, split, strlen(split) + 1);
+    //     split = strtok(NULL, ":");
+    //     char childMachineID[SIZE_OF_IDENTITY_STRING];
+    //     memcpy(childMachineID, split, strlen(split) + 1);
+    //     return retrieveCapabilityKey(currentMachineID, childMachineID);
 
     
-    }  else if (strcmp(split, "AttestEnclave") == 0) {
+    // }  else if (strcmp(split, "AttestEnclave") == 0) {
 
     } else {
         return "Command Not Found";
