@@ -169,12 +169,14 @@ char* network_request_logic(char* request) {
     if (strcmp(split, "Create") == 0) {
         char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
         split = strtok(NULL, ":");
+        char* parentTrustedMachinePublicIDKey = split;
+        split = strtok(NULL, ":");
         char* machineType = split;
         int ptr;
         //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
         //TODO actually make this call a method in untrusted host
         // application of this enclave and have that make an ecall to createMachineAPi
-        sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, "test", "PongPublic", newMachineID, SIZE_OF_IDENTITY_STRING);
+        sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, SIZE_OF_IDENTITY_STRING);
 
         return newMachineID;
     // }  else if (strcmp(split, "GetKey") == 0) {

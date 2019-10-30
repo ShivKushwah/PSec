@@ -26,7 +26,6 @@ enclave {
         public int pong_enclave_request_attestation([in, size=16] const char* other_machine_name);
 
         public int createMachineAPI([in, size=ID_SIZE] char* machineName, 
-                                    [in, size=ID_SIZE]char* untrustedHostID, 
                                     [in, size=ID_SIZE]char* parentTrustedMachineID,
                                     [out, size=ID_SIZE] char* returnNewMachineID,
                                     uint32_t ID_SIZE);

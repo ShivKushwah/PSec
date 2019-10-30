@@ -208,8 +208,8 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 {
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    //TODO extract the newMachineType from the argument
-    char* createMachineRequest = "Create:SecureChild";
+    //TODO extract the newMachineType from the argument and extract current public identity from PID
+    char* createMachineRequest = "Create:PongPublic:SecureChild";
     int ret_value;
     ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING);
     ocall_print("Pong Machine has created a new machine with Identity Public Key as: ");
@@ -241,20 +241,21 @@ char* retrieveCapabilityKeyForChildFromKPS() {
     return capabilityKey;
 }
 
-int createMachineAPI(char* machineType, char* untrustedHostID, char* parentTrustedMachineID, char* returnNewMachineID, uint32_t ID_SIZE) {
-    string secureChildPublicID;
-    string secureChildPrivateID;
-    generateIdentity(secureChildPublicID, secureChildPrivateID);
-    int PMachineID = createMachine(machineType, untrustedHostID, parentTrustedMachineID);
-    PMachineIDToIdentityDictionary[PMachineID] = make_tuple(secureChildPublicID, secureChildPrivateID);
-    PublicIdentityKeyToPMachineIDDictionary[secureChildPublicID] = PMachineID;
+int createMachineAPI(char* machineType, char* parentTrustedMachineID, char* returnNewMachineID, uint32_t ID_SIZE) {
+    //TODO Do we need to verify signature of parentTrustedMachineID?
+    string secureChildPublicIDKey;
+    string secureChildPrivateIDKey;
+    generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey);
+    int newMachinePID = createMachine(machineType, parentTrustedMachineID);
+    PMachineIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
+    PublicIdentityKeyToPMachineIDDictionary[secureChildPublicIDKey] = newMachinePID;
 
     //Contacting KPS for capability key
     string capabilityKeyReceived = receiveNewCapabilityKeyFromKPS();
     ocall_print("Capability Key is: ");
     ocall_print(capabilityKeyReceived.c_str());
-    PMachineIDtoCapabilityKeyDictionary[PMachineID] = capabilityKeyReceived;
-    memcpy(returnNewMachineID, secureChildPublicID.c_str(), secureChildPublicID.length() + 1);
+    PMachineIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
+    memcpy(returnNewMachineID, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
 }
 
 char* receiveNewCapabilityKeyFromKPS() {
@@ -275,7 +276,7 @@ void generateIdentity(string& publicID, string& privateID) {
     ID_GENERATOR_SEED += 1;
 } 
 
-int createMachine(char* machineType, char* untrustedHostID, char* parentTrustedMachineID) {
+int createMachine(char* machineType, char* parentTrustedMachineID) {
     PRT_VALUE *payload = PrtMkNullValue();
     PRT_UINT32 mainMachine2;
 	PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName(machineType, &mainMachine2);
