@@ -19,10 +19,10 @@ set(CMAKE_TARGET_DEFINITIONS_C
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH
   "Samples/PSecureV1/Src/enclave"
-  "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include"
-  "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc"
-  "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/libcxx"
-  "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport"
+  "/include"
+  "/include/tlibc"
+  "/include/libcxx"
+  "/include/stlport"
   "Samples/PSecureV1/Src/enclave/../../PGenerated"
   "Samples/PSecureV1/Src/enclave/../../Includes"
   "Submodule/P/Src/Prt/API"
@@ -46,10 +46,10 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "Samples/PSecureV1/Src/enclave"
-  "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include"
-  "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/tlibc"
-  "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/libcxx"
-  "/home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/include/stlport"
+  "/include"
+  "/include/tlibc"
+  "/include/libcxx"
+  "/include/stlport"
   "Samples/PSecureV1/Src/enclave/../../PGenerated"
   "Samples/PSecureV1/Src/enclave/../../Includes"
   "Submodule/P/Src/Prt/API"
