@@ -12,9 +12,6 @@ PRT_VALUE* P_InitializePongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
 
-PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-extern PRT_FUNDECL P_FUNCTION_Anon_1;
-
 
 PRT_EVENTDECL P_EVENT_Ping = 
 {
@@ -119,92 +116,6 @@ PRT_TRANSDECL P_TRANS[] =
     &_P_NO_OP, \
 }
 
-PRT_EVENTDECL* P_Ping_SendingPing_DEFERS_INNER[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_Ping_SendingPing_DEFERS =
-{
-    0U,
-    P_Ping_SendingPing_DEFERS_INNER,
-    NULL
-};
-
-PRT_EVENTDECL* P_Ping_SendingPing_TRANS_INNER[] = { &P_EVENT_Success };
-PRT_EVENTSETDECL P_EVENTSET_Ping_SendingPing_TRANS =
-{
-    1U,
-    P_Ping_SendingPing_TRANS_INNER,
-    NULL
-};
-
-PRT_EVENTDECL* P_Ping_SendingPing_DOS_INNER[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_Ping_SendingPing_DOS =
-{
-    0U,
-    P_Ping_SendingPing_DOS_INNER,
-    NULL
-};
-
-PRT_TRANSDECL P_TRANS_1[] =
-{
-    { 1, &P_EVENT_Success, 2, &_P_NO_OP }
-};
-
-#define P_STATE_Ping_Ping_SendingPing \
-{ \
-    "Ping.Ping_SendingPing", \
-    1U, \
-    0U, \
-    &P_EVENTSET_Ping_SendingPing_DEFERS, \
-    &P_EVENTSET_Ping_SendingPing_TRANS, \
-    &P_EVENTSET_Ping_SendingPing_DOS, \
-    P_TRANS_1, \
-    NULL, \
-    &P_FUNCTION_Anon_1, \
-    &_P_NO_OP, \
-}
-
-PRT_EVENTDECL* P_Ping_WaitPong_DEFERS_INNER[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_Ping_WaitPong_DEFERS =
-{
-    0U,
-    P_Ping_WaitPong_DEFERS_INNER,
-    NULL
-};
-
-PRT_EVENTDECL* P_Ping_WaitPong_TRANS_INNER[] = { &P_EVENT_Pong };
-PRT_EVENTSETDECL P_EVENTSET_Ping_WaitPong_TRANS =
-{
-    1U,
-    P_Ping_WaitPong_TRANS_INNER,
-    NULL
-};
-
-PRT_EVENTDECL* P_Ping_WaitPong_DOS_INNER[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_Ping_WaitPong_DOS =
-{
-    0U,
-    P_Ping_WaitPong_DOS_INNER,
-    NULL
-};
-
-PRT_TRANSDECL P_TRANS_2[] =
-{
-    { 2, &P_EVENT_Pong, 3, &_P_NO_OP }
-};
-
-#define P_STATE_Ping_Ping_WaitPong \
-{ \
-    "Ping.Ping_WaitPong", \
-    1U, \
-    0U, \
-    &P_EVENTSET_Ping_WaitPong_DEFERS, \
-    &P_EVENTSET_Ping_WaitPong_TRANS, \
-    &P_EVENTSET_Ping_WaitPong_DOS, \
-    P_TRANS_2, \
-    NULL, \
-    &_P_NO_OP, \
-    &_P_NO_OP, \
-}
-
 PRT_EVENTDECL* P_Done_DEFERS_INNER[] = { NULL };
 PRT_EVENTSETDECL P_EVENTSET_Done_DEFERS =
 {
@@ -243,7 +154,7 @@ PRT_EVENTSETDECL P_EVENTSET_Done_DOS =
     &_P_NO_OP, \
 }
 
-PRT_STATEDECL P_Ping_STATES[] = { P_STATE_Ping_Ping_Init, P_STATE_Ping_Ping_SendingPing, P_STATE_Ping_Ping_WaitPong, P_STATE_Ping_Done };
+PRT_STATEDECL P_Ping_STATES[] = { P_STATE_Ping_Ping_Init, P_STATE_Ping_Done };
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
@@ -285,37 +196,7 @@ PRT_FUNDECL P_FUNCTION_Anon =
 };
 
 
-PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE* _P_GEN_funval = NULL;
-    PRT_VALUE** _P_GEN_funargs[32];
-    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
-    PRT_VALUE* _P_GEN_retval = NULL;
-    PRT_VALUE* PTMP_tmp0_1 = NULL;
-    
-    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE** P_LVALUE_1 = &(PTMP_tmp0_1);
-    PrtFreeValue(*P_LVALUE_1);
-    *P_LVALUE_1 = PrtCloneValue((&P_EVENT_Success.value));
-    
-    PrtRaise(p_this, PTMP_tmp0_1, 0);
-    *(&(PTMP_tmp0_1)) = NULL;
-    goto p_return_1;
-    
-p_return_1: ;
-    PrtFreeValue(PTMP_tmp0_1); PTMP_tmp0_1 = NULL;
-    return _P_GEN_retval;
-}
-
-PRT_FUNDECL P_FUNCTION_Anon_1 =
-{
-    NULL,
-    &P_Anon_IMPL_1,
-    NULL
-};
-
-
-PRT_FUNDECL* P_Ping_METHODS[] = { &P_FUNCTION_Anon, &P_FUNCTION_Anon_1 };
+PRT_FUNDECL* P_Ping_METHODS[] = { &P_FUNCTION_Anon };
 
 PRT_EVENTDECL* P_Ping_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Ping_RECV_1 =
@@ -341,8 +222,8 @@ PRT_MACHINEDECL P_MACHINE_Ping =
     &P_EVENTSET_Ping_SEND,
     NULL,
     1U,
-    4U,
     2U,
+    1U,
     4294967295U,
     0U,
     P_Ping_VARS,

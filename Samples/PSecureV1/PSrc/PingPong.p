@@ -12,19 +12,7 @@ machine Ping {
             InitializePongEnclave(); //Start up PrtTrusted in the Pong Enclave
     	    raise Success;   	   
         }
-        on Success goto Ping_SendingPing;
-    }
-
-    state Ping_SendingPing {
-        entry {
-            //SecureSendPingEventToPongEnclave(); //Send Ping to the enclave's Pong machine
-    	    raise Success;
-	    }
-        on Success goto Ping_WaitPong;
-    }
-
-    state Ping_WaitPong {
-        on Pong goto Done; //Receives this message from the Pong machine in the enclave
+        on Success goto Done;
     }
 
     state Done {  }

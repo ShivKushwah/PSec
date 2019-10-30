@@ -2,28 +2,25 @@ type StringType;
 
 event Ping assert 2;
 event Pong assert 2;
-fun SecureSendPongEventToPingMachine();
-fun CreateMachineSecureChild(): StringType; //have this return a string
+fun CreateMachineSecureChild(): StringType;
 fun PrintString(inputString : StringType);
 event Success;
 
 //@secure
 machine Pong {
     var secureChildID: StringType;
-    var tempString: StringType;
 
-    start state Pong_WaitPing {
+    start state Initial {
         entry { 
             secureChildID = CreateMachineSecureChild();
             PrintString(secureChildID);
-            //Call SecureSendMessage();
+            //Call SecureSendMessage() next;
         }
-        on Ping goto Pong_SendingPong; //Receives this event from the Ping Machine in App.cpp
+        on Ping goto Pong_SendingPong; 
     }
 
     state Pong_SendingPong {
         entry {
-	        //SecureSendPongEventToPingMachine(); //Send Pong to app.cpp's Ping machine
 	        raise Success;		 	  
 	    }
         on Success goto Done;
@@ -34,16 +31,13 @@ machine Pong {
 
 //@secure
 machine SecureChild {
-    start state Pong_WaitPing {
-        on Ping goto Pong_SendingPong; //Receives this event from the Ping Machine in App.cpp
-    }
-
-    state Pong_SendingPong {
+    start state Initial {
         entry {
-	        //SecureSendPongEventToPingMachine(); //Send Pong to app.cpp's Ping machine
-	        raise Success;		 	  
-	    }
+            //Take the Pong parent as a payload and secure send it a Ping Message
+            raise Success;
+        }
         on Success goto Done;
+
     }
 
     state Done { }

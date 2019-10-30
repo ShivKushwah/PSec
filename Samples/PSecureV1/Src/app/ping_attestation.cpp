@@ -819,10 +819,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         //We need to send the secure message in this case to the enclave 
         if (message_from_machine_to_enclave == CREATE_CAPABILITY_KEY_CONSTANT) { 
 
-            //TODO Unharcode these values
-            //TODO add a string optional message to this function so you can take these values
             //Generate the capability key
-
             char* split = strtok(optional_message, ":");
             char* childID = split;
             split = strtok(NULL, ":");
@@ -853,8 +850,6 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 
         } else if (message_from_machine_to_enclave == RETRIEVE_CAPABLITY_KEY_CONSTANT) { 
 
-            //TODO Unharcode these values
-            //TODO add a string optional message to this function so you can take these values
             //Retrieve the capability key
             char* split = strtok(optional_message, ":");
             char* currentMachineID = split;

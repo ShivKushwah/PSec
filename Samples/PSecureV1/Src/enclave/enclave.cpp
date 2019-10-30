@@ -206,28 +206,28 @@ int enclave_main(void)
 
 extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    uint32_t currentMachineID = context->id->valueUnion.mid->machineId;
-    char* newMachineID = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+    char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     //TODO extract the newMachineType from the argument
     char* createMachineRequest = "Create:SecureChild";
     int ret_value;
-    ocall_network_request(&ret_value, createMachineRequest, newMachineID, SIZE_OF_IDENTITY_STRING);
-    ocall_print("Pong Machine has created a new machine with ID: ");
-    ocall_print(newMachineID);
+    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING);
+    ocall_print("Pong Machine has created a new machine with Identity Public Key as: ");
+    ocall_print(newMachinePublicIDKey);
 
-    //Now, need to retrieve capabilityKey for this machineID and store (thisMachineID, newMachineID) -> capabilityKey
-    string request = "GetKey:PongPublic:" + string(newMachineID);//TODO unhardcode current Machine name
+    //Now, need to retrieve capabilityKey for this newMachinePublicIDKey and store (thisMachineID, newMachinePublicIDKey) -> capabilityKey
+    string request = "GetKey:PongPublic:" + string(newMachinePublicIDKey);//TODO unhardcode current Machine name
     char* getChildMachineIDRequest = (char*) request.c_str(); 
     char* capabilityKey = retrieveCapabilityKeyForChildFromKPS();//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
     //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
     ocall_print("Pong Machine has received capability key for secure child: ");
     ocall_print(capabilityKey);
 
-    PMachineToChildCapabilityKey[make_tuple(currentMachineID, string(newMachineID))] = string(capabilityKey);
+    PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey);
 
-    //Return the newMachineID and it is the responsibility of the P Secure machine to save it and use it to send messages later
+    //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, newMachineID);
+	sprintf_s(str, 100, newMachinePublicIDKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 

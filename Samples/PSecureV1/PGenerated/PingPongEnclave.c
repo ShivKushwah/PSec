@@ -21,8 +21,6 @@ static PRT_FOREIGNTYPEDECL P_StringType = {
 PRT_TYPE P_GEND_TYPE_StringType = { PRT_KIND_FOREIGN, { .foreignType = &P_StringType } };
 
 // Function implementation prototypes:
-PRT_VALUE* P_SecureSendPongEventToPingMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -60,14 +58,6 @@ PRT_EVENTDECL P_EVENT_Success =
     4294967295U,
     &P_GEND_TYPE_n
 };
-
-PRT_FUNDECL P_FUNCTION_SecureSendPongEventToPingMachine =
-{
-    "SecureSendPongEventToPingMachine",
-    &P_SecureSendPongEventToPingMachine_IMPL,
-    NULL
-};
-
 
 PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild =
 {
@@ -118,31 +108,30 @@ PRT_INTERFACEDECL P_I_SecureChild =
 };
 
 PRT_VARDECL P_Pong_VARS[] = {
-    { "secureChildID", &P_GEND_TYPE_StringType },
-    { "tempString", &P_GEND_TYPE_StringType }
+    { "secureChildID", &P_GEND_TYPE_StringType }
 };
 
-PRT_EVENTDECL* P_Pong_WaitPing_DEFERS_INNER[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_Pong_WaitPing_DEFERS =
+PRT_EVENTDECL* P_Initial_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Initial_DEFERS =
 {
     0U,
-    P_Pong_WaitPing_DEFERS_INNER,
+    P_Initial_DEFERS_INNER,
     NULL
 };
 
-PRT_EVENTDECL* P_Pong_WaitPing_TRANS_INNER[] = { &P_EVENT_Ping };
-PRT_EVENTSETDECL P_EVENTSET_Pong_WaitPing_TRANS =
+PRT_EVENTDECL* P_Initial_TRANS_INNER[] = { &P_EVENT_Ping };
+PRT_EVENTSETDECL P_EVENTSET_Initial_TRANS =
 {
     1U,
-    P_Pong_WaitPing_TRANS_INNER,
+    P_Initial_TRANS_INNER,
     NULL
 };
 
-PRT_EVENTDECL* P_Pong_WaitPing_DOS_INNER[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_Pong_WaitPing_DOS =
+PRT_EVENTDECL* P_Initial_DOS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Initial_DOS =
 {
     0U,
-    P_Pong_WaitPing_DOS_INNER,
+    P_Initial_DOS_INNER,
     NULL
 };
 
@@ -151,14 +140,14 @@ PRT_TRANSDECL P_TRANS[] =
     { 0, &P_EVENT_Ping, 1, &_P_NO_OP }
 };
 
-#define P_STATE_Pong_Pong_WaitPing \
+#define P_STATE_Pong_Initial \
 { \
-    "Pong.Pong_WaitPing", \
+    "Pong.Initial", \
     1U, \
     0U, \
-    &P_EVENTSET_Pong_WaitPing_DEFERS, \
-    &P_EVENTSET_Pong_WaitPing_TRANS, \
-    &P_EVENTSET_Pong_WaitPing_DOS, \
+    &P_EVENTSET_Initial_DEFERS, \
+    &P_EVENTSET_Initial_TRANS, \
+    &P_EVENTSET_Initial_DOS, \
     P_TRANS, \
     NULL, \
     &P_FUNCTION_Anon, \
@@ -246,7 +235,7 @@ PRT_EVENTSETDECL P_EVENTSET_Done_DOS =
     &_P_NO_OP, \
 }
 
-PRT_STATEDECL P_Pong_STATES[] = { P_STATE_Pong_Pong_WaitPing, P_STATE_Pong_Pong_SendingPong, P_STATE_Pong_Done };
+PRT_STATEDECL P_Pong_STATES[] = { P_STATE_Pong_Initial, P_STATE_Pong_Pong_SendingPong, P_STATE_Pong_Done };
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
@@ -363,7 +352,7 @@ PRT_MACHINEDECL P_MACHINE_Pong =
     &P_EVENTSET_Pong_RECV_1,
     &P_EVENTSET_Pong_SEND,
     NULL,
-    2U,
+    1U,
     3U,
     2U,
     4294967295U,
@@ -373,87 +362,44 @@ PRT_MACHINEDECL P_MACHINE_Pong =
     P_Pong_METHODS
 };
 
-PRT_EVENTDECL* P_Pong_WaitPing_DEFERS_INNER_1[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_Pong_WaitPing_DEFERS_1 =
+PRT_EVENTDECL* P_Initial_DEFERS_INNER_1[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Initial_DEFERS_1 =
 {
     0U,
-    P_Pong_WaitPing_DEFERS_INNER_1,
+    P_Initial_DEFERS_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_Pong_WaitPing_TRANS_INNER_1[] = { &P_EVENT_Ping };
-PRT_EVENTSETDECL P_EVENTSET_Pong_WaitPing_TRANS_1 =
+PRT_EVENTDECL* P_Initial_TRANS_INNER_1[] = { &P_EVENT_Success };
+PRT_EVENTSETDECL P_EVENTSET_Initial_TRANS_1 =
 {
     1U,
-    P_Pong_WaitPing_TRANS_INNER_1,
+    P_Initial_TRANS_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_Pong_WaitPing_DOS_INNER_1[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_Pong_WaitPing_DOS_1 =
+PRT_EVENTDECL* P_Initial_DOS_INNER_1[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Initial_DOS_1 =
 {
     0U,
-    P_Pong_WaitPing_DOS_INNER_1,
+    P_Initial_DOS_INNER_1,
     NULL
 };
 
 PRT_TRANSDECL P_TRANS_2[] =
 {
-    { 0, &P_EVENT_Ping, 1, &_P_NO_OP }
+    { 0, &P_EVENT_Success, 1, &_P_NO_OP }
 };
 
-#define P_STATE_SecureChild_Pong_WaitPing \
+#define P_STATE_SecureChild_Initial \
 { \
-    "SecureChild.Pong_WaitPing", \
+    "SecureChild.Initial", \
     1U, \
     0U, \
-    &P_EVENTSET_Pong_WaitPing_DEFERS_1, \
-    &P_EVENTSET_Pong_WaitPing_TRANS_1, \
-    &P_EVENTSET_Pong_WaitPing_DOS_1, \
+    &P_EVENTSET_Initial_DEFERS_1, \
+    &P_EVENTSET_Initial_TRANS_1, \
+    &P_EVENTSET_Initial_DOS_1, \
     P_TRANS_2, \
-    NULL, \
-    &_P_NO_OP, \
-    &_P_NO_OP, \
-}
-
-PRT_EVENTDECL* P_Pong_SendingPong_DEFERS_INNER_1[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_Pong_SendingPong_DEFERS_1 =
-{
-    0U,
-    P_Pong_SendingPong_DEFERS_INNER_1,
-    NULL
-};
-
-PRT_EVENTDECL* P_Pong_SendingPong_TRANS_INNER_1[] = { &P_EVENT_Success };
-PRT_EVENTSETDECL P_EVENTSET_Pong_SendingPong_TRANS_1 =
-{
-    1U,
-    P_Pong_SendingPong_TRANS_INNER_1,
-    NULL
-};
-
-PRT_EVENTDECL* P_Pong_SendingPong_DOS_INNER_1[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_Pong_SendingPong_DOS_1 =
-{
-    0U,
-    P_Pong_SendingPong_DOS_INNER_1,
-    NULL
-};
-
-PRT_TRANSDECL P_TRANS_3[] =
-{
-    { 1, &P_EVENT_Success, 2, &_P_NO_OP }
-};
-
-#define P_STATE_SecureChild_Pong_SendingPong \
-{ \
-    "SecureChild.Pong_SendingPong", \
-    1U, \
-    0U, \
-    &P_EVENTSET_Pong_SendingPong_DEFERS_1, \
-    &P_EVENTSET_Pong_SendingPong_TRANS_1, \
-    &P_EVENTSET_Pong_SendingPong_DOS_1, \
-    P_TRANS_3, \
     NULL, \
     &P_FUNCTION_Anon_2, \
     &_P_NO_OP, \
@@ -497,7 +443,7 @@ PRT_EVENTSETDECL P_EVENTSET_Done_DOS_1 =
     &_P_NO_OP, \
 }
 
-PRT_STATEDECL P_SecureChild_STATES[] = { P_STATE_SecureChild_Pong_WaitPing, P_STATE_SecureChild_Pong_SendingPong, P_STATE_SecureChild_Done };
+PRT_STATEDECL P_SecureChild_STATES[] = { P_STATE_SecureChild_Initial, P_STATE_SecureChild_Done };
 
 PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
@@ -555,7 +501,7 @@ PRT_MACHINEDECL P_MACHINE_SecureChild =
     &P_EVENTSET_SecureChild_SEND,
     NULL,
     0U,
-    3U,
+    2U,
     1U,
     4294967295U,
     0U,
