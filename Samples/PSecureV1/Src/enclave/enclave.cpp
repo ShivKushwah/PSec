@@ -3,9 +3,9 @@
 PRT_PROCESS *process;
 
 extern char secure_message[SIZE_OF_MESSAGE]; 
-unordered_map<int, identityKeyPair> PMachineIDToIdentityDictionary;
-unordered_map<string, int> PublicIdentityKeyToPMachineIDDictionary;
-unordered_map<int, string> PMachineIDtoCapabilityKeyDictionary;
+unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
+unordered_map<string, int> PublicIdentityKeyToMachinePIDDictionary;
+unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
 
 map<PMachineChildPair, string> PMachineToChildCapabilityKey;
 
@@ -241,21 +241,23 @@ char* retrieveCapabilityKeyForChildFromKPS() {
     return capabilityKey;
 }
 
-int createMachineAPI(char* machineType, char* parentTrustedMachineID, char* returnNewMachineID, uint32_t ID_SIZE) {
-    //TODO Do we need to verify signature of parentTrustedMachineID?
+int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, uint32_t ID_SIZE) {
+    //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
     generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey);
-    int newMachinePID = createMachine(machineType, parentTrustedMachineID);
-    PMachineIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
-    PublicIdentityKeyToPMachineIDDictionary[secureChildPublicIDKey] = newMachinePID;
+    int newMachinePID = createMachine(machineType, parentTrustedMachinePublicIDKey);
+    //Store new machine information in enclave's dictionaries
+    MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
+    PublicIdentityKeyToMachinePIDDictionary[secureChildPublicIDKey] = newMachinePID;
 
     //Contacting KPS for capability key
     string capabilityKeyReceived = receiveNewCapabilityKeyFromKPS();
-    ocall_print("Capability Key is: ");
+    ocall_print("Enclave received new capability Key from KPS: ");
     ocall_print(capabilityKeyReceived.c_str());
-    PMachineIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
-    memcpy(returnNewMachineID, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
+    MachinePIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
+    //"Return" the publicIDKey of the new machine
+    memcpy(returnNewMachinePublicIDKey, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
 }
 
 char* receiveNewCapabilityKeyFromKPS() {
@@ -278,12 +280,12 @@ void generateIdentity(string& publicID, string& privateID) {
 
 int createMachine(char* machineType, char* parentTrustedMachineID) {
     PRT_VALUE *payload = PrtMkNullValue();
-    PRT_UINT32 mainMachine2;
-	PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName(machineType, &mainMachine2);
-    ocall_print_int(mainMachine2);
-	PrtAssert(foundMachine2, "No machine found!");
-	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload);
-    return mainMachine2;
+    PRT_UINT32 newMachinePID;
+	PRT_BOOLEAN foundMachine = PrtLookupMachineByName(machineType, &newMachinePID);
+    ocall_print_int(newMachinePID);
+	PrtAssert(foundMachine, "No machine found!");
+	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &payload);
+    return newMachinePID;
 }
 
 

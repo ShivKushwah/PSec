@@ -951,24 +951,24 @@ int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,
 }
 
 
-int createCapabilityKey(char* newMachineID, char* parentTrustedMachineID) {
+int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachinePublicIDKey) {
     //TODO Make this generate a random key
     sprintf(secure_message, "%s", "CAPTAINKEY");
-    capabilityKeyDictionary[string(newMachineID)] = string(secure_message);
+    capabilityKeyDictionary[string(newMachinePublicIDKey)] = string(secure_message);
     //printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
 
-    capabilityKeyAccessDictionary[string(newMachineID)] = string(parentTrustedMachineID);
+    capabilityKeyAccessDictionary[string(newMachinePublicIDKey)] = string(parentTrustedMachinePublicIDKey);
     //printf("New machine ID: %s\n", newMachineID);
 
 }
 
-char* retrieveCapabilityKey(char* currentMachineID, char* childMachineID) {
+char* retrieveCapabilityKey(char* currentMachinePublicIDKey, char* childMachinePublicIDKey) {
     //printf("Current machine ID: %s\n", currentMachineID);
-    //printf("Child machine ID: %s\n", childMachineID);
-    if (capabilityKeyAccessDictionary[string(childMachineID)].compare(string(currentMachineID)) == 0) {
-        //printf("The capability key is : %s", capabilityKeyDictionary[string(childMachineID)].c_str());
+    //printf("Child machine ID: %s\n", childMachinePublicIDKey);
+    if (capabilityKeyAccessDictionary[string(childMachinePublicIDKey)].compare(string(currentMachinePublicIDKey)) == 0) {
+        //printf("The capability key is : %s", capabilityKeyDictionary[string(childMachinePublicIDKey)].c_str());
         char* returnCapabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
-        memcpy(returnCapabilityKey, capabilityKeyDictionary[string(childMachineID)].c_str(), SIZE_OF_CAPABILITYKEY);
+        memcpy(returnCapabilityKey, capabilityKeyDictionary[string(childMachinePublicIDKey)].c_str(), SIZE_OF_CAPABILITYKEY);
         return (char*) returnCapabilityKey;
     } else {
         return "Access Prohibited!";

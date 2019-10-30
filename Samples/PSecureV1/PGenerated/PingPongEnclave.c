@@ -108,7 +108,7 @@ PRT_INTERFACEDECL P_I_SecureChild =
 };
 
 PRT_VARDECL P_Pong_VARS[] = {
-    { "secureChildID", &P_GEND_TYPE_StringType }
+    { "secureChildPublicIDKey", &P_GEND_TYPE_StringType }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER[] = { NULL };

@@ -8,12 +8,12 @@ event Success;
 
 //@secure
 machine Pong {
-    var secureChildID: StringType;
+    var secureChildPublicIDKey: StringType;
 
     start state Initial {
         entry { 
-            secureChildID = CreateMachineSecureChild();
-            PrintString(secureChildID);
+            secureChildPublicIDKey = CreateMachineSecureChild();
+            PrintString(secureChildPublicIDKey);
             //Call SecureSendMessage() next;
         }
         on Ping goto Pong_SendingPong; 

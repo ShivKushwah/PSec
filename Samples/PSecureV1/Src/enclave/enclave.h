@@ -24,9 +24,9 @@ extern map<PMachineChildPair, string> PMachineToChildCapabilityKey;
 //For Enclave API
 typedef tuple <string,string> identityKeyPair;
 typedef tuple <string,string> capabilityKey;
-extern unordered_map<int, identityKeyPair> PMachineIDToIdentityDictionary;
-extern unordered_map<string, int> PublicIdentityKeyToPMachineIDDictionary;
-extern unordered_map<int, string> PMachineIDtoCapabilityKeyDictionary;
+extern unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
+extern unordered_map<string, int> PublicIdentityKeyToMachinePIDDictionary;
+extern unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
 extern uint8_t g_secret[SIZE_OF_MESSAGE];
 
 
