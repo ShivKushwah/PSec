@@ -36,4 +36,4 @@ void generateIdentity(string& publicID, string& privateID);
 char* itoa(int num, char* str, int base);
 int createMachine(char* machineType, char* parentTrustedMachineID);
 char* receiveNewCapabilityKeyFromKPS();
-char* retrieveCapabilityKeyForChildFromKPS();
+char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey);
