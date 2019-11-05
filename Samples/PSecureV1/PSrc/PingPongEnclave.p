@@ -9,11 +9,18 @@ event Success;
 //@secure
 machine Pong {
     var secureChildPublicIDKey: StringType;
+    var secureChildPublicIDKey2: StringType;
+    var secureChildPublicIDKey3: StringType;
+
 
     start state Initial {
         entry { 
             secureChildPublicIDKey = CreateMachineSecureChild();
+            secureChildPublicIDKey2 = CreateMachineSecureChild();
+            secureChildPublicIDKey3 = CreateMachineSecureChild();
             PrintString(secureChildPublicIDKey);
+            PrintString(secureChildPublicIDKey2);
+            PrintString(secureChildPublicIDKey3);
             //Call SecureSendMessage() next;
         }
         on Ping goto Pong_SendingPong; 

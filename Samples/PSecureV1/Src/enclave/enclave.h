@@ -12,6 +12,8 @@ using namespace std;
 const int SIZE_OF_MESSAGE = 20;
 const int SIZE_OF_IDENTITY_STRING = 20;
 const int SIZE_OF_CAPABILITYKEY = 20;
+const int SIZE_OF_NEWMACHINETYPE = 20;
+
 
 const int CREATE_CAPABILITY_KEY_CONSTANT = 1;
 const int RETRIEVE_CAPABLITY_KEY_CONSTANT = 2;
@@ -35,5 +37,5 @@ int handle_incoming_events_pong_enclave(PRT_UINT32 eventIdentifier);
 void generateIdentity(string& publicID, string& privateID);
 char* itoa(int num, char* str, int base);
 int createMachine(char* machineType, char* parentTrustedMachineID);
-char* receiveNewCapabilityKeyFromKPS();
+char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey);
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey);
