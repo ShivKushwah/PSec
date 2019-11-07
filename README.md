@@ -5,16 +5,17 @@ A programming language for writing Enclave programs
 Build Instructions Below for PSecureV1 Sample
 
 ```shell
-git clone https://github.com/ShivKushwah/ProgrammingEnclaves-Temp.git
-cd ProgrammingEnclaves-Temp/
+git clone https://github.com/ankushdesai/ProgrammingEnclaves.git
+cd ProgrammingEnclaves/
+git fetch --all
+git checkout psecure
 git submodule init
 git submodule update --recursive
 cd Submodule/P/
 git submodule init
 git submodule update --recursive
 ./Bld/build-compiler.sh
-cd ..
-cd ..
+cd .. && cd ..
 mkdir build
 cd build/
 source /home/shiv/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment
