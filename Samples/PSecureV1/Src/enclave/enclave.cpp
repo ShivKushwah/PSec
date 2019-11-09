@@ -238,11 +238,52 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
+extern "C" PRT_MACHINEINST* P_CreateMachineSecureChild2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+    //TODO extract the newMachineType from the argument and extract current public identity from PID
+    char* requestedNewMachineTypeToCreate = "SecureChild";
+    char* currentMachineIDPublicKey = "PongPublic"; //TODO Unhardcode this
+    char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1;
+    char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
+    snprintf(createMachineRequest, requestSize, "Create:%s:%s", currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
+    ocall_print("Pong machine is sending out following network request: ");
+    ocall_print(createMachineRequest);
+    int ret_value;
+    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING);
+    ocall_print("Pong Machine has created a new machine with Identity Public Key as: ");
+    ocall_print(newMachinePublicIDKey);
+
+    //Now, need to retrieve capabilityKey for this newMachinePublicIDKey and store (thisMachineID, newMachinePublicIDKey) -> capabilityKey
+    requestSize = 6 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1;
+    char* getChildMachineIDRequest = (char*) malloc(requestSize);
+    snprintf(getChildMachineIDRequest, requestSize, "GetKey:%s:%s", currentMachineIDPublicKey, newMachinePublicIDKey);
+    //string request = "GetKey:" + string(currentMachineIDPublicKey) + ":" + string(newMachinePublicIDKey);//TODO unhardcode current Machine name
+    //TODO replace above line with snprintf as did with createMachineRequest, and do this everywhere in code
+    //char* getChildMachineIDRequest = (char*) request.c_str(); 
+    char* capabilityKey = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey);//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
+    //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
+    ocall_print("Pong Machine has received capability key for secure child: ");
+    ocall_print(capabilityKey);
+
+    PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey);
+
+    //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, newMachinePublicIDKey);
+    // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    PRT_MACHINEINST_PRIV* new_machine_context = (PRT_MACHINEINST_PRIV*)PrtCalloc(1, sizeof(PRT_MACHINEINST_PRIV));
+    //(PRT_MACHINEINST*)
+    return (PRT_MACHINEINST*)new_machine_context;//PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+}
+
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
     int ret;
     char* other_machine_name = "KPS";
-    char* requestString = (char*) (string(currentMachinePublicIDKey) + ":" + string(childPublicIDKey)).c_str();
-    //char* requestString = "PongPublic:SecureChildPublic1"; //TODO unharcode this
+    int requestSize = SIZE_OF_IDENTITY_STRING + SIZE_OF_IDENTITY_STRING;
+    char* requestString = (char*) malloc(requestSize);
+    snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);    
     ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
@@ -271,7 +312,9 @@ int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, c
 char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey) {
     int ret;
     char* other_machine_name = "KPS";
-    char* requestString = (char*) (string(newMachinePublicIDKey) + ":" + string(parentTrustedMachineID)).c_str(); //TODO unhardcode this
+    int requestSize = SIZE_OF_IDENTITY_STRING + SIZE_OF_IDENTITY_STRING;
+    char* requestString = (char*) malloc(requestSize);
+    snprintf(requestString, requestSize, "%s:%s", newMachinePublicIDKey, parentTrustedMachineID);
     ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, CREATE_CAPABILITY_KEY_CONSTANT, requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);

@@ -3,6 +3,7 @@ type StringType;
 event Ping assert 2;
 event Pong assert 2;
 fun CreateMachineSecureChild(): StringType;
+fun CreateMachineSecureChild2(): machine;
 fun PrintString(inputString : StringType);
 event Success;
 
@@ -11,18 +12,25 @@ machine Pong {
     var secureChildPublicIDKey: StringType;
     var secureChildPublicIDKey2: StringType;
     var secureChildPublicIDKey3: StringType;
+    var secureChildRegular: machine;
+    var secureChildRegular2: machine;
 
 
     start state Initial {
         entry { 
-            secureChildPublicIDKey = CreateMachineSecureChild();
-            secureChildPublicIDKey2 = CreateMachineSecureChild();
-            secureChildPublicIDKey3 = CreateMachineSecureChild();
-            PrintString(secureChildPublicIDKey);
-            PrintString(secureChildPublicIDKey2);
-            PrintString(secureChildPublicIDKey3);
+            //secureChildPublicIDKey = CreateMachineSecureChild();
+            //secureChildPublicIDKey2 = CreateMachineSecureChild();
+            //secureChildPublicIDKey3 = CreateMachineSecureChild();
+            //PrintString(secureChildPublicIDKey);
+            //PrintString(secureChildPublicIDKey2);
+            //PrintString(secureChildPublicIDKey3);
+            secureChildRegular = new SecureChild();
+            secureChildRegular2 = new SecureChild();
+
+            //secureChildRegular = CreateMachineSecureChild2();
+            //secureChildRegular2 = CreateMachineSecureChild2();
             //Call SecureSendMessage() next;
-        }
+        } 
         on Ping goto Pong_SendingPong; 
     }
 

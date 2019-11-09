@@ -852,9 +852,11 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 
             //Retrieve the capability key
             char* split = strtok(optional_message, ":");
+            printf("Message is %s\n", optional_message);
             char* currentMachineID = split;
             split = strtok(NULL, ":");
             char* childID = split;
+
             char* capabilityKey = retrieveCapabilityKey(currentMachineID, childID);
 
 
@@ -965,6 +967,7 @@ int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachineP
 char* retrieveCapabilityKey(char* currentMachinePublicIDKey, char* childMachinePublicIDKey) {
     //printf("Current machine ID: %s\n", currentMachineID);
     //printf("Child machine ID: %s\n", childMachinePublicIDKey);
+
     if (capabilityKeyAccessDictionary[string(childMachinePublicIDKey)].compare(string(currentMachinePublicIDKey)) == 0) {
         //printf("The capability key is : %s", capabilityKeyDictionary[string(childMachinePublicIDKey)].c_str());
         char* returnCapabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);

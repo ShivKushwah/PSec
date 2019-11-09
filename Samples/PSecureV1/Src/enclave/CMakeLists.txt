@@ -31,6 +31,7 @@ set(ENCLAVE_SOURCE_FILES
         enclave.cpp
         pong_enclave_internal_attestation.cpp
         enclave_t.c
+        temp.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPongEnclave.c
         #/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c
         #~/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c

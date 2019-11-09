@@ -9,6 +9,7 @@ machine Ping {
 
     start state Ping_Init {
         entry {
+            pongId = new Temp();
             InitializePongEnclave(); //Start up PrtTrusted in the Pong Enclave
     	    raise Success;   	   
         }
@@ -17,4 +18,10 @@ machine Ping {
 
     state Done {  }
 
+}
+
+machine Temp {
+    start state Init {
+
+    }
 }
