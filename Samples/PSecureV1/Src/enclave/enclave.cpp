@@ -238,6 +238,28 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
+extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    ocall_print("Entered Secure Send");
+
+    char* currentMachineIDPublicKey = "PongPublic"; //TODO Unhardcode this
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 sendingToMachinePublicIDPValue = (*P_VAR_payload)->valueUnion.frgn->value;
+    char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
+    if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID))) == 0) {
+        ocall_print("ERROR: No Capability Key found!");
+    }
+    string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID))];
+    ocall_print((char*)capabilityKey.c_str());
+    // ocall_print("String P value is:");
+    // ocall_print((char*) val);
+
+
+    
+}
+
 // extern "C" PRT_MACHINEINST* P_CreateMachineSecureChild2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 // {
 //     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;

@@ -5,6 +5,7 @@ event Pong assert 2;
 fun CreateMachineSecureChild(): StringType;
 //fun CreateMachineSecureChild2(): machine;
 fun PrintString(inputString : StringType);
+fun SecureSend(sendingToMachine : StringType);
 event Success;
 
 //@secure
@@ -28,6 +29,9 @@ machine Pong {
             //PrintString(secureChildPublicIDKey3);
             secureChildRegular = new SecureChild();
             PrintString(secureChildRegular);
+            SecureSend(secureChildRegular);
+
+            //send machineVar, tempEvent;
 
             // secureChildRegular2 = new SecureChild();
             // secureChildRegular3 = new SecureChild();
