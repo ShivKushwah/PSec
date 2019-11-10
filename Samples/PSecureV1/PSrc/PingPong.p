@@ -9,7 +9,7 @@ machine Ping {
 
     start state Ping_Init {
         entry {
-            pongId = new Temp();
+            //pongId = new Temp();
             InitializePongEnclave(); //Start up PrtTrusted in the Pong Enclave
     	    raise Success;   	   
         }

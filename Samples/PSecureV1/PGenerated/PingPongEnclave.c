@@ -24,8 +24,6 @@ static PRT_TYPE P_GEND_TYPE_m = { PRT_KIND_MACHINE, { NULL } };
 // Function implementation prototypes:
 PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_CreateMachineSecureChild2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -66,14 +64,6 @@ PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild =
 {
     "CreateMachineSecureChild",
     &P_CreateMachineSecureChild_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild2 =
-{
-    "CreateMachineSecureChild2",
-    &P_CreateMachineSecureChild2_IMPL,
     NULL
 };
 
@@ -122,8 +112,9 @@ PRT_VARDECL P_Pong_VARS[] = {
     { "secureChildPublicIDKey", &P_GEND_TYPE_StringType },
     { "secureChildPublicIDKey2", &P_GEND_TYPE_StringType },
     { "secureChildPublicIDKey3", &P_GEND_TYPE_StringType },
-    { "secureChildRegular", &P_GEND_TYPE_m },
-    { "secureChildRegular2", &P_GEND_TYPE_m }
+    { "secureChildRegular", &P_GEND_TYPE_StringType },
+    { "secureChildRegular2", &P_GEND_TYPE_m },
+    { "secureChildRegular3", &P_GEND_TYPE_m }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER[] = { NULL };
@@ -264,8 +255,7 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
-    //NOTE: I manually modified below
-    *P_LVALUE = ((_P_GEN_funval = P_CreateMachineSecureChild2_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));//PrtCloneValue(PrtMkInterface(context, 1, 0)->id);
+    *P_LVALUE = ((_P_GEN_funval = P_CreateMachineSecureChild_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
     }
@@ -284,8 +274,12 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp1);
     PrtFreeValue(*P_LVALUE_2);
-     //NOTE: I manually modified below
-    *P_LVALUE_2 = ((_P_GEN_funval = P_CreateMachineSecureChild2_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));//PrtCloneValue(PrtMkInterface(context, 1, 0)->id);
+    *P_LVALUE_2 = PrtCloneValue(p_this->varValues[3]);
+    
+    _P_GEN_funargs[0] = &(PTMP_tmp1);
+    PrtFreeValue(P_PrintString_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(PTMP_tmp1);
+    PTMP_tmp1 = NULL;
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
     }
@@ -293,13 +287,6 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         PrtFreeValue(_P_GEN_retval);
         _P_GEN_retval = NULL;
         goto p_return;
-    }
-    
-    {
-        PRT_VALUE** P_LVALUE_3 = &(p_this->varValues[4]);
-        PrtFreeValue(*P_LVALUE_3);
-        *P_LVALUE_3 = PTMP_tmp1;
-        PTMP_tmp1 = NULL;
     }
     
 p_return: ;
@@ -325,9 +312,9 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp0_1);
-    PrtFreeValue(*P_LVALUE_4);
-    *P_LVALUE_4 = PrtCloneValue((&P_EVENT_Success.value));
+    PRT_VALUE** P_LVALUE_3 = &(PTMP_tmp0_1);
+    PrtFreeValue(*P_LVALUE_3);
+    *P_LVALUE_3 = PrtCloneValue((&P_EVENT_Success.value));
     
     PrtRaise(p_this, PTMP_tmp0_1, 0);
     *(&(PTMP_tmp0_1)) = NULL;
@@ -373,7 +360,7 @@ PRT_MACHINEDECL P_MACHINE_Pong =
     &P_EVENTSET_Pong_RECV_1,
     &P_EVENTSET_Pong_SEND,
     &P_Pong_CREATES,
-    5U,
+    6U,
     3U,
     2U,
     4294967295U,
@@ -475,9 +462,9 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_2 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE** P_LVALUE_5 = &(PTMP_tmp0_2);
-    PrtFreeValue(*P_LVALUE_5);
-    *P_LVALUE_5 = PrtCloneValue((&P_EVENT_Success.value));
+    PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp0_2);
+    PrtFreeValue(*P_LVALUE_4);
+    *P_LVALUE_4 = PrtCloneValue((&P_EVENT_Success.value));
     
     PrtRaise(p_this, PTMP_tmp0_2, 0);
     *(&(PTMP_tmp0_2)) = NULL;

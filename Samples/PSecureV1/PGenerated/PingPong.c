@@ -179,28 +179,8 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE* PTMP_tmp0 = NULL;
-    PRT_VALUE* PTMP_tmp1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
-    PrtFreeValue(*P_LVALUE);
-    *P_LVALUE = PrtCloneValue(PrtMkInterface(context, 1, 0)->id);
-    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
-        goto p_return;
-    }
-    if (p_this->isHalted == PRT_TRUE) {
-        PrtFreeValue(_P_GEN_retval);
-        _P_GEN_retval = NULL;
-        goto p_return;
-    }
-    
-    {
-        PRT_VALUE** P_LVALUE_1 = &(p_this->varValues[0]);
-        PrtFreeValue(*P_LVALUE_1);
-        *P_LVALUE_1 = PTMP_tmp0;
-        PTMP_tmp0 = NULL;
-    }
-    
     PrtFreeValue(P_InitializePongEnclave_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
@@ -211,17 +191,16 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return;
     }
     
-    PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp1);
-    PrtFreeValue(*P_LVALUE_2);
-    *P_LVALUE_2 = PrtCloneValue((&P_EVENT_Success.value));
+    PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
+    PrtFreeValue(*P_LVALUE);
+    *P_LVALUE = PrtCloneValue((&P_EVENT_Success.value));
     
-    PrtRaise(p_this, PTMP_tmp1, 0);
-    *(&(PTMP_tmp1)) = NULL;
+    PrtRaise(p_this, PTMP_tmp0, 0);
+    *(&(PTMP_tmp0)) = NULL;
     goto p_return;
     
 p_return: ;
     PrtFreeValue(PTMP_tmp0); PTMP_tmp0 = NULL;
-    PrtFreeValue(PTMP_tmp1); PTMP_tmp1 = NULL;
     return _P_GEN_retval;
 }
 
@@ -251,15 +230,13 @@ PRT_EVENTSETDECL P_EVENTSET_Ping_SEND =
     NULL
 };
 
-PRT_UINT32 P_Ping_CREATES_ARR[] = { 1 };
-PRT_INTERFACESETDECL P_Ping_CREATES = { 1, P_Ping_CREATES_ARR };
 PRT_MACHINEDECL P_MACHINE_Ping = 
 {
     0U,
     "Ping",
     &P_EVENTSET_Ping_RECV_1,
     &P_EVENTSET_Ping_SEND,
-    &P_Ping_CREATES,
+    NULL,
     1U,
     2U,
     1U,
@@ -348,7 +325,7 @@ PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_Ping, &P_MACHINE_Temp };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_Ping, &P_I_Temp };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
 PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { NULL };
-int P_DefaultImpl_LME_0[] = { -1,1 };
+int P_DefaultImpl_LME_0[] = { -1,-1 };
 int P_DefaultImpl_LME_1[] = { -1,-1 };
 int* P_DefaultImpl_LINKMAP[] = { P_DefaultImpl_LME_0, P_DefaultImpl_LME_1 };
 int P_DefaultImpl_DEFMAP[] = { 0,1 };

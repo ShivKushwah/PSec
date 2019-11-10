@@ -42,7 +42,7 @@ function (PBUILD depName pFiles outputDirect)
     ADD_CUSTOM_TARGET(
             ${depName} ALL
             COMMENT "Building P ${${pFiles}} ..."
-            #COMMAND dotnet ${P_COMPILER_PATH} ${${pFiles}} -outputDir:${outputDirect}
+            COMMAND dotnet ${P_COMPILER_PATH} ${${pFiles}} -outputDir:${outputDirect}
             WORKING_DIRECTORY ${outputDirect}
     )
 endfunction(PBUILD)
