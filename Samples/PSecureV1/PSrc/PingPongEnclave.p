@@ -56,11 +56,7 @@ machine Pong {
 //@secure
 machine SecureChild {
     start state Initial {
-        entry {
-            //Take the Pong parent as a payload and secure send it a Ping Message
-            raise Success;
-        }
-        on Success goto Done;
+        on Pong goto Done;
 
     }
 

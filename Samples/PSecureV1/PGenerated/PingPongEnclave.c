@@ -34,9 +34,6 @@ extern PRT_FUNDECL P_FUNCTION_Anon;
 PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon_1;
 
-PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-extern PRT_FUNDECL P_FUNCTION_Anon_2;
-
 
 PRT_EVENTDECL P_EVENT_Ping = 
 {
@@ -407,7 +404,7 @@ PRT_EVENTSETDECL P_EVENTSET_Initial_DEFERS_1 =
     NULL
 };
 
-PRT_EVENTDECL* P_Initial_TRANS_INNER_1[] = { &P_EVENT_Success };
+PRT_EVENTDECL* P_Initial_TRANS_INNER_1[] = { &P_EVENT_Pong };
 PRT_EVENTSETDECL P_EVENTSET_Initial_TRANS_1 =
 {
     1U,
@@ -425,7 +422,7 @@ PRT_EVENTSETDECL P_EVENTSET_Initial_DOS_1 =
 
 PRT_TRANSDECL P_TRANS_2[] =
 {
-    { 0, &P_EVENT_Success, 1, &_P_NO_OP }
+    { 0, &P_EVENT_Pong, 1, &_P_NO_OP }
 };
 
 #define P_STATE_SecureChild_Initial \
@@ -438,7 +435,7 @@ PRT_TRANSDECL P_TRANS_2[] =
     &P_EVENTSET_Initial_DOS_1, \
     P_TRANS_2, \
     NULL, \
-    &P_FUNCTION_Anon_2, \
+    &_P_NO_OP, \
     &_P_NO_OP, \
 }
 
@@ -482,38 +479,6 @@ PRT_EVENTSETDECL P_EVENTSET_Done_DOS_1 =
 
 PRT_STATEDECL P_SecureChild_STATES[] = { P_STATE_SecureChild_Initial, P_STATE_SecureChild_Done };
 
-PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE* _P_GEN_funval = NULL;
-    PRT_VALUE** _P_GEN_funargs[32];
-    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
-    PRT_VALUE* _P_GEN_retval = NULL;
-    PRT_VALUE* PTMP_tmp0_2 = NULL;
-    
-    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE** P_LVALUE_5 = &(PTMP_tmp0_2);
-    PrtFreeValue(*P_LVALUE_5);
-    *P_LVALUE_5 = PrtCloneValue((&P_EVENT_Success.value));
-    
-    PrtRaise(p_this, PTMP_tmp0_2, 0);
-    *(&(PTMP_tmp0_2)) = NULL;
-    goto p_return_2;
-    
-p_return_2: ;
-    PrtFreeValue(PTMP_tmp0_2); PTMP_tmp0_2 = NULL;
-    return _P_GEN_retval;
-}
-
-PRT_FUNDECL P_FUNCTION_Anon_2 =
-{
-    NULL,
-    &P_Anon_IMPL_2,
-    NULL
-};
-
-
-PRT_FUNDECL* P_SecureChild_METHODS[] = { &P_FUNCTION_Anon_2 };
-
 PRT_EVENTDECL* P_SecureChild_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureChild_RECV_1 =
 {
@@ -539,12 +504,12 @@ PRT_MACHINEDECL P_MACHINE_SecureChild =
     NULL,
     0U,
     2U,
-    1U,
+    0U,
     4294967295U,
     0U,
     NULL,
     P_SecureChild_STATES,
-    P_SecureChild_METHODS
+    NULL
 };
 
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;

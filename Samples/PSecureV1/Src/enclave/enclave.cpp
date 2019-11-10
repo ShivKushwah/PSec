@@ -136,10 +136,17 @@ extern "C" void P_SecureSendPongEventToPingMachine_IMPL(PRT_MACHINEINST* context
 int handle_incoming_events_pong_enclave(PRT_UINT32 eventIdentifier) {
     PRT_VALUE* pingEvent = PrtMkEventValue(eventIdentifier);
     PRT_MACHINEID pongId;
-    pongId.machineId = 1;
+    pongId.machineId = 2;
 
     PRT_MACHINEINST* pongMachine = PrtGetMachine(process, PrtMkMachineValue(pongId));
     PrtSend(NULL, pongMachine, pingEvent, 0);
+    return 0;
+}
+
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID) {
+    PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
+    PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
+    PrtSend(NULL, machine, event, 0);
     return 0;
 }
 
@@ -242,6 +249,8 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 
 extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
+    //TODO take event as input
+
     ocall_print("Entered Secure Send");
 
     char* currentMachineIDPublicKey = "PongPublic"; //TODO Unhardcode this
@@ -271,6 +280,26 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
         ocall_print(newSessionKey);
         PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
     }
+
+
+    string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))];
+    //TODO use sessionKey to encrypt message
+    char* event = (char*) malloc(10);
+    itoa(P_EVENT_Pong.value.valueUnion.ev, event, 10);
+
+    int requestSize = 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1;
+    char* secureSendRequest = (char*) malloc(requestSize);
+    snprintf(secureSendRequest, requestSize, "Send:%s:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID, event);
+    ocall_print("Pong machine is sending out following network request: ");
+    ocall_print(secureSendRequest);
+    char* empty;
+    int ret_value;
+    ocall_network_request(&ret_value, secureSendRequest, empty, 0);
+    ocall_print("Pong Machine has succesfully sent message");
+
+
+
+
 
 
     // ocall_print("String P value is:");
@@ -396,9 +425,11 @@ int createMachine(char* machineType, char* parentTrustedMachineID) {
 
 
 
-int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t ID_SIZE) {
+int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t ID_SIZE, uint32_t SESSION_KEY_SIZE) {
     ocall_print("Initialize Communication API Called!");
+    //TODO need to verify signature over requestingMachineIDKey
     if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))) == 0) {
+        //TODO this logic needs to be diffie hellman authenticated encryption
         string newSessionKey;
         generateSessionKey(newSessionKey);
         PublicIdentityKeyToChildSessionKey[make_tuple(receivingMachineIDKey, requestingMachineIDKey)] = newSessionKey;
@@ -419,6 +450,15 @@ void generateSessionKey(string& newSessionKey) {
     newSessionKey = "GenSessionKey" + to_string(SESSION_KEY_GENERATOR_SEED);
     SESSION_KEY_GENERATOR_SEED += 1;
 } 
+
+int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* message, uint32_t ID_SIZE, uint32_t MAX_MESSAGE_SIZE) {
+    //TODO message should be encrypted and requestingMachineIDKey should be verified with signature
+    PRT_MACHINEID receivingMachinePID;
+    //TODO fix bug below
+    receivingMachinePID.machineId = 2; //PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
+   handle_incoming_event(atoi(message), receivingMachinePID);
+
+}
 
 
 //String Class

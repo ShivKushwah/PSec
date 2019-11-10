@@ -30,10 +30,17 @@ enclave {
                                     [out, size=ID_SIZE] char* returnNewMachineID,
                                     uint32_t ID_SIZE);
         
-        public int initializeCommunicationAPI([in, size=SESSION_SIZE]char* requestingMachineIDKey,
-                                             [in, size=SESSION_SIZE]char* receivingMachineIDKey, 
+        public int initializeCommunicationAPI([in, size=ID_SIZE]char* requestingMachineIDKey,
+                                             [in, size=ID_SIZE]char* receivingMachineIDKey, 
                                              [out, size=SESSION_SIZE]char* returnSessionKey, 
+                                              uint32_t ID_SIZE,
                                              uint32_t SESSION_SIZE);
+        public int sendMessageAPI([in, size=ID_SIZE]char* requestingMachineIDKey, 
+                                 [in, size=ID_SIZE]char* receivingMachineIDKey, 
+                                [in, size=MESSAGE_SIZE]char* message,
+                                 uint32_t ID_SIZE,
+                                uint32_t MESSAGE_SIZE);
+
 
 
     };
