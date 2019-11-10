@@ -29,6 +29,12 @@ enclave {
                                     [in, size=ID_SIZE]char* parentTrustedMachineID,
                                     [out, size=ID_SIZE] char* returnNewMachineID,
                                     uint32_t ID_SIZE);
+        
+        public int initializeCommunicationAPI([in, size=SESSION_SIZE]char* requestingMachineIDKey,
+                                             [in, size=SESSION_SIZE]char* receivingMachineIDKey, 
+                                             [out, size=SESSION_SIZE]char* returnSessionKey, 
+                                             uint32_t SESSION_SIZE);
+
 
     };
 

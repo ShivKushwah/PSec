@@ -8,8 +8,10 @@ unordered_map<string, int> PublicIdentityKeyToMachinePIDDictionary;
 unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
 
 map<PMachineChildPair, string> PMachineToChildCapabilityKey;
+map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 
 int ID_GENERATOR_SEED = 1;
+int SESSION_KEY_GENERATOR_SEED = 1;
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -253,6 +255,24 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     }
     string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID))];
     ocall_print((char*)capabilityKey.c_str());
+
+    //Check if we don't have a pre-existing session key with the other machine, if so 
+    //we need to intialize communications and establish a session key
+    if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))) == 0) {
+        int requestSize = 8 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
+        char* initComRequest = (char*) malloc(requestSize);
+        snprintf(initComRequest, requestSize, "InitComm:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID);
+        ocall_print("Pong machine is sending out following network request: ");
+        ocall_print(initComRequest);
+        char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
+        int ret_value;
+        ocall_network_request(&ret_value, initComRequest, newSessionKey, SIZE_OF_SESSION_KEY);
+        ocall_print("Pong Machine has received new session key: ");
+        ocall_print(newSessionKey);
+        PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
+    }
+
+
     // ocall_print("String P value is:");
     // ocall_print((char*) val);
 
@@ -373,6 +393,32 @@ int createMachine(char* machineType, char* parentTrustedMachineID) {
 	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &payload);
     return newMachinePID;
 }
+
+
+
+int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t ID_SIZE) {
+    ocall_print("Initialize Communication API Called!");
+    if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))) == 0) {
+        string newSessionKey;
+        generateSessionKey(newSessionKey);
+        PublicIdentityKeyToChildSessionKey[make_tuple(receivingMachineIDKey, requestingMachineIDKey)] = newSessionKey;
+        memcpy(returnSessionKey, (char*)newSessionKey.c_str(), SIZE_OF_SESSION_KEY);
+        ocall_print("Returning correct session key!");
+        return 0;
+    } else {
+        char* errorMsg = "Already created!";
+        memcpy(returnSessionKey, errorMsg, strlen(errorMsg) + 1); 
+        ocall_print("ERROR:Session has already been initalized in the past!");
+        return 1;
+    }
+    
+}
+
+void generateSessionKey(string& newSessionKey) {
+    //TODO Make this generate a random key
+    newSessionKey = "GenSessionKey" + to_string(SESSION_KEY_GENERATOR_SEED);
+    SESSION_KEY_GENERATOR_SEED += 1;
+} 
 
 
 //String Class

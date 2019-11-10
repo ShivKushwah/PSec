@@ -54,6 +54,14 @@ typedef struct ms_createMachineAPI_t {
 	uint32_t ms_ID_SIZE;
 } ms_createMachineAPI_t;
 
+typedef struct ms_initializeCommunicationAPI_t {
+	int ms_retval;
+	char* ms_requestingMachineIDKey;
+	char* ms_receivingMachineIDKey;
+	char* ms_returnSessionKey;
+	uint32_t ms_SESSION_SIZE;
+} ms_initializeCommunicationAPI_t;
+
 typedef struct ms_sgx_ra_get_ga_t {
 	sgx_status_t ms_retval;
 	sgx_ra_context_t ms_context;
@@ -396,13 +404,26 @@ sgx_status_t createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineNa
 	return status;
 }
 
+sgx_status_t initializeCommunicationAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t SESSION_SIZE)
+{
+	sgx_status_t status;
+	ms_initializeCommunicationAPI_t ms;
+	ms.ms_requestingMachineIDKey = requestingMachineIDKey;
+	ms.ms_receivingMachineIDKey = receivingMachineIDKey;
+	ms.ms_returnSessionKey = returnSessionKey;
+	ms.ms_SESSION_SIZE = SESSION_SIZE;
+	status = sgx_ecall(eid, 8, &ocall_table_enclave, &ms);
+	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
+	return status;
+}
+
 sgx_status_t sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a)
 {
 	sgx_status_t status;
 	ms_sgx_ra_get_ga_t ms;
 	ms.ms_context = context;
 	ms.ms_g_a = g_a;
-	status = sgx_ecall(eid, 8, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 9, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
@@ -416,7 +437,7 @@ sgx_status_t sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval
 	ms.ms_p_qe_target = p_qe_target;
 	ms.ms_p_report = p_report;
 	ms.ms_p_nonce = p_nonce;
-	status = sgx_ecall(eid, 9, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 10, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
@@ -430,7 +451,7 @@ sgx_status_t sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t* retval,
 	ms.ms_qe_report = qe_report;
 	ms.ms_p_msg3 = p_msg3;
 	ms.ms_msg3_size = msg3_size;
-	status = sgx_ecall(eid, 10, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 11, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }

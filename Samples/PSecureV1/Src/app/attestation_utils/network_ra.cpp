@@ -174,7 +174,7 @@ char* network_request_logic(char* request) {
         char* machineType = split;
         int ptr;
         //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
-        //TODO actually make this call a method in untrusted host
+        //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
         // application of this enclave and have that make an ecall to createMachineAPi
         sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, SIZE_OF_IDENTITY_STRING);
 
@@ -193,7 +193,20 @@ char* network_request_logic(char* request) {
     //     return retrieveCapabilityKey(currentMachineID, childMachineID);
 
     
-    // }  else if (strcmp(split, "AttestEnclave") == 0) {
+    }  else if (strcmp(split, "InitComm") == 0) {
+
+        char* newSessionKey = (char* ) malloc(SIZE_OF_SESSION_KEY);
+        split = strtok(NULL, ":");
+        char* machineInitializingComm = split;
+        split = strtok(NULL, ":");
+        char* machineReceivingComm = split;
+
+        int ptr;
+        //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
+        sgx_status_t status = initializeCommunicationAPI(global_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_SESSION_KEY);
+        return newSessionKey;
+
+
 
     } else {
         return "Command Not Found";

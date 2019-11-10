@@ -37,6 +37,8 @@
 
 const int SIZE_OF_IDENTITY_STRING = 20;
 const int SIZE_OF_CAPABILITYKEY = 20;
+const int SIZE_OF_SESSION_KEY = 20;
+
 
 
 struct Encrypted_Message{
