@@ -420,7 +420,7 @@ int createMachine(char* machineType, char* parentTrustedMachineID) {
     ocall_print_int(newMachinePID);
 	PrtAssert(foundMachine, "No machine found!");
 	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &payload);
-    return newMachinePID;
+    return pongMachine->id->valueUnion.mid->machineId;
 }
 
 
@@ -454,8 +454,11 @@ void generateSessionKey(string& newSessionKey) {
 int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* message, uint32_t ID_SIZE, uint32_t MAX_MESSAGE_SIZE) {
     //TODO message should be encrypted and requestingMachineIDKey should be verified with signature
     PRT_MACHINEID receivingMachinePID;
-    //TODO fix bug below
-    receivingMachinePID.machineId = 2; //PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
+    ocall_print("SecureChildMachine has a PID of:");
+    char* temp = (char*) malloc(10);
+    snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
+    ocall_print(temp);
+    receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
    handle_incoming_event(atoi(message), receivingMachinePID);
 
 }
