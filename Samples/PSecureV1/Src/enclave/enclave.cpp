@@ -256,8 +256,8 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     char* currentMachineIDPublicKey = "PongPublic"; //TODO Unhardcode this
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
 
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 sendingToMachinePublicIDPValue = (*P_VAR_payload)->valueUnion.frgn->value;
+    PRT_VALUE** P_ToMachine_Payload = argRefs[0];
+    PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
     char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
     if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID))) == 0) {
         ocall_print("ERROR: No Capability Key found!");
@@ -284,8 +284,9 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 
     string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))];
     //TODO use sessionKey to encrypt message
+    PRT_VALUE** P_Event_Payload = argRefs[1];
     char* event = (char*) malloc(10);
-    itoa(P_EVENT_Pong.value.valueUnion.ev, event, 10);
+    itoa((*P_Event_Payload)->valueUnion.ev , event, 10);
 
     int requestSize = 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1;
     char* secureSendRequest = (char*) malloc(requestSize);
