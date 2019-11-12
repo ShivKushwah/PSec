@@ -9,8 +9,7 @@ fun PrintString(inputString : StringType);
 fun SecureSend(sendingToMachine : StringType, eventToSend : event);
 event Success;
 
-//@secure
-machine Pong {
+secure_machine Pong {
     var secureChildPublicIDKey: StringType;
     var secureChildPublicIDKey2: StringType;
     var secureChildPublicIDKey3: StringType;
@@ -46,8 +45,7 @@ machine Pong {
     state Done { }
 }
 
-//@secure
-machine SecureChild {
+secure_machine SecureChild {
     start state Initial {
         on Pong goto Next;
 
