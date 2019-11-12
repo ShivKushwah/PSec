@@ -9,6 +9,7 @@ extern "C" {
     
     extern PRT_EVENTDECL P_EVENT_Ping;
     extern PRT_EVENTDECL P_EVENT_Pong;
+    extern PRT_EVENTDECL P_EVENT_even;
     extern PRT_EVENTDECL P_EVENT_Success;
     extern PRT_INTERFACEDECL P_I_Pong;
     extern PRT_INTERFACEDECL P_I_SecureChild;

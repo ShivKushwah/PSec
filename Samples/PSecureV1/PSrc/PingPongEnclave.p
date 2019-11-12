@@ -2,6 +2,7 @@ type StringType;
 
 event Ping assert 2;
 event Pong assert 2;
+event even : StringType;
 fun CreateMachineSecureChild(): StringType;
 //fun CreateMachineSecureChild2(): machine;
 fun PrintString(inputString : StringType);
@@ -16,6 +17,8 @@ machine Pong {
     var secureChildRegular: StringType;
     var secureChildRegular2: machine;
     var secureChildRegular3: machine;
+    var kirat: machine;
+
 
 
 
@@ -30,7 +33,8 @@ machine Pong {
             secureChildRegular = new SecureChild();
             PrintString(secureChildRegular);
             SecureSend(secureChildRegular, Pong);
-            SecureSend(secureChildRegular, Pong);
+            //SecureSend(secureChildRegular, Pong);
+            send kirat, even, secureChildRegular;
 
             //send machineVar, tempEvent;
 
@@ -62,7 +66,7 @@ machine SecureChild {
     }
 
     state Next {
-        on Pong goto Done;
+        on even goto Done;
     }
 
     state Done { }

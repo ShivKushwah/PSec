@@ -51,6 +51,14 @@ PRT_EVENTDECL P_EVENT_Pong =
     &P_GEND_TYPE_n
 };
 
+PRT_EVENTDECL P_EVENT_even = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
+    "even",
+    4294967295U,
+    &P_GEND_TYPE_StringType
+};
+
 PRT_EVENTDECL P_EVENT_Success = 
 {
     { PRT_VALUE_KIND_EVENT, 0U },
@@ -83,10 +91,10 @@ PRT_FUNDECL P_FUNCTION_SecureSend =
 };
 
 
-PRT_EVENTDECL* P_Pong_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_Pong_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &P_EVENT_even, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Pong_RECV =
 {
-    4U,
+    5U,
     P_Pong_RECV_INNER,
     NULL
 };
@@ -99,10 +107,10 @@ PRT_INTERFACEDECL P_I_Pong =
     &P_EVENTSET_Pong_RECV
 };
 
-PRT_EVENTDECL* P_SecureChild_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureChild_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &P_EVENT_even, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureChild_RECV =
 {
-    4U,
+    5U,
     P_SecureChild_RECV_INNER,
     NULL
 };
@@ -121,7 +129,8 @@ PRT_VARDECL P_Pong_VARS[] = {
     { "secureChildPublicIDKey3", &P_GEND_TYPE_StringType },
     { "secureChildRegular", &P_GEND_TYPE_StringType },
     { "secureChildRegular2", &P_GEND_TYPE_m },
-    { "secureChildRegular3", &P_GEND_TYPE_m }
+    { "secureChildRegular3", &P_GEND_TYPE_m },
+    { "kirat", &P_GEND_TYPE_m }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER[] = { NULL };
@@ -262,6 +271,7 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp3 = NULL;
     PRT_VALUE* PTMP_tmp4 = NULL;
     PRT_VALUE* PTMP_tmp5 = NULL;
+    PRT_VALUE* PTMP_tmp6 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
@@ -326,19 +336,19 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_5 = &(PTMP_tmp4);
     PrtFreeValue(*P_LVALUE_5);
-    *P_LVALUE_5 = PrtCloneValue(p_this->varValues[3]);
+    *P_LVALUE_5 = PrtCloneValue(p_this->varValues[6]);
     
     PRT_VALUE** P_LVALUE_6 = &(PTMP_tmp5);
     PrtFreeValue(*P_LVALUE_6);
-    *P_LVALUE_6 = PrtCloneValue((&P_EVENT_Pong.value));
+    *P_LVALUE_6 = PrtCloneValue((&P_EVENT_even.value));
     
-    _P_GEN_funargs[0] = &(PTMP_tmp4);
+    PRT_VALUE** P_LVALUE_7 = &(PTMP_tmp6);
+    PrtFreeValue(*P_LVALUE_7);
+    *P_LVALUE_7 = PrtCloneValue(p_this->varValues[3]);
+    
+    _P_GEN_funargs[0] = &(PTMP_tmp6);
     _P_GEN_funargs[1] = &(PTMP_tmp5);
     PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
-    PrtFreeValue(PTMP_tmp4);
-    PTMP_tmp4 = NULL;
-    PrtFreeValue(PTMP_tmp5);
-    PTMP_tmp5 = NULL;
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
     }
@@ -355,6 +365,7 @@ p_return: ;
     PrtFreeValue(PTMP_tmp3); PTMP_tmp3 = NULL;
     PrtFreeValue(PTMP_tmp4); PTMP_tmp4 = NULL;
     PrtFreeValue(PTMP_tmp5); PTMP_tmp5 = NULL;
+    PrtFreeValue(PTMP_tmp6); PTMP_tmp6 = NULL;
     return _P_GEN_retval;
 }
 
@@ -375,9 +386,9 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE** P_LVALUE_7 = &(PTMP_tmp0_1);
-    PrtFreeValue(*P_LVALUE_7);
-    *P_LVALUE_7 = PrtCloneValue((&P_EVENT_Success.value));
+    PRT_VALUE** P_LVALUE_8 = &(PTMP_tmp0_1);
+    PrtFreeValue(*P_LVALUE_8);
+    *P_LVALUE_8 = PrtCloneValue((&P_EVENT_Success.value));
     
     PrtRaise(p_this, PTMP_tmp0_1, 0);
     *(&(PTMP_tmp0_1)) = NULL;
@@ -398,18 +409,18 @@ PRT_FUNDECL P_FUNCTION_Anon_1 =
 
 PRT_FUNDECL* P_Pong_METHODS[] = { &P_FUNCTION_Anon, &P_FUNCTION_Anon_1 };
 
-PRT_EVENTDECL* P_Pong_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_Pong_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &P_EVENT_even, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Pong_RECV_1 =
 {
-    4U,
+    5U,
     P_Pong_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_Pong_SEND_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_Pong_SEND_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &P_EVENT_even, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Pong_SEND =
 {
-    4U,
+    5U,
     P_Pong_SEND_INNER,
     NULL
 };
@@ -423,7 +434,7 @@ PRT_MACHINEDECL P_MACHINE_Pong =
     &P_EVENTSET_Pong_RECV_1,
     &P_EVENTSET_Pong_SEND,
     &P_Pong_CREATES,
-    6U,
+    7U,
     3U,
     2U,
     4294967295U,
@@ -484,7 +495,7 @@ PRT_EVENTSETDECL P_EVENTSET_Next_DEFERS =
     NULL
 };
 
-PRT_EVENTDECL* P_Next_TRANS_INNER[] = { &P_EVENT_Pong };
+PRT_EVENTDECL* P_Next_TRANS_INNER[] = { &P_EVENT_even };
 PRT_EVENTSETDECL P_EVENTSET_Next_TRANS =
 {
     1U,
@@ -502,7 +513,7 @@ PRT_EVENTSETDECL P_EVENTSET_Next_DOS =
 
 PRT_TRANSDECL P_TRANS_3[] =
 {
-    { 1, &P_EVENT_Pong, 2, &_P_NO_OP }
+    { 1, &P_EVENT_even, 2, &_P_NO_OP }
 };
 
 #define P_STATE_SecureChild_Next \
@@ -559,18 +570,18 @@ PRT_EVENTSETDECL P_EVENTSET_Done_DOS_1 =
 
 PRT_STATEDECL P_SecureChild_STATES[] = { P_STATE_SecureChild_Initial, P_STATE_SecureChild_Next, P_STATE_SecureChild_Done };
 
-PRT_EVENTDECL* P_SecureChild_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureChild_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &P_EVENT_even, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureChild_RECV_1 =
 {
-    4U,
+    5U,
     P_SecureChild_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_SecureChild_SEND_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureChild_SEND_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &P_EVENT_even, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureChild_SEND =
 {
-    4U,
+    5U,
     P_SecureChild_SEND_INNER,
     NULL
 };
@@ -593,7 +604,7 @@ PRT_MACHINEDECL P_MACHINE_SecureChild =
 };
 
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
-PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success };
+PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_even, &P_EVENT_Success };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_Pong, &P_MACHINE_SecureChild };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_Pong, &P_I_SecureChild };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
@@ -603,7 +614,7 @@ int P_DefaultImpl_LME_1[] = { -1,-1 };
 int* P_DefaultImpl_LINKMAP[] = { P_DefaultImpl_LME_0, P_DefaultImpl_LME_1 };
 int P_DefaultImpl_DEFMAP[] = { 0,1 };
 PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl = {
-    5U,
+    6U,
     2U,
     2U,
     0U,
