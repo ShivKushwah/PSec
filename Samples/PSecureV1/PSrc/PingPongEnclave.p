@@ -17,7 +17,7 @@ machine Pong {
     var secureChildRegular: StringType;
     var secureChildRegular2: machine;
     var secureChildRegular3: machine;
-    var kirat: machine;
+    //var kirat: machine;
 
     start state Initial {
         entry { 
@@ -29,22 +29,9 @@ machine Pong {
             //PrintString(secureChildPublicIDKey3);
             secureChildRegular = new SecureChild();
             PrintString(secureChildRegular);
-            //SecureSend(secureChildRegular, Pong);
-            //SecureSend(secureChildRegular, Pong);
-            // send kirat, even, secureChildRegular;
             //send kirat, even, secureChildRegular;
             secure_send secureChildRegular, Pong;
             secure_send secureChildRegular, Pong;
-
-
-            //send machineVar, tempEvent;
-
-            // secureChildRegular2 = new SecureChild();
-            // secureChildRegular3 = new SecureChild();
-
-            //secureChildRegular = CreateMachineSecureChild2();
-            //secureChildRegular2 = CreateMachineSecureChild2();
-            //Call SecureSendMessage() next;
         } 
         on Ping goto Pong_SendingPong; 
     }

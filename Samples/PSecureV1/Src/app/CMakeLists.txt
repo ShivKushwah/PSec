@@ -1,9 +1,11 @@
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SGX_COMMON_CFLAGS} -fPIC -Wno-attributes")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} -std=c++11")
 
-set(SGX OFF)
-remove_definitions( -DPRT_PLAT_SGXUSER )
-add_definitions( -DPRT_PLAT_LINUXUSER )
+# set(SGX OFF)
+# remove_definitions( -DPRT_PLAT_SGXUSER )
+# add_definitions( -DPRT_PLAT_LINUXUSER )
+# remove_definitions(-DENCLAVE_STD_ALT)
+
 
 
 
@@ -50,7 +52,8 @@ set(LIBHANDLERLIB_PATH ${P_LIBHANDLER_PATH}/out/gcc-amd64-linux-gnu/debug/libhan
 target_link_libraries(app
         -L${SGX_LIBRARY_PATH} -l${SGX_URTS_LIB} -l${SGX_USVC_LIB} -lsgx_ukey_exchange
         ~/Research/PSecuredLang/ProgrammingEnclaves/Samples/PSecureV1/Src/app/libsample_libcrypto.so
-        ~/Research/PSecuredLang/ProgrammingEnclaves/Samples/PSecureV1/Src/app/libPrt_static.a #TODO Unhardcode this
+        #~/Research/PSecuredLang/ProgrammingEnclaves/Samples/PSecureV1/Src/app/libPrt_static.a #TODO Unhardcode this
+        Prt_static
         ${LIBHANDLERLIB_PATH}
         -Wl,-rpath -Wl,/usr/local/lib
         -Wl,-rpath -Wl,${SGX_LIBRARY_PATH}

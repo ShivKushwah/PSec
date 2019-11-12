@@ -129,8 +129,7 @@ PRT_VARDECL P_Pong_VARS[] = {
     { "secureChildPublicIDKey3", &P_GEND_TYPE_StringType },
     { "secureChildRegular", &P_GEND_TYPE_StringType },
     { "secureChildRegular2", &P_GEND_TYPE_m },
-    { "secureChildRegular3", &P_GEND_TYPE_m },
-    { "kirat", &P_GEND_TYPE_m }
+    { "secureChildRegular3", &P_GEND_TYPE_m }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER[] = { NULL };
@@ -424,7 +423,7 @@ PRT_MACHINEDECL P_MACHINE_Pong =
     &P_EVENTSET_Pong_RECV_1,
     &P_EVENTSET_Pong_SEND,
     &P_Pong_CREATES,
-    7U,
+    6U,
     3U,
     2U,
     4294967295U,
