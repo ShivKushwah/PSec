@@ -271,8 +271,6 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp3 = NULL;
     PRT_VALUE* PTMP_tmp4 = NULL;
     PRT_VALUE* PTMP_tmp5 = NULL;
-    PRT_VALUE* PTMP_tmp6 = NULL;
-    PRT_VALUE* PTMP_tmp7 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
@@ -313,17 +311,13 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_3 = &(PTMP_tmp2);
     PrtFreeValue(*P_LVALUE_3);
-    *P_LVALUE_3 = PrtCloneValue(p_this->varValues[6]);
+    *P_LVALUE_3 = PrtCloneValue(p_this->varValues[3]);
     
     PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp3);
     PrtFreeValue(*P_LVALUE_4);
-    *P_LVALUE_4 = PrtCloneValue((&P_EVENT_even.value));
+    *P_LVALUE_4 = PrtCloneValue((&P_EVENT_Pong.value));
     
-    PRT_VALUE** P_LVALUE_5 = &(PTMP_tmp4);
-    PrtFreeValue(*P_LVALUE_5);
-    *P_LVALUE_5 = PrtCloneValue(p_this->varValues[3]);
-    
-    _P_GEN_funargs[0] = &(PTMP_tmp4);
+    _P_GEN_funargs[0] = &(PTMP_tmp2);
     _P_GEN_funargs[1] = &(PTMP_tmp3);
     PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
@@ -335,20 +329,16 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return;
     }
     
+    PRT_VALUE** P_LVALUE_5 = &(PTMP_tmp4);
+    PrtFreeValue(*P_LVALUE_5);
+    *P_LVALUE_5 = PrtCloneValue(p_this->varValues[3]);
+    
     PRT_VALUE** P_LVALUE_6 = &(PTMP_tmp5);
     PrtFreeValue(*P_LVALUE_6);
-    *P_LVALUE_6 = PrtCloneValue(p_this->varValues[6]);
+    *P_LVALUE_6 = PrtCloneValue((&P_EVENT_Pong.value));
     
-    PRT_VALUE** P_LVALUE_7 = &(PTMP_tmp6);
-    PrtFreeValue(*P_LVALUE_7);
-    *P_LVALUE_7 = PrtCloneValue((&P_EVENT_even.value));
-    
-    PRT_VALUE** P_LVALUE_8 = &(PTMP_tmp7);
-    PrtFreeValue(*P_LVALUE_8);
-    *P_LVALUE_8 = PrtCloneValue(p_this->varValues[3]);
-    
-    _P_GEN_funargs[0] = &(PTMP_tmp7);
-    _P_GEN_funargs[1] = &(PTMP_tmp6);
+    _P_GEN_funargs[0] = &(PTMP_tmp4);
+    _P_GEN_funargs[1] = &(PTMP_tmp5);
     PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
@@ -366,8 +356,6 @@ p_return: ;
     PrtFreeValue(PTMP_tmp3); PTMP_tmp3 = NULL;
     PrtFreeValue(PTMP_tmp4); PTMP_tmp4 = NULL;
     PrtFreeValue(PTMP_tmp5); PTMP_tmp5 = NULL;
-    PrtFreeValue(PTMP_tmp6); PTMP_tmp6 = NULL;
-    PrtFreeValue(PTMP_tmp7); PTMP_tmp7 = NULL;
     return _P_GEN_retval;
 }
 
@@ -388,9 +376,9 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE** P_LVALUE_9 = &(PTMP_tmp0_1);
-    PrtFreeValue(*P_LVALUE_9);
-    *P_LVALUE_9 = PrtCloneValue((&P_EVENT_Success.value));
+    PRT_VALUE** P_LVALUE_7 = &(PTMP_tmp0_1);
+    PrtFreeValue(*P_LVALUE_7);
+    *P_LVALUE_7 = PrtCloneValue((&P_EVENT_Success.value));
     
     PrtRaise(p_this, PTMP_tmp0_1, 0);
     *(&(PTMP_tmp0_1)) = NULL;
@@ -454,7 +442,7 @@ PRT_EVENTSETDECL P_EVENTSET_Initial_DEFERS_1 =
     NULL
 };
 
-PRT_EVENTDECL* P_Initial_TRANS_INNER_1[] = { &P_EVENT_even };
+PRT_EVENTDECL* P_Initial_TRANS_INNER_1[] = { &P_EVENT_Pong };
 PRT_EVENTSETDECL P_EVENTSET_Initial_TRANS_1 =
 {
     1U,
@@ -472,7 +460,7 @@ PRT_EVENTSETDECL P_EVENTSET_Initial_DOS_1 =
 
 PRT_TRANSDECL P_TRANS_2[] =
 {
-    { 0, &P_EVENT_even, 1, &_P_NO_OP }
+    { 0, &P_EVENT_Pong, 1, &_P_NO_OP }
 };
 
 #define P_STATE_SecureChild_Initial \
@@ -497,7 +485,7 @@ PRT_EVENTSETDECL P_EVENTSET_Next_DEFERS =
     NULL
 };
 
-PRT_EVENTDECL* P_Next_TRANS_INNER[] = { &P_EVENT_even };
+PRT_EVENTDECL* P_Next_TRANS_INNER[] = { &P_EVENT_Pong };
 PRT_EVENTSETDECL P_EVENTSET_Next_TRANS =
 {
     1U,
@@ -515,7 +503,7 @@ PRT_EVENTSETDECL P_EVENTSET_Next_DOS =
 
 PRT_TRANSDECL P_TRANS_3[] =
 {
-    { 1, &P_EVENT_even, 2, &_P_NO_OP }
+    { 1, &P_EVENT_Pong, 2, &_P_NO_OP }
 };
 
 #define P_STATE_SecureChild_Next \

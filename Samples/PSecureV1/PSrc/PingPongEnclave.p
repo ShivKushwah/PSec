@@ -31,8 +31,11 @@ machine Pong {
             PrintString(secureChildRegular);
             //SecureSend(secureChildRegular, Pong);
             //SecureSend(secureChildRegular, Pong);
-            send kirat, even, secureChildRegular;
-            send kirat, even, secureChildRegular;
+            // send kirat, even, secureChildRegular;
+            //send kirat, even, secureChildRegular;
+            secure_send secureChildRegular, Pong;
+            secure_send secureChildRegular, Pong;
+
 
             //send machineVar, tempEvent;
 
@@ -59,12 +62,12 @@ machine Pong {
 //@secure
 machine SecureChild {
     start state Initial {
-        on even goto Next;
+        on Pong goto Next;
 
     }
 
     state Next {
-        on even goto Done;
+        on Pong goto Done;
     }
 
     state Done { }
