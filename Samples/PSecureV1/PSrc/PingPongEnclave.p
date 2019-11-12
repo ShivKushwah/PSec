@@ -19,9 +19,6 @@ machine Pong {
     var secureChildRegular3: machine;
     var kirat: machine;
 
-
-
-
     start state Initial {
         entry { 
             //secureChildPublicIDKey = CreateMachineSecureChild();
@@ -32,8 +29,9 @@ machine Pong {
             //PrintString(secureChildPublicIDKey3);
             secureChildRegular = new SecureChild();
             PrintString(secureChildRegular);
-            SecureSend(secureChildRegular, Pong);
             //SecureSend(secureChildRegular, Pong);
+            //SecureSend(secureChildRegular, Pong);
+            send kirat, even, secureChildRegular;
             send kirat, even, secureChildRegular;
 
             //send machineVar, tempEvent;
@@ -61,7 +59,7 @@ machine Pong {
 //@secure
 machine SecureChild {
     start state Initial {
-        on Pong goto Next;
+        on even goto Next;
 
     }
 
