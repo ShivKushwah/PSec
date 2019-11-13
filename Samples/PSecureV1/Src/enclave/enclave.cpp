@@ -1,6 +1,7 @@
 #include "enclave.h"
 
 PRT_PROCESS *process;
+extern PRT_PROGRAMDECL* program;
 
 extern char secure_message[SIZE_OF_MESSAGE]; 
 unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
@@ -375,8 +376,22 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     return capabilityKey;
 }
 
+int machineTypeIsSecure(char* machineType) {
+    PRT_UINT32 interfaceName;  
+	PrtLookupMachineByName(machineType, &interfaceName);
+    PRT_UINT32 instanceOf = program->interfaceDefMap[interfaceName];
+    PRT_MACHINEDECL* curMachineDecl = program->machines[instanceOf];
+    return curMachineDecl->isSecure;
+}
+
 int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, uint32_t ID_SIZE) {
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
+
+    
+    if (machineTypeIsSecure(machineType)) {
+        ocall_print("HARKIRAT IS GREAT");
+    }
+
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
     generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey);

@@ -244,7 +244,8 @@ PRT_MACHINEDECL P_MACHINE_Ping =
     0U,
     P_Ping_VARS,
     P_Ping_STATES,
-    P_Ping_METHODS
+    P_Ping_METHODS,
+    PRT_FALSE
 };
 
 PRT_EVENTDECL* P_Init_DEFERS_INNER[] = { NULL };
@@ -317,7 +318,8 @@ PRT_MACHINEDECL P_MACHINE_Temp =
     0U,
     NULL,
     P_Temp_STATES,
-    NULL
+    NULL,
+    PRT_FALSE
 };
 
 PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success };

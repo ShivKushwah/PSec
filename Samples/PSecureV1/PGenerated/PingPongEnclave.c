@@ -430,7 +430,8 @@ PRT_MACHINEDECL P_MACHINE_Pong =
     0U,
     P_Pong_VARS,
     P_Pong_STATES,
-    P_Pong_METHODS
+    P_Pong_METHODS,
+    PRT_TRUE
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER_1[] = { NULL };
@@ -589,7 +590,8 @@ PRT_MACHINEDECL P_MACHINE_SecureChild =
     0U,
     NULL,
     P_SecureChild_STATES,
-    NULL
+    NULL,
+    PRT_TRUE
 };
 
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
