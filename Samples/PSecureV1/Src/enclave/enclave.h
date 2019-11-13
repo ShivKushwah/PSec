@@ -49,3 +49,5 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey);
 
 void generateSessionKey(string& newSessionKey);
+
+int machineTypeIsSecure(char* machineType);

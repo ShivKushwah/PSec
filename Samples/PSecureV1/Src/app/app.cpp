@@ -129,7 +129,6 @@ extern "C" void P_InitializePongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE
     
 }
 
-
 extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     

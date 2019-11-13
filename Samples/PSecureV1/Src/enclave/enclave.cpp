@@ -218,8 +218,15 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 {
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     //TODO extract the newMachineType from the argument and extract current public identity from PID
-    char* requestedNewMachineTypeToCreate = "SecureChild";
+    char* requestedNewMachineTypeToCreate = "SecureChild"; //TOOD unhardcode this
     char* currentMachineIDPublicKey = "PongPublic"; //TODO Unhardcode this
+
+    if (!machineTypeIsSecure(requestedNewMachineTypeToCreate)) {
+        //TODO Add case here if we are creating untrusted machine (Do we need this because inside the enclave we dont
+        //have untrusted machines)
+
+    }
+
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1;
     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
@@ -386,12 +393,6 @@ int machineTypeIsSecure(char* machineType) {
 
 int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, uint32_t ID_SIZE) {
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
-
-    
-    if (machineTypeIsSecure(machineType)) {
-        ocall_print("HARKIRAT IS GREAT");
-    }
-
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
     generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey);
