@@ -30,7 +30,7 @@ extern map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 
 
 //For Enclave API
-typedef tuple <string,string> identityKeyPair;
+typedef tuple <string,string> identityKeyPair; //public, private
 typedef tuple <string,string> capabilityKey;
 extern unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
 extern unordered_map<string, int> PublicIdentityKeyToMachinePIDDictionary;
@@ -51,3 +51,5 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
 void generateSessionKey(string& newSessionKey);
 
 int machineTypeIsSecure(char* machineType);
+
+int getNextPID();
