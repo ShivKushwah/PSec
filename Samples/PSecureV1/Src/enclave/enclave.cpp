@@ -125,6 +125,32 @@ static void RunToIdle(void* process)
 	}
 }
 
+char* generateCStringFromFormat(char* format_string, char* strings_to_print[], int num_strings) {
+    if (num_strings > 5) {
+        ocall_print("Too many strings passed to generateCStringFromFormat!");
+        return "ERROR!";
+    }
+    // ocall_print("KIRAT");
+    char* returnString = (char*) malloc(100);
+
+
+    // for (int i = num_strings; i < 5; i++) {
+    //     strings_to_print[i] = "hello";
+    // }
+
+    char* str1 = strings_to_print[0];
+    char* str2 = strings_to_print[1];
+    char* str3 = strings_to_print[2];
+    char* str4 = strings_to_print[3];
+    char* str5 = strings_to_print[4];
+
+    snprintf(returnString, 100, format_string, str1, str2, str3, str4, str5);
+    //ocall_print("Return string is");
+    //ocall_print(returnString);
+    return returnString;
+
+}
+
 extern "C" void P_SecureSendPongEventToPingMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {  
     int ret;
@@ -236,11 +262,19 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1;
     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
     snprintf(createMachineRequest, requestSize, "Create:%s:%s", currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
-    ocall_print("Pong machine is sending out following network request: ");
+    
+    // char** machineNameWrapper = (char*) malloc(sizeof(char*));
+    // *machineNameWrapper = currentMachineIDPublicKey;
+    char* machineNameWrapper[] = {currentMachineIDPublicKey};
+    ocall_print(generateCStringFromFormat("%s machine is sending out the following network request:", machineNameWrapper, 1)); //TODO use this method for all future ocall_prints
+    // ocall_print("Pong machine is sending out following network request: ");
     ocall_print(createMachineRequest);
     int ret_value;
     ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING);
-    ocall_print("Pong Machine has created a new machine with Identity Public Key as: ");
+    
+    char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+    ocall_print(generateCStringFromFormat("%s machine has created a new machine with Identity Public Key as:", machineNameWrapper2, 1)); //TODO use this method for all future ocall_prints
+    // ocall_print("Pong Machine has created a new machine with Identity Public Key as: ");
     ocall_print(newMachinePublicIDKey);
 
     //Now, need to retrieve capabilityKey for this newMachinePublicIDKey and store (thisMachineID, newMachinePublicIDKey) -> capabilityKey
@@ -249,6 +283,9 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     char* getChildMachineIDRequest = (char*) request.c_str(); 
     char* capabilityKey = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey);//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
     //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
+    
+    char* machineNameWrapper3[] = {currentMachineIDPublicKey};
+    ocall_print(generateCStringFromFormat("%s machine has received capability key for secure child:", machineNameWrapper3, 1)); //TODO use this method for all future ocall_prints
     ocall_print("Pong Machine has received capability key for secure child: ");
     ocall_print(capabilityKey);
 
