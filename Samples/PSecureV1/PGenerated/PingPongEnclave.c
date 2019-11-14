@@ -24,8 +24,6 @@ static PRT_TYPE P_GEND_TYPE_m = { PRT_KIND_MACHINE, { NULL } };
 // Function implementation prototypes:
 PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_CreateMachineSecureChild2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -76,14 +74,6 @@ PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild =
 {
     "CreateMachineSecureChild",
     &P_CreateMachineSecureChild_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild2 =
-{
-    "CreateMachineSecureChild2",
-    &P_CreateMachineSecureChild2_IMPL,
     NULL
 };
 
