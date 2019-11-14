@@ -33,17 +33,17 @@ secure_machine Pong {
 
     start state Initial {
         entry { 
-            secureChildPublicIDKey = CreateMachineSecureChild2();
+            // secureChildPublicIDKey = CreateMachineSecureChild2();
             //secureChildPublicIDKey2 = CreateMachineSecureChild();
             //secureChildPublicIDKey3 = CreateMachineSecureChild();
-            PrintString(secureChildPublicIDKey);
+            // PrintString(secureChildPublicIDKey);
             //PrintString(secureChildPublicIDKey2);
             //PrintString(secureChildPublicIDKey3);
-           //// secureChildRegular = new SecureChild();
-            ////PrintString(secureChildRegular);
+           secureChildRegular = new SecureChild();
+            PrintString(secureChildRegular);
             //send kirat, even, secureChildRegular;
-            ////secure_send secureChildRegular, Pong;
-            ////secure_send secureChildRegular, Pong;
+            secure_send secureChildRegular, Pong;
+            secure_send secureChildRegular, Pong;
         } 
         on Ping goto Pong_SendingPong; 
     }

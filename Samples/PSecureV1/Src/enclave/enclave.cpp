@@ -218,7 +218,7 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 {
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     //TODO extract the newMachineType from the argument and extract current public identity from PID
-    char* requestedNewMachineTypeToCreate = "Pong"; //TOOD unhardcode this
+    char* requestedNewMachineTypeToCreate = (char*) argRefs[0]; //TOOD unhardcode this
     //if context->name == coordinator, currentMachineIDPublicKey = 'coordinator' else get currentMachineIDPublicKey from dictionary with pid
     char* currentMachineIDPublicKey;
     if (currentMachinePID == 1) { //TODO Check if name is "Coordinator", not just by id
