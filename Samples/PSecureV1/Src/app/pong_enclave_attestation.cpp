@@ -193,7 +193,12 @@ int pong_enclave_start_attestation(const char* receiving_machine_name, int messa
     int32_t verify_index = -1;
     int32_t verification_samples = sizeof(msg1_samples)/sizeof(msg1_samples[0]);
 
-    FILE* OUTPUT = stdout;
+    FILE* OUTPUT;
+    if (ENABLE_ENCLAVE_ATTESTATION_PRINT) {
+        OUTPUT = stdout;
+    } else {
+        OUTPUT = fopen ("temper.txt" , "w");
+    }
 
 // #define VERIFICATION_INDEX_IS_VALID() (verify_index > 0 && \
 //                                        verify_index <= verification_samples)

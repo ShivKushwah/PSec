@@ -664,7 +664,9 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         char* actual_measurement = (char*) malloc(100);
         char* ptr = actual_measurement;
 
-        printf("Expected Measurement is: %s\n", expected_measurement);
+        if (ENABLE_KPS_ATTESTATION_PRINT) {
+            printf("Expected Measurement is: %s\n", expected_measurement);
+        }
 
         for(i=0;i<sizeof(sample_measurement_t);i++)
         {
@@ -673,15 +675,17 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         }
         ptr[i] = '\0';
 
-        printf("Actual Measurement is: %s\n", actual_measurement);
+        if (ENABLE_KPS_ATTESTATION_PRINT) {
+            printf("Actual Measurement is: %s\n", actual_measurement);
+        }
 
         //If measurements differ, we need to abort this connection
         if (!(strcmp(expected_measurement, actual_measurement) == 0)) {
             printf("MEASUREMENT ERROR!");
             //TODO uncommmet the below when you figure out why measurement check is failing now
             //even though it wasn't failing before this commit
-            // ret = SP_QUOTE_VERIFICATION_FAILED;
-            // break;
+            ret = SP_QUOTE_VERIFICATION_FAILED;
+            break;
         }    
         fclose(fp1); 
 
@@ -702,7 +706,13 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             ret = SP_IAS_FAILED;
             break;
         }
-        FILE* OUTPUT = stdout;
+        FILE* OUTPUT;
+        if (ENABLE_KPS_ATTESTATION_PRINT) {
+            OUTPUT = stdout;
+        } else {
+            OUTPUT =  fopen ("temper.txt" , "w");
+        }
+
         fprintf(OUTPUT, "\n\n\tAttestation Report:");
         fprintf(OUTPUT, "\n\tid: 0x%0x.", attestation_report.id);
         fprintf(OUTPUT, "\n\tstatus: %d.", attestation_report.status);
@@ -710,6 +720,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
                 attestation_report.revocation_reason);
         // attestation_report.info_blob;
         fprintf(OUTPUT, "\n\tpse_status: %d.",  attestation_report.pse_status);
+        
         // Note: This sample always assumes the PIB is sent by attestation server.  In the product
         // implementation, the attestation server could only send the PIB for certain attestation 
         // report statuses.  A product SP implementation needs to handle cases

@@ -39,8 +39,12 @@
 #include "network_ra.h"
 #include <unordered_map>
 #include <string>
+#include "app.h"
+
 
 using namespace std;
+
+const int ENABLE_KPS_ATTESTATION_PRINT = 0;
 
 extern unordered_map<string, string> capabilityKeyAccessDictionary;
 extern unordered_map<string, string> capabilityKeyDictionary;
