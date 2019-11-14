@@ -180,6 +180,8 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE* PTMP_tmp0 = NULL;
     PRT_VALUE* PTMP_tmp1 = NULL;
+    PRT_VALUE* PTMP_tmp2 = NULL;
+    PRT_VALUE* PTMP_tmp3 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
@@ -202,6 +204,25 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         PTMP_tmp0 = NULL;
     }
     
+    PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp1);
+    PrtFreeValue(*P_LVALUE_2);
+    *P_LVALUE_2 = PrtCloneValue(p_this->varValues[0]);
+    
+    PRT_VALUE** P_LVALUE_3 = &(PTMP_tmp2);
+    PrtFreeValue(*P_LVALUE_3);
+    *P_LVALUE_3 = PrtCloneValue((&P_EVENT_Pong.value));
+    
+    PrtSendInternal(context, PrtGetMachine(context->process, PTMP_tmp1), PTMP_tmp2, 0);
+    *(&(PTMP_tmp2)) = NULL;
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
     PrtFreeValue(P_InitializePongEnclave_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
@@ -212,17 +233,19 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return;
     }
     
-    PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp1);
-    PrtFreeValue(*P_LVALUE_2);
-    *P_LVALUE_2 = PrtCloneValue((&P_EVENT_Success.value));
+    PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp3);
+    PrtFreeValue(*P_LVALUE_4);
+    *P_LVALUE_4 = PrtCloneValue((&P_EVENT_Success.value));
     
-    PrtRaise(p_this, PTMP_tmp1, 0);
-    *(&(PTMP_tmp1)) = NULL;
+    PrtRaise(p_this, PTMP_tmp3, 0);
+    *(&(PTMP_tmp3)) = NULL;
     goto p_return;
     
 p_return: ;
     PrtFreeValue(PTMP_tmp0); PTMP_tmp0 = NULL;
     PrtFreeValue(PTMP_tmp1); PTMP_tmp1 = NULL;
+    PrtFreeValue(PTMP_tmp2); PTMP_tmp2 = NULL;
+    PrtFreeValue(PTMP_tmp3); PTMP_tmp3 = NULL;
     return _P_GEN_retval;
 }
 
@@ -280,10 +303,10 @@ PRT_EVENTSETDECL P_EVENTSET_Init_DEFERS =
     NULL
 };
 
-PRT_EVENTDECL* P_Init_TRANS_INNER[] = { NULL };
+PRT_EVENTDECL* P_Init_TRANS_INNER[] = { &P_EVENT_Pong };
 PRT_EVENTSETDECL P_EVENTSET_Init_TRANS =
 {
-    0U,
+    1U,
     P_Init_TRANS_INNER,
     NULL
 };
@@ -296,21 +319,64 @@ PRT_EVENTSETDECL P_EVENTSET_Init_DOS =
     NULL
 };
 
+PRT_TRANSDECL P_TRANS_1[] =
+{
+    { 0, &P_EVENT_Pong, 1, &_P_NO_OP }
+};
+
 #define P_STATE_Temp_Init \
 { \
     "Temp.Init", \
-    0U, \
+    1U, \
     0U, \
     &P_EVENTSET_Init_DEFERS, \
     &P_EVENTSET_Init_TRANS, \
     &P_EVENTSET_Init_DOS, \
+    P_TRANS_1, \
+    NULL, \
+    &_P_NO_OP, \
+    &_P_NO_OP, \
+}
+
+PRT_EVENTDECL* P_Done_DEFERS_INNER_1[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Done_DEFERS_1 =
+{
+    0U,
+    P_Done_DEFERS_INNER_1,
+    NULL
+};
+
+PRT_EVENTDECL* P_Done_TRANS_INNER_1[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Done_TRANS_1 =
+{
+    0U,
+    P_Done_TRANS_INNER_1,
+    NULL
+};
+
+PRT_EVENTDECL* P_Done_DOS_INNER_1[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Done_DOS_1 =
+{
+    0U,
+    P_Done_DOS_INNER_1,
+    NULL
+};
+
+#define P_STATE_Temp_Done \
+{ \
+    "Temp.Done", \
+    0U, \
+    0U, \
+    &P_EVENTSET_Done_DEFERS_1, \
+    &P_EVENTSET_Done_TRANS_1, \
+    &P_EVENTSET_Done_DOS_1, \
     NULL, \
     NULL, \
     &_P_NO_OP, \
     &_P_NO_OP, \
 }
 
-PRT_STATEDECL P_Temp_STATES[] = { P_STATE_Temp_Init };
+PRT_STATEDECL P_Temp_STATES[] = { P_STATE_Temp_Init, P_STATE_Temp_Done };
 
 PRT_EVENTDECL* P_Temp_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_Temp_RECV_1 =
@@ -336,7 +402,7 @@ PRT_MACHINEDECL P_MACHINE_Temp =
     &P_EVENTSET_Temp_SEND,
     NULL,
     0U,
-    1U,
+    2U,
     0U,
     4294967295U,
     0U,
