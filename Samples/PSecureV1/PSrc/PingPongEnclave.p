@@ -9,10 +9,17 @@ event Success;
 
 secure_machine Coordinator {
     var PongSecureChild: StringType;
+    var sidhu : int;
+
 
     start state Initial {
         entry {
-            PongSecureChild = new Pong();
+            //PongSecureChild = new Pong();
+            var kirat : secure_int;
+            kirat = 7 + 5;
+            sidhu = 122;
+            kirat = sidhu;
+            //sidhu = kirat;
         }
     }
 
@@ -23,6 +30,9 @@ secure_machine Pong {
 
     start state Initial {
         entry { 
+            var kirat : secure_int;
+            kirat = 7 + 5;
+            
             secureChildRegular = new SecureChild();
             PrintString(secureChildRegular);
             secure_send secureChildRegular, Pong;

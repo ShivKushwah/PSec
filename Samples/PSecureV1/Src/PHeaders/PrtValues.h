@@ -53,6 +53,8 @@ typedef enum PRT_VALUE_KIND
 	/**< The kind of bool values                 */
 	PRT_VALUE_KIND_INT = 2,
 	/**< The kind of int values                  */
+	PRT_VALUE_KIND_SECURE_INT = 12,
+	/**< The kind of secure_int values                  */
 	PRT_VALUE_KIND_FLOAT = 3,
 	/**< The kind of int values                  */
 	PRT_VALUE_KIND_EVENT = 4,

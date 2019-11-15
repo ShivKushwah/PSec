@@ -43,6 +43,8 @@ typedef enum PRT_TYPE_KIND
 	/**< The kind of the `MACHINE` type         */
 	PRT_KIND_INT = 5,
 	/**< The kind of the `int` type        */
+	PRT_KIND_SECURE_INT = 14,
+		/**< The kind of the `secure_int` type        */
 	PRT_KIND_FLOAT = 6,
 	/**< The kind of the `int` type        */
 	PRT_KIND_MAP = 7,
