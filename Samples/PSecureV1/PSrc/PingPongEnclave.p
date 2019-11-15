@@ -10,6 +10,7 @@ event Success;
 secure_machine Coordinator {
     var PongSecureChild: StringType;
     var sidhu : int;
+    var har : secure_int;
 
 
     start state Initial {
@@ -17,9 +18,14 @@ secure_machine Coordinator {
             //PongSecureChild = new Pong();
             var kirat : secure_int;
             kirat = 7 + 5;
+            har = 17;
+            kirat = kirat + har; //TODO this doesn't work for some rason!
             sidhu = 122;
             kirat = sidhu;
-            //sidhu = kirat;
+            // if (sidhu) {
+            //     print "Kirat";
+            // }
+            // sidhu = kirat;
         }
     }
 
