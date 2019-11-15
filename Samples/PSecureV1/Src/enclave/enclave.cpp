@@ -263,18 +263,14 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
     snprintf(createMachineRequest, requestSize, "Create:%s:%s", currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
     
-    // char** machineNameWrapper = (char*) malloc(sizeof(char*));
-    // *machineNameWrapper = currentMachineIDPublicKey;
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine is sending out the following network request:", machineNameWrapper, 1)); //TODO use this method for all future ocall_prints
-    // ocall_print("Pong machine is sending out following network request: ");
     ocall_print(createMachineRequest);
     int ret_value;
     ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING);
     
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine has created a new machine with Identity Public Key as:", machineNameWrapper2, 1)); //TODO use this method for all future ocall_prints
-    // ocall_print("Pong Machine has created a new machine with Identity Public Key as: ");
     ocall_print(newMachinePublicIDKey);
 
     //Now, need to retrieve capabilityKey for this newMachinePublicIDKey and store (thisMachineID, newMachinePublicIDKey) -> capabilityKey
@@ -286,7 +282,6 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     
     char* machineNameWrapper3[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine has received capability key for secure child:", machineNameWrapper3, 1)); //TODO use this method for all future ocall_prints
-    ocall_print("Pong Machine has received capability key for secure child: ");
     ocall_print(capabilityKey);
 
     PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey);
@@ -301,10 +296,17 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 {
     //TODO take event as input
 
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+
     ocall_print("Entered Secure Send");
 
-    char* currentMachineIDPublicKey = "PongPublic"; //TODO Unhardcode this
-    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+    char* currentMachineIDPublicKey;
+    if (currentMachinePID == 1) { //TODO Check if name is "Coordinator", not just by id
+        currentMachineIDPublicKey = "Coordinator";
+    } else {
+        currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+        snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
+    } 
 
     PRT_VALUE** P_ToMachine_Payload = argRefs[0];
     PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
