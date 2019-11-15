@@ -17,15 +17,14 @@ secure_machine Coordinator {
         entry {
             //PongSecureChild = new Pong();
             var kirat : secure_int;
-            kirat = 7 + 5;
+            kirat = (7 + 5) + 8 + 9;
             har = 17;
-            kirat = kirat + har; //TODO this doesn't work for some rason!
-            sidhu = 122;
+            kirat = kirat + har;
             kirat = sidhu;
             // if (sidhu) {
             //     print "Kirat";
             // }
-            // sidhu = kirat;
+            //sidhu = kirat + 7;
         }
     }
 
