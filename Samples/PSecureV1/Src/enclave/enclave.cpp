@@ -151,25 +151,6 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
 
 }
 
-extern "C" void P_SecureSendPongEventToPingMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{  
-    int ret;
-    char* other_machine_name = "PingMachine";
-    // Copy the Pong event's ID as the message to be sent
-    memcpy(secure_message, itoa(P_EVENT_Pong.value.valueUnion.ev, secure_message, 10), SIZE_OF_MESSAGE);
-    ocall_pong_enclave_attestation_in_thread(&ret, other_machine_name, strlen(other_machine_name)+1, 0, "");
-}
-
-int handle_incoming_events_pong_enclave(PRT_UINT32 eventIdentifier) {
-    PRT_VALUE* pingEvent = PrtMkEventValue(eventIdentifier);
-    PRT_MACHINEID pongId;
-    pongId.machineId = 2;
-
-    PRT_MACHINEINST* pongMachine = PrtGetMachine(process, PrtMkMachineValue(pongId));
-    PrtSend(NULL, pongMachine, pingEvent, 0);
-    return 0;
-}
-
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID) {
     PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
     PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
@@ -323,12 +304,15 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
         int requestSize = 8 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
         char* initComRequest = (char*) malloc(requestSize);
         snprintf(initComRequest, requestSize, "InitComm:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID);
-        ocall_print("Pong machine is sending out following network request: ");
+        
+        char* machineNameWrapper[] = {currentMachineIDPublicKey};
+        ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));
         ocall_print(initComRequest);
         char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
         int ret_value;
         ocall_network_request(&ret_value, initComRequest, newSessionKey, SIZE_OF_SESSION_KEY);
-        ocall_print("Pong Machine has received new session key: ");
+        char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+        ocall_print(generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1));       
         ocall_print(newSessionKey);
         PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
     }
@@ -343,77 +327,20 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     int requestSize = 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1;
     char* secureSendRequest = (char*) malloc(requestSize);
     snprintf(secureSendRequest, requestSize, "Send:%s:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID, event);
-    ocall_print("Pong machine is sending out following network request: ");
+    char* machineNameWrapper[] = {currentMachineIDPublicKey};
+    ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));      
     ocall_print(secureSendRequest);
     char* empty;
     int ret_value;
     ocall_network_request(&ret_value, secureSendRequest, empty, 0);
-    ocall_print("Pong Machine has succesfully sent message");
 
-
-
-
-
-
+    char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+    ocall_print(generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1));       
+    
     // ocall_print("String P value is:");
     // ocall_print((char*) val);
-
-
     
 }
-
-// extern "C" PRT_MACHINEINST* P_CreateMachineSecureChild2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-// {
-//     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
-//     //TODO extract the newMachineType from the argument and extract current public identity from PID
-//     char* requestedNewMachineTypeToCreate = "SecureChild";
-//     char* currentMachineIDPublicKey = "PongPublic"; //TODO Unhardcode this
-//     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-//     int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1;
-//     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
-//     snprintf(createMachineRequest, requestSize, "Create:%s:%s", currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
-//     ocall_print("Pong machine is sending out following network request: ");
-//     ocall_print(createMachineRequest);
-//     int ret_value;
-//     ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING);
-//     ocall_print("Pong Machine has created a new machine with Identity Public Key as: ");
-//     ocall_print(newMachinePublicIDKey);
-
-//     //Now, need to retrieve capabilityKey for this newMachinePublicIDKey and store (thisMachineID, newMachinePublicIDKey) -> capabilityKey
-//     requestSize = 6 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1;
-//     char* getChildMachineIDRequest = (char*) malloc(requestSize);
-//     snprintf(getChildMachineIDRequest, requestSize, "GetKey:%s:%s", currentMachineIDPublicKey, newMachinePublicIDKey);
-//     //string request = "GetKey:" + string(currentMachineIDPublicKey) + ":" + string(newMachinePublicIDKey);//TODO unhardcode current Machine name
-//     //TODO replace above line with snprintf as did with createMachineRequest, and do this everywhere in code
-//     //char* getChildMachineIDRequest = (char*) request.c_str(); 
-//     char* capabilityKey = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey);//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
-//     //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
-//     ocall_print("Pong Machine has received capability key for secure child: ");
-//     ocall_print(capabilityKey);
-
-//     PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey);
-
-//     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
-//     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-// 	sprintf_s(str, 100, newMachinePublicIDKey);
-//     // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-//     PRT_MACHINEINST_PRIV* new_machine_context = (PRT_MACHINEINST_PRIV*)PrtCalloc(1, sizeof(PRT_MACHINEINST_PRIV));
-//     //(PRT_MACHINEINST*)
-//     new_machine_context->id = (PRT_VALUE*)str;
-//     return (PRT_MACHINEINST*)new_machine_context;//PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-// }
-
-// extern "C" void P_PrintMachineID_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-// {
-//    //PRT_VALUE** P_VAR_payload = argRefs[0];
-//    //PRT_MACHINEID mid = PrtPrimGetMachine(*P_VAR_payload);
-//    //PrtGetMachine()
-
-
-
-// }
-
-
 
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
     int ret;
