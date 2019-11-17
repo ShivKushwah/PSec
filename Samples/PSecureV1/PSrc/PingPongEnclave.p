@@ -8,7 +8,7 @@ fun SecureSend(sendingToMachine : StringType, eventToSend : event);
 event Success;
 
 secure_machine Coordinator {
-    // var PongSecureChild: StringType;
+    var PongSecureChild: StringType;
     var sidhu : int;
     var har : secure_int;
     var b : bool;
@@ -17,9 +17,9 @@ secure_machine Coordinator {
 
     start state Initial {
         entry {
-
-            //PongSecureChild = new Pong();
             var kirat : secure_int;
+
+            PongSecureChild = new Pong();
             kirat = (7 + 5) + 8 + 9;
             har = 17;
             kirat = kirat + har;
@@ -76,6 +76,51 @@ secure_machine Coordinator {
                 kirat = 9;
             }
 
+
+            if (b == bb) {
+
+                kirat = sidhu;
+
+                if (kirat == sidhu) {
+                    kirat = sidhu - 1;
+                } else {
+                    kirat = 17;
+                }
+
+            } else {
+                kirat = sidhu + 1;
+            }
+
+            if (b == b) {
+
+                kirat = sidhu;
+
+                if (sidhu == sidhu) {
+                    sidhu = sidhu - 1;
+                } else {
+                    sidhu = 17;
+                }
+
+            } else {
+                kirat = sidhu + 1;
+            }
+
+
+
+            // if (b == bb) {
+
+            //     kirat = sidhu;
+
+            //     if (sidhu == sidhu) {
+            //         sidhu = sidhu - 1;
+            //     } else {
+            //         sidhu = 17;
+            //     }
+
+            // } else {
+            //     kirat = sidhu + 1;
+            // }
+
             // if (b == bb) {
             //     kirat = 8;
             //     sidhu = 7;
@@ -115,41 +160,47 @@ secure_machine Coordinator {
 
 }
 
-// secure_machine Pong {
-//     var secureChildRegular: StringType;
+secure_machine Pong {
+    var secureChildRegular: StringType;
+    var sBool : secure_bool;
 
-//     start state Initial {
-//         entry { 
-//             var kirat : secure_int;
-//             kirat = 7 + 5;
+    start state Initial {
+        entry { 
+            var kirat : secure_int;
+            kirat = 7 + 5;
             
-//             secureChildRegular = new SecureChild();
-//             PrintString(secureChildRegular);
-//             secure_send secureChildRegular, Pong;
-//             secure_send secureChildRegular, Pong;
-//         } 
-//         on Ping goto Pong_SendingPong; 
-//     }
+            secureChildRegular = new SecureChild();
+            PrintString(secureChildRegular);
+            secure_send secureChildRegular, Pong;
+            secure_send secureChildRegular, Pong;
 
-//     state Pong_SendingPong {
-//         entry {
-// 	        raise Success;		 	  
-// 	    }
-//         on Success goto Done;
-//     }
+            // if (sBool) {
+            //     secure_send secureChildRegular, Pong;
+            //     secure_send secureChildRegular, Pong;
+            // }
+        } 
+        on Ping goto Pong_SendingPong; 
+    }
 
-//     state Done { }
-// }
+    state Pong_SendingPong {
+        entry {
+	        raise Success;		 	  
+	    }
+        on Success goto Done;
+    }
 
-// secure_machine SecureChild {
-//     start state Initial {
-//         on Pong goto Next;
+    state Done { }
+}
 
-//     }
+secure_machine SecureChild {
+    start state Initial {
+        on Pong goto Next;
 
-//     state Next {
-//         on Pong goto Done;
-//     }
+    }
 
-//     state Done { }
-// }
+    state Next {
+        on Pong goto Done;
+    }
+
+    state Done { }
+}
