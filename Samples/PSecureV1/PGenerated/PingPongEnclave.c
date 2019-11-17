@@ -161,6 +161,8 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp5 = NULL;
     PRT_VALUE* PTMP_tmp6 = NULL;
     PRT_VALUE* PTMP_tmp7 = NULL;
+    PRT_VALUE* PTMP_tmp8 = NULL;
+    PRT_VALUE* PTMP_tmp9 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 7 } };
@@ -343,6 +345,64 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     }
     
     
+    PRT_VALUE** P_LVALUE_28 = &(PTMP_tmp8);
+    PrtFreeValue(*P_LVALUE_28);
+    *P_LVALUE_28 = PrtMkBoolValue(PrtIsEqualValue(P_VAR_kirat, p_this->varValues[0]));
+    
+    if (PrtPrimGetBool(PTMP_tmp8))
+    {
+        PRT_VALUE** P_LVALUE_29 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_29);
+        *P_LVALUE_29 = PrtCloneValue((&P_LIT_INT32_2));
+        
+        PRT_VALUE** P_LVALUE_30 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_30);
+        *P_LVALUE_30 = PrtCloneValue((&P_LIT_INT32));
+        
+    }
+    
+    else
+    {
+        PRT_VALUE** P_LVALUE_31 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_31);
+        *P_LVALUE_31 = PrtCloneValue((&P_LIT_INT32_5));
+        
+        PRT_VALUE** P_LVALUE_32 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_32);
+        *P_LVALUE_32 = PrtCloneValue((&P_LIT_INT32_3));
+        
+    }
+    
+    
+    PRT_VALUE** P_LVALUE_33 = &(PTMP_tmp9);
+    PrtFreeValue(*P_LVALUE_33);
+    *P_LVALUE_33 = PrtMkBoolValue(PrtIsEqualValue(p_this->varValues[2], p_this->varValues[3]));
+    
+    if (PrtPrimGetBool(PTMP_tmp9))
+    {
+        PRT_VALUE** P_LVALUE_34 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_34);
+        *P_LVALUE_34 = PrtCloneValue((&P_LIT_INT32_2));
+        
+        PRT_VALUE** P_LVALUE_35 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_35);
+        *P_LVALUE_35 = PrtCloneValue((&P_LIT_INT32));
+        
+    }
+    
+    else
+    {
+        PRT_VALUE** P_LVALUE_36 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_36);
+        *P_LVALUE_36 = PrtCloneValue((&P_LIT_INT32_5));
+        
+        PRT_VALUE** P_LVALUE_37 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_37);
+        *P_LVALUE_37 = PrtCloneValue((&P_LIT_INT32_3));
+        
+    }
+    
+    
 p_return: ;
     PrtFreeValue(P_VAR_kirat); P_VAR_kirat = NULL;
     PrtFreeValue(PTMP_tmp0); PTMP_tmp0 = NULL;
@@ -353,6 +413,8 @@ p_return: ;
     PrtFreeValue(PTMP_tmp5); PTMP_tmp5 = NULL;
     PrtFreeValue(PTMP_tmp6); PTMP_tmp6 = NULL;
     PrtFreeValue(PTMP_tmp7); PTMP_tmp7 = NULL;
+    PrtFreeValue(PTMP_tmp8); PTMP_tmp8 = NULL;
+    PrtFreeValue(PTMP_tmp9); PTMP_tmp9 = NULL;
     return _P_GEN_retval;
 }
 

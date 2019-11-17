@@ -60,6 +60,38 @@ secure_machine Coordinator {
                 kirat = 9;
             }
 
+            if (kirat == sidhu) {
+                kirat = 8;
+                kirat = 7;
+            } else {
+                kirat = 6;
+                kirat = 9;
+            }
+
+            if (b == bb) {
+                kirat = 8;
+                kirat = 7;
+            } else {
+                kirat = 6;
+                kirat = 9;
+            }
+
+            // if (b == bb) {
+            //     kirat = 8;
+            //     sidhu = 7;
+            // } else {
+            //     kirat = 6;
+            //     kirat = 9;
+            // }
+
+            // if (kirat == sidhu) {
+            //     kirat = 8;
+            //     sidhu = 7;
+            // } else {
+            //     kirat = 6;
+            //     kirat = 9;
+            // }
+
             // if (kirat == 7) {
             //     kirat = 8;
             //     sidhu = 7;
