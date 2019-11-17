@@ -157,6 +157,10 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp1 = NULL;
     PRT_VALUE* PTMP_tmp2 = NULL;
     PRT_VALUE* PTMP_tmp3 = NULL;
+    PRT_VALUE* PTMP_tmp4 = NULL;
+    PRT_VALUE* PTMP_tmp5 = NULL;
+    PRT_VALUE* PTMP_tmp6 = NULL;
+    PRT_VALUE* PTMP_tmp7 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 7 } };
@@ -164,6 +168,7 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE P_LIT_INT32_2 = { PRT_VALUE_KIND_INT, { .nt = 8 } };
     PRT_VALUE P_LIT_INT32_3 = { PRT_VALUE_KIND_INT, { .nt = 9 } };
     PRT_VALUE P_LIT_INT32_4 = { PRT_VALUE_KIND_INT, { .nt = 17 } };
+    PRT_VALUE P_LIT_INT32_5 = { PRT_VALUE_KIND_INT, { .nt = 6 } };
     PRT_VALUE P_LIT_BOOLEAN = { PRT_VALUE_KIND_BOOL, { .bl = PRT_TRUE } };
     PRT_VALUE P_LIT_BOOLEAN_1 = { PRT_VALUE_KIND_BOOL, { .bl = PRT_FALSE } };
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
@@ -216,12 +221,138 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PrtFreeValue(*P_LVALUE_10);
     *P_LVALUE_10 = PrtCloneValue(p_this->varValues[2]);
     
+    PRT_VALUE** P_LVALUE_11 = &(PTMP_tmp4);
+    PrtFreeValue(*P_LVALUE_11);
+    *P_LVALUE_11 = PrtCloneValue((&P_LIT_BOOLEAN));
+    
+    if (PrtPrimGetBool(PTMP_tmp4))
+    {
+        PRT_VALUE** P_LVALUE_12 = &(PTMP_tmp4);
+        PrtFreeValue(*P_LVALUE_12);
+        *P_LVALUE_12 = PrtCloneValue((&P_LIT_BOOLEAN_1));
+        
+    }
+    
+    
+    {
+        PRT_VALUE** P_LVALUE_13 = &(p_this->varValues[3]);
+        PrtFreeValue(*P_LVALUE_13);
+        *P_LVALUE_13 = PTMP_tmp4;
+        PTMP_tmp4 = NULL;
+    }
+    
+    PRT_VALUE** P_LVALUE_14 = &(PTMP_tmp5);
+    PrtFreeValue(*P_LVALUE_14);
+    *P_LVALUE_14 = PrtCloneValue(p_this->varValues[3]);
+    
+    if (PrtPrimGetBool(PTMP_tmp5))
+    {
+        PRT_VALUE** P_LVALUE_15 = &(PTMP_tmp5);
+        PrtFreeValue(*P_LVALUE_15);
+        *P_LVALUE_15 = PrtCloneValue((&P_LIT_BOOLEAN_1));
+        
+    }
+    
+    
+    {
+        PRT_VALUE** P_LVALUE_16 = &(p_this->varValues[3]);
+        PrtFreeValue(*P_LVALUE_16);
+        *P_LVALUE_16 = PTMP_tmp5;
+        PTMP_tmp5 = NULL;
+    }
+    
+    if (PrtPrimGetBool((&P_LIT_BOOLEAN)))
+    {
+        PrtPrintf("Kirat");
+        
+    }
+    
+    else
+    {
+    }
+    
+    
+    if (PrtPrimGetBool(p_this->varValues[2]))
+    {
+        PRT_VALUE** P_LVALUE_17 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_17);
+        *P_LVALUE_17 = PrtCloneValue((&P_LIT_INT32));
+        
+        PRT_VALUE** P_LVALUE_18 = &(p_this->varValues[0]);
+        PrtFreeValue(*P_LVALUE_18);
+        *P_LVALUE_18 = PrtCloneValue((&P_LIT_INT32_3));
+        
+    }
+    
+    else
+    {
+        PRT_VALUE** P_LVALUE_19 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_19);
+        *P_LVALUE_19 = PrtCloneValue((&P_LIT_INT32_5));
+        
+    }
+    
+    
+    PRT_VALUE** P_LVALUE_20 = &(PTMP_tmp6);
+    PrtFreeValue(*P_LVALUE_20);
+    *P_LVALUE_20 = PrtMkBoolValue(PrtIsEqualValue(P_VAR_kirat, (&P_LIT_INT32)));
+    
+    if (PrtPrimGetBool(PTMP_tmp6))
+    {
+        PRT_VALUE** P_LVALUE_21 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_21);
+        *P_LVALUE_21 = PrtCloneValue((&P_LIT_INT32_2));
+        
+    }
+    
+    else
+    {
+        PRT_VALUE** P_LVALUE_22 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_22);
+        *P_LVALUE_22 = PrtCloneValue((&P_LIT_INT32_5));
+        
+    }
+    
+    
+    PRT_VALUE** P_LVALUE_23 = &(PTMP_tmp7);
+    PrtFreeValue(*P_LVALUE_23);
+    *P_LVALUE_23 = PrtMkBoolValue(PrtIsEqualValue(P_VAR_kirat, (&P_LIT_INT32)));
+    
+    if (PrtPrimGetBool(PTMP_tmp7))
+    {
+        PRT_VALUE** P_LVALUE_24 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_24);
+        *P_LVALUE_24 = PrtCloneValue((&P_LIT_INT32_2));
+        
+        PRT_VALUE** P_LVALUE_25 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_25);
+        *P_LVALUE_25 = PrtCloneValue((&P_LIT_INT32));
+        
+    }
+    
+    else
+    {
+        PRT_VALUE** P_LVALUE_26 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_26);
+        *P_LVALUE_26 = PrtCloneValue((&P_LIT_INT32_5));
+        
+        PRT_VALUE** P_LVALUE_27 = &(P_VAR_kirat);
+        PrtFreeValue(*P_LVALUE_27);
+        *P_LVALUE_27 = PrtCloneValue((&P_LIT_INT32_3));
+        
+    }
+    
+    
 p_return: ;
     PrtFreeValue(P_VAR_kirat); P_VAR_kirat = NULL;
     PrtFreeValue(PTMP_tmp0); PTMP_tmp0 = NULL;
     PrtFreeValue(PTMP_tmp1); PTMP_tmp1 = NULL;
     PrtFreeValue(PTMP_tmp2); PTMP_tmp2 = NULL;
     PrtFreeValue(PTMP_tmp3); PTMP_tmp3 = NULL;
+    PrtFreeValue(PTMP_tmp4); PTMP_tmp4 = NULL;
+    PrtFreeValue(PTMP_tmp5); PTMP_tmp5 = NULL;
+    PrtFreeValue(PTMP_tmp6); PTMP_tmp6 = NULL;
+    PrtFreeValue(PTMP_tmp7); PTMP_tmp7 = NULL;
     return _P_GEN_retval;
 }
 

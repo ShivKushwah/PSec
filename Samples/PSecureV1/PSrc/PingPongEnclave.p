@@ -27,6 +27,52 @@ secure_machine Coordinator {
             b = true;
             bb = false;
             bb = b;
+            bb = true && false;
+            bb = bb && false;
+            if (true) {
+                print "Kirat";
+            }
+
+            if (b) {
+                kirat = 7;
+                sidhu = 9;
+            } else {
+                kirat = 6;
+            }
+
+            // if (kirat == 7) {
+            //     sidhu = 7;
+            // } else {
+            //     sidhu = 6;
+            // }
+
+            if (kirat == 7) {
+                kirat = 8;
+            } else {
+                kirat = 6;
+            }
+
+            if (kirat == 7) {
+                kirat = 8;
+                kirat = 7;
+            } else {
+                kirat = 6;
+                kirat = 9;
+            }
+
+            // if (kirat == 7) {
+            //     kirat = 8;
+            //     sidhu = 7;
+            // } else {
+            //     kirat = 6;
+            //     kirat = 9;
+            // }
+
+
+
+
+
+            //b = true && bb;
             // b = bb;
             // if (sidhu) {
             //     print "Kirat";
