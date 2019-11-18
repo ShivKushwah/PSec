@@ -151,10 +151,15 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
 
 }
 
-int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID) {
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, char* payload) {
     PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
     PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
-    PrtSend(NULL, machine, event, 0);
+    if (numArgs == 0) {
+        PrtSend(NULL, machine, event, 0);
+    } else {
+        PRT_VALUE* prtPayload =  deserializeStringToPrtValue(numArgs, payload);
+        PrtSend(NULL, machine, event, numArgs, &prtPayload);
+    }
     return 0;
 }
 
@@ -275,8 +280,6 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 
 extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    //TODO take event as input
-
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
 
     ocall_print("Entered Secure Send");
@@ -321,12 +324,34 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))];
     //TODO use sessionKey to encrypt message
     PRT_VALUE** P_Event_Payload = argRefs[1];
-    char* event = (char*) malloc(10);
-    itoa((*P_Event_Payload)->valueUnion.ev , event, 10);
+    char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
+    itoa((*P_Event_Payload)->valueUnion.ev , event, SIZE_OF_MAX_EVENT_NAME);
 
-    int requestSize = 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1;
+    const int size_of_max_num_args = 10;
+
+    PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
+    int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
+    char* numArgsPayload = (char*) malloc(size_of_max_num_args);
+    itoa(numArgs, numArgsPayload, SIZE_OF_MAX_EVENT_PAYLOAD);
+
+    char* eventMessagePayload = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
+
+    for (int i = 0; i < numArgs; i++) {
+        PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];
+        char* payload = serializePrtValueToString(*P_EventMessage_Payload);
+        //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
+        if (i == 0) {
+            char* parameters[] = {payload};
+            eventMessagePayload = generateCStringFromFormat("%s", parameters, 1);
+        } else {
+            char* parameters[] = {eventMessagePayload, payload};
+            eventMessagePayload = generateCStringFromFormat("%s:%s", parameters, 2);
+        }
+    }
+
+    int requestSize = 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + size_of_max_num_args + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* secureSendRequest = (char*) malloc(requestSize);
-    snprintf(secureSendRequest, requestSize, "Send:%s:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID, event);
+    snprintf(secureSendRequest, requestSize, "Send:%s:%s:%s:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgsPayload, eventMessagePayload);
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));      
     ocall_print(secureSendRequest);
@@ -335,11 +360,32 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     ocall_network_request(&ret_value, secureSendRequest, empty, 0);
 
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1));       
-    
-    // ocall_print("String P value is:");
-    // ocall_print((char*) val);
-    
+    ocall_print(generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1));
+}
+
+char* serializePrtValueToString(PRT_VALUE* value) {
+    //TODO code the rest of the types
+    if (value->discriminator == PRT_VALUE_KIND_INT) {
+        char* integer = (char*) malloc(10);
+        itoa(value->valueUnion.nt, integer, 10);
+        return integer;
+    } else {
+        return "UNSUPPORTED_TYPE";
+    }
+
+}
+
+PRT_VALUE* deserializeStringToPrtValue(int numArgs, char* str) {
+    //TODO code the rest of the types (only int is coded for now)
+    PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
+    for (int i = 0; i < numArgs; i++) {
+        char* split = strtok(str, ":");
+        values[i] = (PRT_VALUE*)PrtMalloc(sizeof(PRT_VALUE));
+        values[i]->discriminator = PRT_VALUE_KIND_INT;
+        values[i]->valueUnion.nt = atoi(split);
+    }
+    //call MakeTupleFromArray if necessary
+    return *values;
 }
 
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
@@ -444,15 +490,15 @@ void generateSessionKey(string& newSessionKey) {
     SESSION_KEY_GENERATOR_SEED += 1;
 } 
 
-int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* message, uint32_t ID_SIZE, uint32_t MAX_MESSAGE_SIZE) {
-    //TODO message should be encrypted and requestingMachineIDKey should be verified with signature
+int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* eventNum, char* numArgs, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
+    //TODO eventNum should be encrypted and requestingMachineIDKey should be verified with signature
     PRT_MACHINEID receivingMachinePID;
     ocall_print("SecureChildMachine has a PID of:");
     char* temp = (char*) malloc(10);
     snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
     ocall_print(temp);
     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
-   handle_incoming_event(atoi(message), receivingMachinePID);
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, atoi(numArgs), payload);
 
 }
 

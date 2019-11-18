@@ -35,11 +35,15 @@ enclave {
                                              [out, size=SESSION_SIZE]char* returnSessionKey, 
                                               uint32_t ID_SIZE,
                                              uint32_t SESSION_SIZE);
+
         public int sendMessageAPI([in, size=ID_SIZE]char* requestingMachineIDKey, 
                                  [in, size=ID_SIZE]char* receivingMachineIDKey, 
                                 [in, size=MESSAGE_SIZE]char* message,
+                                [in, size=10]char* numArgs,
+                                [in, size=MAX_PAYLOAD_SIZE]char* payload,
                                  uint32_t ID_SIZE,
-                                uint32_t MESSAGE_SIZE);
+                                uint32_t MESSAGE_SIZE,
+                                uint32_t MAX_PAYLOAD_SIZE);
 
 
 

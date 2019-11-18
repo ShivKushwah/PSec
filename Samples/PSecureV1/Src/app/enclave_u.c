@@ -68,8 +68,11 @@ typedef struct ms_sendMessageAPI_t {
 	char* ms_requestingMachineIDKey;
 	char* ms_receivingMachineIDKey;
 	char* ms_message;
+	char* ms_numArgs;
+	char* ms_payload;
 	uint32_t ms_ID_SIZE;
 	uint32_t ms_MESSAGE_SIZE;
+	uint32_t ms_MAX_PAYLOAD_SIZE;
 } ms_sendMessageAPI_t;
 
 typedef struct ms_sgx_ra_get_ga_t {
@@ -428,15 +431,18 @@ sgx_status_t initializeCommunicationAPI(sgx_enclave_id_t eid, int* retval, char*
 	return status;
 }
 
-sgx_status_t sendMessageAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* message, uint32_t ID_SIZE, uint32_t MESSAGE_SIZE)
+sgx_status_t sendMessageAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* message, char* numArgs, char* payload, uint32_t ID_SIZE, uint32_t MESSAGE_SIZE, uint32_t MAX_PAYLOAD_SIZE)
 {
 	sgx_status_t status;
 	ms_sendMessageAPI_t ms;
 	ms.ms_requestingMachineIDKey = requestingMachineIDKey;
 	ms.ms_receivingMachineIDKey = receivingMachineIDKey;
 	ms.ms_message = message;
+	ms.ms_numArgs = numArgs;
+	ms.ms_payload = payload;
 	ms.ms_ID_SIZE = ID_SIZE;
 	ms.ms_MESSAGE_SIZE = MESSAGE_SIZE;
+	ms.ms_MAX_PAYLOAD_SIZE = MAX_PAYLOAD_SIZE;
 	status = sgx_ecall(eid, 9, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;

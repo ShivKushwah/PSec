@@ -40,6 +40,9 @@ const int SIZE_OF_CAPABILITYKEY = 20;
 const int SIZE_OF_SESSION_KEY = 20;
 const int SIZE_OF_MAX_MESSAGE = 20;
 
+const int SIZE_OF_MAX_EVENT_NAME = 20;
+const int SIZE_OF_MAX_EVENT_PAYLOAD = 100;
+
 
 
 struct Encrypted_Message{

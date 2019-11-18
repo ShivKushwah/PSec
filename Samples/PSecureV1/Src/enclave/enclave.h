@@ -16,6 +16,10 @@ const int SIZE_OF_NEWMACHINETYPE = 20;
 const int SIZE_OF_SESSION_KEY = 20;
 const int SIZE_OF_MAX_MESSAGE = 20;
 
+const int SIZE_OF_MAX_EVENT_NAME = 20;
+const int SIZE_OF_MAX_EVENT_PAYLOAD = 100;
+
+
 
 
 const int CREATE_CAPABILITY_KEY_CONSTANT = 1;
@@ -55,3 +59,6 @@ int machineTypeIsSecure(char* machineType);
 int getNextPID();
 
 char* generateCStringFromFormat(char* format_string, char** strings_to_print, int num_strings);
+
+char* serializePrtValueToString(PRT_VALUE* value);
+PRT_VALUE* deserializeStringToPrtValue(int numArgs, char* str);

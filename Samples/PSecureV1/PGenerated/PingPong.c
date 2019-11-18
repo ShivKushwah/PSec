@@ -5,8 +5,6 @@ static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
 static PRT_TYPE P_GEND_TYPE_m = { PRT_KIND_MACHINE, { NULL } };
 
 // Function implementation prototypes:
-PRT_VALUE* P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_InitializePongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -36,14 +34,6 @@ PRT_EVENTDECL P_EVENT_Success =
     4294967295U,
     &P_GEND_TYPE_n
 };
-
-PRT_FUNDECL P_FUNCTION_SecureSendPingEventToPongEnclave =
-{
-    "SecureSendPingEventToPongEnclave",
-    &P_SecureSendPingEventToPongEnclave_IMPL,
-    NULL
-};
-
 
 PRT_FUNDECL P_FUNCTION_InitializePongEnclave =
 {

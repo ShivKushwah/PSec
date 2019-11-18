@@ -1,6 +1,6 @@
 event Ping assert 2;
 event Pong assert 2;
-fun SecureSendPingEventToPongEnclave();
+//fun SecureSendPingEventToPongEnclave();
 fun InitializePongEnclave();
 event Success;
 

@@ -215,11 +215,15 @@ char* network_request_logic(char* request) {
         split = strtok(NULL, ":");
         char* machineReceivingMessage = split;
         split = strtok(NULL, ":");
-        char* message = split;
+        char* eventNum = split;
+        split = strtok(NULL, ":");
+        char* numArgs = split;
+        split = strtok(NULL, ":");
+        char* payload = split;
 
         int ptr;
         //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
-        sgx_status_t status = sendMessageAPI(global_eid, &ptr, machineSendingMessage,machineReceivingMessage, message, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE);
+        sgx_status_t status = sendMessageAPI(global_eid, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
         return temp;
 
 
