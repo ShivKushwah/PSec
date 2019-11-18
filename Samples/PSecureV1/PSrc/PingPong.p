@@ -1,5 +1,5 @@
 event Ping assert 2;
-event Pong assert 2;
+event Pong assert 2 : int;
 //fun SecureSendPingEventToPongEnclave();
 fun InitializePongEnclave();
 event Success;
@@ -10,7 +10,7 @@ machine Ping {
     start state Ping_Init {
         entry {
             pongId = new Temp();
-            send pongId, Pong;
+            send pongId, Pong, 4;
             InitializePongEnclave(); //Start up PrtTrusted in the Pong Enclave
     	    raise Success;   	   
         }

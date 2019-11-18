@@ -414,13 +414,12 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp6 = NULL;
     PRT_VALUE* PTMP_tmp7 = NULL;
     PRT_VALUE* PTMP_tmp8 = NULL;
-    PRT_VALUE* PTMP_tmp9 = NULL;
-    PRT_VALUE* PTMP_tmp10 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 7 } };
     PRT_VALUE P_LIT_INT32_1 = { PRT_VALUE_KIND_INT, { .nt = 5 } };
-    PRT_VALUE P_LIT_INT32_2 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
+    PRT_VALUE P_LIT_INT32_2 = { PRT_VALUE_KIND_INT, { .nt = 3 } };
+    PRT_VALUE P_LIT_INT32_3 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
     PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp0_1);
     PrtFreeValue(*P_LVALUE_2);
     *P_LVALUE_2 = PrtMkIntValue(PrtPrimGetInt((&P_LIT_INT32)) + PrtPrimGetInt((&P_LIT_INT32_1)));
@@ -481,23 +480,12 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PrtFreeValue(*P_LVALUE_9);
     *P_LVALUE_9 = PrtCloneValue((&P_LIT_INT32_2));
     
-    PRT_VALUE** P_LVALUE_10 = &(PTMP_tmp6);
-    PrtFreeValue(*P_LVALUE_10);
-    *P_LVALUE_10 = PrtCloneValue((&P_LIT_INT32));
-    
+    PRT_VALUE* P_PTMP_tmp = PrtCloneValue(&(P_LIT_INT32_3));
     _P_GEN_funargs[0] = &(PTMP_tmp3);
     _P_GEN_funargs[1] = &(PTMP_tmp4);
-    _P_GEN_funargs[2] = &(PTMP_tmp5);
-    _P_GEN_funargs[3] = &(PTMP_tmp6);
+    _P_GEN_funargs[2] = &(P_PTMP_tmp);
+    _P_GEN_funargs[3] = &(PTMP_tmp5);
     PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
-    PrtFreeValue(PTMP_tmp3);
-    PTMP_tmp3 = NULL;
-    PrtFreeValue(PTMP_tmp4);
-    PTMP_tmp4 = NULL;
-    PrtFreeValue(PTMP_tmp5);
-    PTMP_tmp5 = NULL;
-    PrtFreeValue(PTMP_tmp6);
-    PTMP_tmp6 = NULL;
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_1;
     }
@@ -507,35 +495,24 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return_1;
     }
     
+    PRT_VALUE** P_LVALUE_10 = &(PTMP_tmp6);
+    PrtFreeValue(*P_LVALUE_10);
+    *P_LVALUE_10 = PrtCloneValue(p_this->varValues[0]);
+    
     PRT_VALUE** P_LVALUE_11 = &(PTMP_tmp7);
     PrtFreeValue(*P_LVALUE_11);
-    *P_LVALUE_11 = PrtCloneValue(p_this->varValues[0]);
+    *P_LVALUE_11 = PrtCloneValue((&P_EVENT_Pong.value));
     
     PRT_VALUE** P_LVALUE_12 = &(PTMP_tmp8);
     PrtFreeValue(*P_LVALUE_12);
-    *P_LVALUE_12 = PrtCloneValue((&P_EVENT_Pong.value));
+    *P_LVALUE_12 = PrtCloneValue((&P_LIT_INT32_2));
     
-    PRT_VALUE** P_LVALUE_13 = &(PTMP_tmp9);
-    PrtFreeValue(*P_LVALUE_13);
-    *P_LVALUE_13 = PrtCloneValue((&P_LIT_INT32_2));
-    
-    PRT_VALUE** P_LVALUE_14 = &(PTMP_tmp10);
-    PrtFreeValue(*P_LVALUE_14);
-    *P_LVALUE_14 = PrtCloneValue((&P_LIT_INT32));
-    
-    _P_GEN_funargs[0] = &(PTMP_tmp7);
-    _P_GEN_funargs[1] = &(PTMP_tmp8);
-    _P_GEN_funargs[2] = &(PTMP_tmp9);
-    _P_GEN_funargs[3] = &(PTMP_tmp10);
+    PRT_VALUE* P_PTMP_tmp_1 = PrtCloneValue(&(P_LIT_INT32_3));
+    _P_GEN_funargs[0] = &(PTMP_tmp6);
+    _P_GEN_funargs[1] = &(PTMP_tmp7);
+    _P_GEN_funargs[2] = &(P_PTMP_tmp_1);
+    _P_GEN_funargs[3] = &(PTMP_tmp8);
     PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
-    PrtFreeValue(PTMP_tmp7);
-    PTMP_tmp7 = NULL;
-    PrtFreeValue(PTMP_tmp8);
-    PTMP_tmp8 = NULL;
-    PrtFreeValue(PTMP_tmp9);
-    PTMP_tmp9 = NULL;
-    PrtFreeValue(PTMP_tmp10);
-    PTMP_tmp10 = NULL;
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_1;
     }
@@ -556,8 +533,6 @@ p_return_1: ;
     PrtFreeValue(PTMP_tmp6); PTMP_tmp6 = NULL;
     PrtFreeValue(PTMP_tmp7); PTMP_tmp7 = NULL;
     PrtFreeValue(PTMP_tmp8); PTMP_tmp8 = NULL;
-    PrtFreeValue(PTMP_tmp9); PTMP_tmp9 = NULL;
-    PrtFreeValue(PTMP_tmp10); PTMP_tmp10 = NULL;
     return _P_GEN_retval;
 }
 
@@ -578,9 +553,9 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_2 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE** P_LVALUE_15 = &(PTMP_tmp0_2);
-    PrtFreeValue(*P_LVALUE_15);
-    *P_LVALUE_15 = PrtCloneValue((&P_EVENT_Success.value));
+    PRT_VALUE** P_LVALUE_13 = &(PTMP_tmp0_2);
+    PrtFreeValue(*P_LVALUE_13);
+    *P_LVALUE_13 = PrtCloneValue((&P_EVENT_Success.value));
     
     PrtRaise(p_this, PTMP_tmp0_2, 0);
     *(&(PTMP_tmp0_2)) = NULL;

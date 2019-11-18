@@ -37,8 +37,11 @@ secure_machine Pong {
             
             secureChildRegular = new SecureChild();
             PrintString(secureChildRegular);
-            SecureSend(secureChildRegular, Pong, 1, 7);
-            SecureSend(secureChildRegular, Pong, 1, 7);
+            // SecureSend(secureChildRegular, Pong, 1, 7);
+            // SecureSend(secureChildRegular, Pong, 1, 7);
+            secure_send secureChildRegular, Pong, 3;
+            secure_send secureChildRegular, Pong, 3;
+
             
             // secure_send secureChildRegular, Pong;
             // secure_send secureChildRegular, Pong;

@@ -157,8 +157,8 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
     if (numArgs == 0) {
         PrtSend(NULL, machine, event, 0);
     } else {
-        PRT_VALUE* prtPayload =  deserializeStringToPrtValue(numArgs, payload);
-        PrtSend(NULL, machine, event, numArgs, &prtPayload);
+        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload);
+        PrtSend(NULL, machine, event, numArgs, prtPayload);
     }
     return 0;
 }
@@ -375,7 +375,7 @@ char* serializePrtValueToString(PRT_VALUE* value) {
 
 }
 
-PRT_VALUE* deserializeStringToPrtValue(int numArgs, char* str) {
+PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str) {
     //TODO code the rest of the types (only int is coded for now)
     PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
     for (int i = 0; i < numArgs; i++) {
@@ -384,8 +384,7 @@ PRT_VALUE* deserializeStringToPrtValue(int numArgs, char* str) {
         values[i]->discriminator = PRT_VALUE_KIND_INT;
         values[i]->valueUnion.nt = atoi(split);
     }
-    //call MakeTupleFromArray if necessary
-    return *values;
+    return values;
 }
 
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {

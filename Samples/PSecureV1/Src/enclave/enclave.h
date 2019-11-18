@@ -61,4 +61,4 @@ int getNextPID();
 char* generateCStringFromFormat(char* format_string, char** strings_to_print, int num_strings);
 
 char* serializePrtValueToString(PRT_VALUE* value);
-PRT_VALUE* deserializeStringToPrtValue(int numArgs, char* str);
+PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str);

@@ -2,6 +2,7 @@
 
 // Type universe for program:
 static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
+static PRT_TYPE P_GEND_TYPE_i = { PRT_KIND_INT, { NULL } };
 static PRT_TYPE P_GEND_TYPE_m = { PRT_KIND_MACHINE, { NULL } };
 
 // Function implementation prototypes:
@@ -24,7 +25,7 @@ PRT_EVENTDECL P_EVENT_Pong =
     { PRT_VALUE_KIND_EVENT, 0U },
     "Pong",
     2U,
-    &P_GEND_TYPE_n
+    &P_GEND_TYPE_i
 };
 
 PRT_EVENTDECL P_EVENT_Success = 
@@ -172,8 +173,10 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp1 = NULL;
     PRT_VALUE* PTMP_tmp2 = NULL;
     PRT_VALUE* PTMP_tmp3 = NULL;
+    PRT_VALUE* PTMP_tmp4 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 4 } };
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
     _P_GEN_funargs[0] = "Temp";
@@ -202,7 +205,11 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PrtFreeValue(*P_LVALUE_3);
     *P_LVALUE_3 = PrtCloneValue((&P_EVENT_Pong.value));
     
-    PrtSendInternal(context, PrtGetMachine(context->process, PTMP_tmp1), PTMP_tmp2, 0);
+    PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp3);
+    PrtFreeValue(*P_LVALUE_4);
+    *P_LVALUE_4 = PrtCloneValue((&P_LIT_INT32));
+    
+    PrtSendInternal(context, PrtGetMachine(context->process, PTMP_tmp1), PTMP_tmp2, 1, &(PTMP_tmp3));
     *(&(PTMP_tmp2)) = NULL;
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
@@ -223,12 +230,12 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return;
     }
     
-    PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp3);
-    PrtFreeValue(*P_LVALUE_4);
-    *P_LVALUE_4 = PrtCloneValue((&P_EVENT_Success.value));
+    PRT_VALUE** P_LVALUE_5 = &(PTMP_tmp4);
+    PrtFreeValue(*P_LVALUE_5);
+    *P_LVALUE_5 = PrtCloneValue((&P_EVENT_Success.value));
     
-    PrtRaise(p_this, PTMP_tmp3, 0);
-    *(&(PTMP_tmp3)) = NULL;
+    PrtRaise(p_this, PTMP_tmp4, 0);
+    *(&(PTMP_tmp4)) = NULL;
     goto p_return;
     
 p_return: ;
@@ -236,6 +243,7 @@ p_return: ;
     PrtFreeValue(PTMP_tmp1); PTMP_tmp1 = NULL;
     PrtFreeValue(PTMP_tmp2); PTMP_tmp2 = NULL;
     PrtFreeValue(PTMP_tmp3); PTMP_tmp3 = NULL;
+    PrtFreeValue(PTMP_tmp4); PTMP_tmp4 = NULL;
     return _P_GEN_retval;
 }
 
