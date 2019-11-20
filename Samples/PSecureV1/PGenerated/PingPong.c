@@ -8,6 +8,8 @@ static PRT_TYPE P_GEND_TYPE_m = { PRT_KIND_MACHINE, { NULL } };
 // Function implementation prototypes:
 PRT_VALUE* P_InitializePongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
+PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
 
@@ -40,6 +42,14 @@ PRT_FUNDECL P_FUNCTION_InitializePongEnclave =
 {
     "InitializePongEnclave",
     &P_InitializePongEnclave_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_UntrustedCreateCoordinator =
+{
+    "UntrustedCreateCoordinator",
+    &P_UntrustedCreateCoordinator_IMPL,
     NULL
 };
 
@@ -220,7 +230,7 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return;
     }
     
-    PrtFreeValue(P_InitializePongEnclave_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedCreateCoordinator_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
     }

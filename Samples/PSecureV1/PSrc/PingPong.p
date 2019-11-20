@@ -2,6 +2,7 @@ event Ping assert 2;
 event Pong assert 2 : int;
 //fun SecureSendPingEventToPongEnclave();
 fun InitializePongEnclave();
+fun UntrustedCreateCoordinator();
 event Success;
 
 machine Ping {
@@ -11,7 +12,7 @@ machine Ping {
         entry {
             pongId = new Temp();
             send pongId, Pong, 4;
-            InitializePongEnclave(); //Start up PrtTrusted in the Pong Enclave
+            UntrustedCreateCoordinator(); //Start up PrtTrusted in the Pong Enclave
     	    raise Success;   	   
         }
         on Success goto Done;

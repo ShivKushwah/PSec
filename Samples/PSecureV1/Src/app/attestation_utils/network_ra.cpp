@@ -164,7 +164,10 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
     }
 }
 
-char* network_request_logic(char* request) {
+char* network_request_logic(char* request) { //TODO Make this function generalizable for multiple enclaves and machines
+
+    // printf("Network Request Received: %s", request);
+
     char* split = strtok(request, ":");
     if (strcmp(split, "Create") == 0) {
         char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
@@ -193,7 +196,18 @@ char* network_request_logic(char* request) {
     //     return retrieveCapabilityKey(currentMachineID, childMachineID);
 
     
-    }  else if (strcmp(split, "InitComm") == 0) {
+    }  else if (strcmp(split, "UntrustedCreate") == 0) {
+
+
+        split = "Coordinator";//strtok(NULL, ":");
+        char* machineType = split;
+
+        //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
+        sgx_status_t status = UntrustedCreateMachineAPI(global_eid, machineType, 30);
+        return "Request Completed";
+
+    
+    } else if (strcmp(split, "InitComm") == 0) {
 
         char* newSessionKey = (char* ) malloc(SIZE_OF_SESSION_KEY);
         split = strtok(NULL, ":");
@@ -239,10 +253,15 @@ void* network_request_thread_wrapper(void* request) {
 
 //TODO change this API to take in who is sending the request
 char* send_network_request_API(char* request) {
+    char* requestCopy = (char*) malloc(strlen(request) + 1);
+    // printf("Request: %s", request);
+    memcpy( requestCopy, request, strlen(request) + 1);
+    // printf("Request Copy: %s", requestCopy);
+
     void* thread_ret;
     pthread_t thread_id; 
     printf("\n Calling Network Request Thread\n"); 
-    pthread_create(&thread_id, NULL, network_request_thread_wrapper, (void*) request);
+    pthread_create(&thread_id, NULL, network_request_thread_wrapper, (void*) requestCopy);
     //TODO look into not calling pthread_join but actually let this run asynchoronous
     pthread_join(thread_id, &thread_ret); 
     printf("\n Finished Network Request Thread\n"); 

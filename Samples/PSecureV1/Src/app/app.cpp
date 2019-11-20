@@ -111,6 +111,20 @@ static void RunToIdle(void* process)
 	}
 }
 
+
+extern "C" void P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    //TODO move initalization code in InitializePongEnclave method
+    if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
+        std::cout << "Fail to initialize enclave." << std::endl;
+    }
+
+    char* networkRequest = "UntrustedCreate:Coordinator";
+    char* returnMessage = send_network_request_API(networkRequest);
+    printf("Network Message Confirmation: %s", returnMessage);
+    
+}
+
 extern "C" void P_InitializePongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     //TODO move initalization code in InitializePongEnclave method

@@ -1,6 +1,6 @@
 #include "enclave.h"
 
-PRT_PROCESS *process;
+PRT_PROCESS *process =  NULL;
 extern PRT_PROGRAMDECL* program;
 
 extern char secure_message[SIZE_OF_MESSAGE]; 
@@ -405,6 +405,73 @@ int machineTypeIsSecure(char* machineType) {
     PRT_UINT32 instanceOf = program->interfaceDefMap[interfaceName];
     PRT_MACHINEDECL* curMachineDecl = program->machines[instanceOf];
     return curMachineDecl->isSecure;
+}
+
+void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString) {
+
+    if (process == NULL) {
+
+         ocall_print("hello, world!\n");
+	//PRT_DBG_START_MEM_BALANCED_REGION
+	//{
+		PRT_GUID processGuid;
+
+		processGuid.data1 = 1;
+		processGuid.data2 = 0;
+		processGuid.data3 = 0;
+		processGuid.data4 = 0;
+		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
+        ocall_print("after start process!\n");
+        if (cooperative)
+        {
+            PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
+        }
+		
+
+       
+
+        if (cooperative)
+        {
+            // test some multithreading across state machines.
+            /*
+            typedef void *(*start_routine) (void *);
+            pthread_t tid[threads];
+            for (int i = 0; i < threads; i++)
+            {
+                pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
+            }
+            for (int i = 0; i < threads; i++)
+            {
+                pthread_join(tid[i], NULL);
+            }
+            */
+        }
+
+    }
+
+    PRT_VALUE *payload;
+    if (parg == NULL)
+    {
+        payload = PrtMkNullValue();
+
+    }
+    else
+    {
+        int i = atoi(parg);
+        payload = PrtMkIntValue(i);
+        
+    }
+
+	PrtUpdateAssertFn(MyAssert);
+    ocall_print("after update assert fn!\n");
+
+
+    PRT_UINT32 mainMachine2;
+	PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName(machineTypeToCreate, &mainMachine2);
+    ocall_print_int(mainMachine2);
+	PrtAssert(foundMachine2, "No machine found of that type in this enclave!");
+	PrtMkMachine(process, mainMachine2, 1, &payload);
+    ocall_print("after mk machine!\n");
 }
 
 int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, uint32_t ID_SIZE) {

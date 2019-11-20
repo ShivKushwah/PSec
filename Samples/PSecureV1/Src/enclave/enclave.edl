@@ -45,6 +45,8 @@ enclave {
                                 uint32_t MESSAGE_SIZE,
                                 uint32_t MAX_PAYLOAD_SIZE);
 
+        public void UntrustedCreateMachineAPI([in, size=lengthString]char* machineTypeToCreate, int lengthString);
+
 
 
     };
