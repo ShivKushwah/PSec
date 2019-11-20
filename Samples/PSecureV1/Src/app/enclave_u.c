@@ -78,6 +78,8 @@ typedef struct ms_sendMessageAPI_t {
 typedef struct ms_UntrustedCreateMachineAPI_t {
 	char* ms_machineTypeToCreate;
 	int ms_lengthString;
+	char* ms_returnNewMachinePublicID;
+	int ms_output_length;
 } ms_UntrustedCreateMachineAPI_t;
 
 typedef struct ms_sgx_ra_get_ga_t {
@@ -453,12 +455,14 @@ sgx_status_t sendMessageAPI(sgx_enclave_id_t eid, int* retval, char* requestingM
 	return status;
 }
 
-sgx_status_t UntrustedCreateMachineAPI(sgx_enclave_id_t eid, char* machineTypeToCreate, int lengthString)
+sgx_status_t UntrustedCreateMachineAPI(sgx_enclave_id_t eid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int output_length)
 {
 	sgx_status_t status;
 	ms_UntrustedCreateMachineAPI_t ms;
 	ms.ms_machineTypeToCreate = machineTypeToCreate;
 	ms.ms_lengthString = lengthString;
+	ms.ms_returnNewMachinePublicID = returnNewMachinePublicID;
+	ms.ms_output_length = output_length;
 	status = sgx_ecall(eid, 10, &ocall_table_enclave, &ms);
 	return status;
 }

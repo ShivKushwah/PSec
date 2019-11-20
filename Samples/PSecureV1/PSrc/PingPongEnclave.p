@@ -2,6 +2,7 @@ type StringType;
 
 event Ping assert 2;
 event Pong assert 2 : int;
+event UntrustedEventFromPing;
 fun CreateMachineSecureChild(): StringType;
 fun PrintString(inputString : StringType);
 fun SecureSend(sendingToMachine : StringType, eventToSend : event, numArgs : int, arg : int);
@@ -21,6 +22,13 @@ secure_machine Coordinator {
 
             PongSecureChild = new Pong();
             
+        }
+        on UntrustedEventFromPing goto Whoa;
+    }
+
+    state Whoa { 
+        entry {
+            print "WHOA";
         }
     }
 

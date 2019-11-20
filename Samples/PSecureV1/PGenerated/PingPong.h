@@ -14,6 +14,7 @@ extern "C" {
     extern PRT_INTERFACEDECL P_I_Temp;
     extern PRT_MACHINEDECL P_MACHINE_Ping;
     extern PRT_MACHINEDECL P_MACHINE_Temp;
+    extern PRT_TYPE* P_TYPEDEF_StringType;
     extern PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl;
     
 #ifdef __cplusplus

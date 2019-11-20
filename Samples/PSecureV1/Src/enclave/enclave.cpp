@@ -407,7 +407,7 @@ int machineTypeIsSecure(char* machineType) {
     return curMachineDecl->isSecure;
 }
 
-void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString) {
+void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int output_length) {
 
     if (process == NULL) {
 
@@ -466,12 +466,27 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString) {
     ocall_print("after update assert fn!\n");
 
 
-    PRT_UINT32 mainMachine2;
-	PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName(machineTypeToCreate, &mainMachine2);
-    ocall_print_int(mainMachine2);
-	PrtAssert(foundMachine2, "No machine found of that type in this enclave!");
-	PrtMkMachine(process, mainMachine2, 1, &payload);
-    ocall_print("after mk machine!\n");
+    string secureChildPublicIDKey;
+    string secureChildPrivateIDKey;
+    generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey);
+    int newMachinePID = getNextPID(); 
+    //Store new machine information in enclave's dictionaries
+    MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
+    PublicIdentityKeyToMachinePIDDictionary[secureChildPublicIDKey] = newMachinePID;
+
+    //NOTE No one has the capability key for this SSM
+
+    //"Return" the publicIDKey of the new machine
+    memcpy(returnNewMachinePublicID, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
+    createMachine(machineTypeToCreate, "");
+
+
+    // PRT_UINT32 mainMachine2;
+	// PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName(machineTypeToCreate, &mainMachine2);
+    // ocall_print_int(mainMachine2);
+	// PrtAssert(foundMachine2, "No machine found of that type in this enclave!");
+	// PrtMkMachine(process, mainMachine2, 1, &payload);
+    // ocall_print("after mk machine!\n");
 }
 
 int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, uint32_t ID_SIZE) {

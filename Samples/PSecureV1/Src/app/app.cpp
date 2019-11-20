@@ -112,12 +112,26 @@ static void RunToIdle(void* process)
 }
 
 
-extern "C" void P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) //TODO modify this to take the type of machine to create as a param
 {
-    //TODO move initalization code in InitializePongEnclave method
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
         std::cout << "Fail to initialize enclave." << std::endl;
     }
+
+    char* networkRequest = "UntrustedCreate:Coordinator";
+    char* newMachinePublicIDKey = send_network_request_API(networkRequest);
+    //printf("Network Message Confirmation: %s", returnMessage);
+
+    //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, newMachinePublicIDKey);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    
+}
+
+extern "C" void P_UntrustedSendCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
+{   
+    //TODO we need to attest the other enclave before sending it a message, even if we are sending an untrusted message
 
     char* networkRequest = "UntrustedCreate:Coordinator";
     char* returnMessage = send_network_request_API(networkRequest);
@@ -248,4 +262,52 @@ int main(int argc, char const *argv[]) {
         }
     
     return 0;
+}
+
+
+//String Class
+
+extern "C" void P_FREE_StringType_IMPL(PRT_UINT64 frgnVal)
+{
+	PrtFree((PRT_STRING)frgnVal);
+}
+
+extern "C" PRT_BOOLEAN P_ISEQUAL_StringType_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
+{
+	return strcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2) == 0 ? PRT_TRUE : PRT_FALSE;
+}
+
+extern "C" PRT_STRING P_TOSTRING_StringType_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, "String : %lld", frgnVal);
+	return str;
+}
+
+extern "C" PRT_UINT32 P_GETHASHCODE_StringType_IMPL(PRT_UINT64 frgnVal)
+{
+	return (PRT_UINT32)frgnVal;
+}
+
+extern "C" PRT_UINT64 P_MKDEF_StringType_IMPL(void)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, "xyx$12");
+	return (PRT_UINT64)str;
+}
+
+extern "C" PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, (PRT_STRING)frgnVal);
+	return (PRT_UINT64)str;
+}
+
+extern "C" void P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    ocall_print("String P value is:");
+    ocall_print((char*) val);
+    
 }

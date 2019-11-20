@@ -1,3 +1,5 @@
+type StringType;
+
 event Ping assert 2;
 event Pong assert 2 : int;
 //fun SecureSendPingEventToPongEnclave();
@@ -7,12 +9,13 @@ event Success;
 
 machine Ping {
     var pongId: machine;
+    var coordinatorID: StringType;
 
     start state Ping_Init {
         entry {
             pongId = new Temp();
             send pongId, Pong, 4;
-            UntrustedCreateCoordinator(); //Start up PrtTrusted in the Pong Enclave
+            coordinatorID = UntrustedCreateCoordinator(); //Start up PrtTrusted in the Pong Enclave
     	    raise Success;   	   
         }
         on Success goto Done;
@@ -31,3 +34,6 @@ machine Temp {
 
     state Done { }
 }
+
+
+// secure_machine Coordinator { }
