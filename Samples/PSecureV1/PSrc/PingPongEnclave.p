@@ -52,7 +52,7 @@ secure_machine Pong {
             // SecureSend(secureChildRegular, Pong, 1, 7);
             // SecureSend(secureChildRegular, Pong, 1, 7);
             secure_send secureChildRegular, Pong, 3;
-            secure_send secureChildRegular, Pong, 3;
+            // secure_send secureChildRegular, Pong, 3;
 
             
             // secure_send secureChildRegular, Pong;
@@ -63,33 +63,34 @@ secure_machine Pong {
             //     secure_send secureChildRegular, Pong;
             // }
         } 
-        on Ping goto Pong_SendingPong; 
+        on Ping goto Done; 
     }
 
-    state Pong_SendingPong {
+    state Done { 
         entry {
-            print "YOOOO";
-	        raise Success;		 	  
+            print "YOOOOO";
 	    }
-        on Success goto Done;
     }
-
-    state Done { }
 }
 
 secure_machine SecureChild {
+    var parent : StringType;
     start state Initial {
         entry (payload: StringType) {
             // if (payload == 10) {
             //     print "HOORAY";
             // }
+            parent = payload;
         }
         on Pong goto Next;
 
     }
 
     state Next {
-        on Pong goto Done;
+        entry {
+            secure_send parent, Ping;
+            goto Done;
+        }
     }
 
     state Done { }
