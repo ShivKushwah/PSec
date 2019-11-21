@@ -111,6 +111,72 @@ static void RunToIdle(void* process)
 	}
 }
 
+int atoi(char *p) {
+    int k = 0;
+    while (*p) {
+        k = (k << 3) + (k << 1) + (*p) - '0';
+        p++;
+     }
+     return k;
+}
+
+void reverse(char str[], int length) 
+{ 
+    int start = 0; 
+    int end = length -1; 
+    while (start < end) 
+    { 
+        char temp = *(str+start);
+        *(str+start) = *(str+end);
+        *(str+end) = temp;
+        //swap(*(str+start), *(str+end)); 
+        start++; 
+        end--; 
+    } 
+} 
+
+// Implementation of itoa() 
+char* itoa(int num, char* str, int base) 
+{ 
+    int i = 0; 
+    bool isNegative = false; 
+  
+    /* Handle 0 explicitely, otherwise empty string is printed for 0 */
+    if (num == 0) 
+    { 
+        str[i++] = '0'; 
+        str[i] = '\0'; 
+        return str; 
+    } 
+  
+    // In standard itoa(), negative numbers are handled only with  
+    // base 10. Otherwise numbers are considered unsigned. 
+    if (num < 0 && base == 10) 
+    { 
+        isNegative = true; 
+        num = -num; 
+    } 
+  
+    // Process individual digits 
+    while (num != 0) 
+    { 
+        int rem = num % base; 
+        str[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0'; 
+        num = num/base; 
+    } 
+  
+    // If number is negative, append '-' 
+    if (isNegative) 
+        str[i++] = '-'; 
+  
+    str[i] = '\0'; // Append string terminator 
+  
+    // Reverse the string 
+    reverse(str, i); 
+  
+    return str; 
+} 
+
 
 extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) //TODO modify this to take the type of machine to create as a param
 {
@@ -129,14 +195,67 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
     
 }
 
-extern "C" void P_UntrustedSendCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
+extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
 {   
     //TODO we need to attest the other enclave before sending it a message, even if we are sending an untrusted message
+    PRT_VALUE** P_ToMachine_Payload = argRefs[0];
+    PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
+    char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
 
-    char* networkRequest = "UntrustedCreate:Coordinator";
-    char* returnMessage = send_network_request_API(networkRequest);
-    printf("Network Message Confirmation: %s", returnMessage);
+    PRT_VALUE** P_Event_Payload = argRefs[1];
+    char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
+    itoa((*P_Event_Payload)->valueUnion.ev , event, SIZE_OF_MAX_EVENT_NAME);
+
+    const int size_of_max_num_args = 10; //TODO if modififying this, modify it in enclave.cpp
+
+    // PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
+    // int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
+    // char* numArgsPayload = (char*) malloc(size_of_max_num_args);
+    // itoa(numArgs, numArgsPayload, SIZE_OF_MAX_EVENT_PAYLOAD);
+
+    char* eventMessagePayload = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
+
+    // for (int i = 0; i < numArgs; i++) {
+        PRT_VALUE** P_EventMessage_Payload = argRefs[2];
+            char* temp = serializePrtValueToString(*P_EventMessage_Payload);
+            memcpy(eventMessagePayload, temp, strlen(temp) + 1);
+    //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
+    //     //TODO I assumed only 1 payload for the below
+    //     // if (i == 0) {
+    //     //     char* parameters[] = {payload};
+    //     //     eventMessagePayload = generateCStringFromFormat("%s", parameters, 1);
+    //     // } else {
+    //     //     char* parameters[] = {eventMessagePayload, payload};
+    //     //     eventMessagePayload = generateCStringFromFormat("%s:%s", parameters, 2);
+    //     // }
+    // }
+
+    // int requestSize = 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + size_of_max_num_args + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
+    // char* unsecureSendRequest = (char*) malloc(requestSize);
+    // snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%s:%s", sendingToMachinePublicID, event, numArgsPayload, eventMessagePayload);
+    // printf("Untrusted machine is sending out following network request: %s", unsecureSendRequest);      
+    // // char* empty;
+    // // int ret_value;
+    // // ocall_network_request(&ret_value, secureSendRequest, empty, 0);
+
+
+    // // char* networkRequest = "UntrustedCreate:Coordinator";
+    // // char* returnMessage = send_network_request_API(networkRequest);
+    // // printf("Network Message Confirmation: %s", returnMessage);
     
+}
+
+char* serializePrtValueToString(PRT_VALUE* value) {
+    //TODO code the rest of the types
+    //TODO if modifying this, also modify in app.cpp
+    if (value->discriminator == PRT_VALUE_KIND_INT) {
+        char* integer = (char*) malloc(10);
+        itoa(value->valueUnion.nt, integer, 10);
+        return integer;
+    } else {
+        return "UNSUPPORTED_TYPE";
+    }
+
 }
 
 extern "C" void P_InitializePongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)

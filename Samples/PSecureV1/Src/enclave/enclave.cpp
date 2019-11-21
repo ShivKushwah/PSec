@@ -167,62 +167,62 @@ extern int Delta;
 
 int enclave_main(void)
 {
-    ocall_print("hello, world!\n");
-	//PRT_DBG_START_MEM_BALANCED_REGION
-	//{
-		PRT_GUID processGuid;
-		PRT_VALUE *payload;
+    // ocall_print("hello, world!\n");
+	// //PRT_DBG_START_MEM_BALANCED_REGION
+	// //{
+	// 	PRT_GUID processGuid;
+	// 	PRT_VALUE *payload;
 
-		processGuid.data1 = 1;
-		processGuid.data2 = 0;
-		processGuid.data3 = 0;
-		processGuid.data4 = 0;
-		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
-        ocall_print("after start process!\n");
-        if (cooperative)
-        {
-            PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
-        }
-		if (parg == NULL)
-		{
-			payload = PrtMkNullValue();
+	// 	processGuid.data1 = 1;
+	// 	processGuid.data2 = 0;
+	// 	processGuid.data3 = 0;
+	// 	processGuid.data4 = 0;
+	// 	process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
+    //     ocall_print("after start process!\n");
+    //     if (cooperative)
+    //     {
+    //         PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
+    //     }
+	// 	if (parg == NULL)
+	// 	{
+	// 		payload = PrtMkNullValue();
 
-		}
-		else
-		{
-			int i = atoi(parg);
-			payload = PrtMkIntValue(i);
+	// 	}
+	// 	else
+	// 	{
+	// 		int i = atoi(parg);
+	// 		payload = PrtMkIntValue(i);
             
-		}
+	// 	}
 
-		PrtUpdateAssertFn(MyAssert);
-        ocall_print("after update assert fn!\n");
+	// 	PrtUpdateAssertFn(MyAssert);
+    //     ocall_print("after update assert fn!\n");
 
-        PRT_UINT32 mainMachine2;
-		PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Coordinator", &mainMachine2);
-        ocall_print_int(mainMachine2);
-		PrtAssert(foundMachine2, "No 'Coordinator' machine found!");
-		PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload);
+    //     PRT_UINT32 mainMachine2;
+	// 	PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName("Coordinator", &mainMachine2);
+    //     ocall_print_int(mainMachine2);
+	// 	PrtAssert(foundMachine2, "No 'Coordinator' machine found!");
+	// 	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, mainMachine2, 1, &payload);
 
 
-        ocall_print("after mk machine!\n");
+    //     ocall_print("after mk machine!\n");
 
-        if (cooperative)
-        {
-            // test some multithreading across state machines.
-            /*
-            typedef void *(*start_routine) (void *);
-            pthread_t tid[threads];
-            for (int i = 0; i < threads; i++)
-            {
-                pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
-            }
-            for (int i = 0; i < threads; i++)
-            {
-                pthread_join(tid[i], NULL);
-            }
-            */
-        }
+    //     if (cooperative)
+    //     {
+    //         // test some multithreading across state machines.
+    //         /*
+    //         typedef void *(*start_routine) (void *);
+    //         pthread_t tid[threads];
+    //         for (int i = 0; i < threads; i++)
+    //         {
+    //             pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
+    //         }
+    //         for (int i = 0; i < threads; i++)
+    //         {
+    //             pthread_join(tid[i], NULL);
+    //         }
+    //         */
+    //     }
 }
 
 
@@ -231,12 +231,12 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
     char* currentMachineIDPublicKey;
-    if (currentMachinePID == 1) { //TODO Check if name is "Coordinator", not just by id
-        currentMachineIDPublicKey = "Coordinator";
-    } else {
+    // if (currentMachinePID == 1) { //TODO Check if name is "Coordinator", not just by id
+    //     currentMachineIDPublicKey = "Coordinator";
+    // } else {
         currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
         snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
-    } 
+    // } 
 
     if (!machineTypeIsSecure(requestedNewMachineTypeToCreate)) {
         //TODO Add case here if we are creating untrusted machine (Do we need this because inside the enclave we dont
@@ -285,12 +285,12 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     ocall_print("Entered Secure Send");
 
     char* currentMachineIDPublicKey;
-    if (currentMachinePID == 1) { //TODO Check if name is "Coordinator", not just by id
-        currentMachineIDPublicKey = "Coordinator";
-    } else {
+    // if (currentMachinePID == 1) { //TODO Check if name is "Coordinator", not just by id
+    //     currentMachineIDPublicKey = "Coordinator";
+    // } else {
         currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
         snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
-    } 
+    // } 
 
     PRT_VALUE** P_ToMachine_Payload = argRefs[0];
     PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
@@ -327,7 +327,7 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
     itoa((*P_Event_Payload)->valueUnion.ev , event, SIZE_OF_MAX_EVENT_NAME);
 
-    const int size_of_max_num_args = 10;
+    const int size_of_max_num_args = 10; //TODO if modififying this, modify it in app.cpp
 
     PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
     int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
@@ -365,6 +365,7 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 
 char* serializePrtValueToString(PRT_VALUE* value) {
     //TODO code the rest of the types
+    //TODO if modifying this, also modify in app.cpp
     if (value->discriminator == PRT_VALUE_KIND_INT) {
         char* integer = (char*) malloc(10);
         itoa(value->valueUnion.nt, integer, 10);
