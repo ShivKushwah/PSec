@@ -20,7 +20,7 @@ secure_machine Coordinator {
         entry {
             var kirat : secure_int;
 
-            PongSecureChild = new Pong();
+            //PongSecureChild = new Pong();
             
         }
         on UntrustedEventFromPing goto Whoa;
