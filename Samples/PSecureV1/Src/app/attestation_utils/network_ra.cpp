@@ -221,7 +221,23 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         return newSessionKey;
 
     
-    }  else if (strcmp(split, "Send") == 0) {
+    }  else if (strcmp(split, "UntrustedSend") == 0) {
+
+        char* temp;
+        split = strtok(NULL, ":");
+        char* machineReceivingMessage = split;
+        split = strtok(NULL, ":");
+        char* eventNum = split;
+        split = strtok(NULL, ":");
+        char* payload = split;
+
+        int ptr;
+        //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
+        sgx_status_t status = sendUntrustedMessageAPI(global_eid, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+        return temp;
+
+
+    } else if (strcmp(split, "Send") == 0) {
 
         char* temp;
         split = strtok(NULL, ":");

@@ -230,16 +230,20 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     //     // }
     // }
 
-    printf("Sending to : %s\n", sendingToMachinePublicID);
-    printf("Sending event : %s\n", event);
-    printf("Sending payload : %s\n", eventMessagePayload);
+    // printf("Sending to : %s\n", sendingToMachinePublicID);
+    // printf("Sending event : %s\n", event);
+    // printf("Sending payload : %s\n", eventMessagePayload);
 
 
 
     int requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* unsecureSendRequest = (char*) malloc(requestSize);
     snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%s", sendingToMachinePublicID, event, eventMessagePayload);
-    // printf("Untrusted machine is sending out following network request: %s", unsecureSendRequest);      
+    printf("Untrusted machine is sending out following network request: %s\n", unsecureSendRequest);   
+
+    char* newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
+
+
     // // char* empty;
     // // int ret_value;
     // // ocall_network_request(&ret_value, secureSendRequest, empty, 0);
