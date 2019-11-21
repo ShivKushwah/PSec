@@ -157,7 +157,7 @@ PRT_INTERFACEDECL P_I_SecureChild =
 {
     2U,
     "SecureChild",
-    &P_GEND_TYPE_i,
+    &P_GEND_TYPE_StringType,
     &P_EVENTSET_SecureChild_RECV
 };
 
@@ -544,7 +544,7 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_6 = &(PTMP_tmp2);
     PrtFreeValue(*P_LVALUE_6);
-    *P_LVALUE_6 = PrtCloneValue((&P_LIT_INT32_2));
+    *P_LVALUE_6 = PrtCloneValue(p_this->varValues[2]);
     
     _P_GEN_funargs[0] = "SecureChild";
     _P_GEN_funargs[1] = "1";
@@ -864,27 +864,8 @@ PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_VALUE* PTMP_tmp0_3 = NULL;
-    
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE P_LIT_INT32_4 = { PRT_VALUE_KIND_INT, { .nt = 3 } };
-    PRT_VALUE** P_LVALUE_17 = &(PTMP_tmp0_3);
-    PrtFreeValue(*P_LVALUE_17);
-    *P_LVALUE_17 = PrtMkBoolValue(PrtIsEqualValue(*P_VAR_payload, (&P_LIT_INT32_4)));
-    
-    if (PrtPrimGetBool(PTMP_tmp0_3))
-    {
-        PrtPrintf("HOORAY");
-        
-    }
-    
-    else
-    {
-    }
-    
-    
 p_return_4: ;
-    PrtFreeValue(PTMP_tmp0_3); PTMP_tmp0_3 = NULL;
     return _P_GEN_retval;
 }
 
@@ -892,7 +873,7 @@ PRT_FUNDECL P_FUNCTION_Anon_4 =
 {
     NULL,
     &P_Anon_IMPL_4,
-    &P_GEND_TYPE_i
+    &P_GEND_TYPE_StringType
 };
 
 

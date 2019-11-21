@@ -47,7 +47,7 @@ secure_machine Pong {
 
             thisVar = GetThis();
             
-            secureChildRegular = new SecureChild(3);
+            secureChildRegular = new SecureChild(thisVar);
             PrintString(secureChildRegular);
             // SecureSend(secureChildRegular, Pong, 1, 7);
             // SecureSend(secureChildRegular, Pong, 1, 7);
@@ -78,10 +78,10 @@ secure_machine Pong {
 
 secure_machine SecureChild {
     start state Initial {
-        entry (payload: int) {
-            if (payload == 3) {
-                print "HOORAY";
-            }
+        entry (payload: StringType) {
+            // if (payload == 10) {
+            //     print "HOORAY";
+            // }
         }
         on Pong goto Next;
 

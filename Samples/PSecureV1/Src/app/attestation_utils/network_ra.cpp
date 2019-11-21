@@ -177,14 +177,22 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         char* machineType = split;
         split = strtok(NULL, ":");
         int numArgs = atoi(split);
-        split = strtok(NULL, ":");
-        char* payload = split;
+        int payloadType = -1;
+        char* payload;
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, ":");
+            payload = split;
+
+        }
+        
 
         int ptr;
         //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
         //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
         // application of this enclave and have that make an ecall to createMachineAPi
-        sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
+        sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
 
         return newMachineID;
     // }  else if (strcmp(split, "GetKey") == 0) {

@@ -157,7 +157,7 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
     if (numArgs == 0) {
         PrtSend(NULL, machine, event, 0);
     } else {
-        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload);
+        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload, PRT_VALUE_KIND_INT);
         PrtSend(NULL, machine, event, numArgs, prtPayload);
     }
     return 0;
@@ -248,9 +248,11 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 
     PRT_VALUE* payloadPrtValue;
     char* payloadString;  
+    int payloadType;
 
     if (numArgs == 1) {
         payloadPrtValue = *(argRefs[2]);
+        payloadType = payloadPrtValue->discriminator;
         payloadString = serializePrtValueToString(payloadPrtValue);
     }
 
@@ -260,7 +262,7 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     if (numArgs == 0) {
         snprintf(createMachineRequest, requestSize, "Create:%s:%s:0", currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
     } else {
-        snprintf(createMachineRequest, requestSize, "Create:%s:%s:%d:%s", currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadString);
+        snprintf(createMachineRequest, requestSize, "Create:%s:%s:%d:%d:%s", currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
 
     }
     
@@ -385,20 +387,34 @@ char* serializePrtValueToString(PRT_VALUE* value) {
         char* integer = (char*) malloc(10);
         itoa(value->valueUnion.nt, integer, 10);
         return integer;
+    } else if (value->discriminator == PRT_VALUE_KIND_FOREIGN) {
+        if (value->valueUnion.frgn->typeTag == 0) { //if StringType
+            return (char*) value->valueUnion.frgn->value;
+        } else {
+            return "UNSUPPORTED_TYPE";
+        }
     } else {
         return "UNSUPPORTED_TYPE";
     }
 
 }
 
-PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str) {
+PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType) {
     //TODO code the rest of the types (only int is coded for now)
     PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
     for (int i = 0; i < numArgs; i++) {
         char* split = strtok(str, ":");
         values[i] = (PRT_VALUE*)PrtMalloc(sizeof(PRT_VALUE));
-        values[i]->discriminator = PRT_VALUE_KIND_INT;
-        values[i]->valueUnion.nt = atoi(split);
+        values[i]->discriminator = (PRT_VALUE_KIND) payloadType;
+        if (payloadType == PRT_VALUE_KIND_INT) {
+            values[i]->valueUnion.nt = atoi(split);
+        } else if (payloadType == PRT_VALUE_KIND_FOREIGN) {
+            values[i]->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
+            values[i]->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
+            PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	        sprintf_s(prtStr, 100, str);
+            values[i]->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
+        }
     }
     return values;
 }
@@ -494,7 +510,7 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
 
     //"Return" the publicIDKey of the new machine
     memcpy(returnNewMachinePublicID, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
-    createMachine(machineTypeToCreate, "", 0, "");
+    createMachine(machineTypeToCreate, "", 0, PRT_VALUE_KIND_INT, "");
 
 
     // PRT_UINT32 mainMachine2;
@@ -505,7 +521,7 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
     // ocall_print("after mk machine!\n");
 }
 
-int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE) {
+int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE) {
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
@@ -522,7 +538,7 @@ int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, c
     MachinePIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
     //"Return" the publicIDKey of the new machine
     memcpy(returnNewMachinePublicIDKey, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
-    createMachine(machineType, parentTrustedMachinePublicIDKey, numArgs, payload);
+    createMachine(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload);
 }
 
 char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey) {
@@ -549,10 +565,10 @@ int getNextPID() {
     return ((PRT_PROCESS_PRIV*)process)->numMachines + 1;
 }
 
-int createMachine(char* machineType, char* parentTrustedMachineID, int numArgs, char* payload) {
+int createMachine(char* machineType, char* parentTrustedMachineID, int numArgs, int payloadType, char* payload) {
     PRT_VALUE* prtPayload;
     if (numArgs > 0) {
-        prtPayload = *(deserializeStringToPrtValue(numArgs, payload));
+        prtPayload = *(deserializeStringToPrtValue(numArgs, payload, payloadType));
     } else {
         prtPayload = PrtMkNullValue();
     }

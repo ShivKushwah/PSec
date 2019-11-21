@@ -29,6 +29,7 @@ enclave {
                                     [in, size=ID_SIZE]char* parentTrustedMachineID,
                                     [out, size=ID_SIZE] char* returnNewMachineID,
                                     int numArgs, 
+                                    int payloadType,
                                     [in, size=PAYLOAD_SIZE]char* payload, 
                                     uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE);
         
