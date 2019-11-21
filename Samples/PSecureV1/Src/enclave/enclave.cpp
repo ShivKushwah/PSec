@@ -260,7 +260,7 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     if (numArgs == 0) {
         snprintf(createMachineRequest, requestSize, "Create:%s:%s:0", currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
     } else {
-        snprintf(createMachineRequest, requestSize, "Create:%s:%s:1:%s", currentMachineIDPublicKey, requestedNewMachineTypeToCreate, payloadString);
+        snprintf(createMachineRequest, requestSize, "Create:%s:%s:%d:%s", currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadString);
 
     }
     
@@ -494,7 +494,7 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
 
     //"Return" the publicIDKey of the new machine
     memcpy(returnNewMachinePublicID, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
-    createMachine(machineTypeToCreate, "");
+    createMachine(machineTypeToCreate, "", 0, "");
 
 
     // PRT_UINT32 mainMachine2;
@@ -505,7 +505,7 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
     // ocall_print("after mk machine!\n");
 }
 
-int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, uint32_t ID_SIZE) {
+int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE) {
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
@@ -522,7 +522,7 @@ int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, c
     MachinePIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
     //"Return" the publicIDKey of the new machine
     memcpy(returnNewMachinePublicIDKey, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
-    createMachine(machineType, parentTrustedMachinePublicIDKey);
+    createMachine(machineType, parentTrustedMachinePublicIDKey, numArgs, payload);
 }
 
 char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey) {
@@ -549,13 +549,18 @@ int getNextPID() {
     return ((PRT_PROCESS_PRIV*)process)->numMachines + 1;
 }
 
-int createMachine(char* machineType, char* parentTrustedMachineID) {
-    PRT_VALUE *payload = PrtMkNullValue();
+int createMachine(char* machineType, char* parentTrustedMachineID, int numArgs, char* payload) {
+    PRT_VALUE* prtPayload;
+    if (numArgs > 0) {
+        prtPayload = *(deserializeStringToPrtValue(numArgs, payload));
+    } else {
+        prtPayload = PrtMkNullValue();
+    }
     PRT_UINT32 newMachinePID;
 	PRT_BOOLEAN foundMachine = PrtLookupMachineByName(machineType, &newMachinePID);
     ocall_print_int(newMachinePID);
 	PrtAssert(foundMachine, "No machine found!");
-	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &payload);
+	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &prtPayload);
     return pongMachine->id->valueUnion.mid->machineId;
 }
 

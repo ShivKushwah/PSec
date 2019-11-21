@@ -547,7 +547,7 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     *P_LVALUE_6 = PrtCloneValue((&P_LIT_INT32_2));
     
     _P_GEN_funargs[0] = "SecureChild";
-    _P_GEN_funargs[1] = "0";
+    _P_GEN_funargs[1] = "1";
     _P_GEN_funargs[2] = &(PTMP_tmp2);
     PRT_VALUE** P_LVALUE_7 = &(PTMP_tmp3);
     PrtFreeValue(*P_LVALUE_7);
@@ -864,8 +864,27 @@ PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_VALUE* PTMP_tmp0_3 = NULL;
+    
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PRT_VALUE P_LIT_INT32_4 = { PRT_VALUE_KIND_INT, { .nt = 3 } };
+    PRT_VALUE** P_LVALUE_17 = &(PTMP_tmp0_3);
+    PrtFreeValue(*P_LVALUE_17);
+    *P_LVALUE_17 = PrtMkBoolValue(PrtIsEqualValue(*P_VAR_payload, (&P_LIT_INT32_4)));
+    
+    if (PrtPrimGetBool(PTMP_tmp0_3))
+    {
+        PrtPrintf("HOORAY");
+        
+    }
+    
+    else
+    {
+    }
+    
+    
 p_return_4: ;
+    PrtFreeValue(PTMP_tmp0_3); PTMP_tmp0_3 = NULL;
     return _P_GEN_retval;
 }
 

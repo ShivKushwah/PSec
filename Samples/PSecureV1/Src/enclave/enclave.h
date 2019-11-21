@@ -48,7 +48,7 @@ extern uint8_t g_secret[SIZE_OF_MESSAGE];
 int handle_incoming_events_pong_enclave(PRT_UINT32 eventIdentifier);
 void generateIdentity(string& publicID, string& privateID);
 char* itoa(int num, char* str, int base);
-int createMachine(char* machineType, char* parentTrustedMachineID);
+int createMachine(char* machineType, char* parentTrustedMachineID, int numArgs, char* payload);
 char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey);
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey);
 

@@ -79,7 +79,9 @@ secure_machine Pong {
 secure_machine SecureChild {
     start state Initial {
         entry (payload: int) {
-            
+            if (payload == 3) {
+                print "HOORAY";
+            }
         }
         on Pong goto Next;
 

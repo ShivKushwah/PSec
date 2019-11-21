@@ -28,7 +28,9 @@ enclave {
         public int createMachineAPI([in, size=ID_SIZE] char* machineName, 
                                     [in, size=ID_SIZE]char* parentTrustedMachineID,
                                     [out, size=ID_SIZE] char* returnNewMachineID,
-                                    uint32_t ID_SIZE);
+                                    int numArgs, 
+                                    [in, size=PAYLOAD_SIZE]char* payload, 
+                                    uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE);
         
         public int initializeCommunicationAPI([in, size=ID_SIZE]char* requestingMachineIDKey,
                                              [in, size=ID_SIZE]char* receivingMachineIDKey, 

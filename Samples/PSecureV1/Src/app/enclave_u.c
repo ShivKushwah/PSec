@@ -51,7 +51,10 @@ typedef struct ms_createMachineAPI_t {
 	char* ms_machineName;
 	char* ms_parentTrustedMachineID;
 	char* ms_returnNewMachineID;
+	int ms_numArgs;
+	char* ms_payload;
 	uint32_t ms_ID_SIZE;
+	uint32_t ms_PAYLOAD_SIZE;
 } ms_createMachineAPI_t;
 
 typedef struct ms_initializeCommunicationAPI_t {
@@ -421,14 +424,17 @@ sgx_status_t pong_enclave_request_attestation(sgx_enclave_id_t eid, int* retval,
 	return status;
 }
 
-sgx_status_t createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineName, char* parentTrustedMachineID, char* returnNewMachineID, uint32_t ID_SIZE)
+sgx_status_t createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineName, char* parentTrustedMachineID, char* returnNewMachineID, int numArgs, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE)
 {
 	sgx_status_t status;
 	ms_createMachineAPI_t ms;
 	ms.ms_machineName = machineName;
 	ms.ms_parentTrustedMachineID = parentTrustedMachineID;
 	ms.ms_returnNewMachineID = returnNewMachineID;
+	ms.ms_numArgs = numArgs;
+	ms.ms_payload = payload;
 	ms.ms_ID_SIZE = ID_SIZE;
+	ms.ms_PAYLOAD_SIZE = PAYLOAD_SIZE;
 	status = sgx_ecall(eid, 7, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
