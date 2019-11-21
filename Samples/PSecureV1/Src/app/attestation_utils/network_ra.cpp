@@ -236,7 +236,6 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         sgx_status_t status = sendUntrustedMessageAPI(global_eid, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
         return temp;
 
-
     } else if (strcmp(split, "Send") == 0) {
 
         char* temp;

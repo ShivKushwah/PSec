@@ -231,9 +231,10 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 4 } };
     PRT_VALUE P_LIT_INT32_1 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
     PRT_VALUE P_LIT_INT32_2 = { PRT_VALUE_KIND_INT, { .nt = 9 } };
+    _P_GEN_funargs[0] = "Temp";
+    _P_GEN_funargs[1] = "0";
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
-    _P_GEN_funargs[0] = "Temp";
     *P_LVALUE = PrtCloneValue(PrtMkInterface(context, 1, 0)->id);
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;

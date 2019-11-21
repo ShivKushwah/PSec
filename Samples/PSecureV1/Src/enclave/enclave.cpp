@@ -244,10 +244,25 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 
     }
 
+    int numArgs = atoi((char*) argRefs[1]);
+
+    PRT_VALUE* payloadPrtValue;
+    char* payloadString;  
+
+    if (numArgs == 1) {
+        payloadPrtValue = *(argRefs[2]);
+        payloadString = serializePrtValueToString(payloadPrtValue);
+    }
+
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1;
     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
-    snprintf(createMachineRequest, requestSize, "Create:%s:%s", currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
+    if (numArgs == 0) {
+        snprintf(createMachineRequest, requestSize, "Create:%s:%s:0", currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
+    } else {
+        snprintf(createMachineRequest, requestSize, "Create:%s:%s:1:%s", currentMachineIDPublicKey, requestedNewMachineTypeToCreate, payloadString);
+
+    }
     
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine is sending out the following network request:", machineNameWrapper, 1)); //TODO use this method for all future ocall_prints
@@ -593,6 +608,21 @@ int sendUntrustedMessageAPI(char* receivingMachineIDKey, char* eventNum, char* p
     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
     handle_incoming_event(atoi(eventNum), receivingMachinePID, 1, payload);
 
+}
+
+extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+    char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
+    char* currentMachineIDPublicKey;
+ 
+    currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
+  
+    //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, currentMachineIDPublicKey);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
 

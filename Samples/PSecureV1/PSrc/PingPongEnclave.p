@@ -6,6 +6,7 @@ event UntrustedEventFromPing;
 fun CreateMachineSecureChild(): StringType;
 fun PrintString(inputString : StringType);
 fun SecureSend(sendingToMachine : StringType, eventToSend : event, numArgs : int, arg : int);
+fun GetThis();
 event Success;
 
 secure_machine Coordinator {
@@ -20,7 +21,7 @@ secure_machine Coordinator {
         entry {
             var kirat : secure_int;
 
-            // PongSecureChild = new Pong();
+             PongSecureChild = new Pong();
             
         }
         on UntrustedEventFromPing goto Whoa;
@@ -37,13 +38,16 @@ secure_machine Coordinator {
 secure_machine Pong {
     var secureChildRegular: StringType;
     var sBool : secure_bool;
+    var thisVar : StringType;
 
     start state Initial {
         entry { 
             var kirat : secure_int;
             kirat = 7 + 5;
+
+            thisVar = GetThis();
             
-            secureChildRegular = new SecureChild();
+            secureChildRegular = new SecureChild(3);
             PrintString(secureChildRegular);
             // SecureSend(secureChildRegular, Pong, 1, 7);
             // SecureSend(secureChildRegular, Pong, 1, 7);
@@ -74,6 +78,9 @@ secure_machine Pong {
 
 secure_machine SecureChild {
     start state Initial {
+        entry (payload: int) {
+            
+        }
         on Pong goto Next;
 
     }
