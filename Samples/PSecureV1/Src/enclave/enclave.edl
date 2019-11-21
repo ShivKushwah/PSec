@@ -48,7 +48,14 @@ enclave {
                                 uint32_t MESSAGE_SIZE,
                                 uint32_t MAX_PAYLOAD_SIZE);
 
-        public void UntrustedCreateMachineAPI([in, size=lengthString]char* machineTypeToCreate, int lengthString,[out, size=output_length] char* returnNewMachinePublicID, int output_length);
+        public void UntrustedCreateMachineAPI([in, size=lengthString]char* machineTypeToCreate, 
+                                                int lengthString,
+                                                [out, size=output_length] char* returnNewMachinePublicID,
+                                                int numArgs, 
+                                                int payloadType,
+                                                [in, size=payload_size] char* payload, 
+                                                int output_length, 
+                                                int payload_size);
 
         public int sendUntrustedMessageAPI([in, size=ID_SIZE]char* receivingMachineIDKey, 
                                 [in, size=MESSAGE_SIZE]char* event,

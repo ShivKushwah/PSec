@@ -212,11 +212,22 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
     }  else if (strcmp(split, "UntrustedCreate") == 0) {
 
         char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
-        split = "Coordinator";//strtok(NULL, ":");
+        split = strtok(NULL, ":");
         char* machineType = split;
+        split = strtok(NULL, ":");
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload;
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, ":");
+            payload = split;
+
+        }
 
         //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
-        sgx_status_t status = UntrustedCreateMachineAPI(global_eid, machineType, 30, newMachineID, SIZE_OF_IDENTITY_STRING);
+        sgx_status_t status = UntrustedCreateMachineAPI(global_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE);
         return newMachineID;
 
     

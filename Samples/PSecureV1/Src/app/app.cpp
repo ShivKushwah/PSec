@@ -184,7 +184,7 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
         std::cout << "Fail to initialize enclave." << std::endl;
     }
 
-    char* networkRequest = "UntrustedCreate:Coordinator";
+    char* networkRequest = "UntrustedCreate:Coordinator:1:2:9"; //PRT_VALUE_KIND_INT is 2
     char* newMachinePublicIDKey = send_network_request_API(networkRequest);
     //printf("Network Message Confirmation: %s", returnMessage);
 

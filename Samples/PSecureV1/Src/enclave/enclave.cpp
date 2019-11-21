@@ -439,7 +439,8 @@ int machineTypeIsSecure(char* machineType) {
     return curMachineDecl->isSecure;
 }
 
-void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int output_length) {
+                                        
+void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int ID_SIZE, int PAYLOAD_SIZE) {
 
     if (process == NULL) {
 
