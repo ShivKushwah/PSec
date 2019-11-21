@@ -672,6 +672,8 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_2 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PrtPrintf("YOOOO");
+    
     PRT_VALUE** P_LVALUE_16 = &(PTMP_tmp0_2);
     PrtFreeValue(*P_LVALUE_16);
     *P_LVALUE_16 = PrtCloneValue((&P_EVENT_Success.value));

@@ -257,7 +257,7 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     }
 
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1;
+    int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1 + 10 + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
     if (numArgs == 0) {
         snprintf(createMachineRequest, requestSize, "Create:%s:%s:0", currentMachineIDPublicKey, requestedNewMachineTypeToCreate);

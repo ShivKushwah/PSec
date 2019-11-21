@@ -68,6 +68,7 @@ secure_machine Pong {
 
     state Pong_SendingPong {
         entry {
+            print "YOOOO";
 	        raise Success;		 	  
 	    }
         on Success goto Done;
