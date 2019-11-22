@@ -190,7 +190,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 
         int ptr;
         //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
-        //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
+        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
         // application of this enclave and have that make an ecall to createMachineAPi
         sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
 
@@ -226,7 +226,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 
         }
 
-        //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
+        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
         sgx_status_t status = UntrustedCreateMachineAPI(global_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE);
         return newMachineID;
 
@@ -240,7 +240,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         char* machineReceivingComm = split;
 
         int ptr;
-        //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
+        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
         sgx_status_t status = initializeCommunicationAPI(global_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
         return newSessionKey;
 
@@ -256,7 +256,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         char* payload = split;
 
         int ptr;
-        //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
+        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
         sgx_status_t status = sendUntrustedMessageAPI(global_eid, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
         return temp;
 
@@ -275,7 +275,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         char* payload = split;
 
         int ptr;
-        //TODO actually make this call a method in untrusted host (pong_enclave_attestation.cpp)
+        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
         sgx_status_t status = sendMessageAPI(global_eid, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
         return temp;
 

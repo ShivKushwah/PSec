@@ -57,7 +57,7 @@
 
 // Needed to query extended epid group id.
 #include "sgx_uae_service.h"
-#include "pong_enclave_attestation.h"
+#include "enclave_untrusted_host.h"
 #include "kps.h"
 
 #ifndef SAFE_FREE

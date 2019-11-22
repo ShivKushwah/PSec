@@ -7,7 +7,7 @@
 #include "network_ra.h"
 #include "PingPong.h"
 #include <pthread.h> 
-#include "pong_enclave_attestation.h"
+#include "enclave_untrusted_host.h"
 #include "app.h"
 #include <string>
 #include <unordered_map> 
