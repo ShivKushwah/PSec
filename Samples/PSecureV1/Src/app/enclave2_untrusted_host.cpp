@@ -826,8 +826,6 @@ char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra for
             payload = split;
 
         }
-
-        printf("HARKIRAT2");
         
 
         int ptr;

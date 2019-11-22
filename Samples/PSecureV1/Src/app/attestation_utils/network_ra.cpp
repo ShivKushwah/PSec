@@ -180,7 +180,6 @@ char* forward_request(char* request, int redirect) {
     if (redirect == 0) {
         return enclave1_receiveNetworkRequest(request);
     } else if (redirect == 1) {
-        printf("HARKIRAT");
         return enclave2_receiveNetworkRequest(request);
     } else {
         return "ERROR:Request not forwarded!";
