@@ -36,6 +36,7 @@
 #include "network_ra.h"
 #include "kps.h"
 #include "enclave_u.h"
+#include "enclave2_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 #include <unordered_map> 
@@ -148,6 +149,7 @@ int ra_network_send_receive(const char *sending_machine_name,
 
     //Request to PongMachine to initialize a secure attestation channel
     } else if (strcmp(receiving_machine_name, "PongMachine") == 0) { //TODO SHIV NOTE
+        //TODO move this inside an untrusted.cpp file, also this particular code logic isn't called for some reason
         int ptr;
         sgx_status_t status = enclave_pong_enclave_request_attestation(global_eid, &ptr, sending_machine_name);
         if (status == SGX_SUCCESS && ptr == 0) {
@@ -176,7 +178,7 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
 
 char* forward_request(char* request, int redirect) {
     if (redirect == 0) {
-        return enclave1_receiveNetworkRequest(request);
+        return enclave2_receiveNetworkRequest(request);
     } else {
         return "ERROR:Request not forwarded!";
     }
