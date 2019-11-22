@@ -367,6 +367,8 @@ int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
 
 int main(int argc, char const *argv[]) {
 
+        initNetwork();
+
         // Place the measurement of the enclave into metadata_info.txt
         system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
 

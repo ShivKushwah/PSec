@@ -43,6 +43,8 @@ const int SIZE_OF_MAX_MESSAGE = 20;
 const int SIZE_OF_MAX_EVENT_NAME = 20;
 const int SIZE_OF_MAX_EVENT_PAYLOAD = 100;
 
+const int MAX_NETWORK_MESSAGE = 100;
+
 
 
 struct Encrypted_Message{
@@ -101,6 +103,7 @@ typedef struct _ra_samp_response_header_t{
 extern "C" {
 #endif
 
+
 int ra_network_send_receive(const char *sending_machine_name, 
                             const char *receiving_machine_name,
                             const ra_samp_request_header_t *req,
@@ -111,6 +114,8 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp);
 char* send_network_request_API(char* request);
 void* network_request_thread_wrapper(void* request);
 char* network_request_logic(char* request);
+void initNetwork();
+char* forward_request(char* request, int redirect);
 
 #ifdef  __cplusplus
 }

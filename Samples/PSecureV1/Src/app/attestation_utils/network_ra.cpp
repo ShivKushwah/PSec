@@ -38,8 +38,16 @@
 #include "enclave_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
+#include <unordered_map> 
+#include "enclave_untrusted_host.h"
+
 
 extern sgx_enclave_id_t global_eid;
+
+
+unordered_map<string, int> TypeOfMachineToEnclaveNum;
+unordered_map<string, int> MachinePublicIDToEnclaveNum;
+
 
 
 // Used to send requests to the service provider sample.  It
@@ -164,49 +172,35 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
     }
 }
 
+char* forward_request(char* request, int redirect) {
+    if (redirect == 0) {
+        return enclave1_receiveNetworkRequest(request);
+    } else {
+        return "ERROR:Request not forwarded!";
+    }
+}
+
 char* network_request_logic(char* request) { //TODO Make this function generalizable for multiple enclaves and machines
 
-    // printf("Network Request Received: %s", request);
+    printf("Network Request Received: %s", request);
 
-    char* split = strtok(request, ":");
+    char* requestCopy = (char*) malloc(MAX_NETWORK_MESSAGE);
+    memcpy(requestCopy, request, strlen(request) + 1);
+
+    char* split = strtok(requestCopy, ":");
     if (strcmp(split, "Create") == 0) {
         char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
         split = strtok(NULL, ":");
         char* parentTrustedMachinePublicIDKey = split;
         split = strtok(NULL, ":");
         char* machineType = split;
-        split = strtok(NULL, ":");
-        int numArgs = atoi(split);
-        int payloadType = -1;
-        char* payload;
-        if (numArgs > 0) {
-            split = strtok(NULL, ":");
-            payloadType = atoi(split);
-            split = strtok(NULL, ":");
-            payload = split;
+        if (TypeOfMachineToEnclaveNum.count(string(machineType)) == 1) {
 
+            return forward_request(request, TypeOfMachineToEnclaveNum[machineType]);
+
+        } else {
+            return "ERROR:Machine Type Not Found!";
         }
-        
-
-        int ptr;
-        //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
-        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        // application of this enclave and have that make an ecall to createMachineAPi
-        sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
-
-        return newMachineID;
-    // }  else if (strcmp(split, "GetKey") == 0) {
-    //     //TODO move this segmant of code into other ra method because attestation needs to occur first and then call retrieveCapabilityKey
-    //     //TODO move this and use the messageFromMachine int
-    //     //TODO might need to verify the currentMachineIDs signagure before we call attestation, so we need to do that first?
-    //     split = strtok(NULL, ":");
-    //     char currentMachineID[SIZE_OF_IDENTITY_STRING];
-    //     //TODO add check that split is not too big
-    //     memcpy(currentMachineID, split, strlen(split) + 1);
-    //     split = strtok(NULL, ":");
-    //     char childMachineID[SIZE_OF_IDENTITY_STRING];
-    //     memcpy(childMachineID, split, strlen(split) + 1);
-    //     return retrieveCapabilityKey(currentMachineID, childMachineID);
 
     
     }  else if (strcmp(split, "UntrustedCreate") == 0) {
@@ -280,9 +274,25 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         return temp;
 
 
+    } else if (strcmp(split, "RegisterOnNetwork") == 0) { //When a new machine is created, its public ID key should be registered with network_ra so that network knows who to forward the message to
+
+        split = strtok(NULL, ":");
+        char* publicIDRegister = split;
+        split = strtok(NULL, ":");
+        char* enclaveNumRegister = split;
+        MachinePublicIDToEnclaveNum[string(publicIDRegister)] = atoi(enclaveNumRegister);
+        return "Success!";
+
+
     } else {
         return "Command Not Found";
     }
+}
+
+void initNetwork() {
+    TypeOfMachineToEnclaveNum[string("Coordinator")] = 0; 
+    TypeOfMachineToEnclaveNum[string("SecureChild")] = 0; 
+    TypeOfMachineToEnclaveNum[string("Pong")] = 0; 
 }
 
 

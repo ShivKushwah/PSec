@@ -802,3 +802,124 @@ int ocall_network_request(char* request, char* response, uint32_t RESPONSE_SIZE)
 
 }
 
+
+char* enclave1_receiveNetworkRequest(char* request) { //TODO have network ra forward to this
+
+    char* split = strtok(request, ":");
+    if (strcmp(split, "Create") == 0) {
+        char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+        split = strtok(NULL, ":");
+        char* parentTrustedMachinePublicIDKey = split;
+        split = strtok(NULL, ":");
+        char* machineType = split;
+        split = strtok(NULL, ":");
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload;
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, ":");
+            payload = split;
+
+        }
+        
+
+        int ptr;
+        //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
+        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+        // application of this enclave and have that make an ecall to createMachineAPi
+        sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
+
+        return newMachineID;
+    // }  else if (strcmp(split, "GetKey") == 0) {
+    //     //TODO move this segmant of code into other ra method because attestation needs to occur first and then call retrieveCapabilityKey
+    //     //TODO move this and use the messageFromMachine int
+    //     //TODO might need to verify the currentMachineIDs signagure before we call attestation, so we need to do that first?
+    //     split = strtok(NULL, ":");
+    //     char currentMachineID[SIZE_OF_IDENTITY_STRING];
+    //     //TODO add check that split is not too big
+    //     memcpy(currentMachineID, split, strlen(split) + 1);
+    //     split = strtok(NULL, ":");
+    //     char childMachineID[SIZE_OF_IDENTITY_STRING];
+    //     memcpy(childMachineID, split, strlen(split) + 1);
+    //     return retrieveCapabilityKey(currentMachineID, childMachineID);
+
+    
+    }  else if (strcmp(split, "UntrustedCreate") == 0) {
+
+        char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+        split = strtok(NULL, ":");
+        char* machineType = split;
+        split = strtok(NULL, ":");
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload;
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, ":");
+            payload = split;
+
+        }
+
+        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+        sgx_status_t status = UntrustedCreateMachineAPI(global_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE);
+        return newMachineID;
+
+    
+    } else if (strcmp(split, "InitComm") == 0) {
+
+        char* newSessionKey = (char* ) malloc(SIZE_OF_SESSION_KEY);
+        split = strtok(NULL, ":");
+        char* machineInitializingComm = split;
+        split = strtok(NULL, ":");
+        char* machineReceivingComm = split;
+
+        int ptr;
+        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+        sgx_status_t status = initializeCommunicationAPI(global_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
+        return newSessionKey;
+
+    
+    }  else if (strcmp(split, "UntrustedSend") == 0) {
+
+        char* temp;
+        split = strtok(NULL, ":");
+        char* machineReceivingMessage = split;
+        split = strtok(NULL, ":");
+        char* eventNum = split;
+        split = strtok(NULL, ":");
+        char* payload = split;
+
+        int ptr;
+        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+        sgx_status_t status = sendUntrustedMessageAPI(global_eid, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+        return temp;
+
+    } else if (strcmp(split, "Send") == 0) {
+
+        char* temp;
+        split = strtok(NULL, ":");
+        char* machineSendingMessage = split;
+        split = strtok(NULL, ":");
+        char* machineReceivingMessage = split;
+        split = strtok(NULL, ":");
+        char* eventNum = split;
+        split = strtok(NULL, ":");
+        char* numArgs = split;
+        split = strtok(NULL, ":");
+        char* payload = split;
+
+        int ptr;
+        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+        sgx_status_t status = sendMessageAPI(global_eid, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+        return temp;
+
+
+    } else {
+        return "Command Not Found";
+    }
+
+}
+
