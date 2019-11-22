@@ -527,6 +527,7 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
 }
 
 int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE) {
+    ocall_print("CREATING MACHINE INSIDE ENCLAVE 2!!!");
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;

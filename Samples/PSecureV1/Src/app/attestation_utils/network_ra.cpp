@@ -178,6 +178,9 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
 
 char* forward_request(char* request, int redirect) {
     if (redirect == 0) {
+        return enclave1_receiveNetworkRequest(request);
+    } else if (redirect == 1) {
+        printf("HARKIRAT");
         return enclave2_receiveNetworkRequest(request);
     } else {
         return "ERROR:Request not forwarded!";
@@ -280,8 +283,8 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 
 void initNetwork() {
     TypeOfMachineToEnclaveNum[string("Coordinator")] = 0; 
-    TypeOfMachineToEnclaveNum[string("SecureChild")] = 0; 
-    TypeOfMachineToEnclaveNum[string("Pong")] = 0; 
+    TypeOfMachineToEnclaveNum[string("SecureChild")] = 1; 
+    TypeOfMachineToEnclaveNum[string("Pong")] = 1; 
 }
 
 

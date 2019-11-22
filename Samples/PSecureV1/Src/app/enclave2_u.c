@@ -349,7 +349,7 @@ static const struct {
 		(void*)enclave2_invoke_service_ocall,
 	}
 };
-sgx_status_t enclave_main(sgx_enclave_id_t eid, int* retval)
+sgx_status_t enclave2_enclave_main(sgx_enclave_id_t eid, int* retval)
 {
 	sgx_status_t status;
 	ms_enclave_main_t ms;
@@ -358,7 +358,7 @@ sgx_status_t enclave_main(sgx_enclave_id_t eid, int* retval)
 	return status;
 }
 
-sgx_status_t enclave_init_ra(sgx_enclave_id_t eid, sgx_status_t* retval, int b_pse, sgx_ra_context_t* p_context)
+sgx_status_t enclave2_enclave_init_ra(sgx_enclave_id_t eid, sgx_status_t* retval, int b_pse, sgx_ra_context_t* p_context)
 {
 	sgx_status_t status;
 	ms_enclave_init_ra_t ms;
@@ -369,7 +369,7 @@ sgx_status_t enclave_init_ra(sgx_enclave_id_t eid, sgx_status_t* retval, int b_p
 	return status;
 }
 
-sgx_status_t enclave_ra_close(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context)
+sgx_status_t enclave2_enclave_ra_close(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context)
 {
 	sgx_status_t status;
 	ms_enclave_ra_close_t ms;
@@ -379,7 +379,7 @@ sgx_status_t enclave_ra_close(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra
 	return status;
 }
 
-sgx_status_t verify_att_result_mac(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* message, size_t message_size, uint8_t* mac, size_t mac_size)
+sgx_status_t enclave2_verify_att_result_mac(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* message, size_t message_size, uint8_t* mac, size_t mac_size)
 {
 	sgx_status_t status;
 	ms_verify_att_result_mac_t ms;
@@ -393,7 +393,7 @@ sgx_status_t verify_att_result_mac(sgx_enclave_id_t eid, sgx_status_t* retval, s
 	return status;
 }
 
-sgx_status_t put_secret_data(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* p_secret, uint32_t secret_size, uint8_t* gcm_mac)
+sgx_status_t enclave2_put_secret_data(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* p_secret, uint32_t secret_size, uint8_t* gcm_mac)
 {
 	sgx_status_t status;
 	ms_put_secret_data_t ms;
@@ -406,7 +406,7 @@ sgx_status_t put_secret_data(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_
 	return status;
 }
 
-sgx_status_t encrypt_secure_message(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* return_encrypted_string, uint32_t requested_secret_size, uint8_t* return_payload_tag)
+sgx_status_t enclave2_encrypt_secure_message(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* return_encrypted_string, uint32_t requested_secret_size, uint8_t* return_payload_tag)
 {
 	sgx_status_t status;
 	ms_encrypt_secure_message_t ms;
@@ -419,7 +419,7 @@ sgx_status_t encrypt_secure_message(sgx_enclave_id_t eid, sgx_status_t* retval, 
 	return status;
 }
 
-sgx_status_t pong_enclave_request_attestation(sgx_enclave_id_t eid, int* retval, const char* other_machine_name)
+sgx_status_t enclave2_pong_enclave_request_attestation(sgx_enclave_id_t eid, int* retval, const char* other_machine_name)
 {
 	sgx_status_t status;
 	ms_pong_enclave_request_attestation_t ms;
@@ -429,7 +429,7 @@ sgx_status_t pong_enclave_request_attestation(sgx_enclave_id_t eid, int* retval,
 	return status;
 }
 
-sgx_status_t createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineName, char* parentTrustedMachineID, char* returnNewMachineID, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE)
+sgx_status_t enclave2_createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineName, char* parentTrustedMachineID, char* returnNewMachineID, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE)
 {
 	sgx_status_t status;
 	ms_createMachineAPI_t ms;
@@ -446,7 +446,7 @@ sgx_status_t createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineNa
 	return status;
 }
 
-sgx_status_t initializeCommunicationAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t ID_SIZE, uint32_t SESSION_SIZE)
+sgx_status_t enclave2_initializeCommunicationAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t ID_SIZE, uint32_t SESSION_SIZE)
 {
 	sgx_status_t status;
 	ms_initializeCommunicationAPI_t ms;
@@ -460,7 +460,7 @@ sgx_status_t initializeCommunicationAPI(sgx_enclave_id_t eid, int* retval, char*
 	return status;
 }
 
-sgx_status_t sendMessageAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* message, char* numArgs, char* payload, uint32_t ID_SIZE, uint32_t MESSAGE_SIZE, uint32_t MAX_PAYLOAD_SIZE)
+sgx_status_t enclave2_sendMessageAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* message, char* numArgs, char* payload, uint32_t ID_SIZE, uint32_t MESSAGE_SIZE, uint32_t MAX_PAYLOAD_SIZE)
 {
 	sgx_status_t status;
 	ms_sendMessageAPI_t ms;
@@ -477,7 +477,7 @@ sgx_status_t sendMessageAPI(sgx_enclave_id_t eid, int* retval, char* requestingM
 	return status;
 }
 
-sgx_status_t UntrustedCreateMachineAPI(sgx_enclave_id_t eid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payload, int output_length, int payload_size)
+sgx_status_t enclave2_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payload, int output_length, int payload_size)
 {
 	sgx_status_t status;
 	ms_UntrustedCreateMachineAPI_t ms;
@@ -493,7 +493,7 @@ sgx_status_t UntrustedCreateMachineAPI(sgx_enclave_id_t eid, char* machineTypeTo
 	return status;
 }
 
-sgx_status_t sendUntrustedMessageAPI(sgx_enclave_id_t eid, int* retval, char* receivingMachineIDKey, char* event, char* payload, uint32_t ID_SIZE, uint32_t MESSAGE_SIZE, uint32_t MAX_PAYLOAD_SIZE)
+sgx_status_t enclave2_sendUntrustedMessageAPI(sgx_enclave_id_t eid, int* retval, char* receivingMachineIDKey, char* event, char* payload, uint32_t ID_SIZE, uint32_t MESSAGE_SIZE, uint32_t MAX_PAYLOAD_SIZE)
 {
 	sgx_status_t status;
 	ms_sendUntrustedMessageAPI_t ms;
@@ -508,7 +508,7 @@ sgx_status_t sendUntrustedMessageAPI(sgx_enclave_id_t eid, int* retval, char* re
 	return status;
 }
 
-sgx_status_t sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a)
+sgx_status_t enclave2_sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a)
 {
 	sgx_status_t status;
 	ms_sgx_ra_get_ga_t ms;
@@ -519,7 +519,7 @@ sgx_status_t sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_co
 	return status;
 }
 
-sgx_status_t sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, const sgx_ra_msg2_t* p_msg2, const sgx_target_info_t* p_qe_target, sgx_report_t* p_report, sgx_quote_nonce_t* p_nonce)
+sgx_status_t enclave2_sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, const sgx_ra_msg2_t* p_msg2, const sgx_target_info_t* p_qe_target, sgx_report_t* p_report, sgx_quote_nonce_t* p_nonce)
 {
 	sgx_status_t status;
 	ms_sgx_ra_proc_msg2_trusted_t ms;
@@ -533,7 +533,7 @@ sgx_status_t sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval
 	return status;
 }
 
-sgx_status_t sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint32_t quote_size, sgx_report_t* qe_report, sgx_ra_msg3_t* p_msg3, uint32_t msg3_size)
+sgx_status_t enclave2_sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint32_t quote_size, sgx_report_t* qe_report, sgx_ra_msg3_t* p_msg3, uint32_t msg3_size)
 {
 	sgx_status_t status;
 	ms_sgx_ra_get_msg3_trusted_t ms;

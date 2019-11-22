@@ -299,7 +299,7 @@ inline int pong_enclave_start_attestation(const char* receiving_machine_name, in
                 goto CLEANUP;
             }
             //fprintf(OUTPUT, "\nCall sgx_create_enclave success.");
-            ret = enclave_init_ra(enclave_id,
+            ret = enclave2_enclave_init_ra(enclave_id,
                                   &status,
                                   false,
                                   &context);
@@ -331,7 +331,7 @@ inline int pong_enclave_start_attestation(const char* receiving_machine_name, in
         p_msg1_full->size = sizeof(sgx_ra_msg1_t);
         do
         {
-            ret = sgx_ra_get_msg1(context, enclave_id, sgx_ra_get_ga,
+            ret = sgx_ra_get_msg1(context, enclave_id, enclave2_sgx_ra_get_ga,
                                   (sgx_ra_msg1_t*)((uint8_t*)p_msg1_full
                                   + sizeof(ra_samp_request_header_t)));
             sleep(3); // Wait 3s between retries
@@ -507,8 +507,8 @@ inline int pong_enclave_start_attestation(const char* receiving_machine_name, in
             {
                 ret = sgx_ra_proc_msg2(context,
                                    enclave_id,
-                                   sgx_ra_proc_msg2_trusted,
-                                   sgx_ra_get_msg3_trusted,
+                                   enclave2_sgx_ra_proc_msg2_trusted,
+                                   enclave2_sgx_ra_get_msg3_trusted,
                                    p_msg2_body,
                                    p_msg2_full->size,
                                    &p_msg3,
@@ -631,7 +631,7 @@ inline int pong_enclave_start_attestation(const char* receiving_machine_name, in
         // The format of the attestation result message is ISV specific.
         // This is a simple form for demonstration. In a real product,
         // the ISV may want to communicate more information.
-        ret = verify_att_result_mac(enclave_id,
+        ret = enclave2_verify_att_result_mac(enclave_id,
                 &status,
                 context,
                 (uint8_t*)&p_att_result_msg_body->platform_info_blob,
@@ -681,7 +681,7 @@ inline int pong_enclave_start_attestation(const char* receiving_machine_name, in
         {
             //If Ping machine wants to send the enclave a secure message
             if (message_from_machine_to_enclave) { // message_from_machine_to_enclave == 1 or == 2
-                ret = put_secret_data(enclave_id,
+                ret = enclave2_put_secret_data(enclave_id,
                                     &status,
                                     context,
                                     p_att_result_msg_body->secret.payload,
@@ -706,7 +706,7 @@ inline int pong_enclave_start_attestation(const char* receiving_machine_name, in
                 uint32_t secret_size = SIZE_OF_MESSAGE;
 
                 //Encrypt message using enclave
-                ret = encrypt_secure_message(enclave_id,
+                ret = enclave2_encrypt_secure_message(enclave_id,
                                     &status,
                                     context,
                                     encrypted_string,
@@ -735,7 +735,7 @@ CLEANUP:
     if(INT_MAX != context)
     {
         int ret_save = ret;
-        ret = enclave_ra_close(enclave_id, &status, context); 
+        ret = enclave2_enclave_ra_close(enclave_id, &status, context); 
         if(SGX_SUCCESS != ret || status)
         {
             ret = -1;
@@ -826,13 +826,15 @@ char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra for
             payload = split;
 
         }
+
+        printf("HARKIRAT2");
         
 
         int ptr;
         //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
         // application of this enclave and have that make an ecall to createMachineAPi
-        sgx_status_t status = createMachineAPI(global_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
+        sgx_status_t status = enclave2_createMachineAPI(global_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
 
         return newMachineID;
     // }  else if (strcmp(split, "GetKey") == 0) {
@@ -867,7 +869,7 @@ char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra for
         }
 
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = UntrustedCreateMachineAPI(global_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE);
+        sgx_status_t status = enclave2_UntrustedCreateMachineAPI(global_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE);
         return newMachineID;
 
     
@@ -881,7 +883,7 @@ char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra for
 
         int ptr;
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = initializeCommunicationAPI(global_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
+        sgx_status_t status = enclave2_initializeCommunicationAPI(global_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
         return newSessionKey;
 
     
@@ -897,7 +899,7 @@ char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra for
 
         int ptr;
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = sendUntrustedMessageAPI(global_eid, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+        sgx_status_t status = enclave2_sendUntrustedMessageAPI(global_eid, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
         return temp;
 
     } else if (strcmp(split, "Send") == 0) {
@@ -916,7 +918,7 @@ char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra for
 
         int ptr;
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = sendMessageAPI(global_eid, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+        sgx_status_t status = enclave2_sendMessageAPI(global_eid, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
         return temp;
 
 

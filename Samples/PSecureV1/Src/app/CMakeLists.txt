@@ -38,6 +38,7 @@ add_custom_command(
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/enclave2_u.c
         COMMAND ${SGX_EDGER8R} --untrusted enclave2.edl
+        --use-prefix
         --search-path ../enclave2/ # enclave.edl
         --search-path ${SGX_SDK}/include
         --search-path ${MBEDTLS_SGX_ROOT_DIR}/lib # mbedtls_sgx.edl
