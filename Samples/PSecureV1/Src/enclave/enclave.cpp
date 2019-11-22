@@ -566,10 +566,12 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
 char* registerMachineWithNetwork(char* newMachineID) {
 
     int ret_value;
-    char* machineKeyWrapper[] = {newMachineID};
+    char* num = (char*) malloc(10);
+    itoa(ENCLAVE_NUMBER, num, 10);
+    char* machineKeyWrapper[] = {newMachineID, num};
     
     char* networkResult = (char*) malloc(100);
-    ocall_network_request(&ret_value, generateCStringFromFormat("RegisterMachine:%s:0", machineKeyWrapper, 1), networkResult, 100);
+    ocall_network_request(&ret_value, generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2), networkResult, 100);
 
 }
 
