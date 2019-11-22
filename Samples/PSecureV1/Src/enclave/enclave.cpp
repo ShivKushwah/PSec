@@ -256,7 +256,7 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
         payloadString = serializePrtValueToString(payloadPrtValue);
     }
 
-    char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
     int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1 + 10 + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
     if (numArgs == 0) {
@@ -270,7 +270,7 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     ocall_print(generateCStringFromFormat("%s machine is sending out the following network request:", machineNameWrapper, 1)); //TODO use this method for all future ocall_prints
     ocall_print(createMachineRequest);
     int ret_value;
-    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING);
+    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING + 1);
     
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine has created a new machine with Identity Public Key as:", machineNameWrapper2, 1)); //TODO use this method for all future ocall_prints
@@ -507,6 +507,10 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
     PublicIdentityKeyToMachinePIDDictionary[secureChildPublicIDKey] = newMachinePID;
 
+    char* secureChildPublicIDKeyCopy = (char*) malloc(secureChildPublicIDKey.size() + 1);
+    memcpy(secureChildPublicIDKeyCopy, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.size() + 1);
+    registerMachineWithNetwork(secureChildPublicIDKeyCopy);
+
     //NOTE No one has the capability key for this SSM
 
     //"Return" the publicIDKey of the new machine
@@ -537,6 +541,11 @@ int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, c
     ocall_print("Enclave received new capability Key from KPS: ");
     ocall_print(capabilityKeyReceived.c_str());
     MachinePIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
+
+    char* secureChildPublicIDKeyCopy = (char*) malloc(secureChildPublicIDKey.size() + 1);
+    memcpy(secureChildPublicIDKeyCopy, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.size() + 1);
+    registerMachineWithNetwork(secureChildPublicIDKeyCopy);
+
     //"Return" the publicIDKey of the new machine
     memcpy(returnNewMachinePublicIDKey, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
     createMachine(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload);
@@ -552,6 +561,16 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;
+}
+
+char* registerMachineWithNetwork(char* newMachineID) {
+
+    int ret_value;
+    char* machineKeyWrapper[] = {newMachineID};
+    
+    char* networkResult = (char*) malloc(100);
+    ocall_network_request(&ret_value, generateCStringFromFormat("RegisterMachine:%s:0", machineKeyWrapper, 1), networkResult, 100);
+
 }
 
 //publicID and privateID must be allocated by the caller

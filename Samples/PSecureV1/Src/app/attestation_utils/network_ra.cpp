@@ -189,7 +189,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 
     char* split = strtok(requestCopy, ":");
     if (strcmp(split, "Create") == 0) {
-        char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+        
         split = strtok(NULL, ":");
         char* parentTrustedMachinePublicIDKey = split;
         split = strtok(NULL, ":");
@@ -205,76 +205,61 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
     
     }  else if (strcmp(split, "UntrustedCreate") == 0) {
 
-        char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
         split = strtok(NULL, ":");
         char* machineType = split;
-        split = strtok(NULL, ":");
-        int numArgs = atoi(split);
-        int payloadType = -1;
-        char* payload;
-        if (numArgs > 0) {
-            split = strtok(NULL, ":");
-            payloadType = atoi(split);
-            split = strtok(NULL, ":");
-            payload = split;
+        if (TypeOfMachineToEnclaveNum.count(string(machineType)) == 1) {
 
+            return forward_request(request, TypeOfMachineToEnclaveNum[machineType]);
+
+        } else {
+            return "ERROR:Machine Type Not Found!";
         }
-
-        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = UntrustedCreateMachineAPI(global_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE);
-        return newMachineID;
-
     
     } else if (strcmp(split, "InitComm") == 0) {
 
-        char* newSessionKey = (char* ) malloc(SIZE_OF_SESSION_KEY);
         split = strtok(NULL, ":");
         char* machineInitializingComm = split;
         split = strtok(NULL, ":");
         char* machineReceivingComm = split;
 
-        int ptr;
-        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = initializeCommunicationAPI(global_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
-        return newSessionKey;
+        if (MachinePublicIDToEnclaveNum.count(string(machineReceivingComm)) == 1) {
+
+            return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingComm]);
+
+        } else {
+            return "ERROR:Machine Type Not Found!";
+        }
 
     
     }  else if (strcmp(split, "UntrustedSend") == 0) {
 
-        char* temp;
         split = strtok(NULL, ":");
         char* machineReceivingMessage = split;
-        split = strtok(NULL, ":");
-        char* eventNum = split;
-        split = strtok(NULL, ":");
-        char* payload = split;
 
-        int ptr;
-        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = sendUntrustedMessageAPI(global_eid, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
-        return temp;
+        if (MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage)) == 1) {
+
+            return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingMessage]);
+
+        } else {
+            return "ERROR:Machine Type Not Found!";
+        }
 
     } else if (strcmp(split, "Send") == 0) {
 
-        char* temp;
         split = strtok(NULL, ":");
         char* machineSendingMessage = split;
         split = strtok(NULL, ":");
         char* machineReceivingMessage = split;
-        split = strtok(NULL, ":");
-        char* eventNum = split;
-        split = strtok(NULL, ":");
-        char* numArgs = split;
-        split = strtok(NULL, ":");
-        char* payload = split;
 
-        int ptr;
-        //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = sendMessageAPI(global_eid, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
-        return temp;
+        if (MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage)) == 1) {
 
+            return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingMessage]);
 
-    } else if (strcmp(split, "RegisterOnNetwork") == 0) { //When a new machine is created, its public ID key should be registered with network_ra so that network knows who to forward the message to
+        } else {
+            return "ERROR:Machine Type Not Found!";
+        }
+
+    } else if (strcmp(split, "RegisterMachine") == 0) { //When a new machine is created, its public ID key should be registered with network_ra so that network knows who to forward the message to
 
         split = strtok(NULL, ":");
         char* publicIDRegister = split;
