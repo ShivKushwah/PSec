@@ -527,6 +527,63 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
 }
 
 int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE) {
+
+    if (process == NULL) {
+
+         ocall_print("hello, world!\n");
+	//PRT_DBG_START_MEM_BALANCED_REGION
+	//{
+		PRT_GUID processGuid;
+
+		processGuid.data1 = 1;
+		processGuid.data2 = 0;
+		processGuid.data3 = 0;
+		processGuid.data4 = 0;
+		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
+        ocall_print("after start process!\n");
+        if (cooperative)
+        {
+            PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
+        }
+		
+
+       
+
+        if (cooperative)
+        {
+            // test some multithreading across state machines.
+            /*
+            typedef void *(*start_routine) (void *);
+            pthread_t tid[threads];
+            for (int i = 0; i < threads; i++)
+            {
+                pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
+            }
+            for (int i = 0; i < threads; i++)
+            {
+                pthread_join(tid[i], NULL);
+            }
+            */
+        }
+
+    }
+
+    PRT_VALUE *payloadPrt;
+    if (parg == NULL)
+    {
+        payloadPrt = PrtMkNullValue();
+
+    }
+    else
+    {
+        int i = atoi(parg);
+        payloadPrt = PrtMkIntValue(i);
+        
+    }
+
+	PrtUpdateAssertFn(MyAssert);
+    ocall_print("after update assert fn!\n");
+
     ocall_print("CREATING MACHINE INSIDE ENCLAVE 2!!!");
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
     string secureChildPublicIDKey;

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <assert.h>
 #include "enclave_u.h"
+#include "enclave2_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 #include "network_ra.h"
@@ -17,6 +18,8 @@ using namespace std;
 
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
+sgx_enclave_id_t global_eid2 = 0;
+
 
 static PRT_BOOLEAN cooperative = PRT_FALSE;
 static int threads = 1;
@@ -220,6 +223,9 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
     if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
         std::cout << "Fail to initialize enclave." << std::endl;
     }
+     if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
+        std::cout << "Fail to initialize enclave2." << std::endl;
+    }
 
     char* networkRequest = "UntrustedCreate:Coordinator:1:2:9"; //PRT_VALUE_KIND_INT is 2
     char* newMachinePublicIDKey = send_network_request_API(networkRequest);
@@ -312,12 +318,22 @@ extern "C" void P_InitializePongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE
         std::cout << "Fail to initialize enclave." << std::endl;
     }
 
+    if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
+        std::cout << "Fail to initialize enclave2." << std::endl;
+    }
+
     int ptr;
     //Start up PrtTrusted inside enclave
     sgx_status_t status = enclave_enclave_main(global_eid, &ptr); 
     std::cout << status << std::endl;
     if (status != SGX_SUCCESS) {
         std::cout << "Error in Starting PrtTrusted" << std::endl;
+    }
+
+    status = enclave2_enclave_main(global_eid2, &ptr); 
+    std::cout << status << std::endl;
+    if (status != SGX_SUCCESS) {
+        std::cout << "Error in Starting PrtTrusted2" << std::endl;
     }
     
     

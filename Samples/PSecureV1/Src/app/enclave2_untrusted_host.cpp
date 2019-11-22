@@ -71,7 +71,7 @@
 
 const int SIZE_OF_MESSAGE = 20;
 
-extern sgx_enclave_id_t global_eid;
+extern sgx_enclave_id_t global_eid2;
 
 #define ENCLAVE_PATH "isv_enclave.signed.so"
 
@@ -182,7 +182,7 @@ inline int pong_enclave_start_attestation(const char* receiving_machine_name, in
     ra_samp_response_header_t *p_msg2_full = NULL;
     sgx_ra_msg3_t *p_msg3 = NULL;
     ra_samp_response_header_t* p_att_result_msg_full = NULL;
-    sgx_enclave_id_t enclave_id = global_eid;
+    sgx_enclave_id_t enclave_id = global_eid2;
     int enclave_lost_retry_time = 1;
     int busy_retry_time = 4;
     sgx_ra_context_t context = INT_MAX;
@@ -834,7 +834,7 @@ char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra for
         //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
         // application of this enclave and have that make an ecall to createMachineAPi
-        sgx_status_t status = enclave2_createMachineAPI(global_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
+        sgx_status_t status = enclave2_createMachineAPI(global_eid2, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
 
         return newMachineID;
     // }  else if (strcmp(split, "GetKey") == 0) {
@@ -869,7 +869,7 @@ char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra for
         }
 
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = enclave2_UntrustedCreateMachineAPI(global_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE);
+        sgx_status_t status = enclave2_UntrustedCreateMachineAPI(global_eid2, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE);
         return newMachineID;
 
     
@@ -883,7 +883,7 @@ char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra for
 
         int ptr;
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = enclave2_initializeCommunicationAPI(global_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
+        sgx_status_t status = enclave2_initializeCommunicationAPI(global_eid2, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
         return newSessionKey;
 
     
@@ -899,7 +899,7 @@ char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra for
 
         int ptr;
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = enclave2_sendUntrustedMessageAPI(global_eid, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+        sgx_status_t status = enclave2_sendUntrustedMessageAPI(global_eid2, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
         return temp;
 
     } else if (strcmp(split, "Send") == 0) {
@@ -918,7 +918,7 @@ char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra for
 
         int ptr;
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = enclave2_sendMessageAPI(global_eid, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+        sgx_status_t status = enclave2_sendMessageAPI(global_eid2, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
         return temp;
 
 
