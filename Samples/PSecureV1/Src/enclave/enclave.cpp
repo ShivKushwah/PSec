@@ -631,8 +631,8 @@ char* registerMachineWithNetwork(char* newMachineID) {
 //publicID and privateID must be allocated by the caller
 void generateIdentity(string& publicID, string& privateID) {
     //TODO Make this generate a random pk sk pair
-    publicID = "SecureChildPublic" + to_string(ID_GENERATOR_SEED);
-    privateID = "SecureChildPrivate" + to_string(ID_GENERATOR_SEED);
+    publicID = "Enclave2Public" + to_string(ID_GENERATOR_SEED);
+    privateID = "Enclave2Private" + to_string(ID_GENERATOR_SEED);
     ID_GENERATOR_SEED += 1;
 } 
 

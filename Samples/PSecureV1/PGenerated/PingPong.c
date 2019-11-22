@@ -243,6 +243,9 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp3 = NULL;
     PRT_VALUE* PTMP_tmp4 = NULL;
     PRT_VALUE* PTMP_tmp5 = NULL;
+    PRT_VALUE* PTMP_tmp6 = NULL;
+    PRT_VALUE* PTMP_tmp7 = NULL;
+    PRT_VALUE* PTMP_tmp8 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 4 } };
@@ -341,10 +344,41 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_9 = &(PTMP_tmp5);
     PrtFreeValue(*P_LVALUE_9);
-    *P_LVALUE_9 = PrtCloneValue((&P_EVENT_Success.value));
+    *P_LVALUE_9 = PrtCloneValue(p_this->varValues[1]);
     
-    PrtRaise(p_this, PTMP_tmp5, 0);
-    *(&(PTMP_tmp5)) = NULL;
+    PRT_VALUE** P_LVALUE_10 = &(PTMP_tmp6);
+    PrtFreeValue(*P_LVALUE_10);
+    *P_LVALUE_10 = PrtCloneValue((&P_EVENT_UntrustedEventFromPing.value));
+    
+    PRT_VALUE** P_LVALUE_11 = &(PTMP_tmp7);
+    PrtFreeValue(*P_LVALUE_11);
+    *P_LVALUE_11 = PrtCloneValue(p_this->varValues[3]);
+    
+    _P_GEN_funargs[0] = &(PTMP_tmp5);
+    _P_GEN_funargs[1] = &(PTMP_tmp6);
+    _P_GEN_funargs[2] = &(PTMP_tmp7);
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(PTMP_tmp5);
+    PTMP_tmp5 = NULL;
+    PrtFreeValue(PTMP_tmp6);
+    PTMP_tmp6 = NULL;
+    PrtFreeValue(PTMP_tmp7);
+    PTMP_tmp7 = NULL;
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
+    PRT_VALUE** P_LVALUE_12 = &(PTMP_tmp8);
+    PrtFreeValue(*P_LVALUE_12);
+    *P_LVALUE_12 = PrtCloneValue((&P_EVENT_Success.value));
+    
+    PrtRaise(p_this, PTMP_tmp8, 0);
+    *(&(PTMP_tmp8)) = NULL;
     goto p_return;
     
 p_return: ;
@@ -354,6 +388,9 @@ p_return: ;
     PrtFreeValue(PTMP_tmp3); PTMP_tmp3 = NULL;
     PrtFreeValue(PTMP_tmp4); PTMP_tmp4 = NULL;
     PrtFreeValue(PTMP_tmp5); PTMP_tmp5 = NULL;
+    PrtFreeValue(PTMP_tmp6); PTMP_tmp6 = NULL;
+    PrtFreeValue(PTMP_tmp7); PTMP_tmp7 = NULL;
+    PrtFreeValue(PTMP_tmp8); PTMP_tmp8 = NULL;
     return _P_GEN_retval;
 }
 

@@ -64,12 +64,15 @@ secure_machine Pong {
             // }
         } 
         on Ping goto Done; 
+                // on UntrustedEventFromPing goto Done;
     }
 
     state Done { 
         entry {
             print "YOOOOO";
 	    }
+                // on UntrustedEventFromPing goto Done;
+
     }
 }
 

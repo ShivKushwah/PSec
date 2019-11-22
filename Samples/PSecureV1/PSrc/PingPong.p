@@ -27,7 +27,7 @@ machine Ping {
             coordinatorID = UntrustedCreateCoordinator(); //Start up PrtTrusted in the Pong Enclave
             numArgs = 1;
             payld = 9;
-            // UntrustedSend(coordinatorID, UntrustedEventFromPing, payld);
+            UntrustedSend(coordinatorID, UntrustedEventFromPing, payld);
     	    raise Success;   	   
         }
         on Success goto Done;
