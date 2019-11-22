@@ -8,6 +8,8 @@ event UntrustedEventFromPing;
 fun InitializePongEnclave();
 fun UntrustedCreateCoordinator();
 fun UntrustedSend(publicID: StringType, even : event, payload: int);
+fun InitializeUntrustedMachine();
+fun GetThis();
 event Success;
 
 machine Ping {
@@ -18,6 +20,8 @@ machine Ping {
 
     start state Ping_Init {
         entry {
+            InitializeUntrustedMachine();
+            GetThis();
             pongId = new Temp();
             send pongId, Pong, 4;
             coordinatorID = UntrustedCreateCoordinator(); //Start up PrtTrusted in the Pong Enclave

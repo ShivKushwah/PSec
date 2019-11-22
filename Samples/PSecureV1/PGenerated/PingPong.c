@@ -29,6 +29,10 @@ PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE
 
 PRT_VALUE* P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
+PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
 
@@ -85,6 +89,22 @@ PRT_FUNDECL P_FUNCTION_UntrustedSend =
 {
     "UntrustedSend",
     &P_UntrustedSend_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_InitializeUntrustedMachine =
+{
+    "InitializeUntrustedMachine",
+    &P_InitializeUntrustedMachine_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_GetThis =
+{
+    "GetThis",
+    &P_GetThis_IMPL,
     NULL
 };
 
@@ -231,6 +251,26 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 4 } };
     PRT_VALUE P_LIT_INT32_1 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
     PRT_VALUE P_LIT_INT32_2 = { PRT_VALUE_KIND_INT, { .nt = 9 } };
+    PrtFreeValue(P_InitializeUntrustedMachine_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
+    PrtFreeValue(P_GetThis_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
     _P_GEN_funargs[0] = "Temp";
     _P_GEN_funargs[1] = "0";
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);

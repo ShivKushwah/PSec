@@ -10,6 +10,10 @@
 #include "pong_enclave_attestation.h"
 #include "app.h"
 #include <string>
+#include <unordered_map> 
+#include <map>
+
+using namespace std;
 
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
@@ -23,6 +27,10 @@ static long startTime = 0;
 static long perfEndTime = 0;
 static const char* parg = NULL;
 static const char* workspaceConfig;
+
+unordered_map<int, string> MachinePIDtoPublicIdentityKeyDictionary;
+
+int ID_GENERATOR_SEED = 0;
 
 extern char secure_message[8];
 
@@ -176,6 +184,35 @@ char* itoa(int num, char* str, int base)
   
     return str; 
 } 
+
+void generateIdentity(string& publicID) {
+    //TODO Make this generate a random pk sk pair
+    publicID = "UntrustedPublic" + to_string(ID_GENERATOR_SEED);
+    ID_GENERATOR_SEED += 1;
+} 
+
+extern "C" PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+    string publicID;
+    generateIdentity(publicID);
+
+    MachinePIDtoPublicIdentityKeyDictionary[currentMachinePID] = publicID;
+}
+
+extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+    char* currentMachineIDPublicKey;
+ 
+    currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(MachinePIDtoPublicIdentityKeyDictionary[currentMachinePID].c_str())); 
+  
+    //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, currentMachineIDPublicKey);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+}
 
 
 extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) //TODO modify this to take the type of machine to create as a param

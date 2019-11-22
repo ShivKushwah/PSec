@@ -635,7 +635,6 @@ int sendUntrustedMessageAPI(char* receivingMachineIDKey, char* eventNum, char* p
 extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
-    char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
     char* currentMachineIDPublicKey;
  
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
