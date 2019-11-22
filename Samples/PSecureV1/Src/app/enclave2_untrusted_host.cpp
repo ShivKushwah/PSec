@@ -806,7 +806,7 @@ int ocall_network_request2(char* request, char* response, uint32_t RESPONSE_SIZE
 }
 
 
-char* enclave2_receiveNetworkRequest(char* request) { //TODO have network ra forward to this
+char* untrusted_enclave2_receiveNetworkRequest(char* request) { //TODO have network ra forward to this
 
     char* split = strtok(request, ":");
     if (strcmp(split, "Create") == 0) {
