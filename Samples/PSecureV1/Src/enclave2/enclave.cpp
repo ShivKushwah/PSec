@@ -270,7 +270,7 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
     ocall_print(generateCStringFromFormat("%s machine is sending out the following network request:", machineNameWrapper, 1)); //TODO use this method for all future ocall_prints
     ocall_print(createMachineRequest);
     int ret_value;
-    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING + 1);
+    ocall_network_request2(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING + 1);
     
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine has created a new machine with Identity Public Key as:", machineNameWrapper2, 1)); //TODO use this method for all future ocall_prints
@@ -330,7 +330,7 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
         ocall_print(initComRequest);
         char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
         int ret_value;
-        ocall_network_request(&ret_value, initComRequest, newSessionKey, SIZE_OF_SESSION_KEY);
+        ocall_network_request2(&ret_value, initComRequest, newSessionKey, SIZE_OF_SESSION_KEY);
         char* machineNameWrapper2[] = {currentMachineIDPublicKey};
         ocall_print(generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1));       
         ocall_print(newSessionKey);
@@ -374,7 +374,7 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     ocall_print(secureSendRequest);
     char* empty;
     int ret_value;
-    ocall_network_request(&ret_value, secureSendRequest, empty, 0);
+    ocall_network_request2(&ret_value, secureSendRequest, empty, 0);
 
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1));
@@ -425,7 +425,7 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     int requestSize = SIZE_OF_IDENTITY_STRING + SIZE_OF_IDENTITY_STRING;
     char* requestString = (char*) malloc(requestSize);
     snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);    
-    ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString);
+    ocall_pong_enclave2_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;
@@ -557,7 +557,7 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     int requestSize = SIZE_OF_IDENTITY_STRING + SIZE_OF_IDENTITY_STRING;
     char* requestString = (char*) malloc(requestSize);
     snprintf(requestString, requestSize, "%s:%s", newMachinePublicIDKey, parentTrustedMachineID);
-    ocall_pong_enclave_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, CREATE_CAPABILITY_KEY_CONSTANT, requestString);
+    ocall_pong_enclave2_attestation_in_thread(&ret, (char*)other_machine_name, strlen(other_machine_name)+1, CREATE_CAPABILITY_KEY_CONSTANT, requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;
@@ -571,7 +571,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
     char* machineKeyWrapper[] = {newMachineID, num};
     
     char* networkResult = (char*) malloc(100);
-    ocall_network_request(&ret_value, generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2), networkResult, 100);
+    ocall_network_request2(&ret_value, generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2), networkResult, 100);
 
 }
 

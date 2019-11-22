@@ -40,6 +40,8 @@
 #include "sgx_utils/sgx_utils.h"
 #include <unordered_map> 
 #include "enclave_untrusted_host.h"
+#include "enclave2_untrusted_host.h"
+
 
 
 extern sgx_enclave_id_t global_eid;
@@ -145,9 +147,9 @@ int ra_network_send_receive(const char *sending_machine_name,
                                  optional_Message.payload_tag);
 
     //Request to PongMachine to initialize a secure attestation channel
-    } else if (strcmp(receiving_machine_name, "PongMachine") == 0) {
+    } else if (strcmp(receiving_machine_name, "PongMachine") == 0) { //TODO SHIV NOTE
         int ptr;
-        sgx_status_t status = pong_enclave_request_attestation(global_eid, &ptr, sending_machine_name);
+        sgx_status_t status = enclave_pong_enclave_request_attestation(global_eid, &ptr, sending_machine_name);
         if (status == SGX_SUCCESS && ptr == 0) {
             return ptr;
         } else {

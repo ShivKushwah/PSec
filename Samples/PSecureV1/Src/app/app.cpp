@@ -314,7 +314,7 @@ extern "C" void P_InitializePongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE
 
     int ptr;
     //Start up PrtTrusted inside enclave
-    sgx_status_t status = enclave_main(global_eid, &ptr); 
+    sgx_status_t status = enclave_enclave_main(global_eid, &ptr); 
     std::cout << status << std::endl;
     if (status != SGX_SUCCESS) {
         std::cout << "Error in Starting PrtTrusted" << std::endl;

@@ -1,5 +1,5 @@
 #include "PingPongEnclave.h"
-#include "enclave_t.h"
+#include "enclave2_t.h"
 #include "string.h"
 #include <string>
 #include <tuple>
