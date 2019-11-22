@@ -58,7 +58,7 @@
 // Needed to query extended epid group id.
 #include "sgx_uae_service.h"
 #include "pong_enclave_attestation.h"
-#include "ping_attestation.h"
+#include "kps.h"
 
 #ifndef SAFE_FREE
 #define SAFE_FREE(ptr) {if (NULL != (ptr)) {free(ptr); (ptr) = NULL;}}

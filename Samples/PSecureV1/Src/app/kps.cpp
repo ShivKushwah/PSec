@@ -30,7 +30,7 @@
  */
 
 
-#include "ping_attestation.h"
+#include "kps.h"
 #include "enclave_u.h"
 
 #include "sample_libcrypto.h"

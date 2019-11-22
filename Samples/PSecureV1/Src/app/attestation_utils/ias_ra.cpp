@@ -31,7 +31,7 @@
 
 
 
-#include "ping_attestation.h"
+#include "kps.h"
 #include "sample_libcrypto.h"
 #include "ecp.h"
 #include <stdio.h>

@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "network_ra.h"
-#include "ping_attestation.h"
+#include "kps.h"
 #include "enclave_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
