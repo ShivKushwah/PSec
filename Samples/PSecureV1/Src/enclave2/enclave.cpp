@@ -596,7 +596,7 @@ int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, c
 
     //Contacting KPS for capability key
     string capabilityKeyReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str());
-    ocall_print("Enclave received new capability Key from KPS: ");
+    ocall_print("Enclave2 received new capability Key from KPS: ");
     ocall_print(capabilityKeyReceived.c_str());
     MachinePIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
 

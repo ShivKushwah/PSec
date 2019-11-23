@@ -643,6 +643,8 @@ int getNextPID() {
 int createMachine(char* machineType, char* parentTrustedMachineID, int numArgs, int payloadType, char* payload) {
     PRT_VALUE* prtPayload;
     if (numArgs > 0) {
+        ocall_print("Serialized the following payload");
+        ocall_print(payload);
         prtPayload = *(deserializeStringToPrtValue(numArgs, payload, payloadType));
     } else {
         prtPayload = PrtMkNullValue();
