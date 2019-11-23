@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "enclave_u.h"
 #include "enclave2_u.h"
+#include "enclave3_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 #include "network_ra.h"
@@ -19,6 +20,7 @@ using namespace std;
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
 sgx_enclave_id_t global_eid2 = 0;
+sgx_enclave_id_t global_eid3 = 0;
 
 
 static PRT_BOOLEAN cooperative = PRT_FALSE;
@@ -225,6 +227,9 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
     }
      if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
         std::cout << "Fail to initialize enclave2." << std::endl;
+    }
+    if (initialize_enclave(&global_eid3, "enclave3.token", "enclave3.signed.so") < 0) {
+        std::cout << "Fail to initialize enclave3." << std::endl;
     }
 
     char* networkRequest = "UntrustedCreate:Coordinator:1:2:9"; //PRT_VALUE_KIND_INT is 2

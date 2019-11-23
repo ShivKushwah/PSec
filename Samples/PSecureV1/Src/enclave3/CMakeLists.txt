@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(pingpong)
 
-set(projectName enclave)
+set(projectName enclave3)
 FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/PingPongEnclave.p) #used to be ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*
 PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/)
 
@@ -27,10 +27,10 @@ set (${projectName}_INCLUDE
 
 
 
-set(ENCLAVE_SOURCE_FILES
+set(ENCLAVE3_SOURCE_FILES
         enclave.cpp
         enclave_internal_attestation.cpp
-        enclave_t.c
+        enclave3_t.c
         temp.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPongEnclave.c
         #/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c
@@ -40,20 +40,20 @@ set(ENCLAVE_SOURCE_FILES
 add_definitions(-DENCLAVE_STD_ALT)
 
 set_directory_properties(PROPERTIES
-        ADDITIONAL_MAKE_CLEAN_FILES "enclave_t.c; enclave_t.h")
+        ADDITIONAL_MAKE_CLEAN_FILES "enclave3_t.c; enclave3_t.h")
 
 add_custom_command(
-        OUTPUT enclave_t.c
-        COMMAND ${SGX_EDGER8R} --trusted enclave.edl
+        OUTPUT enclave3_t.c
+        COMMAND ${SGX_EDGER8R} --trusted enclave3.edl
         --search-path ${SGX_SDK}/include
         --search-path ${CMAKE_CURRENT_SOURCE_DIR}
-        DEPENDS enclave.edl
+        DEPENDS enclave3.edl
         WORKING_DIRECTORY .
 )
 
 cmake_policy(SET CMP0004 OLD)
 
-add_library(enclave SHARED ${ENCLAVE_SOURCE_FILES} ${${projectName}_gsources} ${${projectName}_csources} ${${projectName}_psources})
+add_library(enclave3 SHARED ${ENCLAVE3_SOURCE_FILES} ${${projectName}_gsources} ${${projectName}_csources} ${${projectName}_psources})
 
 include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -67,9 +67,9 @@ include_directories(
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SGX_COMMON_CFLAGS} -nostdinc -fvisibility=hidden -fpie -fstack-protector")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} -std=c++11 -nostdinc++")
 
-set_target_properties(enclave PROPERTIES PREFIX "")
+set_target_properties(enclave3 PROPERTIES PREFIX "")
 
-target_link_libraries(enclave 
+target_link_libraries(enclave3 
 Prt_trusted_static
 "${SGX_COMMON_CFLAGS} \
 -Wl,--no-undefined -nostdlib -nodefaultlibs -nostartfiles -L${SGX_LIBRARY_PATH} \
@@ -79,15 +79,15 @@ Prt_trusted_static
 -Wl,-pie,-eenclave_entry -Wl,--export-dynamic \
 -Wl,--defsym,__ImageBase=0")
 
-add_custom_command(TARGET enclave
+add_custom_command(TARGET enclave3
         POST_BUILD
         COMMAND ${SGX_ENCLAVE_SIGNER} sign
         -key enclave_private.pem
         -config enclave.config.xml
-        -enclave ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/enclave.so
-        -out ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/enclave.signed.so
+        -enclave ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/enclave3.so
+        -out ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/enclave3.signed.so
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT "Signing the enclave => ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/enclave.signed.so")
+        COMMENT "Signing the enclave => ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/enclave3.signed.so")
 
     
 set_property(TARGET ${projectName} PROPERTY C_STANDARD 99)

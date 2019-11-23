@@ -37,11 +37,14 @@
 #include "kps.h"
 #include "enclave_u.h"
 #include "enclave2_u.h"
+#include "enclave3_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 #include <unordered_map> 
 #include "enclave_untrusted_host.h"
 #include "enclave2_untrusted_host.h"
+#include "enclave3_untrusted_host.h"
+
 
 
 
@@ -181,6 +184,8 @@ char* forward_request(char* request, int redirect) {
         return untrusted_enclave1_receiveNetworkRequest(request);
     } else if (redirect == 1) {
         return untrusted_enclave2_receiveNetworkRequest(request);
+    } else if (redirect == 2) {
+        return untrusted_enclave3_receiveNetworkRequest(request);
     } else {
         return "ERROR:Request not forwarded!";
     }
@@ -283,7 +288,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 void initNetwork() {
     TypeOfMachineToEnclaveNum[string("Coordinator")] = 0;
     TypeOfMachineToEnclaveNum[string("SecureChild")] = 1; 
-    TypeOfMachineToEnclaveNum[string("Pong")] = 1; 
+    TypeOfMachineToEnclaveNum[string("Pong")] = 2; 
 }
 
 

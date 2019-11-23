@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} -std=c++11")
 
 # set(CLIENT_SRC_FILES enclave_u.c app.cpp enclave_untrusted_host.cpp sgx_utils/sgx_utils.cpp attestation_utils/network_ra.cpp kps.cpp attestation_utils/ias_ra.cpp attestation_utils/ecp.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPong.c)
 
-set(CLIENT_SRC_FILES enclave_u.c enclave2_u.c app.cpp enclave2_untrusted_host.cpp enclave_untrusted_host.cpp sgx_utils/sgx_utils.cpp attestation_utils/network_ra.cpp attestation_utils/sample_messages.cpp kps.cpp attestation_utils/ias_ra.cpp attestation_utils/ecp.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPong.c)
+set(CLIENT_SRC_FILES enclave_u.c enclave2_u.c enclave3_u.c app.cpp enclave3_untrusted_host.cpp enclave2_untrusted_host.cpp enclave_untrusted_host.cpp sgx_utils/sgx_utils.cpp attestation_utils/network_ra.cpp attestation_utils/sample_messages.cpp kps.cpp attestation_utils/ias_ra.cpp attestation_utils/ecp.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPong.c)
 
 FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/PingPong.p) #used to be ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*
 PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/)
@@ -45,6 +45,17 @@ add_custom_command(
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/enclave3_u.c
+        COMMAND ${SGX_EDGER8R} --untrusted enclave3.edl
+        --use-prefix
+        --search-path ../enclave3/ # enclave.edl
+        --search-path ${SGX_SDK}/include
+        --search-path ${MBEDTLS_SGX_ROOT_DIR}/lib # mbedtls_sgx.edl
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 add_executable(app ${CLIENT_SRC_FILES})
 
 include_directories(
@@ -71,5 +82,5 @@ target_link_libraries(app
         -Wl,-rpath -Wl,${SGX_LIBRARY_PATH}
         -lpthread)
 
-add_dependencies(app enclave enclave2)
+add_dependencies(app enclave enclave2 enclave3)
 # add_dependencies(app enclave)

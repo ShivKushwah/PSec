@@ -11,4 +11,5 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
 add_subdirectory(Src/enclave)
 add_subdirectory(Src/enclave2)
+add_subdirectory(Src/enclave3)
 add_subdirectory(Src/app)
