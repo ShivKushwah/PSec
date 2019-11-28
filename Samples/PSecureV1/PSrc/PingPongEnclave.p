@@ -1,4 +1,112 @@
 type StringType;
+event Ping assert 2;
+event Pong assert 2 : int;
+event UntrustedEventFromPing;
+fun CreateMachineSecureChild(): StringType;
+fun PrintString(inputString : StringType);
+fun SecureSend(sendingToMachine : StringType, eventToSend : event, numArgs : int, arg : int);
+fun GetThis();
+event Success;
+
+secure_machine Coordinator {
+    var s_int : secure_int;
+    var reg_int : int;
+    var s_bool : secure_int;
+
+    start state Initial {
+        entry {
+            s_int = 7;
+            s_int = -7;
+            reg_int = -7;
+            reg_int = reg_int + 1;
+            reg_int = -reg_int;
+            s_int = -s_int;
+            s_int = reg_int;
+
+            if (s_int == 7) {
+                s_int = s_int + 1;
+            } else {
+                s_int = 9;
+            }
+
+            if (s_int == 7) {
+                s_int = s_int + 1;
+            }
+
+            if (reg_int == 7) {
+                reg_int = 8;
+            }
+
+            if (s_int == 7) {
+                s_int = s_int + 1;
+            } else  {
+                if (s_int == 10) {
+                    s_int = 8;
+                } else {
+                    s_int = 9;
+                }
+            }
+
+            while (s_int == 7) {
+                s_int = s_int + 1;
+            }
+
+             while (s_int == 7) {
+                
+            }
+
+            while (reg_int == 7) {
+                s_int = s_int + 1;
+
+            }
+
+            // Following lines should be commented out unless error testing
+            // reg_int = s_int;
+
+            // if (s_int == 7) {
+            //     s_int = s_int + 1;
+            // } else  {
+            //     if (reg_int == 7) {
+            //         s_int = 8;
+            //     } else {
+            //         s_int = 9;
+            //     }
+            // }
+
+            // while (s_int == 7) {
+            //     reg_int = reg_int + 1;
+            // }
+
+            //
+            
+        }
+        on UntrustedEventFromPing goto Whoa;
+    }
+
+    state Whoa { 
+        entry {
+            print "WHOA";
+        }
+    }
+
+}
+
+secure_machine Pong {
+    start state Initial {
+
+    }
+}
+
+secure_machine SecureChild {
+    start state Initial {
+
+    }
+}
+
+/*
+//Actual Code
+
+type StringType;
 
 event Ping assert 2;
 event Pong assert 2 : int;
@@ -11,15 +119,15 @@ event Success;
 
 secure_machine Coordinator {
     var PongSecureChild: StringType;
-    var sidhu : int;
-    var har : secure_int;
-    var b : bool;
-    var bb : secure_bool;
+    // var sidhu : int;
+    // var har : secure_int;
+    // var b : bool;
+    // var bb : secure_bool;
 
 
     start state Initial {
         entry {
-            var kirat : secure_int;
+            // var kirat : secure_int;
 
              PongSecureChild = new Pong();
             
@@ -37,13 +145,13 @@ secure_machine Coordinator {
 
 secure_machine Pong {
     var secureChildRegular: StringType;
-    var sBool : secure_bool;
+    // var sBool : secure_bool;
     var thisVar : StringType;
 
     start state Initial {
         entry { 
-            var kirat : secure_int;
-            kirat = 7 + 5;
+            // var kirat : secure_int;
+            // kirat = 7 + 5;
 
             thisVar = GetThis();
             
@@ -99,6 +207,7 @@ secure_machine SecureChild {
     state Done { }
 }
 
+*/
 
 //             kirat = (7 + 5) + 8 + 9;
 //             har = 17;
