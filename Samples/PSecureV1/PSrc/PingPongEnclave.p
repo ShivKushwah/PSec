@@ -2,13 +2,66 @@ type StringType;
 event Ping assert 2;
 event Pong assert 2 : int;
 event UntrustedEventFromPing;
-fun CreateMachineSecureChild(): StringType;
-fun PrintString(inputString : StringType);
-fun SecureSend(sendingToMachine : StringType, eventToSend : event, numArgs : int, arg : int);
-fun GetThis();
-event Success;
+
+
+secure_machine VotingMachine {
+    var ssn : secure_int;
+    var insecure_int : int;
+    var s_int : secure_int;
+    var m : StringType;
+
+    start state Initial {
+        defer Pong;
+        entry {      
+            ssn = ReadSSNFromUser();
+
+            if (ssn == 625674887) {
+                s_int = 7; 
+            } else {
+                s_int = 8;
+            }
+
+            s_int = s_int + 1;
+
+            insecure_int = 10;
+            s_int = insecure_int;
+
+            while (insecure_int < 15) {
+                s_int = s_int + 1;
+                insecure_int = insecure_int + 1;
+            }
+
+            while (s_int < 20) {
+                s_int = s_int + 1;
+                secure_send m, Ping;
+            }
+
+            //Leakage code below
+
+            // if (ssn == 625674887) {
+            //     insecure_int = 7;
+            // } else {
+            //     insecure_int = 8;
+            // }
+
+            // insecure_int = ssn;
+
+            // while (s_int < 15) {
+            //     s_int = s_int + 1;
+            //     insecure_int = insecure_int + 1;
+            // }
+
+        }
+    }
+}
+
+
+fun ReadSSNFromUser() : int {
+    return 625674887;
+}
 
 secure_machine Coordinator {
+    var PongSecureChild: StringType;
     var s_int : secure_int;
     var reg_int : int;
     var s_bool : secure_int;
@@ -51,7 +104,7 @@ secure_machine Coordinator {
                 s_int = s_int + 1;
             }
 
-             while (s_int == 7) {
+            while (s_int == 7) {
                 
             }
 
@@ -59,6 +112,9 @@ secure_machine Coordinator {
                 s_int = s_int + 1;
 
             }
+
+            PongSecureChild = new VotingMachine();
+            // secure_send PongSecureChild, Pong, 3; 
 
             // Following lines should be commented out unless error testing
             // reg_int = s_int;
@@ -91,16 +147,12 @@ secure_machine Coordinator {
 
 }
 
-secure_machine Pong {
-    start state Initial {
-
-    }
-}
-
 secure_machine SecureChild {
     start state Initial {
-
+        on Pong goto Done;
     }
+
+    state Done { }
 }
 
 /*
