@@ -288,7 +288,6 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     char* unsecureSendRequest = (char*) malloc(requestSize);
     snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%s", sendingToMachinePublicID, event, eventMessagePayload);
     printf("Untrusted machine is sending out following network request: %s\n", unsecureSendRequest);   
-
     char* newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
 
 

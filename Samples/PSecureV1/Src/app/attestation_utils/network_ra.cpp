@@ -286,7 +286,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 }
 
 void initNetwork() {
-    TypeOfMachineToEnclaveNum[string("Coordinator")] = 2;
+    TypeOfMachineToEnclaveNum[string("Coordinator")] = 0;
     TypeOfMachineToEnclaveNum[string("SecureChild")] = 0; 
     TypeOfMachineToEnclaveNum[string("Pong")] = 0; 
 }

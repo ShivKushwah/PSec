@@ -39,6 +39,9 @@
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 
+#include <unordered_map> 
+
+
 #include <stdio.h>
 #include <limits.h>
 #include <unistd.h>
@@ -72,6 +75,9 @@
 const int SIZE_OF_MESSAGE = 20;
 
 extern sgx_enclave_id_t global_eid;
+int CURRENT_ENCLAVE_EID_NUM = 5;
+
+unordered_map<string, sgx_enclave_id_t> PublicIdentityKeyToEidDictionary;
 
 #define ENCLAVE_PATH "isv_enclave.signed.so"
 
@@ -783,7 +789,7 @@ int ocall_pong_enclave_attestation_in_thread(char* other_machine_name, uint32_t 
     pthread_create(&thread_id, NULL, pong_enclave_attestation_thread, (void*) &parameters);
     //TODO look into not calling pthread_join but actually let this run asynchoronous
     pthread_join(thread_id, &thread_ret); 
-    printf("\n Finished Attestation Thread\n"); 
+    printf("\n Finished Attestation Thread\n");
 
     return 0;
 
@@ -796,8 +802,13 @@ int ocall_network_request(char* request, char* response, uint32_t RESPONSE_SIZE)
     if (RESPONSE_SIZE == 0) {
         return 1;
     }
+
     printf("Network Response is : %s", result);
-    if (strlen(result) + 1 > RESPONSE_SIZE) {
+    if (result == NULL || result[0] == '\0') {
+        printf("ERROR. No Message Received!\n");
+        return 0;
+    }
+    else if (strlen(result) + 1 > RESPONSE_SIZE) {
         printf("ERROR. Message too big!\n");
     }
     memcpy(response, result, strlen(result) + 1);
@@ -827,14 +838,29 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
 
         }
         
+        sgx_enclave_id_t new_enclave_eid = CURRENT_ENCLAVE_EID_NUM;
+        CURRENT_ENCLAVE_EID_NUM += 1;
+
+        string token = "enclave" + to_string((int)new_enclave_eid) + ".token";
+
+        if (initialize_enclave(&new_enclave_eid, token, "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
+            std::cout << "Fail to initialize enclave." << std::endl;
+        }        
 
         int ptr;
         //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
         // application of this enclave and have that make an ecall to createMachineAPi
         sgx_status_t status = enclave_createMachineAPI(global_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
+        char* newMachineIDCopy = (char*) malloc(strlen(newMachineID) + 1);
+        strncpy(newMachineIDCopy, newMachineID, strlen(newMachineID) + 1);
+        string identityString = string(newMachineIDCopy);
+        PublicIdentityKeyToEidDictionary[identityString] = new_enclave_eid;
 
+        
+        
         return newMachineID;
+
     // }  else if (strcmp(split, "GetKey") == 0) {
     //     //TODO move this segmant of code into other ra method because attestation needs to occur first and then call retrieveCapabilityKey
     //     //TODO move this and use the messageFromMachine int

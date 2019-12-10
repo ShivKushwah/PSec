@@ -1,4 +1,5 @@
 const int ENABLE_ENCLAVE_ATTESTATION_PRINT = 0;
+extern int CURRENT_ENCLAVE_EID_NUM;
 
 
 struct Enclave_start_attestation_wrapper_arguments {

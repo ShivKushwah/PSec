@@ -16,7 +16,6 @@ secure_machine Coordinator {
     start state Initial {
         entry {
              PongSecureChild = new Pong();
-            
         }
         on UntrustedEventFromPing goto Whoa;
     }
