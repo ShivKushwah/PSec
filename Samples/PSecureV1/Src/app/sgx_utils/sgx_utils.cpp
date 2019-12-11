@@ -47,19 +47,32 @@ int initialize_enclave(sgx_enclave_id_t* eid, const std::string& launch_token_pa
     }
     /* Step 2: call sgx_create_enclave to initialize an enclave instance */
     /* Debug Support: set 2nd parameter to 1 */
+    // printf("creating new enclave!\n");
+    // fflush(stdout);
+
     ret = sgx_create_enclave(enclave_name.c_str(), SGX_DEBUG_FLAG, &token, &updated, eid, NULL);
     if (ret != SGX_SUCCESS) {
+        // printf("Error in creating enclave!\n");
+        // fflush(stdout);
         print_error_message(ret);
         if (fp != NULL) fclose(fp);
         return -1;
     }
 
+    // printf("Finished creating new enclave!\n");
+    // fflush(stdout);
+
     /* Step 3: save the launch token if it is updated */
     if (updated == FALSE || fp == NULL) {
         /* if the token is not updated, or file handler is invalid, do not perform saving */
+        // printf("Token not updated\n");
+        // fflush(stdout);
         if (fp != NULL) fclose(fp);
         return 0;
     }
+
+    // printf("Next step\n");
+    // fflush(stdout);
 
     /* reopen the file with write capablity */
     fp = freopen(token_path, "wb", fp);
@@ -68,6 +81,9 @@ int initialize_enclave(sgx_enclave_id_t* eid, const std::string& launch_token_pa
     if (write_num != sizeof(sgx_launch_token_t))
         printf("Warning: Failed to save launch token to \"%s\".\n", token_path);
     fclose(fp);
+
+    // printf("Returning from sgx_utils\n");
+    // fflush(stdout);
     return 0;
 }
 

@@ -63,6 +63,7 @@ enclave {
                                  uint32_t ID_SIZE,
                                 uint32_t MESSAGE_SIZE,
                                 uint32_t MAX_PAYLOAD_SIZE);
+        public void eprint([in, size=50]char* printStr);
 
 
     };

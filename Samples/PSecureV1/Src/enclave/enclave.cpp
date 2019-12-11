@@ -526,6 +526,11 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
     // ocall_print("after mk machine!\n");
 }
 
+void eprint(char* printStr) {
+    ocall_print(printStr);
+}
+
+
 int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE) {
     if (process == NULL) {
 
@@ -631,8 +636,11 @@ char* registerMachineWithNetwork(char* newMachineID) {
 //publicID and privateID must be allocated by the caller
 void generateIdentity(string& publicID, string& privateID) {
     //TODO Make this generate a random pk sk pair
-    publicID = "Enclave2Public" + to_string(ID_GENERATOR_SEED);
-    privateID = "Enclave2Private" + to_string(ID_GENERATOR_SEED);
+
+    uint32_t val; 
+    sgx_read_rand((unsigned char *) &val, 4);
+    publicID = "Enclave2Public" + to_string(val % 10);
+    privateID = "Enclave2Private" + to_string(val % 10);
     ID_GENERATOR_SEED += 1;
 } 
 
@@ -715,7 +723,6 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
  
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
-  
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
 	sprintf_s(str, 100, currentMachineIDPublicKey);

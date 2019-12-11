@@ -23,8 +23,6 @@ static PRT_FOREIGNTYPEDECL P_StringType = {
 PRT_TYPE P_GEND_TYPE_StringType = { PRT_KIND_FOREIGN, { .foreignType = &P_StringType } };
 
 // Function implementation prototypes:
-PRT_VALUE* P_InitializePongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -68,14 +66,6 @@ PRT_EVENTDECL P_EVENT_Success =
     4294967295U,
     &P_GEND_TYPE_n
 };
-
-PRT_FUNDECL P_FUNCTION_InitializePongEnclave =
-{
-    "InitializePongEnclave",
-    &P_InitializePongEnclave_IMPL,
-    NULL
-};
-
 
 PRT_FUNDECL P_FUNCTION_UntrustedCreateCoordinator =
 {

@@ -222,15 +222,18 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 
 extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) //TODO modify this to take the type of machine to create as a param
 {
-    if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
-        std::cout << "Fail to initialize enclave." << std::endl;
-    }
-     if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
-        std::cout << "Fail to initialize enclave2." << std::endl;
-    }
-    if (initialize_enclave(&global_eid3, "enclave3.token", "enclave3.signed.so") < 0) {
-        std::cout << "Fail to initialize enclave3." << std::endl;
-    }
+    //     if (initialize_enclave(&new_enclave_eid, token, "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
+    //         std::cout << "Fail to initialize enclave." << std::endl;
+    //     }   
+    // if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
+    //     std::cout << "Fail to initialize enclave." << std::endl;
+    // }
+    //  if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
+    //     std::cout << "Fail to initialize enclave2." << std::endl;
+    // }
+    // if (initialize_enclave(&global_eid3, "enclave3.token", "enclave3.signed.so") < 0) {
+    //     std::cout << "Fail to initialize enclave3." << std::endl;
+    // }
 
     char* networkRequest = "UntrustedCreate:Coordinator:1:2:9"; //PRT_VALUE_KIND_INT is 2
     char* newMachinePublicIDKey = send_network_request_API(networkRequest);
@@ -315,34 +318,6 @@ char* serializePrtValueToString(PRT_VALUE* value) {
 
 }
 
-extern "C" void P_InitializePongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    //TODO move initalization code in InitializePongEnclave method
-    if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
-        std::cout << "Fail to initialize enclave." << std::endl;
-    }
-
-    if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
-        std::cout << "Fail to initialize enclave2." << std::endl;
-    }
-
-    int ptr;
-    //Start up PrtTrusted inside enclave
-    sgx_status_t status = enclave_enclave_main(global_eid, &ptr); 
-    std::cout << status << std::endl;
-    if (status != SGX_SUCCESS) {
-        std::cout << "Error in Starting PrtTrusted" << std::endl;
-    }
-
-    status = enclave2_enclave_main(global_eid2, &ptr); 
-    std::cout << status << std::endl;
-    if (status != SGX_SUCCESS) {
-        std::cout << "Error in Starting PrtTrusted2" << std::endl;
-    }
-    
-    
-}
-
 extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     
@@ -368,6 +343,7 @@ extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context
 // OCall implementations
 void ocall_print(const char* str) {
     printf("[o] %s\n", str);
+    fflush(stdout);
 }
 
 void ocall_print_int(int intPrint) {

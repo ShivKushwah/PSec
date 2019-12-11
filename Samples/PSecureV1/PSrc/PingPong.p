@@ -5,7 +5,6 @@ event Pong assert 2 : int;
 event UntrustedEventFromPing;
 
 //fun SecureSendPingEventToPongEnclave();
-fun InitializePongEnclave();
 fun UntrustedCreateCoordinator();
 fun UntrustedSend(publicID: StringType, even : event, payload: int);
 fun InitializeUntrustedMachine();
