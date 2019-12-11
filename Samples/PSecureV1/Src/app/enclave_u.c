@@ -56,6 +56,7 @@ typedef struct ms_createMachineAPI_t {
 	char* ms_payload;
 	uint32_t ms_ID_SIZE;
 	uint32_t ms_PAYLOAD_SIZE;
+	sgx_enclave_id_t ms_enclaveEid;
 } ms_createMachineAPI_t;
 
 typedef struct ms_initializeCommunicationAPI_t {
@@ -88,6 +89,7 @@ typedef struct ms_UntrustedCreateMachineAPI_t {
 	char* ms_payload;
 	int ms_output_length;
 	int ms_payload_size;
+	sgx_enclave_id_t ms_enclaveEid;
 } ms_UntrustedCreateMachineAPI_t;
 
 typedef struct ms_sendUntrustedMessageAPI_t {
@@ -157,6 +159,11 @@ typedef struct ms_ocall_network_request_t {
 	char* ms_response;
 	uint32_t ms_RESPONSE_SIZE;
 } ms_ocall_network_request_t;
+
+typedef struct ms_ocall_add_identity_to_eid_dictionary_t {
+	char* ms_newMachineID;
+	sgx_enclave_id_t ms_enclave_eid;
+} ms_ocall_add_identity_to_eid_dictionary_t;
 
 typedef struct ms_sgx_oc_cpuidex_t {
 	int* ms_cpuinfo;
@@ -259,6 +266,14 @@ static sgx_status_t SGX_CDECL enclave_ocall_network_request(void* pms)
 	return SGX_SUCCESS;
 }
 
+static sgx_status_t SGX_CDECL enclave_ocall_add_identity_to_eid_dictionary(void* pms)
+{
+	ms_ocall_add_identity_to_eid_dictionary_t* ms = SGX_CAST(ms_ocall_add_identity_to_eid_dictionary_t*, pms);
+	ocall_add_identity_to_eid_dictionary(ms->ms_newMachineID, ms->ms_enclave_eid);
+
+	return SGX_SUCCESS;
+}
+
 static sgx_status_t SGX_CDECL enclave_sgx_oc_cpuidex(void* pms)
 {
 	ms_sgx_oc_cpuidex_t* ms = SGX_CAST(ms_sgx_oc_cpuidex_t*, pms);
@@ -333,15 +348,16 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[14];
+	void * table[15];
 } ocall_table_enclave = {
-	14,
+	15,
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_print_int,
 		(void*)enclave_ocall_pong_enclave_attestation_in_thread,
 		(void*)enclave_ocall_ping_machine_receive_encrypted_message,
 		(void*)enclave_ocall_network_request,
+		(void*)enclave_ocall_add_identity_to_eid_dictionary,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
 		(void*)enclave_sgx_thread_set_untrusted_event_ocall,
@@ -433,7 +449,7 @@ sgx_status_t enclave_pong_enclave_request_attestation(sgx_enclave_id_t eid, int*
 	return status;
 }
 
-sgx_status_t enclave_createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineName, char* parentTrustedMachineID, char* returnNewMachineID, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE)
+sgx_status_t enclave_createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineName, char* parentTrustedMachineID, char* returnNewMachineID, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid)
 {
 	sgx_status_t status;
 	ms_createMachineAPI_t ms;
@@ -445,6 +461,7 @@ sgx_status_t enclave_createMachineAPI(sgx_enclave_id_t eid, int* retval, char* m
 	ms.ms_payload = payload;
 	ms.ms_ID_SIZE = ID_SIZE;
 	ms.ms_PAYLOAD_SIZE = PAYLOAD_SIZE;
+	ms.ms_enclaveEid = enclaveEid;
 	status = sgx_ecall(eid, 7, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
@@ -481,7 +498,7 @@ sgx_status_t enclave_sendMessageAPI(sgx_enclave_id_t eid, int* retval, char* req
 	return status;
 }
 
-sgx_status_t enclave_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payload, int output_length, int payload_size)
+sgx_status_t enclave_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payload, int output_length, int payload_size, sgx_enclave_id_t enclaveEid)
 {
 	sgx_status_t status;
 	ms_UntrustedCreateMachineAPI_t ms;
@@ -493,6 +510,7 @@ sgx_status_t enclave_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, char* machi
 	ms.ms_payload = payload;
 	ms.ms_output_length = output_length;
 	ms.ms_payload_size = payload_size;
+	ms.ms_enclaveEid = enclaveEid;
 	status = sgx_ecall(eid, 10, &ocall_table_enclave, &ms);
 	return status;
 }

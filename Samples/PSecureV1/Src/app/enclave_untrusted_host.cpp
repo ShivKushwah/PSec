@@ -861,15 +861,8 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
         // application of this enclave and have that make an ecall to createMachineAPi
-        sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
-        
-        char* newMachineIDCopy = (char*) malloc(strlen(newMachineID) + 1);
-        strncpy(newMachineIDCopy, newMachineID, strlen(newMachineID) + 1);
-        string identityString = string(newMachineIDCopy);
-        PublicIdentityKeyToEidDictionary[identityString] = new_enclave_eid;
+        sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
 
-        
-        
         return newMachineID;
 
     // }  else if (strcmp(split, "GetKey") == 0) {
@@ -913,12 +906,7 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         }   
 
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE);
-        
-        char* newMachineIDCopy = (char*) malloc(strlen(newMachineID) + 1);
-        strncpy(newMachineIDCopy, newMachineID, strlen(newMachineID) + 1);
-        string identityString = string(newMachineIDCopy);
-        PublicIdentityKeyToEidDictionary[identityString] = new_enclave_eid;
+        sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
 
         
         return newMachineID;
@@ -927,16 +915,24 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
     } else if (strcmp(split, "InitComm") == 0) {
 
         char* newSessionKey = (char* ) malloc(SIZE_OF_SESSION_KEY);
+        newSessionKey[0] = '\0';
         split = strtok(NULL, ":");
         char* machineInitializingComm = split;
         split = strtok(NULL, ":");
         char* machineReceivingComm = split;
+        
+        if (PublicIdentityKeyToEidDictionary.count(machineReceivingComm) == 0) {
+            printf("\n No Enclave Eid Found!\n");
+        }
         
         sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingComm]; //TODO add check here in case its not in dictionary
 
         int ptr;
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
         sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
+        if (status != SGX_SUCCESS) {
+            printf("Sgx Error Code: %x\n", status);
+        }
         return newSessionKey;
 
     
@@ -971,6 +967,10 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         split = strtok(NULL, ":");
         char* payload = split;
 
+        if (PublicIdentityKeyToEidDictionary.count(machineReceivingMessage) == 0) {
+            printf("\n No Enclave Eid Found!\n");
+        }
+
         sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingMessage]; //TODO add check here in case its not in dictionary
 
 
@@ -984,5 +984,14 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         return "Command Not Found";
     }
 
+}
+
+
+void ocall_add_identity_to_eid_dictionary(char* newMachineID, sgx_enclave_id_t enclave_eid) {
+        string identityString = string(newMachineID);
+        PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
+        // ocall_print(newMachineID);
+        // ocall_print("has enclave ID");
+        // ocall_print_int(enclave_eid);
 }
 

@@ -440,7 +440,7 @@ int machineTypeIsSecure(char* machineType) {
 }
 
                                         
-void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int ID_SIZE, int PAYLOAD_SIZE) {
+void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int ID_SIZE, int PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
 
     if (process == NULL) {
 
@@ -502,6 +502,9 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
     generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey);
+    char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
+    strncpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
+    ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, enclaveEid);
     int newMachinePID = getNextPID(); 
     //Store new machine information in enclave's dictionaries
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
@@ -531,7 +534,8 @@ void eprint(char* printStr) {
 }
 
 
-int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE) {
+int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
+    ocall_print("HARHAR");
     if (process == NULL) {
 
          ocall_print("hello, world!\n");
@@ -589,6 +593,9 @@ int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, c
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
     generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey);
+    char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
+    strncpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
+    ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, enclaveEid);
     int newMachinePID = getNextPID(); 
     //Store new machine information in enclave's dictionaries
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
@@ -639,8 +646,8 @@ void generateIdentity(string& publicID, string& privateID) {
 
     uint32_t val; 
     sgx_read_rand((unsigned char *) &val, 4);
-    publicID = "Enclave2Public" + to_string(val % 10);
-    privateID = "Enclave2Private" + to_string(val % 10);
+    publicID = "Enclave2Publi" + to_string(val % 100);
+    privateID = "Enclave2Privat" + to_string(val % 100);
     ID_GENERATOR_SEED += 1;
 } 
 
@@ -689,7 +696,9 @@ int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMach
 
 void generateSessionKey(string& newSessionKey) {
     //TODO Make this generate a random key
-    newSessionKey = "GenSessionKey" + to_string(SESSION_KEY_GENERATOR_SEED);
+    uint32_t val; 
+    sgx_read_rand((unsigned char *) &val, 4);
+    newSessionKey = "GenSessionKe" + to_string(val % 100);
     SESSION_KEY_GENERATOR_SEED += 1;
 } 
 
