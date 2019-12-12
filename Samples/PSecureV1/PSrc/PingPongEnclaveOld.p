@@ -1,3 +1,4 @@
+//-----------------------
 type StringType;
 
 event Ping assert 2;
@@ -8,9 +9,6 @@ fun PrintString(inputString : StringType);
 fun SecureSend(sendingToMachine : StringType, eventToSend : event, numArgs : int, arg : int);
 fun GetThis();
 event Success;
-fun UntrustedCreateCoordinator();
-fun UntrustedSend(publicID: StringType, even : event, payload: int);
-fun InitializeUntrustedMachine();
 
 secure_machine Coordinator {
     var PongSecureChild: StringType;
@@ -79,41 +77,6 @@ secure_machine SecureChild {
             secure_send parent, Ping;
             goto Done;
         }
-    }
-
-    state Done { }
-}
-
-machine Ping {
-    var pongId: machine;
-    var coordinatorID: StringType;
-    var numArgs : int;
-    var payld : int;
-
-    start state Ping_Init {
-        entry {
-            InitializeUntrustedMachine();
-            GetThis();
-            pongId = new Temp();
-            send pongId, Pong, 4;
-            coordinatorID = UntrustedCreateCoordinator(); //Start up PrtTrusted in the Pong Enclave
-            numArgs = 1;
-            payld = 9;
-            UntrustedSend(coordinatorID, UntrustedEventFromPing, payld);
-    	    raise Success;   	   
-        }
-        on Success goto Done;
-    }
-
-    state Done {  }
-
-}
-
-machine Temp {
-    start state Init {
-
-        on Pong goto Done;
-
     }
 
     state Done { }
