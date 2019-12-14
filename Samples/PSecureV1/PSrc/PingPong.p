@@ -47,4 +47,5 @@ machine Temp {
 }
 
 
+
 // secure_machine Coordinator { }

@@ -131,6 +131,22 @@ PRT_INTERFACEDECL P_I_Temp =
     &P_EVENTSET_Temp_RECV
 };
 
+PRT_EVENTDECL* P_Kirat_RECV_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_Kirat_RECV =
+{
+    5U,
+    P_Kirat_RECV_INNER,
+    NULL
+};
+
+PRT_INTERFACEDECL P_I_Kirat =
+{
+    2U,
+    "Kirat",
+    &P_GEND_TYPE_n,
+    &P_EVENTSET_Kirat_RECV
+};
+
 PRT_VARDECL P_Ping_VARS[] = {
     { "pongId", &P_GEND_TYPE_m },
     { "coordinatorID", &P_GEND_TYPE_StringType },
@@ -547,20 +563,95 @@ PRT_MACHINEDECL P_MACHINE_Temp =
     PRT_FALSE
 };
 
+PRT_EVENTDECL* P_Initial_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Initial_DEFERS =
+{
+    0U,
+    P_Initial_DEFERS_INNER,
+    NULL
+};
+
+PRT_EVENTDECL* P_Initial_TRANS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Initial_TRANS =
+{
+    0U,
+    P_Initial_TRANS_INNER,
+    NULL
+};
+
+PRT_EVENTDECL* P_Initial_DOS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Initial_DOS =
+{
+    0U,
+    P_Initial_DOS_INNER,
+    NULL
+};
+
+#define P_STATE_Kirat_Initial \
+{ \
+    "Kirat.Initial", \
+    0U, \
+    0U, \
+    &P_EVENTSET_Initial_DEFERS, \
+    &P_EVENTSET_Initial_TRANS, \
+    &P_EVENTSET_Initial_DOS, \
+    NULL, \
+    NULL, \
+    &_P_NO_OP, \
+    &_P_NO_OP, \
+}
+
+PRT_STATEDECL P_Kirat_STATES[] = { P_STATE_Kirat_Initial };
+
+PRT_EVENTDECL* P_Kirat_RECV_INNER_1[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_Kirat_RECV_1 =
+{
+    5U,
+    P_Kirat_RECV_INNER_1,
+    NULL
+};
+
+PRT_EVENTDECL* P_Kirat_SEND_INNER[] = { &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_Kirat_SEND =
+{
+    5U,
+    P_Kirat_SEND_INNER,
+    NULL
+};
+
+PRT_MACHINEDECL P_MACHINE_Kirat = 
+{
+    2U,
+    "Kirat",
+    &P_EVENTSET_Kirat_RECV_1,
+    &P_EVENTSET_Kirat_SEND,
+    NULL,
+    0U,
+    1U,
+    0U,
+    4294967295U,
+    0U,
+    NULL,
+    P_Kirat_STATES,
+    NULL,
+    PRT_TRUE
+};
+
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
 PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_UntrustedEventFromPing, &P_EVENT_Success };
-PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_Ping, &P_MACHINE_Temp };
-PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_Ping, &P_I_Temp };
+PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_Ping, &P_MACHINE_Temp, &P_MACHINE_Kirat };
+PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_Ping, &P_I_Temp, &P_I_Kirat };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
 PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_StringType };
-int P_DefaultImpl_LME_0[] = { -1,1 };
-int P_DefaultImpl_LME_1[] = { -1,-1 };
-int* P_DefaultImpl_LINKMAP[] = { P_DefaultImpl_LME_0, P_DefaultImpl_LME_1 };
-int P_DefaultImpl_DEFMAP[] = { 0,1 };
+int P_DefaultImpl_LME_0[] = { -1,1,-1 };
+int P_DefaultImpl_LME_1[] = { -1,-1,-1 };
+int P_DefaultImpl_LME_2[] = { -1,-1,-1 };
+int* P_DefaultImpl_LINKMAP[] = { P_DefaultImpl_LME_0, P_DefaultImpl_LME_1, P_DefaultImpl_LME_2 };
+int P_DefaultImpl_DEFMAP[] = { 0,1,2 };
 PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl = {
     6U,
-    2U,
-    2U,
+    3U,
+    3U,
     0U,
     1U,
     P_ALL_EVENTS,

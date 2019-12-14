@@ -428,6 +428,16 @@ int main(int argc, char const *argv[]) {
     return 0;
 }
 
+extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+
+}
+
+extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    
+}
+
 
 //String Class
 
