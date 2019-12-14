@@ -76,7 +76,7 @@ target_link_libraries(app
         -L${SGX_LIBRARY_PATH} -l${SGX_URTS_LIB} -l${SGX_USVC_LIB} -lsgx_ukey_exchange
         ~/Research/PSecuredLang/ProgrammingEnclaves/Samples/PSecureV1/Src/app/libsample_libcrypto.so
         #~/Research/PSecuredLang/ProgrammingEnclaves/Samples/PSecureV1/Src/app/libPrt_static.a #TODO Unhardcode this
-        Prt_static
+        Prt_static2
         ${LIBHANDLERLIB_PATH}
         -Wl,-rpath -Wl,/usr/local/lib
         -Wl,-rpath -Wl,${SGX_LIBRARY_PATH}
