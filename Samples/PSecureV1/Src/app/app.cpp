@@ -2,8 +2,6 @@
 #include <iostream>
 #include <assert.h>
 #include "enclave_u.h"
-#include "enclave2_u.h"
-#include "enclave3_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 #include "network_ra.h"

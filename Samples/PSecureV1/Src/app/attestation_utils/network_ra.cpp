@@ -36,16 +36,10 @@
 #include "network_ra.h"
 #include "kps.h"
 #include "enclave_u.h"
-#include "enclave2_u.h"
-#include "enclave3_u.h"
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 #include <unordered_map> 
 #include "enclave_untrusted_host.h"
-#include "enclave2_untrusted_host.h"
-#include "enclave3_untrusted_host.h"
-
-
 
 
 extern sgx_enclave_id_t global_eid;
