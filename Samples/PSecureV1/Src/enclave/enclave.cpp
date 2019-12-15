@@ -123,6 +123,8 @@ static void RunToIdle(void* process)
 }
 
 char* generateCStringFromFormat(char* format_string, char* strings_to_print[], int num_strings) {
+        //NOTE make changes in app.cpp as well
+
     if (num_strings > 5) {
         ocall_print("Too many strings passed to generateCStringFromFormat!");
         return "ERROR!";
@@ -328,6 +330,8 @@ char* serializePrtValueToString(PRT_VALUE* value) {
 }
 
 PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType) {
+        //TODO if there are changes in here make changes in enclave.cpp
+
     //TODO code the rest of the types (only int is coded for now)
     PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
     for (int i = 0; i < numArgs; i++) {
@@ -463,7 +467,6 @@ void eprint(char* printStr) {
 
 
 int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
-    ocall_print("HARHAR");
     if (process == NULL) {
 
          ocall_print("hello, world!\n");

@@ -190,16 +190,19 @@ char* itoa(int num, char* str, int base)
     return str; 
 } 
 
-void generateIdentity(string& publicID) {
+void generateIdentity(string& publicID, string& privateID) {
     int randNum = rand() % 100;
     publicID = "UntrustedPubl" + to_string(randNum);
+    privateID = "UntrustedPriv" + to_string(randNum);
 } 
 
 extern "C" PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     string publicID;
-    generateIdentity(publicID);
+    string privateID;
+    generateIdentity(publicID, privateID);
+    //TODO store the privateID
 
     USMMachinePIDtoPublicIdentityKeyDictionary[currentMachinePID] = publicID;
     USMPublicIdentityKeyToMachinePIDDictionary[publicID] = currentMachinePID;
@@ -304,6 +307,28 @@ char* serializePrtValueToString(PRT_VALUE* value) {
 
 }
 
+PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType) {
+    //TODO if there are changes in here make changes in enclave.cpp
+    //TODO code the rest of the types (only int is coded for now)
+    PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
+    for (int i = 0; i < numArgs; i++) {
+        char* split = strtok(str, ":");
+        values[i] = (PRT_VALUE*)PrtMalloc(sizeof(PRT_VALUE));
+        values[i]->discriminator = (PRT_VALUE_KIND) payloadType;
+        if (payloadType == PRT_VALUE_KIND_INT) {
+            values[i]->valueUnion.nt = atoi(split);
+        } else if (payloadType == PRT_VALUE_KIND_FOREIGN) {
+            values[i]->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
+            values[i]->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
+            PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	        sprintf_s(prtStr, 100, str);
+            values[i]->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
+        }
+    }
+    return values;
+}
+
+
 extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     
@@ -353,7 +378,7 @@ char* receiveNetworkRequest(char* request) {
 
          if (USMAuthorizedTypes.count(machineType) > 0) {
             //TODO need to implement
-            return "TODO";
+            return createUSMMachine(machineType, numArgs, payloadType, payload);
         } else {
             return untrusted_enclave1_receiveNetworkRequest(requestCopy);
         }
@@ -378,7 +403,7 @@ char* receiveNetworkRequest(char* request) {
 
         if (USMAuthorizedTypes.count(machineType) > 0) {
             //TODO need to implement
-            return "TODO";
+            return createUSMMachine(machineType, numArgs, payloadType, payload);
         } else {
             return untrusted_enclave1_receiveNetworkRequest(requestCopy);
         }
@@ -478,6 +503,86 @@ int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
     PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
     PrtSend(NULL, pingMachine, pongEvent, 0);
     return 0;
+}
+
+char* generateCStringFromFormat(char* format_string, char* strings_to_print[], int num_strings) {
+    //NOTE make changes in enclave.cpp as well
+    if (num_strings > 5) {
+        ocall_print("Too many strings passed to generateCStringFromFormat!");
+        return "ERROR!";
+    }
+    // ocall_print("KIRAT");
+    char* returnString = (char*) malloc(100);
+
+
+    // for (int i = num_strings; i < 5; i++) {
+    //     strings_to_print[i] = "hello";
+    // }
+
+    char* str1 = strings_to_print[0];
+    char* str2 = strings_to_print[1];
+    char* str3 = strings_to_print[2];
+    char* str4 = strings_to_print[3];
+    char* str5 = strings_to_print[4];
+
+    snprintf(returnString, 100, format_string, str1, str2, str3, str4, str5);
+    //ocall_print("Return string is");
+    //ocall_print(returnString);
+    return returnString;
+
+}
+
+int getNextPID() {
+    return ((PRT_PROCESS_PRIV*)process)->numMachines + 1;
+}
+
+char* registerMachineWithNetwork(char* newMachineID) {
+
+    char* machineKeyWrapper[] = {newMachineID};
+    
+    return send_network_request_API(generateCStringFromFormat("RegisterMachine:%s:-1", machineKeyWrapper, 1));
+
+}
+
+char* createUSMMachine(char* machineType, int numArgs, int payloadType, char* payload) {
+    
+    //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
+    int newMachinePID = getNextPID(); 
+
+    string usmChildPublicIDKey;
+    string usmChildPrivateIDKey;
+    generateIdentity(usmChildPublicIDKey, usmChildPrivateIDKey);
+    USMMachinePIDtoPublicIdentityKeyDictionary[newMachinePID] = usmChildPublicIDKey;
+    USMPublicIdentityKeyToMachinePIDDictionary[usmChildPublicIDKey] = newMachinePID;
+
+    char* usmChildPublicIDKeyCopy = (char*) malloc(usmChildPublicIDKey.size() + 1);
+    memcpy(usmChildPublicIDKeyCopy, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
+    registerMachineWithNetwork(usmChildPublicIDKeyCopy);
+
+    char* usmChildPublicIDKeyCopy2 = (char*) malloc(usmChildPublicIDKey.size() + 1);
+    memcpy(usmChildPublicIDKeyCopy2, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
+
+    createMachine(machineType, numArgs, payloadType, payload);
+
+    //Return the publicIDKey of the new machine
+    return usmChildPublicIDKeyCopy2;
+}
+
+int createMachine(char* machineType, int numArgs, int payloadType, char* payload) {
+    PRT_VALUE* prtPayload;
+    if (numArgs > 0) {
+        ocall_print("Serialized the following payload");
+        ocall_print(payload);
+        prtPayload = *(deserializeStringToPrtValue(numArgs, payload, payloadType));
+    } else {
+        prtPayload = PrtMkNullValue();
+    }
+    PRT_UINT32 newMachinePID;
+	PRT_BOOLEAN foundMachine = PrtLookupMachineByName(machineType, &newMachinePID);
+    ocall_print_int(newMachinePID);
+	PrtAssert(foundMachine, "No machine found!");
+	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &prtPayload);
+    return pongMachine->id->valueUnion.mid->machineId;
 }
 
 int main(int argc, char const *argv[]) {

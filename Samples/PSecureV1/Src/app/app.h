@@ -17,3 +17,13 @@ char* serializePrtValueToString(PRT_VALUE* value);
 void generateIdentity(string& publicID);
 
 char* receiveNetworkRequest(char* request);
+
+int getNextPID();
+
+int createMachine(char* machineType, int numArgs, int payloadType, char* payload);
+
+char* createUSMMachine(char* machineType, int numArgs, int payloadType, char* payload);
+
+char* registerMachineWithNetwork(char* newMachineID);
+
+char* generateCStringFromFormat(char* format_string, char* strings_to_print[], int num_strings);

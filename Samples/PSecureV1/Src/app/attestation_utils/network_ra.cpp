@@ -265,7 +265,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         }
 
     } else if (strcmp(split, "RegisterMachine") == 0) { //When a new machine is created, its public ID key should be registered with network_ra so that network knows who to forward the message to
-
+        //TODO allow USMs to be registered as well, maybe make them be -1 ?
         split = strtok(NULL, ":");
         char* publicIDRegister = split;
         split = strtok(NULL, ":");
