@@ -35,8 +35,6 @@ static const char* workspaceConfig;
 
 unordered_map<int, string> MachinePIDtoPublicIdentityKeyDictionary;
 
-int ID_GENERATOR_SEED = 0;
-
 extern char secure_message[8];
 
 PRT_PROCESS *process;
@@ -191,9 +189,8 @@ char* itoa(int num, char* str, int base)
 } 
 
 void generateIdentity(string& publicID) {
-    //TODO Make this generate a random pk sk pair
-    publicID = "UntrustedPublic" + to_string(ID_GENERATOR_SEED);
-    ID_GENERATOR_SEED += 1;
+    int randNum = rand() % 100;
+    publicID = "UntrustedPubl" + to_string(randNum);
 } 
 
 extern "C" PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -222,19 +219,6 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 
 extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) //TODO modify this to take the type of machine to create as a param
 {
-    //     if (initialize_enclave(&new_enclave_eid, token, "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
-    //         std::cout << "Fail to initialize enclave." << std::endl;
-    //     }   
-    // if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
-    //     std::cout << "Fail to initialize enclave." << std::endl;
-    // }
-    //  if (initialize_enclave(&global_eid2, "enclave2.token", "enclave2.signed.so") < 0) {
-    //     std::cout << "Fail to initialize enclave2." << std::endl;
-    // }
-    // if (initialize_enclave(&global_eid3, "enclave3.token", "enclave3.signed.so") < 0) {
-    //     std::cout << "Fail to initialize enclave3." << std::endl;
-    // }
-
     char* networkRequest = "UntrustedCreate:Coordinator:1:2:9"; //PRT_VALUE_KIND_INT is 2
     char* newMachinePublicIDKey = send_network_request_API(networkRequest);
     //printf("Network Message Confirmation: %s", returnMessage);
@@ -243,7 +227,6 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
 	sprintf_s(str, 100, newMachinePublicIDKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-    
 }
 
 extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
@@ -351,7 +334,6 @@ void ocall_print_int(int intPrint) {
 }
 
 int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
-   // PRT_VALUE* pongEvent = PrtMkEventValue(eventIdentifier);
     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
     PRT_MACHINEID pingId;
     pingId.machineId = 1;
@@ -435,7 +417,7 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 
 extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    
+
 }
 
 

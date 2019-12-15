@@ -182,10 +182,10 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
 char* forward_request(char* request, int redirect) {
     if (redirect == 0) {
         return untrusted_enclave1_receiveNetworkRequest(request);
-    } else if (redirect == 1) {
-        return untrusted_enclave2_receiveNetworkRequest(request);
-    } else if (redirect == 2) {
-        return untrusted_enclave3_receiveNetworkRequest(request);
+    // } else if (redirect == 1) {
+    //     return untrusted_enclave2_receiveNetworkRequest(request);
+    // } else if (redirect == 2) {
+    //     return untrusted_enclave3_receiveNetworkRequest(request);
     } else {
         return "ERROR:Request not forwarded!";
     }
