@@ -17,9 +17,6 @@ using namespace std;
 
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
-sgx_enclave_id_t global_eid2 = 0;
-sgx_enclave_id_t global_eid3 = 0;
-
 
 static PRT_BOOLEAN cooperative = PRT_FALSE;
 static int threads = 1;
