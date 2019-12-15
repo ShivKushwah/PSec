@@ -15,3 +15,5 @@ int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier);
 char* serializePrtValueToString(PRT_VALUE* value);
 
 void generateIdentity(string& publicID);
+
+char* receiveNetworkRequest(char* request);

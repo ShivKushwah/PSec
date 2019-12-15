@@ -11,6 +11,7 @@
 #include "app.h"
 #include <string>
 #include <unordered_map> 
+#include <unordered_set> 
 #include <map>
 
 using namespace std;
@@ -28,7 +29,13 @@ static long perfEndTime = 0;
 static const char* parg = NULL;
 static const char* workspaceConfig;
 
-unordered_map<int, string> MachinePIDtoPublicIdentityKeyDictionary;
+unordered_map<int, string> USMMachinePIDtoPublicIdentityKeyDictionary;
+unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
+
+unordered_set<string> USMAuthorizedTypes; //TODO unhardcode
+
+
+
 
 extern char secure_message[8];
 
@@ -194,7 +201,8 @@ extern "C" PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context
     string publicID;
     generateIdentity(publicID);
 
-    MachinePIDtoPublicIdentityKeyDictionary[currentMachinePID] = publicID;
+    USMMachinePIDtoPublicIdentityKeyDictionary[currentMachinePID] = publicID;
+    USMPublicIdentityKeyToMachinePIDDictionary[publicID] = currentMachinePID;
 }
 
 extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -203,7 +211,7 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     char* currentMachineIDPublicKey;
  
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(MachinePIDtoPublicIdentityKeyDictionary[currentMachinePID].c_str())); 
+    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(USMMachinePIDtoPublicIdentityKeyDictionary[currentMachinePID].c_str())); 
   
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
@@ -318,6 +326,140 @@ extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context
     
 }
 
+char* receiveNetworkRequest(char* request) {
+
+    char* requestCopy = (char*) malloc(strlen(request) + 1);
+    memcpy(requestCopy, request, strlen(request) + 1);
+
+    char* split = strtok(request, ":");
+    if (strcmp(split, "Create") == 0) {
+        char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+        split = strtok(NULL, ":");
+        char* parentTrustedMachinePublicIDKey = split;
+        split = strtok(NULL, ":");
+        char* machineType = split;
+        split = strtok(NULL, ":");
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload = (char*) malloc(10);
+        payload[0] = '\0';
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, ":");
+            payload = split;
+
+        }
+
+         if (USMAuthorizedTypes.count(machineType) > 0) {
+            //TODO need to implement
+            return "TODO";
+        } else {
+            return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+        }
+
+    }  else if (strcmp(split, "UntrustedCreate") == 0) {
+
+        char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+        split = strtok(NULL, ":");
+        char* machineType = split;
+        split = strtok(NULL, ":");
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload = (char*) malloc(10);
+        payload[0] = '\0';
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, ":");
+            payload = split;
+
+        }
+
+        if (USMAuthorizedTypes.count(machineType) > 0) {
+            //TODO need to implement
+            return "TODO";
+        } else {
+            return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+        }
+
+    
+    } else if (strcmp(split, "InitComm") == 0) {
+
+        char* newSessionKey = (char* ) malloc(SIZE_OF_SESSION_KEY);
+        newSessionKey[0] = '\0';
+        split = strtok(NULL, ":");
+        char* machineInitializingComm = split;
+        split = strtok(NULL, ":");
+        char* machineReceivingComm = split;
+
+        if (USMPublicIdentityKeyToMachinePIDDictionary.count(machineReceivingComm) > 0) {
+
+            //TODO need to implement
+            return "TODO";
+            
+        } else {
+            return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+        }
+    
+    }  else if (strcmp(split, "UntrustedSend") == 0) {
+
+        char* temp;
+        split = strtok(NULL, ":");
+        char* machineReceivingMessage = split;
+        split = strtok(NULL, ":");
+        char* eventNum = split;
+        split = strtok(NULL, ":");
+        char* payload = split;
+
+        if (USMPublicIdentityKeyToMachinePIDDictionary.count(machineReceivingMessage) > 0) {
+
+            //TODO need to implement
+            return "TODO";
+            
+        } else {
+            return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+        }
+
+        // sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingMessage]; //TODO add check here in case its not in dictionary
+
+        // int ptr;
+        // //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+        // sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+        // return temp;
+
+    } else if (strcmp(split, "Send") == 0) {
+
+        char* temp;
+        split = strtok(NULL, ":");
+        char* machineSendingMessage = split;
+        split = strtok(NULL, ":");
+        char* machineReceivingMessage = split;
+        split = strtok(NULL, ":");
+        char* eventNum = split;
+        split = strtok(NULL, ":");
+        char* numArgs = split;
+        split = strtok(NULL, ":");
+        char* payload = split;
+
+         if (USMPublicIdentityKeyToMachinePIDDictionary.count(machineReceivingMessage) > 0) {
+
+            //TODO need to implement
+            return "TODO";
+            
+        } else {
+            return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+        }
+
+
+    } else {
+        return "Command Not Found";
+    }
+
+
+
+}
+
 // OCall implementations
 void ocall_print(const char* str) {
     printf("[o] %s\n", str);
@@ -339,6 +481,12 @@ int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
 }
 
 int main(int argc, char const *argv[]) {
+
+    //TODO unhardcode
+    USMAuthorizedTypes.insert("Ping");
+    USMAuthorizedTypes.insert("Temp");
+
+
 
         initNetwork();
 
