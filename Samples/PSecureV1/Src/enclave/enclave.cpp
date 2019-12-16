@@ -644,6 +644,7 @@ int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, ch
 }
 
 int sendUntrustedMessageAPI(char* receivingMachineIDKey, char* eventNum, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
+    //TODO if modifying this, modify USMsendMessageAPI in app.cpp
     PRT_MACHINEID receivingMachinePID;
     ocall_print("SecureChildMachine has a PID of:");
     char* temp = (char*) malloc(10);

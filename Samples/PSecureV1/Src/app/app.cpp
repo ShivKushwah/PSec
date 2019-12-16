@@ -31,6 +31,8 @@ static const char* workspaceConfig;
 
 unordered_map<int, string> USMMachinePIDtoPublicIdentityKeyDictionary;
 unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
+map<PublicMachineChildPair, string> USMPublicIdentityKeyToChildSessionKey;
+
 
 unordered_set<string> USMAuthorizedTypes; //TODO unhardcode
 
@@ -377,7 +379,6 @@ char* receiveNetworkRequest(char* request) {
         }
 
          if (USMAuthorizedTypes.count(machineType) > 0) {
-            //TODO need to implement
             return createUSMMachine(machineType, numArgs, payloadType, payload);
         } else {
             return untrusted_enclave1_receiveNetworkRequest(requestCopy);
@@ -402,7 +403,6 @@ char* receiveNetworkRequest(char* request) {
         }
 
         if (USMAuthorizedTypes.count(machineType) > 0) {
-            //TODO need to implement
             return createUSMMachine(machineType, numArgs, payloadType, payload);
         } else {
             return untrusted_enclave1_receiveNetworkRequest(requestCopy);
@@ -419,10 +419,9 @@ char* receiveNetworkRequest(char* request) {
         char* machineReceivingComm = split;
 
         if (USMPublicIdentityKeyToMachinePIDDictionary.count(machineReceivingComm) > 0) {
-
-            //TODO need to implement
-            return "TODO";
             
+            return USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm);
+        
         } else {
             return untrusted_enclave1_receiveNetworkRequest(requestCopy);
         }
@@ -439,19 +438,11 @@ char* receiveNetworkRequest(char* request) {
 
         if (USMPublicIdentityKeyToMachinePIDDictionary.count(machineReceivingMessage) > 0) {
 
-            //TODO need to implement
-            return "TODO";
+            return USMsendMessageAPI(machineReceivingMessage, eventNum, payload);
             
         } else {
             return untrusted_enclave1_receiveNetworkRequest(requestCopy);
         }
-
-        // sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingMessage]; //TODO add check here in case its not in dictionary
-
-        // int ptr;
-        // //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        // sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
-        // return temp;
 
     } else if (strcmp(split, "Send") == 0) {
 
@@ -485,6 +476,44 @@ char* receiveNetworkRequest(char* request) {
 
 }
 
+char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey) {
+    printf("USM Initialize Communication API Called!\n");
+    //TODO need to verify signature over requestingMachineIDKey
+    if (USMPublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))) == 0) {
+        //TODO this logic needs to be diffie hellman authenticated encryption
+        string newSessionKey;
+        generateSessionKey(newSessionKey);
+        USMPublicIdentityKeyToChildSessionKey[make_tuple(receivingMachineIDKey, requestingMachineIDKey)] = newSessionKey;
+        printf("Returning correct session key!\n");
+        char* returnSessionkey = (char*) malloc(newSessionKey.length() + 1);
+        memcpy(returnSessionkey, newSessionKey.c_str(), newSessionKey.length() + 1);
+        return returnSessionkey;
+    } else {
+        char* errorMsg = "Already created!";
+        printf("ERROR:Session has already been initalized in the past!\n");
+        return errorMsg;
+    }
+    
+}
+
+void generateSessionKey(string& newSessionKey) {
+    //TODO Make this generate a random key
+    int randNum = rand() % 100;
+    newSessionKey = "GenSessionKe" + to_string(randNum);
+} 
+
+char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, char* payload) {
+    //TODO if modifying this, modify sendUntrustedMessageAPI in enclave.cpp
+   PRT_MACHINEID receivingMachinePID;
+    printf("Machine receiving message has a PID of:");
+    char* temp = (char*) malloc(10);
+    snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
+    printf(temp);
+    receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, 1, payload);
+    return "Message successfully sent!/n";
+}
+
 // OCall implementations
 void ocall_print(const char* str) {
     printf("[o] %s\n", str);
@@ -493,6 +522,18 @@ void ocall_print(const char* str) {
 
 void ocall_print_int(int intPrint) {
     printf("Value is: %d\n", intPrint);
+}
+
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, char* payload) {
+    PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
+    PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
+    if (numArgs == 0) {
+        PrtSend(NULL, machine, event, 0);
+    } else {
+        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload, PRT_VALUE_KIND_INT);
+        PrtSend(NULL, machine, event, numArgs, prtPayload);
+    }
+    return 0;
 }
 
 int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
