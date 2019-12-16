@@ -2,7 +2,7 @@ type StringType;
 
 event Ping assert 2;
 event Pong assert 2 : int;
-event UntrustedEventFromPing;
+event UntrustedEventFromPing : int;
 fun CreateMachineSecureChild(): StringType;
 fun PrintString(inputString : StringType);
 fun SecureSend(sendingToMachine : StringType, eventToSend : event, numArgs : int, arg : int);
@@ -21,6 +21,7 @@ secure_machine Coordinator {
     start state Initial {
         entry {
              PongSecureChild = new Pong();
+             PongSecureChild = new Temp();
         }
         on UntrustedEventFromPing goto Whoa;
     }
@@ -102,7 +103,8 @@ machine Ping {
             numArgs = 1;
             payld = 9;
             PrintString(coordinatorID);
-            UntrustedSend(coordinatorID, UntrustedEventFromPing, payld);
+            untrusted_send coordinatorID, UntrustedEventFromPing, payld;
+            // UntrustedSend(coordinatorID, UntrustedEventFromPing, payld);
     	    raise Success;   	   
         }
         on Success goto Done;
