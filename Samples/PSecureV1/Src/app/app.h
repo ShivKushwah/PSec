@@ -11,6 +11,7 @@ char* itoa(int num, char* str, int base);
 int atoi(char *p);
 void reverse(char str[], int length);
 
+
 typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPublicKey
 
 
