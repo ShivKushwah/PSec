@@ -65,4 +65,5 @@ char* generateCStringFromFormat(char* format_string, char** strings_to_print, in
 
 char* serializePrtValueToString(PRT_VALUE* value);
 PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType);
+extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);

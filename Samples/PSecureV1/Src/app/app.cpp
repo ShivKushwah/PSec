@@ -210,6 +210,7 @@ extern "C" PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context
     string privateID;
     generateIdentity(publicID, privateID);
     //TODO store the privateID
+    //TODO register this machine over network
 
     USMMachinePIDtoPublicIdentityKeyDictionary[currentMachinePID] = publicID;
     USMPublicIdentityKeyToMachinePIDDictionary[publicID] = currentMachinePID;
