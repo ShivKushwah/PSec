@@ -174,7 +174,7 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
 }
 
 char* forward_request(char* request, int redirect) {
-    if (redirect == 0) {
+    if (redirect == 0 || redirect == -1) {
         return receiveNetworkRequest(request);
     // } else if (redirect == 1) {
     //     return untrusted_enclave2_receiveNetworkRequest(request);
@@ -283,6 +283,7 @@ void initNetwork() {
     TypeOfMachineToEnclaveNum[string("Coordinator")] = 0;
     TypeOfMachineToEnclaveNum[string("SecureChild")] = 0; 
     TypeOfMachineToEnclaveNum[string("Pong")] = 0; 
+    TypeOfMachineToEnclaveNum[string("Temp")] = -1; 
 }
 
 

@@ -198,6 +198,11 @@ void generateIdentity(string& publicID, string& privateID) {
     privateID = "UntrustedPriv" + to_string(randNum);
 } 
 
+extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    return P_UntrustedCreateCoordinator_IMPL(context, argRefs);
+}
+
 extern "C" PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;

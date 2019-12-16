@@ -12,6 +12,7 @@ fun UntrustedCreateCoordinator();
 fun UntrustedSend(publicID: StringType, even : event, payload: int);
 fun InitializeUntrustedMachine();
 fun CreateSecureMachineRequest(): StringType;
+fun CreateUSMMachineRequest(): StringType;
 
 secure_machine Coordinator {
     var PongSecureChild: StringType;
@@ -96,7 +97,7 @@ machine Ping {
             InitializeUntrustedMachine();
             GetThis();
             pongId = new Temp();
-            send pongId, Pong, 4;
+            // send pongId, Pong, 4;
             coordinatorID = new Coordinator();// UntrustedCreateCoordinator();
             numArgs = 1;
             payld = 9;
