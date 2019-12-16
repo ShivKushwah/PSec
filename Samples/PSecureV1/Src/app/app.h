@@ -38,3 +38,8 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
 void generateSessionKey(string& newSessionKey);
 
 char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, char* payload);
+
+extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+

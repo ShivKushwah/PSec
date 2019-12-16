@@ -11,6 +11,7 @@ event Success;
 fun UntrustedCreateCoordinator();
 fun UntrustedSend(publicID: StringType, even : event, payload: int);
 fun InitializeUntrustedMachine();
+fun CreateSecureMachineRequest(): StringType;
 
 secure_machine Coordinator {
     var PongSecureChild: StringType;
@@ -96,9 +97,10 @@ machine Ping {
             GetThis();
             pongId = new Temp();
             send pongId, Pong, 4;
-            coordinatorID = UntrustedCreateCoordinator(); //Start up PrtTrusted in the Pong Enclave
+            coordinatorID = new Coordinator();// UntrustedCreateCoordinator();
             numArgs = 1;
             payld = 9;
+            PrintString(coordinatorID);
             UntrustedSend(coordinatorID, UntrustedEventFromPing, payld);
     	    raise Success;   	   
         }

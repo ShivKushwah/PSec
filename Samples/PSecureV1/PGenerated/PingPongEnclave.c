@@ -37,6 +37,8 @@ PRT_VALUE* P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
+PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
 
@@ -143,6 +145,14 @@ PRT_FUNDECL P_FUNCTION_InitializeUntrustedMachine =
 {
     "InitializeUntrustedMachine",
     &P_InitializeUntrustedMachine_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_CreateSecureMachineRequest =
+{
+    "CreateSecureMachineRequest",
+    &P_CreateSecureMachineRequest_IMPL,
     NULL
 };
 
@@ -327,7 +337,7 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = "0";
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
-    *P_LVALUE = ((_P_GEN_funval = P_CreateMachineSecureChild_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
     }
@@ -549,7 +559,7 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[2] = &(PTMP_tmp1);
     PRT_VALUE** P_LVALUE_5 = &(PTMP_tmp2);
     PrtFreeValue(*P_LVALUE_5);
-    *P_LVALUE_5 = ((_P_GEN_funval = P_CreateMachineSecureChild_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE_5 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_2;
     }
@@ -1027,6 +1037,7 @@ PRT_VALUE* P_Anon_IMPL_6(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp6_1 = NULL;
     PRT_VALUE* PTMP_tmp7 = NULL;
     PRT_VALUE* PTMP_tmp8 = NULL;
+    PRT_VALUE* PTMP_tmp9 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32_3 = { PRT_VALUE_KIND_INT, { .nt = 4 } };
@@ -1096,9 +1107,11 @@ PRT_VALUE* P_Anon_IMPL_6(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return_6;
     }
     
+    _P_GEN_funargs[0] = "Coordinator";
+    _P_GEN_funargs[1] = "0";
     PRT_VALUE** P_LVALUE_19 = &(PTMP_tmp4_1);
     PrtFreeValue(*P_LVALUE_19);
-    *P_LVALUE_19 = ((_P_GEN_funval = P_UntrustedCreateCoordinator_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE_19 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_6;
     }
@@ -1127,24 +1140,10 @@ PRT_VALUE* P_Anon_IMPL_6(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PrtFreeValue(*P_LVALUE_23);
     *P_LVALUE_23 = PrtCloneValue(p_this->varValues[1]);
     
-    PRT_VALUE** P_LVALUE_24 = &(PTMP_tmp6_1);
-    PrtFreeValue(*P_LVALUE_24);
-    *P_LVALUE_24 = PrtCloneValue((&P_EVENT_UntrustedEventFromPing.value));
-    
-    PRT_VALUE** P_LVALUE_25 = &(PTMP_tmp7);
-    PrtFreeValue(*P_LVALUE_25);
-    *P_LVALUE_25 = PrtCloneValue(p_this->varValues[3]);
-    
     _P_GEN_funargs[0] = &(PTMP_tmp5_1);
-    _P_GEN_funargs[1] = &(PTMP_tmp6_1);
-    _P_GEN_funargs[2] = &(PTMP_tmp7);
-    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_PrintString_IMPL(context, _P_GEN_funargs));
     PrtFreeValue(PTMP_tmp5_1);
     PTMP_tmp5_1 = NULL;
-    PrtFreeValue(PTMP_tmp6_1);
-    PTMP_tmp6_1 = NULL;
-    PrtFreeValue(PTMP_tmp7);
-    PTMP_tmp7 = NULL;
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_6;
     }
@@ -1154,12 +1153,43 @@ PRT_VALUE* P_Anon_IMPL_6(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return_6;
     }
     
+    PRT_VALUE** P_LVALUE_24 = &(PTMP_tmp6_1);
+    PrtFreeValue(*P_LVALUE_24);
+    *P_LVALUE_24 = PrtCloneValue(p_this->varValues[1]);
+    
+    PRT_VALUE** P_LVALUE_25 = &(PTMP_tmp7);
+    PrtFreeValue(*P_LVALUE_25);
+    *P_LVALUE_25 = PrtCloneValue((&P_EVENT_UntrustedEventFromPing.value));
+    
     PRT_VALUE** P_LVALUE_26 = &(PTMP_tmp8);
     PrtFreeValue(*P_LVALUE_26);
-    *P_LVALUE_26 = PrtCloneValue((&P_EVENT_Success.value));
+    *P_LVALUE_26 = PrtCloneValue(p_this->varValues[3]);
     
-    PrtRaise(p_this, PTMP_tmp8, 0);
-    *(&(PTMP_tmp8)) = NULL;
+    _P_GEN_funargs[0] = &(PTMP_tmp6_1);
+    _P_GEN_funargs[1] = &(PTMP_tmp7);
+    _P_GEN_funargs[2] = &(PTMP_tmp8);
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(PTMP_tmp6_1);
+    PTMP_tmp6_1 = NULL;
+    PrtFreeValue(PTMP_tmp7);
+    PTMP_tmp7 = NULL;
+    PrtFreeValue(PTMP_tmp8);
+    PTMP_tmp8 = NULL;
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_6;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_6;
+    }
+    
+    PRT_VALUE** P_LVALUE_27 = &(PTMP_tmp9);
+    PrtFreeValue(*P_LVALUE_27);
+    *P_LVALUE_27 = PrtCloneValue((&P_EVENT_Success.value));
+    
+    PrtRaise(p_this, PTMP_tmp9, 0);
+    *(&(PTMP_tmp9)) = NULL;
     goto p_return_6;
     
 p_return_6: ;
@@ -1172,6 +1202,7 @@ p_return_6: ;
     PrtFreeValue(PTMP_tmp6_1); PTMP_tmp6_1 = NULL;
     PrtFreeValue(PTMP_tmp7); PTMP_tmp7 = NULL;
     PrtFreeValue(PTMP_tmp8); PTMP_tmp8 = NULL;
+    PrtFreeValue(PTMP_tmp9); PTMP_tmp9 = NULL;
     return _P_GEN_retval;
 }
 
@@ -1201,8 +1232,8 @@ PRT_EVENTSETDECL P_EVENTSET_Ping_SEND =
     NULL
 };
 
-PRT_UINT32 P_Ping_CREATES_ARR[] = { 4 };
-PRT_INTERFACESETDECL P_Ping_CREATES = { 1, P_Ping_CREATES_ARR };
+PRT_UINT32 P_Ping_CREATES_ARR[] = { 0, 4 };
+PRT_INTERFACESETDECL P_Ping_CREATES = { 2, P_Ping_CREATES_ARR };
 PRT_MACHINEDECL P_MACHINE_Ping = 
 {
     3U,
@@ -1347,7 +1378,7 @@ PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_StringType };
 int P_DefaultImpl_LME_0[] = { -1,1,-1,-1,-1 };
 int P_DefaultImpl_LME_1[] = { -1,-1,2,-1,-1 };
 int P_DefaultImpl_LME_2[] = { -1,-1,-1,-1,-1 };
-int P_DefaultImpl_LME_3[] = { -1,-1,-1,-1,4 };
+int P_DefaultImpl_LME_3[] = { 0,-1,-1,-1,4 };
 int P_DefaultImpl_LME_4[] = { -1,-1,-1,-1,-1 };
 int* P_DefaultImpl_LINKMAP[] = { P_DefaultImpl_LME_0, P_DefaultImpl_LME_1, P_DefaultImpl_LME_2, P_DefaultImpl_LME_3, P_DefaultImpl_LME_4 };
 int P_DefaultImpl_DEFMAP[] = { 0,1,2,3,4 };

@@ -164,6 +164,12 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
 
 extern int Delta;
 
+extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
+    //USMs can only make untrusted requests to create machines
+    ocall_print("UGHH");
+    return P_CreateMachineSecureChild_IMPL(context, argRefs);
+}
+
 extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;

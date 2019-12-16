@@ -353,6 +353,14 @@ extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context
     
 }
 
+extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
+    //USMs can only make untrusted requests to create machines
+    PRT_VALUE* temp = P_UntrustedCreateCoordinator_IMPL(context, argRefs);
+    printf("VALUE IS : %s", temp->valueUnion.frgn->value);
+    fflush(stdout);
+    return temp;// PrtMkIntValue(3);//PrtCloneValue(temp);
+}
+
 char* receiveNetworkRequest(char* request) {
 
     char* requestCopy = (char*) malloc(strlen(request) + 1);
