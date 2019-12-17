@@ -735,6 +735,74 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
 
 extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
+
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+
+    //TODO we need to attest the other enclave before sending it a message, even if we are sending an untrusted message
+    PRT_VALUE** P_ToMachine_Payload = argRefs[0];
+    PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
+    char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
+
+    PRT_VALUE** P_Event_Payload = argRefs[1];
+    char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
+    itoa((*P_Event_Payload)->valueUnion.ev , event, SIZE_OF_MAX_EVENT_NAME);
+
+    const int size_of_max_num_args = 10; //TODO if modififying this, modify it in enclave.cpp
+
+    // PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
+    // int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
+    // char* numArgsPayload = (char*) malloc(size_of_max_num_args);
+    // itoa(numArgs, numArgsPayload, SIZE_OF_MAX_EVENT_PAYLOAD);
+
+    char* eventMessagePayload = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
+
+    // for (int i = 0; i < numArgs; i++) {
+        PRT_VALUE** P_EventMessage_Payload = argRefs[2];
+            char* temp = serializePrtValueToString(*P_EventMessage_Payload);
+            memcpy(eventMessagePayload, temp, strlen(temp) + 1);
+    //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
+    //     //TODO I assumed only 1 payload for the below
+    //     // if (i == 0) {
+    //     //     char* parameters[] = {payload};
+    //     //     eventMessagePayload = generateCStringFromFormat("%s", parameters, 1);
+    //     // } else {
+    //     //     char* parameters[] = {eventMessagePayload, payload};
+    //     //     eventMessagePayload = generateCStringFromFormat("%s:%s", parameters, 2);
+    //     // }
+    // }
+
+    // printf("Sending to : %s\n", sendingToMachinePublicID);
+    // printf("Sending event : %s\n", event);
+    // printf("Sending payload : %s\n", eventMessagePayload);
+
+    char* currentMachineIDPublicKey;
+    currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
+
+
+
+
+    int requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
+    char* unsecureSendRequest = (char*) malloc(requestSize);
+    snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%s", sendingToMachinePublicID, event, eventMessagePayload);
+    char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
+
+    char* machineNameWrapper[] = {currentMachineIDPublicKey};
+    ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));      
+    ocall_print(unsecureSendRequest);
+    char* empty;
+    int ret_value;
+    ocall_network_request(&ret_value, unsecureSendRequest, empty, 0);
+
+
+    // // char* empty;
+    // // int ret_value;
+    // // ocall_network_request(&ret_value, secureSendRequest, empty, 0);
+
+
+    // // char* networkRequest = "UntrustedCreate:Coordinator";
+    // // char* returnMessage = send_network_request_API(networkRequest);
+    // // printf("Network Message Confirmation: %s", returnMessage);
    
 }
 
