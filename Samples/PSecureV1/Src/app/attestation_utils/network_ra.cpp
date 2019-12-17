@@ -284,10 +284,14 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 }
 
 void initNetwork() {
-    TypeOfMachineToEnclaveNum[string("Coordinator")] = 0;
-    TypeOfMachineToEnclaveNum[string("SecureChild")] = 0; 
-    TypeOfMachineToEnclaveNum[string("Pong")] = 0; 
-    TypeOfMachineToEnclaveNum[string("Temp")] = -1; 
+    //Shiv Hardcoded
+    TypeOfMachineToEnclaveNum[string("GodMachine")] = 0;
+    TypeOfMachineToEnclaveNum[string("BankEnclave")] = 0; 
+    TypeOfMachineToEnclaveNum[string("ClientEnclave")] = 0; 
+    TypeOfMachineToEnclaveNum[string("GodUntrusted")] = -1; 
+    TypeOfMachineToEnclaveNum[string("BankHost")] = -1; 
+    TypeOfMachineToEnclaveNum[string("ClientWebBrowser")] = -1; 
+
 }
 
 

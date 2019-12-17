@@ -685,9 +685,10 @@ int createMachine(char* machineType, int numArgs, int payloadType, char* payload
 
 int main(int argc, char const *argv[]) {
 
-    //TODO unhardcode
-    USMAuthorizedTypes.insert("Ping");
-    USMAuthorizedTypes.insert("Temp");
+    //Shiv Hardcoded
+    USMAuthorizedTypes.insert("ClientWebBrowser");
+    USMAuthorizedTypes.insert("GodUntrusted");
+    USMAuthorizedTypes.insert("BankHost");
 
 
 
@@ -730,8 +731,9 @@ int main(int argc, char const *argv[]) {
 
         PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
         // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
-		PRT_BOOLEAN foundMachine = PrtLookupMachineByName("Ping", &mainMachine);
-		PrtAssert(foundMachine, "No 'Ping' machine found!");
+		//Shiv Hardcoded
+        PRT_BOOLEAN foundMachine = PrtLookupMachineByName("GodUntrusted", &mainMachine);
+		PrtAssert(foundMachine, "No 'GodUntrusted' machine found!");
 		PRT_MACHINEINST* pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);    
         
         printf("after mk machine!\n");
