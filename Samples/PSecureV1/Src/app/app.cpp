@@ -5,7 +5,7 @@
 #include "sgx_urts.h"
 #include "sgx_utils/sgx_utils.h"
 #include "network_ra.h"
-#include "PingPong.h"
+#include "PingPongEnclave.h"
 #include <pthread.h> 
 #include "enclave_untrusted_host.h"
 #include "app.h"
