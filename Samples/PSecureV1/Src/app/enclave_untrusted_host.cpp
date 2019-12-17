@@ -944,13 +944,23 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         split = strtok(NULL, ":");
         char* eventNum = split;
         split = strtok(NULL, ":");
-        char* payload = split;
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload = (char*) malloc(10);
+        payload[0] = '\0';
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, ":");
+            payload = split;
+
+        }
 
         sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingMessage]; //TODO add check here in case its not in dictionary
 
         int ptr;
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+        sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
         return temp;
 
     } else if (strcmp(split, "Send") == 0) {

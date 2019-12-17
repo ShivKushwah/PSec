@@ -17,7 +17,7 @@ typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPu
 
 int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier);
 
-int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, char* payload);
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload);
 char* serializePrtValueToString(PRT_VALUE* value);
 
 void generateIdentity(string& publicID);
@@ -38,7 +38,7 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
 
 void generateSessionKey(string& newSessionKey);
 
-char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, char* payload);
+char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload);
 
 extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 

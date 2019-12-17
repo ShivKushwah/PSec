@@ -150,13 +150,13 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
 
 }
 
-int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, char* payload) {
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload) {
     PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
     PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
     if (numArgs == 0) {
         PrtSend(NULL, machine, event, 0);
     } else {
-        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload, PRT_VALUE_KIND_INT);
+        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload, payloadType);
         PrtSend(NULL, machine, event, numArgs, prtPayload);
     }
     return 0;
@@ -650,11 +650,11 @@ int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, ch
     snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
     ocall_print(temp);
     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, atoi(numArgs), payload);
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, atoi(numArgs), PRT_VALUE_KIND_INT, payload); //TODO update to untrusted send api
 
 }
 
-int sendUntrustedMessageAPI(char* receivingMachineIDKey, char* eventNum, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
+int sendUntrustedMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
     //TODO if modifying this, modify USMsendMessageAPI in app.cpp
     PRT_MACHINEID receivingMachinePID;
     ocall_print("SecureChildMachine has a PID of:");
@@ -662,7 +662,7 @@ int sendUntrustedMessageAPI(char* receivingMachineIDKey, char* eventNum, char* p
     snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
     ocall_print(temp);
     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, 1, payload);
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload);
 
 }
 
@@ -757,6 +757,7 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 
     // for (int i = 0; i < numArgs; i++) {
         PRT_VALUE** P_EventMessage_Payload = argRefs[3];
+        int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
             char* temp = serializePrtValueToString(*P_EventMessage_Payload);
             memcpy(eventMessagePayload, temp, strlen(temp) + 1);
     //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
@@ -778,12 +779,17 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
 
-
-
+    PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
+    int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
 
     int requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* unsecureSendRequest = (char*) malloc(requestSize);
-    snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%s", sendingToMachinePublicID, event, eventMessagePayload);
+    if (numArgs > 0) {
+        snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%d:%d:%s", sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+    } else {
+        snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:0", sendingToMachinePublicID, event);
+    }
+
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
 
     char* machineNameWrapper[] = {currentMachineIDPublicKey};

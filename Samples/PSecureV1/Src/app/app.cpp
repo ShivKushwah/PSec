@@ -306,6 +306,7 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 
     // for (int i = 0; i < numArgs; i++) {
         PRT_VALUE** P_EventMessage_Payload = argRefs[3];
+        int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
             char* temp = serializePrtValueToString(*P_EventMessage_Payload);
             memcpy(eventMessagePayload, temp, strlen(temp) + 1);
     //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
@@ -323,11 +324,16 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     // printf("Sending event : %s\n", event);
     // printf("Sending payload : %s\n", eventMessagePayload);
 
-
+    PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
+    int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
 
     int requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* unsecureSendRequest = (char*) malloc(requestSize);
-    snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%s", sendingToMachinePublicID, event, eventMessagePayload);
+    if (numArgs > 0) {
+        snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%d:%d:%s", sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+    } else {
+        snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:0", sendingToMachinePublicID, event);
+    }
     printf("Untrusted machine is sending out following network request: %s\n", unsecureSendRequest);   
     char* newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
 
@@ -489,12 +495,23 @@ char* receiveNetworkRequest(char* request) {
         split = strtok(NULL, ":");
         char* eventNum = split;
         split = strtok(NULL, ":");
-        char* payload = split;
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload = (char*) malloc(10);
+        payload[0] = '\0';
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, ":");
+            payload = split;
+
+        }
+
         string machineReceiveMsgString = string(machineReceivingMessage);
         // printf("Untrusted Send -> machine checking in dictionary is %s\n", machineReceiveMsgString.c_str());
         if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
             // printf("Sending Message to USM in app.cpp\n");
-            return USMsendMessageAPI(machineReceivingMessage, eventNum, payload);
+            return USMsendMessageAPI(machineReceivingMessage, eventNum, numArgs, payloadType, payload);
             
         } else {
             return untrusted_enclave1_receiveNetworkRequest(requestCopy);
@@ -558,7 +575,7 @@ void generateSessionKey(string& newSessionKey) {
     newSessionKey = "GenSessionKe" + to_string(randNum);
 } 
 
-char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, char* payload) {
+char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload) {
     //TODO if modifying this, modify sendUntrustedMessageAPI in enclave.cpp
    PRT_MACHINEID receivingMachinePID;
     printf("Machine receiving message has a PID of:");
@@ -566,7 +583,7 @@ char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, char* paylo
     snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
     printf(temp);
     receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, 1, payload);
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload);
     return "Message successfully sent!/n";
 }
 
@@ -581,13 +598,13 @@ void ocall_print_int(int intPrint) {
     fflush(stdout);
 }
 
-int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, char* payload) {
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload) {
     PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
     PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
     if (numArgs == 0) {
         PrtSend(NULL, machine, event, 0);
     } else {
-        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload, PRT_VALUE_KIND_INT);
+        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload, payloadType);
         PrtSend(NULL, machine, event, numArgs, prtPayload);
     }
     return 0;

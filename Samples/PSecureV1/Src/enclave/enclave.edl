@@ -59,10 +59,13 @@ enclave {
 
         public int sendUntrustedMessageAPI([in, size=ID_SIZE]char* receivingMachineIDKey, 
                                 [in, size=MESSAGE_SIZE]char* event,
+                                int numArgs,
+                                int payloadType,
                                 [in, size=MAX_PAYLOAD_SIZE]char* payload,
                                  uint32_t ID_SIZE,
                                 uint32_t MESSAGE_SIZE,
                                 uint32_t MAX_PAYLOAD_SIZE);
+
         public void eprint([in, size=50]char* printStr);
 
 

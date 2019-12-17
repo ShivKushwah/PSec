@@ -92,6 +92,8 @@ typedef struct ms_sendUntrustedMessageAPI_t {
 	int ms_retval;
 	char* ms_receivingMachineIDKey;
 	char* ms_event;
+	int ms_numArgs;
+	int ms_payloadType;
 	char* ms_payload;
 	uint32_t ms_ID_SIZE;
 	uint32_t ms_MESSAGE_SIZE;
@@ -502,12 +504,14 @@ sgx_status_t enclave_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, char* machi
 	return status;
 }
 
-sgx_status_t enclave_sendUntrustedMessageAPI(sgx_enclave_id_t eid, int* retval, char* receivingMachineIDKey, char* event, char* payload, uint32_t ID_SIZE, uint32_t MESSAGE_SIZE, uint32_t MAX_PAYLOAD_SIZE)
+sgx_status_t enclave_sendUntrustedMessageAPI(sgx_enclave_id_t eid, int* retval, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t MESSAGE_SIZE, uint32_t MAX_PAYLOAD_SIZE)
 {
 	sgx_status_t status;
 	ms_sendUntrustedMessageAPI_t ms;
 	ms.ms_receivingMachineIDKey = receivingMachineIDKey;
 	ms.ms_event = event;
+	ms.ms_numArgs = numArgs;
+	ms.ms_payloadType = payloadType;
 	ms.ms_payload = payload;
 	ms.ms_ID_SIZE = ID_SIZE;
 	ms.ms_MESSAGE_SIZE = MESSAGE_SIZE;
