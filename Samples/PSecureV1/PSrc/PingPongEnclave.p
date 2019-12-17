@@ -22,6 +22,7 @@ secure_machine Coordinator {
         entry {
              PongSecureChild = new Pong();
              PongSecureChild = new Temp();
+            //  untrusted_send PongSecureChild, Pong, 5;
         }
         on UntrustedEventFromPing goto Whoa;
     }
@@ -78,7 +79,10 @@ secure_machine SecureChild {
     }
 
     state Next {
-        entry {
+        entry (payload: int) {
+            if (payload == 3) {
+                print "YEET";
+            }
             secure_send parent, Ping;
             goto Done;
         }
@@ -98,7 +102,7 @@ machine Ping {
             InitializeUntrustedMachine();
             GetThis();
             pongId = new Temp();
-            // send pongId, Pong, 4;
+            untrusted_send pongId, Pong, 4;
             coordinatorID = new Coordinator();// UntrustedCreateCoordinator();
             numArgs = 1;
             payld = 9;
@@ -121,5 +125,9 @@ machine Temp {
 
     }
 
-    state Done { }
+    state Done {
+        // entry {
+            // print "KIRAT";
+        // }
+     }
 }

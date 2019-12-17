@@ -166,7 +166,6 @@ extern int Delta;
 
 extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
     //USMs can only make untrusted requests to create machines
-    ocall_print("UGHH");
     return P_CreateMachineSecureChild_IMPL(context, argRefs);
 }
 

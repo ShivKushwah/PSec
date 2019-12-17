@@ -270,7 +270,11 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         char* publicIDRegister = split;
         split = strtok(NULL, ":");
         char* enclaveNumRegister = split;
-        MachinePublicIDToEnclaveNum[string(publicIDRegister)] = atoi(enclaveNumRegister);
+        if (enclaveNumRegister != NULL && enclaveNumRegister[0] != '\0' && enclaveNumRegister[0] == '-') {
+            MachinePublicIDToEnclaveNum[string(publicIDRegister)] = -1;
+        } else {
+            MachinePublicIDToEnclaveNum[string(publicIDRegister)] = atoi(enclaveNumRegister);
+        }
         return "Success!";
 
 

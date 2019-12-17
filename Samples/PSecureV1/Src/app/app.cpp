@@ -473,7 +473,7 @@ char* receiveNetworkRequest(char* request) {
         split = strtok(NULL, ":");
         char* machineReceivingComm = split;
 
-        if (USMPublicIdentityKeyToMachinePIDDictionary.count(machineReceivingComm) > 0) {
+        if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm)) > 0) {
             
             return USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm);
         
@@ -490,9 +490,10 @@ char* receiveNetworkRequest(char* request) {
         char* eventNum = split;
         split = strtok(NULL, ":");
         char* payload = split;
-
-        if (USMPublicIdentityKeyToMachinePIDDictionary.count(machineReceivingMessage) > 0) {
-
+        string machineReceiveMsgString = string(machineReceivingMessage);
+        // printf("Untrusted Send -> machine checking in dictionary is %s\n", machineReceiveMsgString.c_str());
+        if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
+            // printf("Sending Message to USM in app.cpp\n");
             return USMsendMessageAPI(machineReceivingMessage, eventNum, payload);
             
         } else {
@@ -513,7 +514,7 @@ char* receiveNetworkRequest(char* request) {
         split = strtok(NULL, ":");
         char* payload = split;
 
-         if (USMPublicIdentityKeyToMachinePIDDictionary.count(machineReceivingMessage) > 0) {
+         if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
 
             //TODO need to implement
             return "TODO";
@@ -650,6 +651,7 @@ char* createUSMMachine(char* machineType, int numArgs, int payloadType, char* pa
     generateIdentity(usmChildPublicIDKey, usmChildPrivateIDKey);
     USMMachinePIDtoPublicIdentityKeyDictionary[newMachinePID] = usmChildPublicIDKey;
     USMPublicIdentityKeyToMachinePIDDictionary[usmChildPublicIDKey] = newMachinePID;
+    // printf("Added %s to USM dictionary!\n", usmChildPublicIDKey.c_str());
 
     char* usmChildPublicIDKeyCopy = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
