@@ -22,7 +22,7 @@ secure_machine Coordinator {
         entry {
              PongSecureChild = new Pong();
              PongSecureChild = new Temp();
-            //  untrusted_send PongSecureChild, Pong, 5;
+             untrusted_send PongSecureChild, Pong, 5;
         }
         on UntrustedEventFromPing goto Whoa;
     }
