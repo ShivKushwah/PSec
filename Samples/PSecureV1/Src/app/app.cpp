@@ -305,7 +305,7 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     char* eventMessagePayload = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
 
     // for (int i = 0; i < numArgs; i++) {
-        PRT_VALUE** P_EventMessage_Payload = argRefs[2];
+        PRT_VALUE** P_EventMessage_Payload = argRefs[3];
             char* temp = serializePrtValueToString(*P_EventMessage_Payload);
             memcpy(eventMessagePayload, temp, strlen(temp) + 1);
     //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
@@ -578,6 +578,7 @@ void ocall_print(const char* str) {
 
 void ocall_print_int(int intPrint) {
     printf("Value is: %d\n", intPrint);
+    fflush(stdout);
 }
 
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, char* payload) {
