@@ -637,6 +637,7 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 }
 
 PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* createTypeCommand, bool isSecureCreate) {
+    //If making changes here, make relevant changes in app.cpp
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
 
