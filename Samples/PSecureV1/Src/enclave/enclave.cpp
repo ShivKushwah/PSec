@@ -262,46 +262,46 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     ocall_print(generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1));
 }
 
-char* serializePrtValueToString(PRT_VALUE* value) {
-    //TODO code the rest of the types
-    //TODO if modifying this, also modify in app.cpp
-    if (value->discriminator == PRT_VALUE_KIND_INT) {
-        char* integer = (char*) malloc(10);
-        itoa(value->valueUnion.nt, integer, 10);
-        return integer;
-    } else if (value->discriminator == PRT_VALUE_KIND_FOREIGN) {
-        if (value->valueUnion.frgn->typeTag == 0) { //if StringType
-            return (char*) value->valueUnion.frgn->value;
-        } else {
-            return "UNSUPPORTED_TYPE";
-        }
-    } else {
-        return "UNSUPPORTED_TYPE";
-    }
+// char* serializePrtValueToString(PRT_VALUE* value) {
+//     //TODO code the rest of the types
+//     //TODO if modifying this, also modify in app.cpp
+//     if (value->discriminator == PRT_VALUE_KIND_INT) {
+//         char* integer = (char*) malloc(10);
+//         itoa(value->valueUnion.nt, integer, 10);
+//         return integer;
+//     } else if (value->discriminator == PRT_VALUE_KIND_FOREIGN) {
+//         if (value->valueUnion.frgn->typeTag == 0) { //if StringType
+//             return (char*) value->valueUnion.frgn->value;
+//         } else {
+//             return "UNSUPPORTED_TYPE";
+//         }
+//     } else {
+//         return "UNSUPPORTED_TYPE";
+//     }
 
-}
+// }
 
-PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType) {
-        //TODO if there are changes in here make changes in enclave.cpp
+// PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType) {
+//         //TODO if there are changes in here make changes in enclave.cpp
 
-    //TODO code the rest of the types (only int is coded for now)
-    PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
-    for (int i = 0; i < numArgs; i++) {
-        char* split = strtok(str, ":");
-        values[i] = (PRT_VALUE*)PrtMalloc(sizeof(PRT_VALUE));
-        values[i]->discriminator = (PRT_VALUE_KIND) payloadType;
-        if (payloadType == PRT_VALUE_KIND_INT) {
-            values[i]->valueUnion.nt = atoi(split);
-        } else if (payloadType == PRT_VALUE_KIND_FOREIGN) {
-            values[i]->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
-            values[i]->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
-            PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	        sprintf_s(prtStr, 100, str);
-            values[i]->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
-        }
-    }
-    return values;
-}
+//     //TODO code the rest of the types (only int is coded for now)
+//     PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
+//     for (int i = 0; i < numArgs; i++) {
+//         char* split = strtok(str, ":");
+//         values[i] = (PRT_VALUE*)PrtMalloc(sizeof(PRT_VALUE));
+//         values[i]->discriminator = (PRT_VALUE_KIND) payloadType;
+//         if (payloadType == PRT_VALUE_KIND_INT) {
+//             values[i]->valueUnion.nt = atoi(split);
+//         } else if (payloadType == PRT_VALUE_KIND_FOREIGN) {
+//             values[i]->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
+//             values[i]->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
+//             PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+// 	        sprintf_s(prtStr, 100, str);
+//             values[i]->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
+//         }
+//     }
+//     return values;
+// }
 
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
     int ret;

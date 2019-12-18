@@ -33,6 +33,7 @@ set(ENCLAVE_SOURCE_FILES
         enclave_t.c
         temp.c
         ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPongEnclave.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../Src/shared/helper.cpp
         #/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c
         #~/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c
         )
