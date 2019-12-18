@@ -171,67 +171,7 @@ extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context
 
 extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
-    char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
-    char* currentMachineIDPublicKey;
-    currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
-
-    if (!machineTypeIsSecure(requestedNewMachineTypeToCreate)) {
-        //TODO Add case here if we are creating untrusted machine (Do we need this because inside the enclave we dont
-        //have untrusted machines)
-
-    }
-
-    int numArgs = atoi((char*) argRefs[1]);
-
-    PRT_VALUE* payloadPrtValue;
-    char* payloadString;  
-    int payloadType;
-
-    if (numArgs == 1) {
-        payloadPrtValue = *(argRefs[2]);
-        payloadType = payloadPrtValue->discriminator;
-        payloadString = serializePrtValueToString(payloadPrtValue);
-    }
-
-    char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
-    int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1 + 10 + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
-    char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
-    if (numArgs == 0) {
-        snprintf(createMachineRequest, requestSize, "Create:%s:%s:0", currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
-    } else {
-        snprintf(createMachineRequest, requestSize, "Create:%s:%s:%d:%d:%s", currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
-
-    }
-    
-    char* machineNameWrapper[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine is sending out the following network request:", machineNameWrapper, 1)); //TODO use this method for all future ocall_prints
-    ocall_print(createMachineRequest);
-    int ret_value;
-    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING + 1);
-    
-    char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine has created a new machine with Identity Public Key as:", machineNameWrapper2, 1)); //TODO use this method for all future ocall_prints
-    ocall_print(newMachinePublicIDKey);
-
-    //Now, need to retrieve capabilityKey for this newMachinePublicIDKey and store (thisMachineID, newMachinePublicIDKey) -> capabilityKey
-    string request = "GetKey:" + string(currentMachineIDPublicKey) + ":" + string(newMachinePublicIDKey);//TODO unhardcode current Machine name
-    //TODO replace above line with snprintf as did with createMachineRequest, and do this everywhere in code
-    char* getChildMachineIDRequest = (char*) request.c_str(); 
-    char* capabilityKey = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey);//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
-    //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
-    
-    char* machineNameWrapper3[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine has received capability key for secure child:", machineNameWrapper3, 1)); //TODO use this method for all future ocall_prints
-    ocall_print(capabilityKey);
-
-    PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey);
-
-    //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, newMachinePublicIDKey);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    return sendCreateMachineNetworkRequest(context, argRefs, "Create:", true);
 }
 
 extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -696,9 +636,8 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
-extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-   uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* createTypeCommand, bool isSecureCreate) {
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
 
     char* currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
@@ -726,12 +665,23 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
     int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1 + 10 + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
-    if (numArgs == 0) {
-        snprintf(createMachineRequest, requestSize, "UntrustedCreate:%s:0", requestedNewMachineTypeToCreate);
-    } else {
-        snprintf(createMachineRequest, requestSize, "UntrustedCreate:%s:%d:%d:%s", requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
+    if (isSecureCreate) {
+        if (numArgs == 0) {
+            snprintf(createMachineRequest, requestSize, "%s:%s:%s:0", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
+        } else {
+            snprintf(createMachineRequest, requestSize, "%s:%s:%s:%d:%d:%s", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
 
+        }
+
+    } else {
+        if (numArgs == 0) {
+            snprintf(createMachineRequest, requestSize, "%s:%s:0", createTypeCommand, requestedNewMachineTypeToCreate);
+        } else {
+            snprintf(createMachineRequest, requestSize, "%s:%s:%d:%d:%s", createTypeCommand, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
+
+        }
     }
+    
     
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine is sending out the following network request:", machineNameWrapper, 1)); //TODO use this method for all future ocall_prints
@@ -743,10 +693,32 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
     ocall_print(generateCStringFromFormat("%s machine has created a new machine with Identity Public Key as:", machineNameWrapper2, 1)); //TODO use this method for all future ocall_prints
     ocall_print(newMachinePublicIDKey);
 
+    if (isSecureCreate) {
+
+        //Now, need to retrieve capabilityKey for this newMachinePublicIDKey and store (thisMachineID, newMachinePublicIDKey) -> capabilityKey
+        string request = "GetKey:" + string(currentMachineIDPublicKey) + ":" + string(newMachinePublicIDKey);//TODO unhardcode current Machine name
+        //TODO replace above line with snprintf as did with createMachineRequest, and do this everywhere in code
+        char* getChildMachineIDRequest = (char*) request.c_str(); 
+        char* capabilityKey = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey);//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
+        //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
+        
+        char* machineNameWrapper3[] = {currentMachineIDPublicKey};
+        ocall_print(generateCStringFromFormat("%s machine has received capability key for secure child:", machineNameWrapper3, 1)); //TODO use this method for all future ocall_prints
+        ocall_print(capabilityKey);
+
+        PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey);
+
+    }
+
     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
 	sprintf_s(str, 100, newMachinePublicIDKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+}
+
+extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+   return sendCreateMachineNetworkRequest(context, argRefs, "UntrustedCreate", false);
 }
 
 extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
