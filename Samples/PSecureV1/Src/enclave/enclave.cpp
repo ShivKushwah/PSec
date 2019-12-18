@@ -129,13 +129,7 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
         ocall_print("Too many strings passed to generateCStringFromFormat!");
         return "ERROR!";
     }
-    // ocall_print("KIRAT");
     char* returnString = (char*) malloc(100);
-
-
-    // for (int i = num_strings; i < 5; i++) {
-    //     strings_to_print[i] = "hello";
-    // }
 
     char* str1 = strings_to_print[0];
     char* str2 = strings_to_print[1];
@@ -165,7 +159,6 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
 extern int Delta;
 
 extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
-    //USMs can only make untrusted requests to create machines
     return P_CreateMachineSecureChild_IMPL(context, argRefs);
 }
 
@@ -176,7 +169,6 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 
 extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    //TODO do thiS
     return P_UntrustedCreateCoordinator_IMPL(context, argRefs);
 }
 
@@ -340,61 +332,7 @@ string createString(char* str) {
                                         
 void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int ID_SIZE, int PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
 
-    if (process == NULL) {
-
-        //  ocall_print("hello, world!\n");
-	//PRT_DBG_START_MEM_BALANCED_REGION
-	//{
-		PRT_GUID processGuid;
-
-		processGuid.data1 = 1;
-		processGuid.data2 = 0;
-		processGuid.data3 = 0;
-		processGuid.data4 = 0;
-		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
-        ocall_print("Started Prt Process inside Enclave!\n");
-        if (cooperative)
-        {
-            PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
-        }
-		
-
-       
-
-        if (cooperative)
-        {
-            // test some multithreading across state machines.
-            /*
-            typedef void *(*start_routine) (void *);
-            pthread_t tid[threads];
-            for (int i = 0; i < threads; i++)
-            {
-                pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
-            }
-            for (int i = 0; i < threads; i++)
-            {
-                pthread_join(tid[i], NULL);
-            }
-            */
-        }
-
-    }
-
-    PRT_VALUE *payload;
-    if (parg == NULL)
-    {
-        payload = PrtMkNullValue();
-
-    }
-    else
-    {
-        int i = atoi(parg);
-        payload = PrtMkIntValue(i);
-        
-    }
-
-	PrtUpdateAssertFn(MyAssert);
-    // ocall_print("after update assert fn!\n");
+    startPrtProcessIfNotStarted();
     
     string machineTypeToCreateString = createString(machineTypeToCreate);
     string secureChildPublicIDKey;
@@ -417,22 +355,13 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
     //"Return" the publicIDKey of the new machine
     memcpy(returnNewMachinePublicID, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
     createMachine(machineTypeToCreate, "", 0, PRT_VALUE_KIND_INT, "");
-
-
-    // PRT_UINT32 mainMachine2;
-	// PRT_BOOLEAN foundMachine2 = PrtLookupMachineByName(machineTypeToCreate, &mainMachine2);
-    // ocall_print_int(mainMachine2);
-	// PrtAssert(foundMachine2, "No machine found of that type in this enclave!");
-	// PrtMkMachine(process, mainMachine2, 1, &payload);
-    // ocall_print("after mk machine!\n");
 }
 
 void eprint(char* printStr) {
     ocall_print(printStr);
 }
 
-
-int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
+void startPrtProcessIfNotStarted() {
     if (process == NULL) {
         //TODO take this duplicate code and make it called from one place
 
@@ -472,20 +401,14 @@ int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, c
             */
         }
 
-    }
-
-    PRT_VALUE *payloadPrt;
-    if (parg == NULL)
-    {
-        payloadPrt = PrtMkNullValue();
+        PrtUpdateAssertFn(MyAssert);
 
     }
-    else
-    {
-        int i = atoi(parg);
-        payloadPrt = PrtMkIntValue(i);
-        
-    }
+
+}
+
+char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, bool isSecureCreate, sgx_enclave_id_t enclaveEid) {
+    startPrtProcessIfNotStarted();
     
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
     string machineTypeToCreateString = createString(machineType);
@@ -500,19 +423,37 @@ int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, c
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
     PublicIdentityKeyToMachinePIDDictionary[secureChildPublicIDKey] = newMachinePID;
 
-    //Contacting KPS for capability key
-    string capabilityKeyReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str());
-    ocall_print("Enclave received new capability Key from KPS: ");
-    ocall_print(capabilityKeyReceived.c_str());
-    MachinePIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
+    if (isSecureCreate) {
+        //Contacting KPS for capability key
+        string capabilityKeyReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str());
+        ocall_print("Enclave received new capability Key from KPS: ");
+        ocall_print(capabilityKeyReceived.c_str());
+        MachinePIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
+    }
 
     char* secureChildPublicIDKeyCopy = (char*) malloc(secureChildPublicIDKey.size() + 1);
     memcpy(secureChildPublicIDKeyCopy, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.size() + 1);
     registerMachineWithNetwork(secureChildPublicIDKeyCopy);
 
-    //"Return" the publicIDKey of the new machine
+    if (isSecureCreate) {
+        createMachine(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload);
+
+    } else {
+        createMachine(machineType, "", 0, PRT_VALUE_KIND_INT, "");
+    }
+
+    char* returnNewMachinePublicIDKey = (char*) malloc(secureChildPublicIDKey.length() + 1);
     memcpy(returnNewMachinePublicIDKey, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
-    createMachine(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload);
+    return returnNewMachinePublicIDKey;
+
+}
+
+
+int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
+    
+    char* newMachinePublicIDKey = createMachineHelper(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload, true, enclaveEid);
+    //"Return" the publicIDKey of the new machine
+    memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
 }
 
 char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey) {

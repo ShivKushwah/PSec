@@ -45,7 +45,8 @@ extern uint8_t g_secret[SIZE_OF_MESSAGE];
 
 
 
-
+void startPrtProcessIfNotStarted();
+char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, bool isSecureCreate,sgx_enclave_id_t enclaveEid);
 int handle_incoming_events_pong_enclave(PRT_UINT32 eventIdentifier);
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload);
 void generateIdentity(string& publicID, string& privateID, string prefix);
