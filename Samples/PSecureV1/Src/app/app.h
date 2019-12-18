@@ -30,7 +30,7 @@ string createString(char* str);
 
 int createMachine(char* machineType, int numArgs, int payloadType, char* payload);
 
-char* createUSMMachine(char* machineType, int numArgs, int payloadType, char* payload);
+char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload);
 
 char* registerMachineWithNetwork(char* newMachineID);
 

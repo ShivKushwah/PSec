@@ -475,7 +475,7 @@ char* receiveNetworkRequest(char* request) {
         }
 
          if (USMAuthorizedTypes.count(machineType) > 0) {
-            return createUSMMachine(machineType, numArgs, payloadType, payload);
+            return createUSMMachineAPI(machineType, numArgs, payloadType, payload);
         } else {
             return untrusted_enclave1_receiveNetworkRequest(requestCopy);
         }
@@ -499,7 +499,7 @@ char* receiveNetworkRequest(char* request) {
         }
 
         if (USMAuthorizedTypes.count(machineType) > 0) {
-            return createUSMMachine(machineType, numArgs, payloadType, payload);
+            return createUSMMachineAPI(machineType, numArgs, payloadType, payload);
         } else {
             return untrusted_enclave1_receiveNetworkRequest(requestCopy);
         }
@@ -694,7 +694,7 @@ string createString(char* str) {
     return string(strCopy);
 }
 
-char* createUSMMachine(char* machineType, int numArgs, int payloadType, char* payload) {
+char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload) {
     
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
     int newMachinePID = getNextPID(); 
