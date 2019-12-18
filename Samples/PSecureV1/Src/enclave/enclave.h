@@ -10,7 +10,7 @@ using namespace std;
 
 //NOTE: If modifying these constants, search for these in other header files too
 const int SIZE_OF_MESSAGE = 20;
-const int SIZE_OF_IDENTITY_STRING = 20;
+const int SIZE_OF_IDENTITY_STRING = 50;
 const int SIZE_OF_CAPABILITYKEY = 20;
 const int SIZE_OF_NEWMACHINETYPE = 20;
 const int SIZE_OF_SESSION_KEY = 20;
