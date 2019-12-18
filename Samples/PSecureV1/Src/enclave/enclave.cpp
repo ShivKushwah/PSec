@@ -332,29 +332,9 @@ string createString(char* str) {
                                         
 void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int ID_SIZE, int PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
 
-    startPrtProcessIfNotStarted();
-    
-    string machineTypeToCreateString = createString(machineTypeToCreate);
-    string secureChildPublicIDKey;
-    string secureChildPrivateIDKey;
-    generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
-    char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
-    strncpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
-    ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, enclaveEid);
-    int newMachinePID = getNextPID(); 
-    //Store new machine information in enclave's dictionaries
-    MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
-    PublicIdentityKeyToMachinePIDDictionary[secureChildPublicIDKey] = newMachinePID;
-
-    char* secureChildPublicIDKeyCopy = (char*) malloc(secureChildPublicIDKey.size() + 1);
-    memcpy(secureChildPublicIDKeyCopy, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.size() + 1);
-    registerMachineWithNetwork(secureChildPublicIDKeyCopy);
-
-    //NOTE No one has the capability key for this SSM
-
+    char* newMachinePublicIDKey = createMachineHelper(machineTypeToCreate, "", numArgs, payloadType, payloadString, false, enclaveEid);
     //"Return" the publicIDKey of the new machine
-    memcpy(returnNewMachinePublicID, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
-    createMachine(machineTypeToCreate, "", 0, PRT_VALUE_KIND_INT, "");
+    memcpy(returnNewMachinePublicID, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
 }
 
 void eprint(char* printStr) {
