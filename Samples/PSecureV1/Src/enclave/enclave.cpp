@@ -391,6 +391,12 @@ int machineTypeIsSecure(char* machineType) {
     return curMachineDecl->isSecure;
 }
 
+string createString(char* str) {
+    char* strCopy = (char*) malloc(strlen(str) + 1);
+    memcpy(strCopy, str, strlen(str) + 1);
+    return string(strCopy);
+}
+
                                         
 void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int ID_SIZE, int PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
 
@@ -449,11 +455,11 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
 
 	PrtUpdateAssertFn(MyAssert);
     // ocall_print("after update assert fn!\n");
-
-
+    
+    string machineTypeToCreateString = createString(machineTypeToCreate);
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
-    generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey);
+    generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
     char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
     strncpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
     ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, enclaveEid);
@@ -542,9 +548,10 @@ int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, c
     }
     
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
+    string machineTypeToCreateString = createString(machineType);
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
-    generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey);
+    generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
     char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
     strncpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
     ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, enclaveEid);
@@ -593,13 +600,13 @@ char* registerMachineWithNetwork(char* newMachineID) {
 }
 
 //publicID and privateID must be allocated by the caller
-void generateIdentity(string& publicID, string& privateID) {
+void generateIdentity(string& publicID, string& privateID, string prefix) {
     //TODO Make this generate a random pk sk pair
 
     uint32_t val; 
     sgx_read_rand((unsigned char *) &val, 4);
-    publicID = "Enclave2Publi" + to_string(val % 100);
-    privateID = "Enclave2Privat" + to_string(val % 100);
+    publicID =  prefix + "SPub" + to_string(val % 100);
+    privateID = prefix + "SPriv" + to_string(val % 100);
 } 
 
 int getNextPID() {

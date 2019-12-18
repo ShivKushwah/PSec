@@ -20,11 +20,13 @@ int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier);
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload);
 char* serializePrtValueToString(PRT_VALUE* value);
 
-void generateIdentity(string& publicID);
+void generateIdentity(string& publicID, string& privateID, string prefix);
 
 char* receiveNetworkRequest(char* request);
 
 int getNextPID();
+
+string createString(char* str);
 
 int createMachine(char* machineType, int numArgs, int payloadType, char* payload);
 

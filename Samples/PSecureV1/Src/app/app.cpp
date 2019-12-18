@@ -192,10 +192,10 @@ char* itoa(int num, char* str, int base)
     return str; 
 } 
 
-void generateIdentity(string& publicID, string& privateID) {
+void generateIdentity(string& publicID, string& privateID, string prefix) {
     int randNum = rand() % 100;
-    publicID = "UntrustedPubl" + to_string(randNum);
-    privateID = "UntrustedPriv" + to_string(randNum);
+    publicID = prefix + "UPub" + to_string(randNum);
+    privateID = prefix + "UPriv" + to_string(randNum);
 } 
 
 extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -208,7 +208,7 @@ extern "C" PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     string publicID;
     string privateID;
-    generateIdentity(publicID, privateID);
+    generateIdentity(publicID, privateID, string("Initial"));
     //TODO store the privateID
     //TODO register this machine over network
 
@@ -653,14 +653,21 @@ char* registerMachineWithNetwork(char* newMachineID) {
 
 }
 
+string createString(char* str) {
+    char* strCopy = (char*) malloc(strlen(str) + 1);
+    memcpy(strCopy, str, strlen(str) + 1);
+    return string(strCopy);
+}
+
 char* createUSMMachine(char* machineType, int numArgs, int payloadType, char* payload) {
     
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
     int newMachinePID = getNextPID(); 
 
+    string machineTypeString = createString(machineType);
     string usmChildPublicIDKey;
     string usmChildPrivateIDKey;
-    generateIdentity(usmChildPublicIDKey, usmChildPrivateIDKey);
+    generateIdentity(usmChildPublicIDKey, usmChildPrivateIDKey, machineType);
     USMMachinePIDtoPublicIdentityKeyDictionary[newMachinePID] = usmChildPublicIDKey;
     USMPublicIdentityKeyToMachinePIDDictionary[usmChildPublicIDKey] = newMachinePID;
     // printf("Added %s to USM dictionary!\n", usmChildPublicIDKey.c_str());
