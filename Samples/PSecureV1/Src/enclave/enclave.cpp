@@ -294,22 +294,31 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 
     char* eventMessagePayload = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
 
-    for (int i = 0; i < numArgs; i++) {
-        PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];
-        char* payload = serializePrtValueToString(*P_EventMessage_Payload);
-        //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
-        if (i == 0) {
-            char* parameters[] = {payload};
-            eventMessagePayload = generateCStringFromFormat("%s", parameters, 1);
-        } else {
-            char* parameters[] = {eventMessagePayload, payload};
-            eventMessagePayload = generateCStringFromFormat("%s:%s", parameters, 2);
-        }
-    }
+    PRT_VALUE** P_EventMessage_Payload = argRefs[3];
+    int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
+    char* temp = serializePrtValueToString(*P_EventMessage_Payload);
+    memcpy(eventMessagePayload, temp, strlen(temp) + 1);
+
+    // for (int i = 0; i < numArgs; i++) {
+    //     PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];
+    //     char* payload = serializePrtValueToString(*P_EventMessage_Payload);
+    //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
+    //     if (i == 0) {
+    //         char* parameters[] = {payload};
+    //         eventMessagePayload = generateCStringFromFormat("%s", parameters, 1);
+    //     } else {
+    //         char* parameters[] = {eventMessagePayload, payload};
+    //         eventMessagePayload = generateCStringFromFormat("%s:%s", parameters, 2);
+    //     }
+    // }
 
     int requestSize = 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + size_of_max_num_args + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* secureSendRequest = (char*) malloc(requestSize);
-    snprintf(secureSendRequest, requestSize, "Send:%s:%s:%s:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgsPayload, eventMessagePayload);
+    if (numArgs > 0) {
+        snprintf(secureSendRequest, requestSize, "Send:%s:%s:%s:%d:%d:%s", currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+    } else  {
+        snprintf(secureSendRequest, requestSize, "Send:%s:%s:%s:0", currentMachineIDPublicKey, sendingToMachinePublicID, event);
+    }
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));      
     ocall_print(secureSendRequest);
@@ -642,7 +651,7 @@ void generateSessionKey(string& newSessionKey) {
     newSessionKey = "GenSessionKe" + to_string(val % 100);
 } 
 
-int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* eventNum, char* numArgs, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
+int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
     //TODO eventNum should be encrypted and requestingMachineIDKey should be verified with signature
     PRT_MACHINEID receivingMachinePID;
     ocall_print("SecureChildMachine has a PID of:");
@@ -650,7 +659,7 @@ int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, ch
     snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
     ocall_print(temp);
     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, atoi(numArgs), PRT_VALUE_KIND_INT, payload); //TODO update to untrusted send api
+    handle_incoming_event(atoi(event), receivingMachinePID, numArgs, payloadType, payload); //TODO update to untrusted send api
 
 }
 

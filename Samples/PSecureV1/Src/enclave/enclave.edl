@@ -40,8 +40,9 @@ enclave {
 
         public int sendMessageAPI([in, size=ID_SIZE]char* requestingMachineIDKey, 
                                  [in, size=ID_SIZE]char* receivingMachineIDKey, 
-                                [in, size=MESSAGE_SIZE]char* message,
-                                [in, size=10]char* numArgs,
+                                [in, size=MESSAGE_SIZE]char* event,
+                                int numArgs,
+                                int payloadType,
                                 [in, size=MAX_PAYLOAD_SIZE]char* payload,
                                  uint32_t ID_SIZE,
                                 uint32_t MESSAGE_SIZE,

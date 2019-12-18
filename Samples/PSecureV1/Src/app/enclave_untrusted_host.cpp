@@ -973,9 +973,17 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         split = strtok(NULL, ":");
         char* eventNum = split;
         split = strtok(NULL, ":");
-        char* numArgs = split;
-        split = strtok(NULL, ":");
-        char* payload = split;
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload = (char*) malloc(10);
+        payload[0] = '\0';
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, ":");
+            payload = split;
+
+        }
 
         if (PublicIdentityKeyToEidDictionary.count(machineReceivingMessage) == 0) {
             printf("\n No Enclave Eid Found!\n");
@@ -986,7 +994,7 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
 
         int ptr;
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = enclave_sendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+        sgx_status_t status = enclave_sendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
         return temp;
 
 

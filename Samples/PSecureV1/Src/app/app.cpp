@@ -524,12 +524,6 @@ char* receiveNetworkRequest(char* request) {
         char* machineSendingMessage = split;
         split = strtok(NULL, ":");
         char* machineReceivingMessage = split;
-        split = strtok(NULL, ":");
-        char* eventNum = split;
-        split = strtok(NULL, ":");
-        char* numArgs = split;
-        split = strtok(NULL, ":");
-        char* payload = split;
 
          if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
 
