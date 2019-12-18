@@ -100,20 +100,12 @@ machine ClientWebBrowser {
 
     state SaveOTPCode {
         entry (payload : int) {
-            print "OTP Code Received: {0}", payload;
+            print "OTP Code Received: {0}\n", payload;
             goto Done;
         }
 
     }
 
     state Done { }
-
-}
-
-machine ServerHost {
-    start state Init {
-
-
-    }
 
 }

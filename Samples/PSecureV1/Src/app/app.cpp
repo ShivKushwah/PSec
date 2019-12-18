@@ -409,8 +409,8 @@ extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context
 extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
     //USMs can only make untrusted requests to create machines
     PRT_VALUE* temp = P_UntrustedCreateCoordinator_IMPL(context, argRefs);
-    printf("VALUE IS : %s", temp->valueUnion.frgn->value);
-    fflush(stdout);
+    // printf("VALUE IS : %s", temp->valueUnion.frgn->value);
+    // fflush(stdout);
     return temp;// PrtMkIntValue(3);//PrtCloneValue(temp);
 }
 
@@ -588,7 +588,7 @@ void ocall_print(const char* str) {
 }
 
 void ocall_print_int(int intPrint) {
-    printf("Value is: %d\n", intPrint);
+    printf("OCALL_PRINT_INT:Value is %d\n", intPrint);
     fflush(stdout);
 }
 
@@ -689,7 +689,7 @@ int createMachine(char* machineType, int numArgs, int payloadType, char* payload
     }
     PRT_UINT32 newMachinePID;
 	PRT_BOOLEAN foundMachine = PrtLookupMachineByName(machineType, &newMachinePID);
-    ocall_print_int(newMachinePID);
+    // ocall_print_int(newMachinePID);
 	PrtAssert(foundMachine, "No machine found!");
 	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &prtPayload);
     return pongMachine->id->valueUnion.mid->machineId;
@@ -718,7 +718,7 @@ int main(int argc, char const *argv[]) {
 		processGuid.data3 = 0;
 		processGuid.data4 = 0;
 		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
-        ocall_print("after start process!\n");
+        ocall_print("Started Prt Process in App!\n");
         if (cooperative)
         {
             PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
@@ -739,7 +739,7 @@ int main(int argc, char const *argv[]) {
 		}
 
 		PrtUpdateAssertFn(MyAssert);
-        ocall_print("after update assert fn!\n");
+        // ocall_print("after update assert fn!\n");
 
         PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
         // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
@@ -748,7 +748,7 @@ int main(int argc, char const *argv[]) {
 		PrtAssert(foundMachine, "No 'GodUntrusted' machine found!");
 		PRT_MACHINEINST* pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);    
         
-        printf("after mk machine!\n");
+        // printf("after mk machine!\n");
 
         if (cooperative)
         {

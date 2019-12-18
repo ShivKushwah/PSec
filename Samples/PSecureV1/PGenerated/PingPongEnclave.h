@@ -20,13 +20,11 @@ extern "C" {
     extern PRT_INTERFACEDECL P_I_BankEnclave;
     extern PRT_INTERFACEDECL P_I_ClientEnclave;
     extern PRT_INTERFACEDECL P_I_ClientWebBrowser;
-    extern PRT_INTERFACEDECL P_I_ServerHost;
     extern PRT_MACHINEDECL P_MACHINE_GodUntrusted;
     extern PRT_MACHINEDECL P_MACHINE_GodMachine;
     extern PRT_MACHINEDECL P_MACHINE_BankEnclave;
     extern PRT_MACHINEDECL P_MACHINE_ClientEnclave;
     extern PRT_MACHINEDECL P_MACHINE_ClientWebBrowser;
-    extern PRT_MACHINEDECL P_MACHINE_ServerHost;
     extern PRT_TYPE* P_TYPEDEF_StringType;
     extern PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl;
     

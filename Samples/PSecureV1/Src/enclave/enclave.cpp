@@ -396,7 +396,7 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
 
     if (process == NULL) {
 
-         ocall_print("hello, world!\n");
+        //  ocall_print("hello, world!\n");
 	//PRT_DBG_START_MEM_BALANCED_REGION
 	//{
 		PRT_GUID processGuid;
@@ -406,7 +406,7 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
 		processGuid.data3 = 0;
 		processGuid.data4 = 0;
 		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
-        ocall_print("after start process!\n");
+        ocall_print("Started Prt Process inside Enclave!\n");
         if (cooperative)
         {
             PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
@@ -448,7 +448,7 @@ void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char
     }
 
 	PrtUpdateAssertFn(MyAssert);
-    ocall_print("after update assert fn!\n");
+    // ocall_print("after update assert fn!\n");
 
 
     string secureChildPublicIDKey;
@@ -488,8 +488,9 @@ void eprint(char* printStr) {
 
 int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
     if (process == NULL) {
+        //TODO take this duplicate code and make it called from one place
 
-         ocall_print("hello, world!\n");
+        //  ocall_print("hello, world!\n");
 	//PRT_DBG_START_MEM_BALANCED_REGION
 	//{
 		PRT_GUID processGuid;
@@ -499,7 +500,7 @@ int createMachineAPI(char* machineType, char* parentTrustedMachinePublicIDKey, c
 		processGuid.data3 = 0;
 		processGuid.data4 = 0;
 		process = PrtStartProcess(processGuid, &P_GEND_IMPL_DefaultImpl, ErrorHandler, Log);
-        ocall_print("after start process!\n");
+        ocall_print("Started Prt Process inside Enclave!\n");
         if (cooperative)
         {
             PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
@@ -616,7 +617,7 @@ int createMachine(char* machineType, char* parentTrustedMachineID, int numArgs, 
     }
     PRT_UINT32 newMachinePID;
 	PRT_BOOLEAN foundMachine = PrtLookupMachineByName(machineType, &newMachinePID);
-    ocall_print_int(newMachinePID);
+    // ocall_print_int(newMachinePID);
 	PrtAssert(foundMachine, "No machine found!");
 	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &prtPayload);
     return pongMachine->id->valueUnion.mid->machineId;

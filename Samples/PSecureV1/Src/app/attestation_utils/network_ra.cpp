@@ -187,7 +187,7 @@ char* forward_request(char* request, int redirect) {
 
 char* network_request_logic(char* request) { //TODO Make this function generalizable for multiple enclaves and machines
 
-    printf("Network Request Received: %s", request);
+    printf("Network Request Received: %s\n", request);
 
     char* requestCopy = (char*) malloc(MAX_NETWORK_MESSAGE);
     memcpy(requestCopy, request, strlen(request) + 1);
