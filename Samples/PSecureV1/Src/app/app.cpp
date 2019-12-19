@@ -13,6 +13,7 @@
 #include <unordered_map> 
 #include <unordered_set> 
 #include <map>
+#include <tuple>
 
 using namespace std;
 
@@ -29,7 +30,7 @@ static long perfEndTime = 0;
 static const char* parg = NULL;
 static const char* workspaceConfig;
 
-unordered_map<int, string> USMMachinePIDtoPublicIdentityKeyDictionary;
+unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary; //USM Dictionary
 unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
 map<PublicMachineChildPair, string> USMPublicIdentityKeyToChildSessionKey;
 
@@ -144,7 +145,7 @@ extern "C" PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context
     //TODO store the privateID
     //TODO register this machine over network
 
-    USMMachinePIDtoPublicIdentityKeyDictionary[currentMachinePID] = publicID;
+    MachinePIDToIdentityDictionary[currentMachinePID] = make_tuple(publicID, privateID);
     USMPublicIdentityKeyToMachinePIDDictionary[publicID] = currentMachinePID;
 }
 
@@ -154,7 +155,7 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     char* currentMachineIDPublicKey;
  
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(USMMachinePIDtoPublicIdentityKeyDictionary[currentMachinePID].c_str())); 
+    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str())); 
   
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
@@ -168,7 +169,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
 
     char* currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)USMMachinePIDtoPublicIdentityKeyDictionary[currentMachinePID].c_str()); 
+    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
   
 
     // if (!machineTypeIsSecure(requestedNewMachineTypeToCreate)) {
@@ -554,7 +555,7 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     string usmChildPublicIDKey;
     string usmChildPrivateIDKey;
     generateIdentity(usmChildPublicIDKey, usmChildPrivateIDKey, machineType);
-    USMMachinePIDtoPublicIdentityKeyDictionary[newMachinePID] = usmChildPublicIDKey;
+    MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(usmChildPublicIDKey, usmChildPrivateIDKey);
     USMPublicIdentityKeyToMachinePIDDictionary[usmChildPublicIDKey] = newMachinePID;
     // printf("Added %s to USM dictionary!\n", usmChildPublicIDKey.c_str());
 

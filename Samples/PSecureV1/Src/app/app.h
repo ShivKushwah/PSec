@@ -13,6 +13,7 @@ void reverse(char str[], int length);
 
 
 typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPublicKey
+typedef tuple <string,string> identityKeyPair; //public, private
 
 
 int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier);

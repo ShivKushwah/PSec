@@ -1,6 +1,9 @@
 #include "PingPongEnclave.h"
 #include "string.h"
 #include <string>
+#include "constants.h"
+#include <tuple>
+
 
 #ifdef ENCLAVE_STD_ALT
 #include "enclave_t.h"
@@ -14,6 +17,7 @@ using namespace std;
 
 extern PRT_PROCESS *process;
 extern PRT_PROGRAMDECL* program;
+// extern unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
 
 
 int atoi(char *p) {

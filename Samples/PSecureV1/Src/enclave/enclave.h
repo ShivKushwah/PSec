@@ -18,8 +18,8 @@ extern map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 
 
 //For Enclave API
-typedef tuple <string,string> identityKeyPair; //public, private
 typedef tuple <string,string> capabilityKey;
+typedef tuple <string,string> identityKeyPair; //public, private
 extern unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
 extern unordered_map<string, int> PublicIdentityKeyToMachinePIDDictionary;
 extern unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
