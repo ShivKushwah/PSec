@@ -122,28 +122,6 @@ static void RunToIdle(void* process)
 	}
 }
 
-char* generateCStringFromFormat(char* format_string, char* strings_to_print[], int num_strings) {
-        //NOTE make changes in app.cpp as well
-
-    if (num_strings > 5) {
-        ocall_print("Too many strings passed to generateCStringFromFormat!");
-        return "ERROR!";
-    }
-    char* returnString = (char*) malloc(100);
-
-    char* str1 = strings_to_print[0];
-    char* str2 = strings_to_print[1];
-    char* str3 = strings_to_print[2];
-    char* str4 = strings_to_print[3];
-    char* str5 = strings_to_print[4];
-
-    snprintf(returnString, 100, format_string, str1, str2, str3, str4, str5);
-    //ocall_print("Return string is");
-    //ocall_print(returnString);
-    return returnString;
-
-}
-
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload) {
     PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
     PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
@@ -275,6 +253,7 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
 }
 
 int machineTypeIsSecure(char* machineType) {
+    //TODO there is a bug with this function because it thought that BankEnclave is USM
     PRT_UINT32 interfaceName;  
 	PrtLookupMachineByName(machineType, &interfaceName);
     PRT_UINT32 instanceOf = program->interfaceDefMap[interfaceName];
@@ -528,6 +507,9 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     // if (!machineTypeIsSecure(requestedNewMachineTypeToCreate)) {
     //     //TODO Add case here if we are creating untrusted machine (Do we need this because inside the enclave we dont
     //     //have untrusted machines)
+    //     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+    //     sprintf_s(str, 100, "Error: Tried to Create USM inside enclave!");
+    //     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 
     // }
 
