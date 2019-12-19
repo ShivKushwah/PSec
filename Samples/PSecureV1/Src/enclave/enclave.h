@@ -9,24 +9,6 @@
 #include "constants.h"
 using namespace std;
 
-//NOTE: If modifying these constants, search for these in other header files too
-const int SIZE_OF_MESSAGE = 20;
-const int SIZE_OF_CAPABILITYKEY = 20;
-const int SIZE_OF_NEWMACHINETYPE = 20;
-const int SIZE_OF_SESSION_KEY = 20;
-const int SIZE_OF_MAX_MESSAGE = 20;
-
-const int SIZE_OF_MAX_EVENT_NAME = 20;
-const int SIZE_OF_MAX_EVENT_PAYLOAD = 100;
-
-const int ENCLAVE_NUMBER = 0; //TODO retrieve this from network after registering this entire enclave
-
-
-
-
-const int CREATE_CAPABILITY_KEY_CONSTANT = 1;
-const int RETRIEVE_CAPABLITY_KEY_CONSTANT = 2;
-
 //For Enclave Internal Methods
 typedef tuple <uint32_t,string> PMachineChildPair; //parentMachineID, childPublicKey
 typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPublicKey

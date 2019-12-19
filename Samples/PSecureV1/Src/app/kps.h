@@ -44,13 +44,9 @@
 
 using namespace std;
 
-const int ENABLE_KPS_ATTESTATION_PRINT = 0;
-
 extern unordered_map<string, string> capabilityKeyAccessDictionary;
 extern unordered_map<string, string> capabilityKeyDictionary;
 
-const int CREATE_CAPABILITY_KEY_CONSTANT = 1;
-const int RETRIEVE_CAPABLITY_KEY_CONSTANT = 2;
 
 #ifdef  __cplusplus
 extern "C" {

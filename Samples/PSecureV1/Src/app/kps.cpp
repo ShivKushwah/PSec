@@ -59,8 +59,6 @@ using namespace std;
 
 //NOTE: in certain parts of this file, SP refers to the Ping machine
 
-const int SIZE_OF_MESSAGE = 20;
-
 unordered_map<string, string> capabilityKeyAccessDictionary;
 unordered_map<string, string> capabilityKeyDictionary;
 
