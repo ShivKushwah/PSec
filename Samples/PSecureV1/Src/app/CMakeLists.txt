@@ -35,27 +35,6 @@ add_custom_command(
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/enclave2_u.c
-        COMMAND ${SGX_EDGER8R} --untrusted enclave2.edl
-        --use-prefix
-        --search-path ../enclave2/ # enclave.edl
-        --search-path ${SGX_SDK}/include
-        --search-path ${MBEDTLS_SGX_ROOT_DIR}/lib # mbedtls_sgx.edl
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-
-add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/enclave3_u.c
-        COMMAND ${SGX_EDGER8R} --untrusted enclave3.edl
-        --use-prefix
-        --search-path ../enclave3/ # enclave.edl
-        --search-path ${SGX_SDK}/include
-        --search-path ${MBEDTLS_SGX_ROOT_DIR}/lib # mbedtls_sgx.edl
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
 add_executable(app ${CLIENT_SRC_FILES})
 
 include_directories(
@@ -63,6 +42,7 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/../PHeaders
         ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated
         ${CMAKE_CURRENT_SOURCE_DIR}/attestation_utils
+        ${CMAKE_CURRENT_SOURCE_DIR}/../shared
         ${CMAKE_CURRENT_SOURCE_DIR}
 
 )

@@ -35,7 +35,8 @@
 
 #define _NETWORK_RA_H
 
-const int SIZE_OF_IDENTITY_STRING = 50;
+#include "constants.h"
+
 const int SIZE_OF_CAPABILITYKEY = 20;
 const int SIZE_OF_SESSION_KEY = 20;
 const int SIZE_OF_MAX_MESSAGE = 20;

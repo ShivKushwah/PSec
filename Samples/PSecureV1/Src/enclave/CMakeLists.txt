@@ -23,6 +23,7 @@ FILE(GLOB_RECURSE ${projectName}_gsources ${CMAKE_CURRENT_SOURCE_DIR}../../PGene
 set (${projectName}_INCLUDE
 ../../PGenerated/
 ../../Includes/
+../../Src/shared/
 )
 
 
