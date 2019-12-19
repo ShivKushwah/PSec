@@ -261,12 +261,6 @@ int machineTypeIsSecure(char* machineType) {
     return curMachineDecl->isSecure;
 }
 
-string createString(char* str) {
-    char* strCopy = (char*) malloc(strlen(str) + 1);
-    memcpy(strCopy, str, strlen(str) + 1);
-    return string(strCopy);
-}
-
                                         
 void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int ID_SIZE, int PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
 

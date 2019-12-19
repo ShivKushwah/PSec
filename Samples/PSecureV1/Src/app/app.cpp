@@ -562,12 +562,6 @@ char* registerMachineWithNetwork(char* newMachineID) {
 
 }
 
-string createString(char* str) {
-    char* strCopy = (char*) malloc(strlen(str) + 1);
-    memcpy(strCopy, str, strlen(str) + 1);
-    return string(strCopy);
-}
-
 char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload) {
     
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?

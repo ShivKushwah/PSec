@@ -1,4 +1,6 @@
 #include "PingPongEnclave.h"
+#include "string.h"
+#include <string>
 
 #ifdef ENCLAVE_STD_ALT
 #include "enclave_t.h"
@@ -8,6 +10,7 @@
 #include "enclave_u.h"
 #endif
 
+using namespace std;
 
 int atoi(char *p) {
     int k = 0;
@@ -136,6 +139,12 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
     //ocall_print(returnString);
     return returnString;
 
+}
+
+string createString(char* str) {
+    char* strCopy = (char*) malloc(strlen(str) + 1);
+    memcpy(strCopy, str, strlen(str) + 1);
+    return string(strCopy);
 }
 
 //String Class
