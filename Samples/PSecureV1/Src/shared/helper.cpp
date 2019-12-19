@@ -12,6 +12,9 @@
 
 using namespace std;
 
+extern PRT_PROCESS *process;
+
+
 int atoi(char *p) {
     int k = 0;
     while (*p) {
@@ -139,6 +142,23 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
     //ocall_print(returnString);
     return returnString;
 
+}
+
+int createMachine(char* machineType, int numArgs, int payloadType, char* payload) {
+    PRT_VALUE* prtPayload;
+    if (numArgs > 0) {
+        ocall_print("Serialized the following payload");
+        ocall_print(payload);
+        prtPayload = *(deserializeStringToPrtValue(numArgs, payload, payloadType));
+    } else {
+        prtPayload = PrtMkNullValue();
+    }
+    PRT_UINT32 newMachinePID;
+	PRT_BOOLEAN foundMachine = PrtLookupMachineByName(machineType, &newMachinePID);
+    // ocall_print_int(newMachinePID);
+	PrtAssert(foundMachine, "No machine found!");
+	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &prtPayload);
+    return pongMachine->id->valueUnion.mid->machineId;
 }
 
 string createString(char* str) {

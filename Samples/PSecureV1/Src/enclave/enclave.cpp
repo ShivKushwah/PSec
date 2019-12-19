@@ -152,92 +152,7 @@ extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, P
 
 extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
-
-    ocall_print("Entered Secure Send");
-
-    char* currentMachineIDPublicKey;
-    currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
-
-    PRT_VALUE** P_ToMachine_Payload = argRefs[0];
-    PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
-    char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
-    if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID))) == 0) {
-        ocall_print("ERROR: No Capability Key found!");
-    }
-    string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID))];
-    ocall_print((char*)capabilityKey.c_str());
-
-    //Check if we don't have a pre-existing session key with the other machine, if so 
-    //we need to intialize communications and establish a session key
-    if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))) == 0) {
-        int requestSize = 8 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
-        char* initComRequest = (char*) malloc(requestSize);
-        snprintf(initComRequest, requestSize, "InitComm:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID);
-        
-        char* machineNameWrapper[] = {currentMachineIDPublicKey};
-        ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));
-        ocall_print(initComRequest);
-        char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
-        int ret_value;
-        ocall_network_request(&ret_value, initComRequest, newSessionKey, SIZE_OF_SESSION_KEY);
-        char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-        ocall_print(generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1));       
-        ocall_print(newSessionKey);
-        PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
-    }
-
-
-    string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))];
-    //TODO use sessionKey to encrypt message
-    PRT_VALUE** P_Event_Payload = argRefs[1];
-    char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
-    itoa((*P_Event_Payload)->valueUnion.ev , event, SIZE_OF_MAX_EVENT_NAME);
-
-    const int size_of_max_num_args = 10; //TODO if modififying this, modify it in app.cpp
-
-    PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
-    int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
-    char* numArgsPayload = (char*) malloc(size_of_max_num_args);
-    itoa(numArgs, numArgsPayload, SIZE_OF_MAX_EVENT_PAYLOAD);
-
-    char* eventMessagePayload = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
-
-    PRT_VALUE** P_EventMessage_Payload = argRefs[3];
-    int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
-    char* temp = serializePrtValueToString(*P_EventMessage_Payload);
-    memcpy(eventMessagePayload, temp, strlen(temp) + 1);
-
-    // for (int i = 0; i < numArgs; i++) {
-    //     PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];
-    //     char* payload = serializePrtValueToString(*P_EventMessage_Payload);
-    //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
-    //     if (i == 0) {
-    //         char* parameters[] = {payload};
-    //         eventMessagePayload = generateCStringFromFormat("%s", parameters, 1);
-    //     } else {
-    //         char* parameters[] = {eventMessagePayload, payload};
-    //         eventMessagePayload = generateCStringFromFormat("%s:%s", parameters, 2);
-    //     }
-    // }
-
-    int requestSize = 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + size_of_max_num_args + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
-    char* secureSendRequest = (char*) malloc(requestSize);
-    if (numArgs > 0) {
-        snprintf(secureSendRequest, requestSize, "Send:%s:%s:%s:%d:%d:%s", currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
-    } else  {
-        snprintf(secureSendRequest, requestSize, "Send:%s:%s:%s:0", currentMachineIDPublicKey, sendingToMachinePublicID, event);
-    }
-    char* machineNameWrapper[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));      
-    ocall_print(secureSendRequest);
-    char* empty;
-    int ret_value;
-    ocall_network_request(&ret_value, secureSendRequest, empty, 0);
-
-    char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1));
+    sendSendNetworkRequest(context, argRefs, "Send", true);
 }
 
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
@@ -275,9 +190,6 @@ void eprint(char* printStr) {
 
 void startPrtProcessIfNotStarted() {
     if (process == NULL) {
-        //TODO take this duplicate code and make it called from one place
-
-        //  ocall_print("hello, world!\n");
 	//PRT_DBG_START_MEM_BALANCED_REGION
 	//{
 		PRT_GUID processGuid;
@@ -292,10 +204,7 @@ void startPrtProcessIfNotStarted() {
         {
             PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
         }
-		
-
-       
-
+	
         if (cooperative)
         {
             // test some multithreading across state machines.
@@ -348,10 +257,10 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     registerMachineWithNetwork(secureChildPublicIDKeyCopy);
 
     if (isSecureCreate) {
-        createMachine(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload);
+        createMachine(machineType, numArgs, payloadType, payload);
 
     } else {
-        createMachine(machineType, "", 0, PRT_VALUE_KIND_INT, "");
+        createMachine(machineType, 0, PRT_VALUE_KIND_INT, "");
     }
 
     char* returnNewMachinePublicIDKey = (char*) malloc(secureChildPublicIDKey.length() + 1);
@@ -394,8 +303,6 @@ char* registerMachineWithNetwork(char* newMachineID) {
 
 //publicID and privateID must be allocated by the caller
 void generateIdentity(string& publicID, string& privateID, string prefix) {
-    //TODO Make this generate a random pk sk pair
-
     uint32_t val; 
     sgx_read_rand((unsigned char *) &val, 4);
     publicID =  prefix + "SPub" + to_string(val % 100);
@@ -404,23 +311,6 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
 
 int getNextPID() {
     return ((PRT_PROCESS_PRIV*)process)->numMachines + 1;
-}
-
-int createMachine(char* machineType, char* parentTrustedMachineID, int numArgs, int payloadType, char* payload) {
-    PRT_VALUE* prtPayload;
-    if (numArgs > 0) {
-        ocall_print("Serialized the following payload");
-        ocall_print(payload);
-        prtPayload = *(deserializeStringToPrtValue(numArgs, payload, payloadType));
-    } else {
-        prtPayload = PrtMkNullValue();
-    }
-    PRT_UINT32 newMachinePID;
-	PRT_BOOLEAN foundMachine = PrtLookupMachineByName(machineType, &newMachinePID);
-    // ocall_print_int(newMachinePID);
-	PrtAssert(foundMachine, "No machine found!");
-	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &prtPayload);
-    return pongMachine->id->valueUnion.mid->machineId;
 }
 
 
@@ -578,82 +468,115 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
    return sendCreateMachineNetworkRequest(context, argRefs, "UntrustedCreate", false);
 }
 
-extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-
+void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend) {
+    //TODO if making changes in this protocol, make changes in app.cpp
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
 
-    //TODO we need to attest the other enclave before sending it a message, even if we are sending an untrusted message
-    PRT_VALUE** P_ToMachine_Payload = argRefs[0];
-    PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
-    char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
-
-    PRT_VALUE** P_Event_Payload = argRefs[1];
-    char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
-    itoa((*P_Event_Payload)->valueUnion.ev , event, SIZE_OF_MAX_EVENT_NAME);
-
-    const int size_of_max_num_args = 10; //TODO if modififying this, modify it in enclave.cpp
-
-    // PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
-    // int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
-    // char* numArgsPayload = (char*) malloc(size_of_max_num_args);
-    // itoa(numArgs, numArgsPayload, SIZE_OF_MAX_EVENT_PAYLOAD);
-
-    char* eventMessagePayload = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
-
-    // for (int i = 0; i < numArgs; i++) {
-        PRT_VALUE** P_EventMessage_Payload = argRefs[3];
-        int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
-            char* temp = serializePrtValueToString(*P_EventMessage_Payload);
-            memcpy(eventMessagePayload, temp, strlen(temp) + 1);
-    //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
-    //     //TODO I assumed only 1 payload for the below
-    //     // if (i == 0) {
-    //     //     char* parameters[] = {payload};
-    //     //     eventMessagePayload = generateCStringFromFormat("%s", parameters, 1);
-    //     // } else {
-    //     //     char* parameters[] = {eventMessagePayload, payload};
-    //     //     eventMessagePayload = generateCStringFromFormat("%s:%s", parameters, 2);
-    //     // }
-    // }
-
-    // printf("Sending to : %s\n", sendingToMachinePublicID);
-    // printf("Sending event : %s\n", event);
-    // printf("Sending payload : %s\n", eventMessagePayload);
+    ocall_print("Entered Secure Send");
 
     char* currentMachineIDPublicKey;
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
 
+    PRT_VALUE** P_ToMachine_Payload = argRefs[0];
+    PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
+    char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
+
+    if (isSecureSend) {
+
+        if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID))) == 0) {
+            ocall_print("ERROR: No Capability Key found!");
+        }
+        string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID))];
+        ocall_print((char*)capabilityKey.c_str());
+
+        //Check if we don't have a pre-existing session key with the other machine, if so 
+        //we need to intialize communications and establish a session key
+        if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))) == 0) {
+            int requestSize = 8 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
+            char* initComRequest = (char*) malloc(requestSize);
+            snprintf(initComRequest, requestSize, "InitComm:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID);
+            
+            char* machineNameWrapper[] = {currentMachineIDPublicKey};
+            ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));
+            ocall_print(initComRequest);
+            char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
+            int ret_value;
+            ocall_network_request(&ret_value, initComRequest, newSessionKey, SIZE_OF_SESSION_KEY);
+            char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+            ocall_print(generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1));       
+            ocall_print(newSessionKey);
+            PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
+        }
+
+
+        string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))];
+        //TODO use sessionKey to encrypt message
+    }
+    PRT_VALUE** P_Event_Payload = argRefs[1];
+    char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
+    itoa((*P_Event_Payload)->valueUnion.ev , event, SIZE_OF_MAX_EVENT_NAME);
+
+    const int size_of_max_num_args = 10; //TODO if modififying this, modify it in app.cpp
+
     PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
     int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
+    char* numArgsPayload = (char*) malloc(size_of_max_num_args);
+    itoa(numArgs, numArgsPayload, SIZE_OF_MAX_EVENT_PAYLOAD);
 
-    int requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
-    char* unsecureSendRequest = (char*) malloc(requestSize);
-    if (numArgs > 0) {
-        snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%d:%d:%s", sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+    char* eventMessagePayload = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
+
+    PRT_VALUE** P_EventMessage_Payload = argRefs[3];
+    int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
+    char* temp = serializePrtValueToString(*P_EventMessage_Payload);
+    memcpy(eventMessagePayload, temp, strlen(temp) + 1);
+
+    // for (int i = 0; i < numArgs; i++) {
+    //     PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];
+    //     char* payload = serializePrtValueToString(*P_EventMessage_Payload);
+    //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
+    //     if (i == 0) {
+    //         char* parameters[] = {payload};
+    //         eventMessagePayload = generateCStringFromFormat("%s", parameters, 1);
+    //     } else {
+    //         char* parameters[] = {eventMessagePayload, payload};
+    //         eventMessagePayload = generateCStringFromFormat("%s:%s", parameters, 2);
+    //     }
+    // }
+
+    int requestSize = 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + size_of_max_num_args + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
+    char* sendRequest = (char*) malloc(requestSize);
+    if (isSecureSend) {
+        if (numArgs > 0) {
+            snprintf(sendRequest, requestSize, "%s:%s:%s:%s:%d:%d:%s", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+        } else  {
+            snprintf(sendRequest, requestSize, "%s:%s:%s:%s:0", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event);
+        }
     } else {
-        snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:0", sendingToMachinePublicID, event);
+         if (numArgs > 0) {
+            snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:%s", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+        } else {
+            snprintf(sendRequest, requestSize, "%s:%s:%s:0", sendTypeCommand, sendingToMachinePublicID, event);
+        }
+
     }
-
-    char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
-
+    
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));      
-    ocall_print(unsecureSendRequest);
+    ocall_print(sendRequest);
     char* empty;
     int ret_value;
-    ocall_network_request(&ret_value, unsecureSendRequest, empty, 0);
+    ocall_network_request(&ret_value, sendRequest, empty, 0);
 
+    char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+    ocall_print(generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1));
 
-    // // char* empty;
-    // // int ret_value;
-    // // ocall_network_request(&ret_value, secureSendRequest, empty, 0);
+}
 
+extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
 
-    // // char* networkRequest = "UntrustedCreate:Coordinator";
-    // // char* returnMessage = send_network_request_API(networkRequest);
-    // // printf("Network Message Confirmation: %s", returnMessage);
+    sendSendNetworkRequest(context, argRefs, "UntrustedSend", false);
    
 }
 

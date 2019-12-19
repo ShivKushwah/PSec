@@ -36,9 +36,6 @@ map<PublicMachineChildPair, string> USMPublicIdentityKeyToChildSessionKey;
 
 unordered_set<string> USMAuthorizedTypes; //TODO unhardcode
 
-
-
-
 extern char secure_message[8];
 
 PRT_PROCESS *process;
@@ -256,6 +253,7 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
 
 extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
 {   
+    //If we are making changes in here, then make appropiate changes in enclave.cpp
     //TODO we need to attest the other enclave before sending it a message, even if we are sending an untrusted message
     PRT_VALUE** P_ToMachine_Payload = argRefs[0];
     PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
@@ -586,23 +584,6 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
 
     //Return the publicIDKey of the new machine
     return usmChildPublicIDKeyCopy2;
-}
-
-int createMachine(char* machineType, int numArgs, int payloadType, char* payload) {
-    PRT_VALUE* prtPayload;
-    if (numArgs > 0) {
-        ocall_print("Serialized the following payload");
-        ocall_print(payload);
-        prtPayload = *(deserializeStringToPrtValue(numArgs, payload, payloadType));
-    } else {
-        prtPayload = PrtMkNullValue();
-    }
-    PRT_UINT32 newMachinePID;
-	PRT_BOOLEAN foundMachine = PrtLookupMachineByName(machineType, &newMachinePID);
-    // ocall_print_int(newMachinePID);
-	PrtAssert(foundMachine, "No machine found!");
-	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &prtPayload);
-    return pongMachine->id->valueUnion.mid->machineId;
 }
 
 void startPrtProcessIfNotStarted() {
