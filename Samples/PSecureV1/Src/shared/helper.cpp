@@ -3,6 +3,8 @@
 #include <string>
 #include "constants.h"
 #include <tuple>
+#include <unordered_map> 
+
 
 
 #ifdef ENCLAVE_STD_ALT
@@ -17,7 +19,10 @@ using namespace std;
 
 extern PRT_PROCESS *process;
 extern PRT_PROGRAMDECL* program;
-// extern unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
+
+//NOTE all typedefs are also defined in enclave.cpp and app.cpp
+typedef tuple <string,string> identityKeyPair; //public, private
+extern unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
 
 
 int atoi(char *p) {
@@ -196,6 +201,19 @@ string createString(char* str) {
     char* strCopy = (char*) malloc(strlen(str) + 1);
     memcpy(strCopy, str, strlen(str) + 1);
     return string(strCopy);
+}
+
+extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+    char* currentMachineIDPublicKey;
+ 
+    currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
+    //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, currentMachineIDPublicKey);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
 //String Class

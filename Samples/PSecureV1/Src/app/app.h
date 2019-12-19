@@ -11,7 +11,7 @@ char* itoa(int num, char* str, int base);
 int atoi(char *p);
 void reverse(char str[], int length);
 
-
+//NOTE all typedefs are also defined in enclave.cpp and constants.cpp
 typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPublicKey
 typedef tuple <string,string> identityKeyPair; //public, private
 

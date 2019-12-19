@@ -17,6 +17,7 @@ extern map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 
 
 
+//NOTE all typedefs are also defined in app.cpp and constants.cpp
 //For Enclave API
 typedef tuple <string,string> capabilityKey;
 typedef tuple <string,string> identityKeyPair; //public, private
