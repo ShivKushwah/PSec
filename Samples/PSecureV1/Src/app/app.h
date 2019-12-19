@@ -25,6 +25,8 @@ void generateIdentity(string& publicID, string& privateID, string prefix);
 
 char* receiveNetworkRequest(char* request);
 
+void startPrtProcessIfNotStarted();
+
 int getNextPID();
 
 string createString(char* str);

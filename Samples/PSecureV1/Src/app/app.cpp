@@ -605,23 +605,14 @@ int createMachine(char* machineType, int numArgs, int payloadType, char* payload
     return pongMachine->id->valueUnion.mid->machineId;
 }
 
-int main(int argc, char const *argv[]) {
+void startPrtProcessIfNotStarted() {
+    if (process == NULL) {
+        //TODO take this duplicate code and make it called from one place
 
-    //Shiv Hardcoded
-    USMAuthorizedTypes.insert("ClientWebBrowser");
-    USMAuthorizedTypes.insert("GodUntrusted");
-    USMAuthorizedTypes.insert("BankHost");
-
-
-
-        initNetwork();
-
-        // Place the measurement of the enclave into metadata_info.txt
-        system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
-
+        //  ocall_print("hello, world!\n");
+	//PRT_DBG_START_MEM_BALANCED_REGION
+	//{
 		PRT_GUID processGuid;
-		PRT_VALUE *payload;
-        PRT_VALUE *payload2;
 
 		processGuid.data1 = 1;
 		processGuid.data2 = 0;
@@ -633,32 +624,9 @@ int main(int argc, char const *argv[]) {
         {
             PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
         }
-		if (parg == NULL)
-		{
-			payload = PrtMkNullValue();
-            payload2 = PrtMkNullValue();
+		
 
-		}
-		else
-		{
-			int i = atoi(parg);
-			payload = PrtMkIntValue(i);
-            payload2 = PrtMkIntValue(i);
-
-            
-		}
-
-		PrtUpdateAssertFn(MyAssert);
-        // ocall_print("after update assert fn!\n");
-
-        PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
-        // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
-		//Shiv Hardcoded
-        PRT_BOOLEAN foundMachine = PrtLookupMachineByName("GodUntrusted", &mainMachine);
-		PrtAssert(foundMachine, "No 'GodUntrusted' machine found!");
-		PRT_MACHINEINST* pingMachine = PrtMkMachine(process, mainMachine, 1, &payload);    
-        
-        // printf("after mk machine!\n");
+       
 
         if (cooperative)
         {
@@ -676,7 +644,36 @@ int main(int argc, char const *argv[]) {
             }
             */
         }
-    
+
+        PrtUpdateAssertFn(MyAssert);
+
+    }
+
+}
+
+int main(int argc, char const *argv[]) {
+
+    //Shiv Hardcoded
+    USMAuthorizedTypes.insert("ClientWebBrowser");
+    USMAuthorizedTypes.insert("GodUntrusted");
+    USMAuthorizedTypes.insert("BankHost");
+
+    initNetwork();
+
+    startPrtProcessIfNotStarted();
+
+    PRT_VALUE *payload = PrtMkNullValue();
+
+    // Place the measurement of the enclave into metadata_info.txt
+    system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
+
+    PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
+    // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
+    //Shiv Hardcoded
+    PRT_BOOLEAN foundMachine = PrtLookupMachineByName("GodUntrusted", &mainMachine);
+    PrtAssert(foundMachine, "No 'GodUntrusted' machine found!");
+    PRT_MACHINEINST* newMachine = PrtMkMachine(process, mainMachine, 1, &payload);    
+        
     return 0;
 }
 
