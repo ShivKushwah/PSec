@@ -262,47 +262,6 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     ocall_print(generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1));
 }
 
-// char* serializePrtValueToString(PRT_VALUE* value) {
-//     //TODO code the rest of the types
-//     //TODO if modifying this, also modify in app.cpp
-//     if (value->discriminator == PRT_VALUE_KIND_INT) {
-//         char* integer = (char*) malloc(10);
-//         itoa(value->valueUnion.nt, integer, 10);
-//         return integer;
-//     } else if (value->discriminator == PRT_VALUE_KIND_FOREIGN) {
-//         if (value->valueUnion.frgn->typeTag == 0) { //if StringType
-//             return (char*) value->valueUnion.frgn->value;
-//         } else {
-//             return "UNSUPPORTED_TYPE";
-//         }
-//     } else {
-//         return "UNSUPPORTED_TYPE";
-//     }
-
-// }
-
-// PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType) {
-//         //TODO if there are changes in here make changes in enclave.cpp
-
-//     //TODO code the rest of the types (only int is coded for now)
-//     PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
-//     for (int i = 0; i < numArgs; i++) {
-//         char* split = strtok(str, ":");
-//         values[i] = (PRT_VALUE*)PrtMalloc(sizeof(PRT_VALUE));
-//         values[i]->discriminator = (PRT_VALUE_KIND) payloadType;
-//         if (payloadType == PRT_VALUE_KIND_INT) {
-//             values[i]->valueUnion.nt = atoi(split);
-//         } else if (payloadType == PRT_VALUE_KIND_FOREIGN) {
-//             values[i]->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
-//             values[i]->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
-//             PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-// 	        sprintf_s(prtStr, 100, str);
-//             values[i]->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
-//         }
-//     }
-//     return values;
-// }
-
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
     int ret;
     char* other_machine_name = "KPS";
@@ -726,54 +685,3 @@ extern "C" void P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context, PRT_
 {
    
 }
-
-
-//String Class
-
-extern "C" void P_FREE_StringType_IMPL(PRT_UINT64 frgnVal)
-{
-	PrtFree((PRT_STRING)frgnVal);
-}
-
-extern "C" PRT_BOOLEAN P_ISEQUAL_StringType_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
-{
-	return strcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2) == 0 ? PRT_TRUE : PRT_FALSE;
-}
-
-extern "C" PRT_STRING P_TOSTRING_StringType_IMPL(PRT_UINT64 frgnVal)
-{
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, "String : %lld", frgnVal);
-	return str;
-}
-
-extern "C" PRT_UINT32 P_GETHASHCODE_StringType_IMPL(PRT_UINT64 frgnVal)
-{
-	return (PRT_UINT32)frgnVal;
-}
-
-extern "C" PRT_UINT64 P_MKDEF_StringType_IMPL(void)
-{
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, "xyx$12");
-	return (PRT_UINT64)str;
-}
-
-extern "C" PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64 frgnVal)
-{
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, (PRT_STRING)frgnVal);
-	return (PRT_UINT64)str;
-}
-
-extern "C" void P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-    ocall_print("String P value is:");
-    ocall_print((char*) val);
-    
-}
-
-
-

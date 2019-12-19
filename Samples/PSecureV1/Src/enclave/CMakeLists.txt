@@ -26,6 +26,7 @@ set (${projectName}_INCLUDE
 )
 
 
+add_definitions(-DENCLAVE_STD_ALT)
 
 set(ENCLAVE_SOURCE_FILES
         enclave.cpp
@@ -38,7 +39,6 @@ set(ENCLAVE_SOURCE_FILES
         #~/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c
         )
 
-add_definitions(-DENCLAVE_STD_ALT)
 
 set_directory_properties(PROPERTIES
         ADDITIONAL_MAKE_CLEAN_FILES "enclave_t.c; enclave_t.h")
