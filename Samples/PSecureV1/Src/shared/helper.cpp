@@ -13,6 +13,7 @@
 using namespace std;
 
 extern PRT_PROCESS *process;
+extern PRT_PROGRAMDECL* program;
 
 
 int atoi(char *p) {
@@ -144,6 +145,22 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
 
 }
 
+int getNextPID() {
+    return ((PRT_PROCESS_PRIV*)process)->numMachines + 1;
+}
+
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload) {
+    PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
+    PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
+    if (numArgs == 0) {
+        PrtSend(NULL, machine, event, 0);
+    } else {
+        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload, payloadType);
+        PrtSend(NULL, machine, event, numArgs, prtPayload);
+    }
+    return 0;
+}
+
 int createMachine(char* machineType, int numArgs, int payloadType, char* payload) {
     PRT_VALUE* prtPayload;
     if (numArgs > 0) {
@@ -160,6 +177,16 @@ int createMachine(char* machineType, int numArgs, int payloadType, char* payload
 	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &prtPayload);
     return pongMachine->id->valueUnion.mid->machineId;
 }
+
+int machineTypeIsSecure(char* machineType) {
+    //TODO there is a bug with this function because it thought that BankEnclave is USM
+    PRT_UINT32 interfaceName;  
+	PrtLookupMachineByName(machineType, &interfaceName);
+    PRT_UINT32 instanceOf = program->interfaceDefMap[interfaceName];
+    PRT_MACHINEDECL* curMachineDecl = program->machines[instanceOf];
+    return curMachineDecl->isSecure;
+}
+
 
 string createString(char* str) {
     char* strCopy = (char*) malloc(strlen(str) + 1);

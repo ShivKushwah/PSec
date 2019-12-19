@@ -526,17 +526,6 @@ void ocall_print_int(int intPrint) {
     fflush(stdout);
 }
 
-int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload) {
-    PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
-    PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
-    if (numArgs == 0) {
-        PrtSend(NULL, machine, event, 0);
-    } else {
-        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload, payloadType);
-        PrtSend(NULL, machine, event, numArgs, prtPayload);
-    }
-    return 0;
-}
 
 int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
     PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
@@ -546,10 +535,6 @@ int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
     PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
     PrtSend(NULL, pingMachine, pongEvent, 0);
     return 0;
-}
-
-int getNextPID() {
-    return ((PRT_PROCESS_PRIV*)process)->numMachines + 1;
 }
 
 char* registerMachineWithNetwork(char* newMachineID) {

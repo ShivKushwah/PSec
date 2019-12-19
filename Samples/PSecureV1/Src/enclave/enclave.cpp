@@ -122,18 +122,6 @@ static void RunToIdle(void* process)
 	}
 }
 
-int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload) {
-    PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
-    PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
-    if (numArgs == 0) {
-        PrtSend(NULL, machine, event, 0);
-    } else {
-        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload, payloadType);
-        PrtSend(NULL, machine, event, numArgs, prtPayload);
-    }
-    return 0;
-}
-
 extern int Delta;
 
 extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
@@ -166,16 +154,6 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;
 }
-
-int machineTypeIsSecure(char* machineType) {
-    //TODO there is a bug with this function because it thought that BankEnclave is USM
-    PRT_UINT32 interfaceName;  
-	PrtLookupMachineByName(machineType, &interfaceName);
-    PRT_UINT32 instanceOf = program->interfaceDefMap[interfaceName];
-    PRT_MACHINEDECL* curMachineDecl = program->machines[instanceOf];
-    return curMachineDecl->isSecure;
-}
-
                                         
 void UntrustedCreateMachineAPI(char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int ID_SIZE, int PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
 
@@ -309,11 +287,6 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
     privateID = prefix + "SPriv" + to_string(val % 100);
 } 
 
-int getNextPID() {
-    return ((PRT_PROCESS_PRIV*)process)->numMachines + 1;
-}
-
-
 
 int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t ID_SIZE, uint32_t SESSION_KEY_SIZE) {
     ocall_print("Initialize Communication API Called!");
@@ -342,7 +315,8 @@ void generateSessionKey(string& newSessionKey) {
     newSessionKey = "GenSessionKe" + to_string(val % 100);
 } 
 
-int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
+int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload) {
+    //TODO if modifying this, modify USMsendMessageAPI in app.cpp
     //TODO eventNum should be encrypted and requestingMachineIDKey should be verified with signature
     PRT_MACHINEID receivingMachinePID;
     ocall_print("SecureChildMachine has a PID of:");
@@ -351,19 +325,14 @@ int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, ch
     ocall_print(temp);
     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
     handle_incoming_event(atoi(event), receivingMachinePID, numArgs, payloadType, payload); //TODO update to untrusted send api
+}
 
+int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
+    sendMessageHelper(requestingMachineIDKey, receivingMachineIDKey, event, numArgs, payloadType, payload);
 }
 
 int sendUntrustedMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
-    //TODO if modifying this, modify USMsendMessageAPI in app.cpp
-    PRT_MACHINEID receivingMachinePID;
-    ocall_print("SecureChildMachine has a PID of:");
-    char* temp = (char*) malloc(10);
-    snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
-    ocall_print(temp);
-    receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload);
-
+    sendMessageHelper("", receivingMachineIDKey, eventNum, numArgs, payloadType, payload);
 }
 
 extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
