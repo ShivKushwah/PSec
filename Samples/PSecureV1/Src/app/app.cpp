@@ -156,13 +156,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     char* currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
-  
-
-    // if (!machineTypeIsSecure(requestedNewMachineTypeToCreate)) {
-    //     //TODO Add case here if we are creating untrusted machine (Do we need this because inside the enclave we dont
-    //     //have untrusted machines)
-
-    // }
 
     int numArgs = atoi((char*) argRefs[1]);
 
@@ -533,6 +526,10 @@ char* registerMachineWithNetwork(char* newMachineID) {
 }
 
 char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload) {
+    startPrtProcessIfNotStarted();
+    if (machineTypeIsSecure(machineType)) {
+        return "Error: Tried to create SSM inside app!";
+    }
     
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
     int newMachinePID = getNextPID(); 
@@ -613,20 +610,11 @@ int main(int argc, char const *argv[]) {
 
     initNetwork();
 
-    startPrtProcessIfNotStarted();
-
-    PRT_VALUE *payload = PrtMkNullValue();
-
     // Place the measurement of the enclave into metadata_info.txt
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
 
-    PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
-    // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
-    //Shiv Hardcoded
-    PRT_BOOLEAN foundMachine = PrtLookupMachineByName("GodUntrusted", &mainMachine);
-    PrtAssert(foundMachine, "No 'GodUntrusted' machine found!");
-    PRT_MACHINEINST* newMachine = PrtMkMachine(process, mainMachine, 1, &payload);    
-        
+    createUSMMachineAPI("GodUntrusted", 0, 0, "");
+
     return 0;
 }
 

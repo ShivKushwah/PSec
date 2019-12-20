@@ -208,6 +208,10 @@ void startPrtProcessIfNotStarted() {
 
 char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, bool isSecureCreate, sgx_enclave_id_t enclaveEid) {
     startPrtProcessIfNotStarted();
+
+    if (!machineTypeIsSecure(machineType)) {
+        return "Error: Tried to Create USM inside enclave!";
+    }
     
     //TODO Do we need to verify signature of parentTrustedMachinePublicIDKey?
     string machineTypeToCreateString = createString(machineType);
@@ -343,16 +347,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     char* currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str())); 
-  
-
-    // if (!machineTypeIsSecure(requestedNewMachineTypeToCreate)) {
-    //     //TODO Add case here if we are creating untrusted machine (Do we need this because inside the enclave we dont
-    //     //have untrusted machines)
-    //     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-    //     sprintf_s(str, 100, "Error: Tried to Create USM inside enclave!");
-    //     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-
-    // }
 
     int numArgs = atoi((char*) argRefs[1]);
 

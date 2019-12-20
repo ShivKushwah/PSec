@@ -34,6 +34,8 @@ string createString(char* str);
 
 int createMachine(char* machineType, int numArgs, int payloadType, char* payload);
 
+int machineTypeIsSecure(char* machineType);
+
 char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload);
 
 char* registerMachineWithNetwork(char* newMachineID);

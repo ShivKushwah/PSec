@@ -284,7 +284,6 @@ int createMachine(char* machineType, int numArgs, int payloadType, char* payload
 }
 
 int machineTypeIsSecure(char* machineType) {
-    //TODO there is a bug with this function because it thought that BankEnclave is USM
     PRT_UINT32 interfaceName;  
 	PrtLookupMachineByName(machineType, &interfaceName);
     PRT_UINT32 instanceOf = program->interfaceDefMap[interfaceName];
