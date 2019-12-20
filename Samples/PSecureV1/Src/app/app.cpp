@@ -557,9 +557,7 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
 
 void startPrtProcessIfNotStarted() {
     if (process == NULL) {
-        //TODO take this duplicate code and make it called from one place
 
-        //  ocall_print("hello, world!\n");
 	//PRT_DBG_START_MEM_BALANCED_REGION
 	//{
 		PRT_GUID processGuid;

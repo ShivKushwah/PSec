@@ -9,6 +9,9 @@
 #include "constants.h"
 using namespace std;
 
+extern sgx_enclave_id_t current_eid;
+
+
 //For Enclave Internal Methods
 typedef tuple <uint32_t,string> PMachineChildPair; //parentMachineID, childPublicKey
 typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPublicKey

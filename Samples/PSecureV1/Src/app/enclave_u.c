@@ -44,6 +44,7 @@ typedef struct ms_pong_enclave_request_attestation_t {
 
 typedef struct ms_createMachineAPI_t {
 	int ms_retval;
+	sgx_enclave_id_t ms_currentEid;
 	char* ms_machineName;
 	char* ms_parentTrustedMachineID;
 	char* ms_returnNewMachineID;
@@ -78,6 +79,7 @@ typedef struct ms_sendMessageAPI_t {
 } ms_sendMessageAPI_t;
 
 typedef struct ms_UntrustedCreateMachineAPI_t {
+	sgx_enclave_id_t ms_currentEid;
 	char* ms_machineTypeToCreate;
 	int ms_lengthString;
 	char* ms_returnNewMachinePublicID;
@@ -139,6 +141,7 @@ typedef struct ms_ocall_print_int_t {
 
 typedef struct ms_ocall_pong_enclave_attestation_in_thread_t {
 	int ms_retval;
+	sgx_enclave_id_t ms_currentEid;
 	char* ms_other_machine_name;
 	uint32_t ms_other_machine_name_size;
 	int ms_message_from_machine_to_enclave;
@@ -244,7 +247,7 @@ static sgx_status_t SGX_CDECL enclave_ocall_print_int(void* pms)
 static sgx_status_t SGX_CDECL enclave_ocall_pong_enclave_attestation_in_thread(void* pms)
 {
 	ms_ocall_pong_enclave_attestation_in_thread_t* ms = SGX_CAST(ms_ocall_pong_enclave_attestation_in_thread_t*, pms);
-	ms->ms_retval = ocall_pong_enclave_attestation_in_thread(ms->ms_other_machine_name, ms->ms_other_machine_name_size, ms->ms_message_from_machine_to_enclave, ms->ms_optional_message);
+	ms->ms_retval = ocall_pong_enclave_attestation_in_thread(ms->ms_currentEid, ms->ms_other_machine_name, ms->ms_other_machine_name_size, ms->ms_message_from_machine_to_enclave, ms->ms_optional_message);
 
 	return SGX_SUCCESS;
 }
@@ -439,10 +442,11 @@ sgx_status_t enclave_pong_enclave_request_attestation(sgx_enclave_id_t eid, int*
 	return status;
 }
 
-sgx_status_t enclave_createMachineAPI(sgx_enclave_id_t eid, int* retval, char* machineName, char* parentTrustedMachineID, char* returnNewMachineID, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid)
+sgx_status_t enclave_createMachineAPI(sgx_enclave_id_t eid, int* retval, sgx_enclave_id_t currentEid, char* machineName, char* parentTrustedMachineID, char* returnNewMachineID, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid)
 {
 	sgx_status_t status;
 	ms_createMachineAPI_t ms;
+	ms.ms_currentEid = currentEid;
 	ms.ms_machineName = machineName;
 	ms.ms_parentTrustedMachineID = parentTrustedMachineID;
 	ms.ms_returnNewMachineID = returnNewMachineID;
@@ -489,10 +493,11 @@ sgx_status_t enclave_sendMessageAPI(sgx_enclave_id_t eid, int* retval, char* req
 	return status;
 }
 
-sgx_status_t enclave_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payload, int output_length, int payload_size, sgx_enclave_id_t enclaveEid)
+sgx_status_t enclave_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, sgx_enclave_id_t currentEid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payload, int output_length, int payload_size, sgx_enclave_id_t enclaveEid)
 {
 	sgx_status_t status;
 	ms_UntrustedCreateMachineAPI_t ms;
+	ms.ms_currentEid = currentEid;
 	ms.ms_machineTypeToCreate = machineTypeToCreate;
 	ms.ms_lengthString = lengthString;
 	ms.ms_returnNewMachinePublicID = returnNewMachinePublicID;

@@ -178,7 +178,7 @@ inline void PRINT_ATTESTATION_SERVICE_RESPONSE(
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
 // This method makes network_ra call to have the pong enclave attest to the ping machine
-inline int pong_enclave_start_attestation(const char* receiving_machine_name, int message_from_machine_to_enclave, char* optional_message) {
+inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const char* receiving_machine_name, int message_from_machine_to_enclave, char* optional_message) {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -186,7 +186,9 @@ inline int pong_enclave_start_attestation(const char* receiving_machine_name, in
     ra_samp_response_header_t *p_msg2_full = NULL;
     sgx_ra_msg3_t *p_msg3 = NULL;
     ra_samp_response_header_t* p_att_result_msg_full = NULL;
-    sgx_enclave_id_t enclave_id = PublicIdentityKeyToEidDictionary[receiving_machine_name]; //TODO the change from global_eid to this is causing this to fail
+    // ocall_print("Receiving Machine Name is ");
+    // ocall_print(receiving_machine_name);
+    sgx_enclave_id_t enclave_id = currentEid; //TODO the change from global_eid to this is causing this to fail
     int enclave_lost_retry_time = 1;
     int busy_retry_time = 4;
     sgx_ra_context_t context = INT_MAX;
@@ -776,11 +778,11 @@ CLEANUP:
 inline void* pong_enclave_attestation_thread(void* parameters) { //message_from_machine_to_enclave should be true when the enclave is receiving the message
                                                           //false when the enclave wants to send a message
     struct Enclave_start_attestation_wrapper_arguments* p = (struct Enclave_start_attestation_wrapper_arguments*)parameters;
-    return (void*) pong_enclave_start_attestation(p->machineName,  p->message_from_machine_to_enclave, p->optional_message);
+    return (void*) pong_enclave_start_attestation(p->currentEid, p->machineName,  p->message_from_machine_to_enclave, p->optional_message);
 }
 
-int ocall_pong_enclave_attestation_in_thread(char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, char* optional_message) {
-    struct Enclave_start_attestation_wrapper_arguments parameters = {other_machine_name, message_from_machine_to_enclave, optional_message};
+int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, char* optional_message) {
+    struct Enclave_start_attestation_wrapper_arguments parameters = {currentEid, other_machine_name, message_from_machine_to_enclave, optional_message};
     void* thread_ret;
     pthread_t thread_id; 
     printf("\n Calling Attestation Thread\n"); 
@@ -859,7 +861,7 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
         // application of this enclave and have that make an ecall to createMachineAPi
-        sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
+        sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
 
         return newMachineID;
 
@@ -904,7 +906,7 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         }   
 
         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
+        sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
 
         
         return newMachineID;

@@ -24,7 +24,8 @@ enclave {
                                                             [out, size=16] uint8_t* return_payload_tag);
         public int pong_enclave_request_attestation([in, size=16] const char* other_machine_name);
 
-        public int createMachineAPI([in, size=ID_SIZE] char* machineName, 
+        public int createMachineAPI(sgx_enclave_id_t currentEid,
+                                    [in, size=ID_SIZE] char* machineName, 
                                     [in, size=ID_SIZE]char* parentTrustedMachineID,
                                     [out, size=ID_SIZE] char* returnNewMachineID,
                                     int numArgs, 
@@ -48,7 +49,8 @@ enclave {
                                 uint32_t MESSAGE_SIZE,
                                 uint32_t MAX_PAYLOAD_SIZE);
 
-        public void UntrustedCreateMachineAPI([in, size=lengthString]char* machineTypeToCreate, 
+        public void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid,
+                                                [in, size=lengthString]char* machineTypeToCreate, 
                                                 int lengthString,
                                                 [out, size=output_length] char* returnNewMachinePublicID,
                                                 int numArgs, 
@@ -76,7 +78,8 @@ enclave {
         /* define OCALLs here. */
         void ocall_print([in, string]const char* str);
         void ocall_print_int(int intPrint);
-        int ocall_pong_enclave_attestation_in_thread([in,size=other_machine_name_size] char* other_machine_name, 
+        int ocall_pong_enclave_attestation_in_thread( sgx_enclave_id_t currentEid,
+                                                    [in,size=other_machine_name_size] char* other_machine_name, 
                                                     uint32_t other_machine_name_size,
                                                     int message_from_machine_to_enclave,
                                                     [in,string] char* optional_message);

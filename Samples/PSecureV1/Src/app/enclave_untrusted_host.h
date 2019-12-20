@@ -1,8 +1,9 @@
-const int ENABLE_ENCLAVE_ATTESTATION_PRINT = 0;
 extern int CURRENT_ENCLAVE_EID_NUM;
+extern const int ENABLE_ENCLAVE_ATTESTATION_PRINT;
 
 
 struct Enclave_start_attestation_wrapper_arguments {
+    sgx_enclave_id_t currentEid;
     char* machineName;
     int message_from_machine_to_enclave;
     char* optional_message;
