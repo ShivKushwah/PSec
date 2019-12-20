@@ -15,7 +15,6 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_MasterSecretEvent;
     extern PRT_EVENTDECL P_EVENT_GenerateOTPCodeEvent;
     extern PRT_EVENTDECL P_EVENT_OTPCodeEvent;
-    extern PRT_EVENTDECL P_EVENT_kirat;
     extern PRT_INTERFACEDECL P_I_GodUntrusted;
     extern PRT_INTERFACEDECL P_I_GodMachine;
     extern PRT_INTERFACEDECL P_I_BankEnclave;

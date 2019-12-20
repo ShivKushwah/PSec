@@ -15,11 +15,9 @@ fun CreateSecureMachineRequest(): StringType;
 fun CreateUSMMachineRequest(): StringType;
 
 event PublicIDEvent : StringType;
-event trusted MasterSecretEvent: int;
+trusted event MasterSecretEvent: int;
 event GenerateOTPCodeEvent : int;
 event OTPCodeEvent : int;
-
-event trusted kirat : int;
 
 machine GodUntrusted {
     var handler: StringType;

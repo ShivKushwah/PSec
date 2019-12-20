@@ -129,14 +129,6 @@ PRT_EVENTDECL P_EVENT_OTPCodeEvent =
     &P_GEND_TYPE_i
 };
 
-PRT_EVENTDECL P_EVENT_kirat = 
-{
-    { PRT_VALUE_KIND_EVENT, 0U },
-    "kirat",
-    4294967295U,
-    &P_GEND_TYPE_i
-};
-
 PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild =
 {
     "CreateMachineSecureChild",
@@ -209,10 +201,10 @@ PRT_FUNDECL P_FUNCTION_CreateUSMMachineRequest =
 };
 
 
-PRT_EVENTDECL* P_GodUntrusted_RECV_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_GodUntrusted_RECV_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_GodUntrusted_RECV =
 {
-    10U,
+    9U,
     P_GodUntrusted_RECV_INNER,
     NULL
 };
@@ -225,10 +217,10 @@ PRT_INTERFACEDECL P_I_GodUntrusted =
     &P_EVENTSET_GodUntrusted_RECV
 };
 
-PRT_EVENTDECL* P_GodMachine_RECV_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_GodMachine_RECV_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_GodMachine_RECV =
 {
-    10U,
+    9U,
     P_GodMachine_RECV_INNER,
     NULL
 };
@@ -241,10 +233,10 @@ PRT_INTERFACEDECL P_I_GodMachine =
     &P_EVENTSET_GodMachine_RECV
 };
 
-PRT_EVENTDECL* P_BankEnclave_RECV_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_BankEnclave_RECV_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_BankEnclave_RECV =
 {
-    10U,
+    9U,
     P_BankEnclave_RECV_INNER,
     NULL
 };
@@ -257,10 +249,10 @@ PRT_INTERFACEDECL P_I_BankEnclave =
     &P_EVENTSET_BankEnclave_RECV
 };
 
-PRT_EVENTDECL* P_ClientEnclave_RECV_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_ClientEnclave_RECV_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_ClientEnclave_RECV =
 {
-    10U,
+    9U,
     P_ClientEnclave_RECV_INNER,
     NULL
 };
@@ -273,10 +265,10 @@ PRT_INTERFACEDECL P_I_ClientEnclave =
     &P_EVENTSET_ClientEnclave_RECV
 };
 
-PRT_EVENTDECL* P_ClientWebBrowser_RECV_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_ClientWebBrowser_RECV_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_ClientWebBrowser_RECV =
 {
-    10U,
+    9U,
     P_ClientWebBrowser_RECV_INNER,
     NULL
 };
@@ -378,18 +370,18 @@ PRT_FUNDECL P_FUNCTION_Anon =
 
 PRT_FUNDECL* P_GodUntrusted_METHODS[] = { &P_FUNCTION_Anon };
 
-PRT_EVENTDECL* P_GodUntrusted_RECV_INNER_1[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_GodUntrusted_RECV_INNER_1[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_GodUntrusted_RECV_1 =
 {
-    10U,
+    9U,
     P_GodUntrusted_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_GodUntrusted_SEND_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_GodUntrusted_SEND_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_GodUntrusted_SEND =
 {
-    10U,
+    9U,
     P_GodUntrusted_SEND_INNER,
     NULL
 };
@@ -534,18 +526,18 @@ PRT_FUNDECL P_FUNCTION_Anon_1 =
 
 PRT_FUNDECL* P_GodMachine_METHODS[] = { &P_FUNCTION_Anon_1 };
 
-PRT_EVENTDECL* P_GodMachine_RECV_INNER_1[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_GodMachine_RECV_INNER_1[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_GodMachine_RECV_1 =
 {
-    10U,
+    9U,
     P_GodMachine_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_GodMachine_SEND_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_GodMachine_SEND_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_GodMachine_SEND =
 {
-    10U,
+    9U,
     P_GodMachine_SEND_INNER,
     NULL
 };
@@ -759,18 +751,18 @@ PRT_FUNDECL P_FUNCTION_Anon_2 =
 
 PRT_FUNDECL* P_BankEnclave_METHODS[] = { &P_FUNCTION_Anon_2 };
 
-PRT_EVENTDECL* P_BankEnclave_RECV_INNER_1[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_BankEnclave_RECV_INNER_1[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_BankEnclave_RECV_1 =
 {
-    10U,
+    9U,
     P_BankEnclave_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_BankEnclave_SEND_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_BankEnclave_SEND_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_BankEnclave_SEND =
 {
-    10U,
+    9U,
     P_BankEnclave_SEND_INNER,
     NULL
 };
@@ -1039,18 +1031,18 @@ PRT_FUNDECL P_FUNCTION_Anon_5 =
 
 PRT_FUNDECL* P_ClientEnclave_METHODS[] = { &P_FUNCTION_Anon_3, &P_FUNCTION_Anon_4, &P_FUNCTION_Anon_5 };
 
-PRT_EVENTDECL* P_ClientEnclave_RECV_INNER_1[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_ClientEnclave_RECV_INNER_1[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_ClientEnclave_RECV_1 =
 {
-    10U,
+    9U,
     P_ClientEnclave_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_ClientEnclave_SEND_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_ClientEnclave_SEND_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_ClientEnclave_SEND =
 {
-    10U,
+    9U,
     P_ClientEnclave_SEND_INNER,
     NULL
 };
@@ -1332,18 +1324,18 @@ PRT_FUNDECL P_FUNCTION_Anon_7 =
 
 PRT_FUNDECL* P_ClientWebBrowser_METHODS[] = { &P_FUNCTION_Anon_6, &P_FUNCTION_Anon_7 };
 
-PRT_EVENTDECL* P_ClientWebBrowser_RECV_INNER_1[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_ClientWebBrowser_RECV_INNER_1[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_ClientWebBrowser_RECV_1 =
 {
-    10U,
+    9U,
     P_ClientWebBrowser_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_ClientWebBrowser_SEND_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT, &P_EVENT_kirat };
+PRT_EVENTDECL* P_ClientWebBrowser_SEND_INNER[] = { &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_PublicIDEvent, &P_EVENT_Success, &P_EVENT_UntrustedEventFromPing, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_ClientWebBrowser_SEND =
 {
-    10U,
+    9U,
     P_ClientWebBrowser_SEND_INNER,
     NULL
 };
@@ -1367,7 +1359,7 @@ PRT_MACHINEDECL P_MACHINE_ClientWebBrowser =
 };
 
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
-PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_UntrustedEventFromPing, &P_EVENT_Success, &P_EVENT_PublicIDEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_kirat };
+PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_UntrustedEventFromPing, &P_EVENT_Success, &P_EVENT_PublicIDEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_OTPCodeEvent };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_GodUntrusted, &P_MACHINE_GodMachine, &P_MACHINE_BankEnclave, &P_MACHINE_ClientEnclave, &P_MACHINE_ClientWebBrowser };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_GodUntrusted, &P_I_GodMachine, &P_I_BankEnclave, &P_I_ClientEnclave, &P_I_ClientWebBrowser };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
@@ -1380,7 +1372,7 @@ int P_DefaultImpl_LME_4[] = { -1,-1,-1,-1,-1 };
 int* P_DefaultImpl_LINKMAP[] = { P_DefaultImpl_LME_0, P_DefaultImpl_LME_1, P_DefaultImpl_LME_2, P_DefaultImpl_LME_3, P_DefaultImpl_LME_4 };
 int P_DefaultImpl_DEFMAP[] = { 0,1,2,3,4 };
 PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl = {
-    11U,
+    10U,
     5U,
     5U,
     0U,
