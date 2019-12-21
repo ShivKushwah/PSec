@@ -555,9 +555,22 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     return usmChildPublicIDKeyCopy2;
 }
 
+long threadsRunning = 0;
+pthread_mutex_t threadsRunning_mutex;
+
+long
+get_threadsRunning()
+{
+    long c;
+
+    pthread_mutex_lock(&threadsRunning_mutex);
+        c = threadsRunning;
+    pthread_mutex_unlock(&threadsRunning_mutex);
+    return (c);
+}
+
 void startPrtProcessIfNotStarted() {
     if (process == NULL) {
-
 	//PRT_DBG_START_MEM_BALANCED_REGION
 	//{
 		PRT_GUID processGuid;
@@ -573,13 +586,19 @@ void startPrtProcessIfNotStarted() {
             PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
         }
 		
-
-       
-
         if (cooperative)
         {
+
+            PRT_VALUE *payload = PrtMkNullValue();
+            PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
+            // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
+            //Shiv Hardcoded
+            PRT_BOOLEAN foundMachine = PrtLookupMachineByName("GodUntrusted", &mainMachine);
+            PrtAssert(foundMachine, "No 'GodUntrusted' machine found!");
+            PRT_MACHINEINST* newMachine = PrtMkMachine(process, mainMachine, 1, &payload);  
+
             // test some multithreading across state machines.
-            /*
+            
             typedef void *(*start_routine) (void *);
             pthread_t tid[threads];
             for (int i = 0; i < threads; i++)
@@ -590,8 +609,9 @@ void startPrtProcessIfNotStarted() {
             {
                 pthread_join(tid[i], NULL);
             }
-            */
+            
         }
+
 
         PrtUpdateAssertFn(MyAssert);
 
