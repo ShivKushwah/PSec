@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} -std=c++11")
 
 # set(CLIENT_SRC_FILES enclave_u.c app.cpp enclave_untrusted_host.cpp sgx_utils/sgx_utils.cpp attestation_utils/network_ra.cpp kps.cpp attestation_utils/ias_ra.cpp attestation_utils/ecp.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPong.c)
 
-set(CLIENT_SRC_FILES enclave_u.c app.cpp enclave_untrusted_host.cpp sgx_utils/sgx_utils.cpp attestation_utils/network_ra.cpp attestation_utils/sample_messages.cpp kps.cpp attestation_utils/ias_ra.cpp attestation_utils/ecp.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPongEnclave.c ${CMAKE_CURRENT_SOURCE_DIR}/../../Src/shared/helper.cpp)
+set(CLIENT_SRC_FILES enclave_u.c app.cpp enclave_untrusted_host.cpp sgx_utils/sgx_utils.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../Src/shared/helper.cpp attestation_utils/network_ra.cpp attestation_utils/sample_messages.cpp kps.cpp attestation_utils/ias_ra.cpp attestation_utils/ecp.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPongEnclave.c)
 
 FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/PingPongEnclave.p) #used to be ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*
 PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/)
