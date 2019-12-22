@@ -284,13 +284,21 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 }
 
 void initNetwork() {
-    //Shiv Hardcoded
-    TypeOfMachineToEnclaveNum[string("GodMachine")] = 0;
-    TypeOfMachineToEnclaveNum[string("BankEnclave")] = 0; 
-    TypeOfMachineToEnclaveNum[string("ClientEnclave")] = 0; 
-    TypeOfMachineToEnclaveNum[string("GodUntrusted")] = -1; 
-    TypeOfMachineToEnclaveNum[string("BankHost")] = -1; 
-    TypeOfMachineToEnclaveNum[string("ClientWebBrowser")] = -1; 
+    //NOTE -1 means untrusted machine
+    startPrtProcessIfNotStarted();
+    for (int i = 0; i < program->nMachines; i++) {
+            if (program->machines[i]->isSecure) {
+                TypeOfMachineToEnclaveNum[createString(program->machines[i]->name)] = 0;
+            } else {
+                TypeOfMachineToEnclaveNum[createString(program->machines[i]->name)] = -1;
+            }
+        }
+    // TypeOfMachineToEnclaveNum[string("GodMachine")] = 0;
+    // TypeOfMachineToEnclaveNum[string("BankEnclave")] = 0; 
+    // TypeOfMachineToEnclaveNum[string("ClientEnclave")] = 0; 
+    // TypeOfMachineToEnclaveNum[string("GodUntrusted")] = -1; 
+    // TypeOfMachineToEnclaveNum[string("BankHost")] = -1; 
+    // TypeOfMachineToEnclaveNum[string("ClientWebBrowser")] = -1; 
 
 }
 
