@@ -107,29 +107,73 @@ char* serializePrtValueToString(PRT_VALUE* value) {
         } else {
             return "UNSUPPORTED_TYPE";
         }
+    } else if (value->discriminator == PRT_VALUE_KIND_TUPLE) {
+        char* tupleString = (char*) malloc(SIZE_OF_MAX_TUPLE);
+        int currIndex = 0;
+        PRT_TUPVALUE* tupPtr = value->valueUnion.tuple;
+        for (int i = 0; i < tupPtr->size; i++) {
+            PRT_VALUE* currValue = tupPtr->values[i];
+            int currValueType = tupPtr->values[i]->discriminator;
+            char* typeString = (char*) malloc(10);
+            itoa(currValueType, typeString, 10);
+            memcpy(tupleString + currIndex, typeString, strlen(typeString) + 1);
+            currIndex += strlen(typeString);
+            tupleString[currIndex] = ':';
+            currIndex++;
+            char* serializedStr = serializePrtValueToString(currValue);
+            memcpy(tupleString + currIndex, serializedStr, strlen(serializedStr) + 1);
+            currIndex += strlen(serializedStr);
+            if (i < tupPtr->size - 1) {
+                tupleString[currIndex] = ':';
+                currIndex++;
+            }
+        }
+        tupleString[currIndex] = '\0';
+        return tupleString;
     } else {
         return "UNSUPPORTED_TYPE";
     }
 
 }
 
-PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType) {
-        //TODO if there are changes in here make changes in enclave.cpp
+PRT_VALUE* deserializeHelper(char* str, int payloadType) { //assumes only 1 non-recursive element
+    PRT_VALUE* newPrtValue = (PRT_VALUE*)PrtMalloc(sizeof(PRT_VALUE));
+    newPrtValue->discriminator = (PRT_VALUE_KIND) payloadType;
+    if (payloadType == PRT_VALUE_KIND_INT) {
+        newPrtValue->valueUnion.nt = atoi(str);
+    } else if (payloadType == PRT_VALUE_KIND_FOREIGN) {
+        newPrtValue->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
+        newPrtValue->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
+        PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+        sprintf_s(prtStr, 100, str);
+        newPrtValue->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
+    } 
+    return newPrtValue;
 
+}
+
+PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType) {
     //TODO code the rest of the types (only int is coded for now)
     PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
+    char* temp = str;
     for (int i = 0; i < numArgs; i++) {
         char* split = strtok(str, ":");
-        values[i] = (PRT_VALUE*)PrtMalloc(sizeof(PRT_VALUE));
-        values[i]->discriminator = (PRT_VALUE_KIND) payloadType;
-        if (payloadType == PRT_VALUE_KIND_INT) {
-            values[i]->valueUnion.nt = atoi(split);
-        } else if (payloadType == PRT_VALUE_KIND_FOREIGN) {
-            values[i]->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
-            values[i]->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
-            PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	        sprintf_s(prtStr, 100, str);
-            values[i]->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
+        temp = temp + strlen(split) + 2;
+        if (payloadType == PRT_VALUE_KIND_INT || PRT_VALUE_KIND_FOREIGN) {
+            values[i] = deserializeHelper(str, payloadType);
+        }
+        else if (payloadType == PRT_VALUE_KIND_TUPLE) {
+            values[i]->valueUnion.tuple = (PRT_TUPVALUE*) PrtMalloc(sizeof(PRT_TUPVALUE));
+            PRT_TUPVALUE* tupPtr = values[i]->valueUnion.tuple;
+            tupPtr->size = 0;
+            char* dataType = split;
+            while (dataType != NULL) {
+                char* payload = strtok(NULL, ":"); //TODO make this safe?
+                int i = tupPtr->size;
+                tupPtr->size++;
+                tupPtr->values[i] = deserializeHelper(payload, atoi(dataType));
+                dataType = strtok(NULL, ":");
+            }
         }
     }
     return values;

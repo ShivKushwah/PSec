@@ -5,6 +5,8 @@ const int SIZE_OF_NEWMACHINETYPE = 20;
 const int SIZE_OF_SESSION_KEY = 20;
 const int SIZE_OF_MAX_MESSAGE = 20;
 
+const int SIZE_OF_MAX_TUPLE = 100;
+
 const int SIZE_OF_MAX_EVENT_NAME = 20;
 const int SIZE_OF_MAX_EVENT_PAYLOAD = 100;
 
