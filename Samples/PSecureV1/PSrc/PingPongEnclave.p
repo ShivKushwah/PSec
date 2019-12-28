@@ -15,7 +15,7 @@ fun CreateSecureMachineRequest(): StringType;
 fun CreateUSMMachineRequest(): StringType;
 
 event PublicIDEvent : StringType;
-trusted event MasterSecretEvent: int;
+trusted event MasterSecretEvent: (int, int);
 event GenerateOTPCodeEvent : int;
 event OTPCodeEvent : int;
 
@@ -47,7 +47,7 @@ secure_machine BankEnclave {
             clientUSM = payload;
             clientSSM = new ClientEnclave(clientUSM);
             // PrintString(clientSSM);
-            secure_send clientSSM, MasterSecretEvent, 7;
+            secure_send clientSSM, MasterSecretEvent, (7, 3);
             PrintString(clientSSM);
             untrusted_send clientUSM, PublicIDEvent, clientSSM;
         } 
@@ -66,8 +66,8 @@ secure_machine ClientEnclave {
     }
 
     state ProvisionEnclaveWithSecret {
-        entry (payload : int) {
-            masterSecret = payload;
+        entry (payload : (int, int)){
+            masterSecret = payload.0;
         }
         on GenerateOTPCodeEvent goto GenerateOTP;
     }
@@ -75,7 +75,7 @@ secure_machine ClientEnclave {
     state GenerateOTP {
         entry (usernamePassword: int) {
             untrusted_send clientUSM, OTPCodeEvent, usernamePassword + masterSecret;
-            goto ProvisionEnclaveWithSecret, masterSecret;
+            goto ProvisionEnclaveWithSecret, (masterSecret, 3);
         }
     }
 

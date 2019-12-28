@@ -272,7 +272,7 @@ char* receiveNetworkRequest(char* request) {
         if (numArgs > 0) {
             split = strtok(NULL, ":");
             payloadType = atoi(split);
-            split = strtok(NULL, ":");
+            split = strtok(NULL, "\0");
             payload = split;
 
         }
@@ -296,7 +296,7 @@ char* receiveNetworkRequest(char* request) {
         if (numArgs > 0) {
             split = strtok(NULL, ":");
             payloadType = atoi(split);
-            split = strtok(NULL, ":");
+            split = strtok(NULL, "\0");
             payload = split;
 
         }
@@ -340,7 +340,7 @@ char* receiveNetworkRequest(char* request) {
         if (numArgs > 0) {
             split = strtok(NULL, ":");
             payloadType = atoi(split);
-            split = strtok(NULL, ":");
+            split = strtok(NULL, "\0");
             payload = split;
 
         }

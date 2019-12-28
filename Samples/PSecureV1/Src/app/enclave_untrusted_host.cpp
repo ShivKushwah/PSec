@@ -834,7 +834,7 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         if (numArgs > 0) {
             split = strtok(NULL, ":");
             payloadType = atoi(split);
-            split = strtok(NULL, ":");
+            split = strtok(NULL, "\0");
             payload = split;
 
         }
@@ -892,7 +892,7 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         if (numArgs > 0) {
             split = strtok(NULL, ":");
             payloadType = atoi(split);
-            split = strtok(NULL, ":");
+            split = strtok(NULL, "\0");
             payload = split;
 
         }
@@ -951,7 +951,7 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         if (numArgs > 0) {
             split = strtok(NULL, ":");
             payloadType = atoi(split);
-            split = strtok(NULL, ":");
+            split = strtok(NULL, "\0");
             payload = split;
 
         }
@@ -980,7 +980,7 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
         if (numArgs > 0) {
             split = strtok(NULL, ":");
             payloadType = atoi(split);
-            split = strtok(NULL, ":");
+            split = strtok(NULL, "\0");
             payload = split;
 
         }

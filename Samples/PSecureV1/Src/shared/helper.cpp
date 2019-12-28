@@ -159,14 +159,18 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType)
     for (int i = 0; i < numArgs; i++) {
         char* split = strtok(str, ":");
         temp = temp + strlen(split) + 2;
-        if (payloadType == PRT_VALUE_KIND_INT || PRT_VALUE_KIND_FOREIGN) {
+        if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_FOREIGN) {
             values[i] = deserializeHelper(str, payloadType);
         }
         else if (payloadType == PRT_VALUE_KIND_TUPLE) {
-            values[i]->valueUnion.tuple = (PRT_TUPVALUE*) PrtMalloc(sizeof(PRT_TUPVALUE));
-            PRT_TUPVALUE* tupPtr = values[i]->valueUnion.tuple;
+            ocall_print("Deserializing Tuple:");
+            values[i] = (PRT_VALUE*) PrtMalloc(sizeof(PRT_VALUE));
+            PRT_TUPVALUE* tupPtr = (PRT_TUPVALUE*) PrtMalloc(sizeof(PRT_TUPVALUE));
+            values[i]->discriminator = PRT_VALUE_KIND_TUPLE;
+            values[i]->valueUnion.tuple = tupPtr;            
             tupPtr->size = 0;
             char* dataType = split;
+            tupPtr->values = (PRT_VALUE **)PrtCalloc(MAX_TUPLE_LENGTH, sizeof(PRT_VALUE*));
             while (dataType != NULL) {
                 char* payload = strtok(NULL, ":"); //TODO make this safe?
                 int i = tupPtr->size;
@@ -299,6 +303,25 @@ int getNextPID() {
     return ((PRT_PROCESS_PRIV*)process)->numMachines + 1;
 }
 
+void PrintTuple(PRT_VALUE* tuple){
+    ocall_print("Printing Tuple:");
+    PRT_TUPVALUE* tupPtr = tuple->valueUnion.tuple;
+    ocall_print("Tuple size:");
+    ocall_print_int(tupPtr->size);
+    for (int i = 0; i < tupPtr->size; i++) {
+        PRT_VALUE* currValue = tupPtr->values[i];
+        int currValueType = tupPtr->values[i]->discriminator;
+        if (currValueType == PRT_VALUE_KIND_INT) {
+            ocall_print("Int Value:");
+            ocall_print_int(currValue->valueUnion.nt);
+        } else if (currValueType == PRT_VALUE_KIND_FOREIGN) {
+            ocall_print("String Value:");
+            ocall_print( (char*)currValue->valueUnion.frgn->value);
+        }
+    }
+
+}
+
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload) {
     PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
     PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
@@ -306,6 +329,9 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
         PrtSend(NULL, machine, event, 0);
     } else {
         PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload, payloadType);
+        if (payloadType == PRT_VALUE_KIND_TUPLE) {
+            PrintTuple(*prtPayload);
+        }
         PrtSend(NULL, machine, event, numArgs, prtPayload);
     }
     return 0;
