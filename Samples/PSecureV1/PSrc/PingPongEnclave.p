@@ -73,15 +73,14 @@ secure_machine ClientEnclave {
     state ProvisionEnclaveWithSecret {
         entry (payload : map[int, int]){
             masterSecret = payload[3];
+            goto WaitForGenerateOTP;
         }
-        on GenerateOTPCodeEvent goto GenerateOTP;
     }
 
-    state GenerateOTP {
-        entry (usernamePassword: int) {
+    state WaitForGenerateOTP {
+        on GenerateOTPCodeEvent do (usernamePassword: int) {
             untrusted_send clientUSM, OTPCodeEvent, usernamePassword + masterSecret;
             result[3] = masterSecret;
-            goto ProvisionEnclaveWithSecret, result;
         }
     }
 
@@ -100,8 +99,12 @@ machine ClientWebBrowser {
             usernamePassword = 10;
             // PrintString(clientSSM);
             untrusted_send clientSSM, GenerateOTPCodeEvent, usernamePassword;
+            receive {
+                case OTPCodeEvent : (payload : int) {
+                    goto SaveOTPCode, payload;
+                }
+            }
         }
-        on OTPCodeEvent goto SaveOTPCode;
     }
 
     state SaveOTPCode {

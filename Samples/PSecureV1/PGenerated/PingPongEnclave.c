@@ -852,10 +852,10 @@ PRT_EVENTSETDECL P_EVENTSET_ProvisionEnclaveWithSecret_DEFERS =
     NULL
 };
 
-PRT_EVENTDECL* P_ProvisionEnclaveWithSecret_TRANS_INNER[] = { &P_EVENT_GenerateOTPCodeEvent };
+PRT_EVENTDECL* P_ProvisionEnclaveWithSecret_TRANS_INNER[] = { NULL };
 PRT_EVENTSETDECL P_EVENTSET_ProvisionEnclaveWithSecret_TRANS =
 {
-    1U,
+    0U,
     P_ProvisionEnclaveWithSecret_TRANS_INNER,
     NULL
 };
@@ -868,64 +868,64 @@ PRT_EVENTSETDECL P_EVENTSET_ProvisionEnclaveWithSecret_DOS =
     NULL
 };
 
-PRT_TRANSDECL P_TRANS_1[] =
-{
-    { 1, &P_EVENT_GenerateOTPCodeEvent, 2, &_P_NO_OP }
-};
-
 #define P_STATE_ClientEnclave_ProvisionEnclaveWithSecret \
 { \
     "ClientEnclave.ProvisionEnclaveWithSecret", \
-    1U, \
+    0U, \
     0U, \
     &P_EVENTSET_ProvisionEnclaveWithSecret_DEFERS, \
     &P_EVENTSET_ProvisionEnclaveWithSecret_TRANS, \
     &P_EVENTSET_ProvisionEnclaveWithSecret_DOS, \
-    P_TRANS_1, \
+    NULL, \
     NULL, \
     &P_FUNCTION_Anon_4, \
     &_P_NO_OP, \
 }
 
-PRT_EVENTDECL* P_GenerateOTP_DEFERS_INNER[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_GenerateOTP_DEFERS =
+PRT_EVENTDECL* P_WaitForGenerateOTP_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_WaitForGenerateOTP_DEFERS =
 {
     0U,
-    P_GenerateOTP_DEFERS_INNER,
+    P_WaitForGenerateOTP_DEFERS_INNER,
     NULL
 };
 
-PRT_EVENTDECL* P_GenerateOTP_TRANS_INNER[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_GenerateOTP_TRANS =
+PRT_EVENTDECL* P_WaitForGenerateOTP_TRANS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_WaitForGenerateOTP_TRANS =
 {
     0U,
-    P_GenerateOTP_TRANS_INNER,
+    P_WaitForGenerateOTP_TRANS_INNER,
     NULL
 };
 
-PRT_EVENTDECL* P_GenerateOTP_DOS_INNER[] = { NULL };
-PRT_EVENTSETDECL P_EVENTSET_GenerateOTP_DOS =
+PRT_EVENTDECL* P_WaitForGenerateOTP_DOS_INNER[] = { &P_EVENT_GenerateOTPCodeEvent };
+PRT_EVENTSETDECL P_EVENTSET_WaitForGenerateOTP_DOS =
 {
-    0U,
-    P_GenerateOTP_DOS_INNER,
+    1U,
+    P_WaitForGenerateOTP_DOS_INNER,
     NULL
 };
 
-#define P_STATE_ClientEnclave_GenerateOTP \
+PRT_DODECL P_DOS[] =
+{
+    { 2, &P_EVENT_GenerateOTPCodeEvent, &P_FUNCTION_Anon_5 }
+};
+
+#define P_STATE_ClientEnclave_WaitForGenerateOTP \
 { \
-    "ClientEnclave.GenerateOTP", \
+    "ClientEnclave.WaitForGenerateOTP", \
     0U, \
-    0U, \
-    &P_EVENTSET_GenerateOTP_DEFERS, \
-    &P_EVENTSET_GenerateOTP_TRANS, \
-    &P_EVENTSET_GenerateOTP_DOS, \
+    1U, \
+    &P_EVENTSET_WaitForGenerateOTP_DEFERS, \
+    &P_EVENTSET_WaitForGenerateOTP_TRANS, \
+    &P_EVENTSET_WaitForGenerateOTP_DOS, \
     NULL, \
-    NULL, \
-    &P_FUNCTION_Anon_5, \
+    P_DOS, \
+    &_P_NO_OP, \
     &_P_NO_OP, \
 }
 
-PRT_STATEDECL P_ClientEnclave_STATES[] = { P_STATE_ClientEnclave_Initial, P_STATE_ClientEnclave_ProvisionEnclaveWithSecret, P_STATE_ClientEnclave_GenerateOTP };
+PRT_STATEDECL P_ClientEnclave_STATES[] = { P_STATE_ClientEnclave_Initial, P_STATE_ClientEnclave_ProvisionEnclaveWithSecret, P_STATE_ClientEnclave_WaitForGenerateOTP };
 
 PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
@@ -973,6 +973,8 @@ PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         PTMP_tmp0_3 = NULL;
     }
     
+    PrtGoto(p_this, 2U, 0);
+    
 p_return_4: ;
     PrtFreeValue(PTMP_tmp0_3); PTMP_tmp0_3 = NULL;
     return _P_GEN_retval;
@@ -996,7 +998,6 @@ PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_4 = NULL;
     PRT_VALUE* PTMP_tmp1_2 = NULL;
     PRT_VALUE* PTMP_tmp2_2 = NULL;
-    PRT_VALUE* PTMP_tmp3_1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32_4 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
@@ -1032,17 +1033,10 @@ PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PrtFreeValue(*P_LVALUE_25);
     *P_LVALUE_25 = PrtCloneValue(p_this->varValues[0]);
     
-    PRT_VALUE** P_LVALUE_26 = &(PTMP_tmp3_1);
-    PrtFreeValue(*P_LVALUE_26);
-    *P_LVALUE_26 = PrtCloneValue(p_this->varValues[2]);
-    
-    PrtGoto(p_this, 1U, 1, &(PTMP_tmp3_1));
-    
 p_return_5: ;
     PrtFreeValue(PTMP_tmp0_4); PTMP_tmp0_4 = NULL;
     PrtFreeValue(PTMP_tmp1_2); PTMP_tmp1_2 = NULL;
     PrtFreeValue(PTMP_tmp2_2); PTMP_tmp2_2 = NULL;
-    PrtFreeValue(PTMP_tmp3_1); PTMP_tmp3_1 = NULL;
     return _P_GEN_retval;
 }
 
@@ -1119,7 +1113,7 @@ PRT_EVENTSETDECL P_EVENTSET_Initial_DOS_4 =
     NULL
 };
 
-PRT_TRANSDECL P_TRANS_2[] =
+PRT_TRANSDECL P_TRANS_1[] =
 {
     { 0, &P_EVENT_PublicIDEvent, 1, &_P_NO_OP }
 };
@@ -1132,7 +1126,7 @@ PRT_TRANSDECL P_TRANS_2[] =
     &P_EVENTSET_Initial_DEFERS_4, \
     &P_EVENTSET_Initial_TRANS_4, \
     &P_EVENTSET_Initial_DOS_4, \
-    P_TRANS_2, \
+    P_TRANS_1, \
     NULL, \
     &_P_NO_OP, \
     &_P_NO_OP, \
@@ -1146,10 +1140,10 @@ PRT_EVENTSETDECL P_EVENTSET_Authenticate_DEFERS =
     NULL
 };
 
-PRT_EVENTDECL* P_Authenticate_TRANS_INNER[] = { &P_EVENT_OTPCodeEvent };
+PRT_EVENTDECL* P_Authenticate_TRANS_INNER[] = { NULL };
 PRT_EVENTSETDECL P_EVENTSET_Authenticate_TRANS =
 {
-    1U,
+    0U,
     P_Authenticate_TRANS_INNER,
     NULL
 };
@@ -1162,20 +1156,15 @@ PRT_EVENTSETDECL P_EVENTSET_Authenticate_DOS =
     NULL
 };
 
-PRT_TRANSDECL P_TRANS_3[] =
-{
-    { 1, &P_EVENT_OTPCodeEvent, 2, &_P_NO_OP }
-};
-
 #define P_STATE_ClientWebBrowser_Authenticate \
 { \
     "ClientWebBrowser.Authenticate", \
-    1U, \
+    0U, \
     0U, \
     &P_EVENTSET_Authenticate_DEFERS, \
     &P_EVENTSET_Authenticate_TRANS, \
     &P_EVENTSET_Authenticate_DOS, \
-    P_TRANS_3, \
+    NULL, \
     NULL, \
     &P_FUNCTION_Anon_6, \
     &_P_NO_OP, \
@@ -1269,29 +1258,31 @@ PRT_VALUE* P_Anon_IMPL_6(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_5 = NULL;
     PRT_VALUE* PTMP_tmp1_3 = NULL;
     PRT_VALUE* PTMP_tmp2_3 = NULL;
+    PRT_VALUE* PTMP_tmp3_1 = NULL;
+    PRT_VALUE* P_VAR_P_payload = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32_6 = { PRT_VALUE_KIND_INT, { .nt = 10 } };
     PRT_VALUE P_LIT_INT32_7 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
-    PRT_VALUE** P_LVALUE_27 = &(p_this->varValues[0]);
+    PRT_VALUE** P_LVALUE_26 = &(p_this->varValues[0]);
+    PrtFreeValue(*P_LVALUE_26);
+    *P_LVALUE_26 = PrtCloneValue(*P_VAR_payload_3);
+    
+    PRT_VALUE** P_LVALUE_27 = &(p_this->varValues[1]);
     PrtFreeValue(*P_LVALUE_27);
-    *P_LVALUE_27 = PrtCloneValue(*P_VAR_payload_3);
+    *P_LVALUE_27 = PrtCloneValue((&P_LIT_INT32_6));
     
-    PRT_VALUE** P_LVALUE_28 = &(p_this->varValues[1]);
+    PRT_VALUE** P_LVALUE_28 = &(PTMP_tmp0_5);
     PrtFreeValue(*P_LVALUE_28);
-    *P_LVALUE_28 = PrtCloneValue((&P_LIT_INT32_6));
+    *P_LVALUE_28 = PrtCloneValue(p_this->varValues[0]);
     
-    PRT_VALUE** P_LVALUE_29 = &(PTMP_tmp0_5);
+    PRT_VALUE** P_LVALUE_29 = &(PTMP_tmp1_3);
     PrtFreeValue(*P_LVALUE_29);
-    *P_LVALUE_29 = PrtCloneValue(p_this->varValues[0]);
+    *P_LVALUE_29 = PrtCloneValue((&P_EVENT_GenerateOTPCodeEvent.value));
     
-    PRT_VALUE** P_LVALUE_30 = &(PTMP_tmp1_3);
+    PRT_VALUE** P_LVALUE_30 = &(PTMP_tmp2_3);
     PrtFreeValue(*P_LVALUE_30);
-    *P_LVALUE_30 = PrtCloneValue((&P_EVENT_GenerateOTPCodeEvent.value));
-    
-    PRT_VALUE** P_LVALUE_31 = &(PTMP_tmp2_3);
-    PrtFreeValue(*P_LVALUE_31);
-    *P_LVALUE_31 = PrtCloneValue(p_this->varValues[1]);
+    *P_LVALUE_30 = PrtCloneValue(p_this->varValues[1]);
     
     PRT_VALUE* P_PTMP_tmp_3 = PrtCloneValue(&(P_LIT_INT32_7));
     _P_GEN_funargs[0] = &(PTMP_tmp0_5);
@@ -1308,10 +1299,40 @@ PRT_VALUE* P_Anon_IMPL_6(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return_6;
     }
     
+    PRT_UINT32 P_allowedEventIds[] = { 2 };
+    PrtFreeValue(P_VAR_P_payload); P_VAR_P_payload = NULL;
+    PRT_UINT32 P_eventId = PrtReceiveAsync(1U, P_allowedEventIds, &P_VAR_P_payload);
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_6;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_6;
+    }
+    switch (P_eventId) {
+        case 2: {
+            PRT_VALUE** P_VAR_payload_4 = &P_VAR_P_payload;
+                        PRT_VALUE** P_LVALUE_31 = &(PTMP_tmp3_1);
+            PrtFreeValue(*P_LVALUE_31);
+            *P_LVALUE_31 = PrtCloneValue(*P_VAR_payload_4);
+            
+            PrtGoto(p_this, 2U, 1, &(PTMP_tmp3_1));
+            
+            p_return_7: ;
+} break;
+        default: {
+            PrtAssert(PRT_FALSE, "receive returned unhandled event");
+        } break;
+    }
+    PrtFreeValue(P_VAR_P_payload); P_VAR_P_payload = NULL;
+    
 p_return_6: ;
     PrtFreeValue(PTMP_tmp0_5); PTMP_tmp0_5 = NULL;
     PrtFreeValue(PTMP_tmp1_3); PTMP_tmp1_3 = NULL;
     PrtFreeValue(PTMP_tmp2_3); PTMP_tmp2_3 = NULL;
+    PrtFreeValue(PTMP_tmp3_1); PTMP_tmp3_1 = NULL;
+    PrtFreeValue(P_VAR_P_payload); P_VAR_P_payload = NULL;
     return _P_GEN_retval;
 }
 
@@ -1329,13 +1350,13 @@ PRT_VALUE* P_Anon_IMPL_7(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE** _P_GEN_funargs[32];
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
-    PRT_VALUE** P_VAR_payload_4 = argRefs[0];
+    PRT_VALUE** P_VAR_payload_5 = argRefs[0];
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PrtFormatPrintf("OTP Code Received: ", 1, *P_VAR_payload_4, 1, 0, "\n");
+    PrtFormatPrintf("OTP Code Received: ", 1, *P_VAR_payload_5, 1, 0, "\n");
     
     PrtGoto(p_this, 3U, 0);
     
-p_return_7: ;
+p_return_8: ;
     return _P_GEN_retval;
 }
 
@@ -1384,7 +1405,7 @@ PRT_MACHINEDECL P_MACHINE_ClientWebBrowser =
 };
 
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
-PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_UntrustedEventFromPing, &P_EVENT_Success, &P_EVENT_PublicIDEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_OTPCodeEvent };
+PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_OTPCodeEvent, &P_EVENT_Ping, &P_EVENT_Pong, &P_EVENT_UntrustedEventFromPing, &P_EVENT_Success, &P_EVENT_PublicIDEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_GodUntrusted, &P_MACHINE_GodMachine, &P_MACHINE_BankEnclave, &P_MACHINE_ClientEnclave, &P_MACHINE_ClientWebBrowser };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_GodUntrusted, &P_I_GodMachine, &P_I_BankEnclave, &P_I_ClientEnclave, &P_I_ClientWebBrowser };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
