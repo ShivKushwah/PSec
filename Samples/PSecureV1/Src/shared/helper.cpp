@@ -93,6 +93,15 @@ char* itoa(int num, char* str, int base)
   
     return str; 
 } 
+PRT_TYPE_KIND convertKindToType(int kind) {
+    if (kind == PRT_VALUE_KIND_INT) {
+        return PRT_KIND_INT;
+    } else if (kind == PRT_VALUE_KIND_FOREIGN) {
+        return PRT_KIND_FOREIGN;
+    } else {
+        return PRT_TYPE_KIND_CANARY; //unsupported type
+    }
+}
 
 char* serializePrtValueToString(PRT_VALUE* value) {
     //TODO code the rest of the types
@@ -224,13 +233,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType)
             }
         } else if (payloadType == PRT_VALUE_KIND_MAP) {
 
-            values[i] = (PRT_VALUE*) PrtMalloc(sizeof(PRT_VALUE));
-            PRT_MAPVALUE* map = (PRT_MAPVALUE *)PrtMalloc(sizeof(PRT_MAPVALUE));
-            PRT_TYPE* mapType = PrtMkMapType(PrtMkPrimitiveType(PRT_KIND_INT), PrtMkPrimitiveType(PRT_KIND_INT));
-            // PRT_TYPE* mapType = (PRT_TYPE*) PrtMalloc(sizeof(PRT_TYPE));
-            // mapType->typeKind = PRT_KIND_MAP;
-            // mapType->typeUnion.map = 
-            values[i] = PrtMkDefaultValue(mapType);
+           
             // PrtMkDefaultValue()
             // values[i]->discriminator = PRT_VALUE_KIND_MAP;
             // values[i]->valueUnion.map = map;
@@ -244,12 +247,24 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType)
             char* dataType = split;
             while (dataType != NULL) {
                 char* payload = strtok(NULL, ":"); //TODO make this safe?
-                PRT_VALUE* key = deserializeHelper(payload, atoi(dataType));
+                int dType = atoi(dataType);
+                PRT_VALUE* key = deserializeHelper(payload, dType);
                 dataType = strtok(NULL, ":");
 
                 payload = strtok(NULL, ":"); //TODO make this safe?
-                PRT_VALUE* value = deserializeHelper(payload, atoi(dataType));
+                int dType2 = atoi(dataType);
+                PRT_VALUE* value = deserializeHelper(payload, dType2);
                 dataType = strtok(NULL, ":");
+
+                if (values[i] == NULL) {
+
+                    PRT_TYPE* mapType = PrtMkMapType(PrtMkPrimitiveType(convertKindToType(dType)), PrtMkPrimitiveType(convertKindToType(dType2)));
+                    // PRT_TYPE* mapType = (PRT_TYPE*) PrtMalloc(sizeof(PRT_TYPE));
+                    // mapType->typeKind = PRT_KIND_MAP;
+                    // mapType->typeUnion.map = 
+                    values[i] = PrtMkDefaultValue(mapType);
+
+                }
 
                 PrtMapUpdate(values[i], key, value);
             }
