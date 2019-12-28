@@ -108,7 +108,7 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             return "UNSUPPORTED_TYPE";
         }
     } else if (value->discriminator == PRT_VALUE_KIND_TUPLE) {
-        char* tupleString = (char*) malloc(SIZE_OF_MAX_TUPLE);
+        char* tupleString = (char*) malloc(SIZE_OF_MAX_SERIALIZED_TUPLE);
         int currIndex = 0;
         PRT_TUPVALUE* tupPtr = value->valueUnion.tuple;
         for (int i = 0; i < tupPtr->size; i++) {
@@ -130,7 +130,51 @@ char* serializePrtValueToString(PRT_VALUE* value) {
         }
         tupleString[currIndex] = '\0';
         return tupleString;
-    } else {
+    } else if (value->discriminator == PRT_VALUE_KIND_MAP) {
+        char* mapString = (char*) malloc(SIZE_OF_MAX_SERIALIZED_MAP);
+        int currIndex = 0;
+
+        PRT_VALUE* mapValues = PrtMapGetValues(value);
+        PRT_VALUE* mapKeys = PrtMapGetKeys(value);
+        int size = mapValues->valueUnion.seq->size;
+
+        for (int i = 0; i < size; i++) {
+            PRT_VALUE* mapKey = mapKeys->valueUnion.seq->values[i];
+            int currValueType = mapKey->discriminator;
+            char* typeString = (char*) malloc(10);
+            itoa(currValueType, typeString, 10);
+            memcpy(mapString + currIndex, typeString, strlen(typeString) + 1);
+            currIndex += strlen(typeString);
+            mapString[currIndex] = ':';
+            currIndex++;
+            char* serializedKey = serializePrtValueToString(mapKey);
+            memcpy(mapString + currIndex, serializedKey, strlen(serializedKey) + 1);
+            currIndex += strlen(serializedKey);
+            mapString[currIndex] = ':';
+            currIndex++;
+            PRT_VALUE* mapValue = mapValues->valueUnion.seq->values[i];
+            currValueType = mapValue->discriminator;
+            typeString = (char*) malloc(10);
+            itoa(currValueType, typeString, 10);
+            memcpy(mapString + currIndex, typeString, strlen(typeString) + 1);
+            currIndex += strlen(typeString);
+            mapString[currIndex] = ':';
+            currIndex++;
+            char* serializedValue = serializePrtValueToString(mapValue);
+            memcpy(mapString + currIndex, serializedValue, strlen(serializedValue) + 1);
+            currIndex += strlen(serializedValue);
+            if (i < size - 1) {
+                mapString[currIndex] = ':';
+                currIndex++;
+            }
+        }
+
+        mapString[currIndex] = '\0';
+        return mapString;
+    }
+    
+    
+     else {
         return "UNSUPPORTED_TYPE";
     }
 
@@ -170,7 +214,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType)
             values[i]->valueUnion.tuple = tupPtr;            
             tupPtr->size = 0;
             char* dataType = split;
-            tupPtr->values = (PRT_VALUE **)PrtCalloc(MAX_TUPLE_LENGTH, sizeof(PRT_VALUE*));
+            tupPtr->values = (PRT_VALUE **)PrtCalloc(MAX_TUPLE_ELEMENT_LENGTH, sizeof(PRT_VALUE*));
             while (dataType != NULL) {
                 char* payload = strtok(NULL, ":"); //TODO make this safe?
                 int i = tupPtr->size;
@@ -178,6 +222,38 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType)
                 tupPtr->values[i] = deserializeHelper(payload, atoi(dataType));
                 dataType = strtok(NULL, ":");
             }
+        } else if (payloadType == PRT_VALUE_KIND_MAP) {
+
+            values[i] = (PRT_VALUE*) PrtMalloc(sizeof(PRT_VALUE));
+            PRT_MAPVALUE* map = (PRT_MAPVALUE *)PrtMalloc(sizeof(PRT_MAPVALUE));
+            PRT_TYPE* mapType = PrtMkMapType(PrtMkPrimitiveType(PRT_KIND_INT), PrtMkPrimitiveType(PRT_KIND_INT));
+            // PRT_TYPE* mapType = (PRT_TYPE*) PrtMalloc(sizeof(PRT_TYPE));
+            // mapType->typeKind = PRT_KIND_MAP;
+            // mapType->typeUnion.map = 
+            values[i] = PrtMkDefaultValue(mapType);
+            // PrtMkDefaultValue()
+            // values[i]->discriminator = PRT_VALUE_KIND_MAP;
+            // values[i]->valueUnion.map = map;
+
+            // map->size = 0;
+            // map->capNum = 0;
+            // map->buckets = (PRT_MAPNODE **)PrtCalloc(PrtHashtableCapacities[0], sizeof(PRT_MAPNODE *));
+            // map->first = NULL;
+            // map->last = NULL;
+
+            char* dataType = split;
+            while (dataType != NULL) {
+                char* payload = strtok(NULL, ":"); //TODO make this safe?
+                PRT_VALUE* key = deserializeHelper(payload, atoi(dataType));
+                dataType = strtok(NULL, ":");
+
+                payload = strtok(NULL, ":"); //TODO make this safe?
+                PRT_VALUE* value = deserializeHelper(payload, atoi(dataType));
+                dataType = strtok(NULL, ":");
+
+                PrtMapUpdate(values[i], key, value);
+            }
+
         }
     }
     return values;
