@@ -98,6 +98,8 @@ PRT_TYPE_KIND convertKindToType(int kind) {
         return PRT_KIND_INT;
     } else if (kind == PRT_VALUE_KIND_FOREIGN) {
         return PRT_KIND_FOREIGN;
+    } else if (kind == PRT_VALUE_KIND_BOOL) {
+        return PRT_KIND_BOOL;
     } else {
         return PRT_TYPE_KIND_CANARY; //unsupported type
     }
@@ -105,7 +107,6 @@ PRT_TYPE_KIND convertKindToType(int kind) {
 
 char* serializePrtValueToString(PRT_VALUE* value) {
     //TODO code the rest of the types
-    //TODO if modifying this, also modify in app.cpp
     if (value->discriminator == PRT_VALUE_KIND_INT) {
         char* integer = (char*) malloc(10);
         itoa(value->valueUnion.nt, integer, 10);
@@ -115,6 +116,14 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             return (char*) value->valueUnion.frgn->value;
         } else {
             return "UNSUPPORTED_TYPE";
+        }
+    } else if (value->discriminator == PRT_VALUE_KIND_BOOL) {
+        if (value->valueUnion.bl == PRT_TRUE) {
+            return "true";
+        } else if (value->valueUnion.bl == PRT_FALSE) {
+            return "false";
+        } else {
+            return "ERROR: Boolean not found";
         }
     } else if (value->discriminator == PRT_VALUE_KIND_TUPLE) {
         char* tupleString = (char*) malloc(SIZE_OF_MAX_SERIALIZED_TUPLE);
@@ -200,6 +209,12 @@ PRT_VALUE* deserializeHelper(char* str, int payloadType) { //assumes only 1 non-
         PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
         sprintf_s(prtStr, 100, str);
         newPrtValue->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
+    } else if (payloadType == PRT_VALUE_KIND_BOOL) {
+        if (strcmp(str, "true") == 0) {
+            newPrtValue->valueUnion.bl = PRT_TRUE;
+        } else if (strcmp(str, "false") == 0){
+            newPrtValue->valueUnion.bl = PRT_FALSE;
+        } 
     } 
     return newPrtValue;
 
@@ -212,7 +227,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType)
     for (int i = 0; i < numArgs; i++) {
         char* split = strtok(str, ":");
         temp = temp + strlen(split) + 2;
-        if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_FOREIGN) {
+        if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_FOREIGN || payloadType == PRT_VALUE_KIND_BOOL) {
             values[i] = deserializeHelper(str, payloadType);
         }
         else if (payloadType == PRT_VALUE_KIND_TUPLE) {
