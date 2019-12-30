@@ -189,6 +189,33 @@ char* serializePrtValueToString(PRT_VALUE* value) {
 
         mapString[currIndex] = '\0';
         return mapString;
+    } else if (value->discriminator == PRT_VALUE_KIND_SEQ) {
+        char* seqString = (char*) malloc(SIZE_OF_MAX_SERIALIZED_SEQ);
+        int currIndex = 0;
+
+        int size = PrtSeqSizeOf(value);
+
+        for (int i = 0; i < size; i++) {
+
+            PRT_VALUE* seqValue = PrtSeqGet(value, PrtMkIntValue(currIndex));
+            int currValueType = seqValue->discriminator;
+            char* typeString = (char*) malloc(10);
+            itoa(currValueType, typeString, 10);
+            memcpy(seqString + currIndex, typeString, strlen(typeString) + 1);
+            currIndex += strlen(typeString);
+            seqString[currIndex] = ':';
+            currIndex++;
+            char* serializedValue = serializePrtValueToString(seqValue);
+            memcpy(seqString + currIndex, serializedValue, strlen(serializedValue) + 1);
+            currIndex += strlen(serializedValue);
+            if (i < size - 1) {
+                seqString[currIndex] = ':';
+                currIndex++;
+            }
+        }
+
+        seqString[currIndex] = '\0';
+        return seqString;
     }
     
     
@@ -282,6 +309,28 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType)
                 }
 
                 PrtMapUpdate(values[i], key, value);
+            }
+
+        } else if (payloadType == PRT_VALUE_KIND_SEQ) {
+
+            char* dataType = split;
+            int index = 0;
+            while (dataType != NULL) {
+                char* payload = strtok(NULL, ":"); //TODO make this safe?
+                int dType = atoi(dataType);
+                PRT_VALUE* value = deserializeHelper(payload, dType);
+                dataType = strtok(NULL, ":");
+
+                if (values[i] == NULL) {
+
+                    PRT_TYPE* seqType = PrtMkSeqType(PrtMkPrimitiveType(convertKindToType(dType)));
+                    values[i] = PrtMkDefaultValue(seqType);
+
+                }
+
+                PrtSeqInsert(values[i], PrtMkIntValue(index), value);
+
+                index++;
             }
 
         }
