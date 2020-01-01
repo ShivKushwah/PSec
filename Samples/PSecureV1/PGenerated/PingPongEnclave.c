@@ -20,8 +20,8 @@ static PRT_FOREIGNTYPEDECL P_StringType = {
     P_TOSTRING_StringType_IMPL,
 };
 PRT_TYPE P_GEND_TYPE_StringType = { PRT_KIND_FOREIGN, { .foreignType = &P_StringType } };
-static PRT_SEQTYPE P_SEQTYPE = { &P_GEND_TYPE_i };
-static PRT_TYPE P_GEND_TYPE_Si = { PRT_KIND_SEQ, { .seq = &P_SEQTYPE } };
+static PRT_SEQTYPE P_SEQTYPE = { &P_GEND_TYPE_StringType };
+static PRT_TYPE P_GEND_TYPE_SStringType = { PRT_KIND_SEQ, { .seq = &P_SEQTYPE } };
 static PRT_MAPTYPE P_MAPTYPE = { &P_GEND_TYPE_i, &P_GEND_TYPE_i };
 static PRT_TYPE P_GEND_TYPE_MKiVi = { PRT_KIND_MAP, { .map = &P_MAPTYPE } };
 
@@ -33,6 +33,8 @@ PRT_VALUE* P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
@@ -114,7 +116,7 @@ PRT_EVENTDECL P_EVENT_MasterSecretEvent =
     { PRT_VALUE_KIND_EVENT, 0U },
     "MasterSecretEvent",
     4294967295U,
-    &P_GEND_TYPE_Si
+    &P_GEND_TYPE_SStringType
 };
 
 PRT_EVENTDECL P_EVENT_GenerateOTPCodeEvent = 
@@ -122,7 +124,7 @@ PRT_EVENTDECL P_EVENT_GenerateOTPCodeEvent =
     { PRT_VALUE_KIND_EVENT, 0U },
     "GenerateOTPCodeEvent",
     4294967295U,
-    &P_GEND_TYPE_i
+    &P_GEND_TYPE_StringType
 };
 
 PRT_EVENTDECL P_EVENT_OTPCodeEvent = 
@@ -130,7 +132,7 @@ PRT_EVENTDECL P_EVENT_OTPCodeEvent =
     { PRT_VALUE_KIND_EVENT, 0U },
     "OTPCodeEvent",
     4294967295U,
-    &P_GEND_TYPE_i
+    &P_GEND_TYPE_StringType
 };
 
 PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild =
@@ -161,6 +163,14 @@ PRT_FUNDECL P_FUNCTION_GetThis =
 {
     "GetThis",
     &P_GetThis_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_Concat =
+{
+    "Concat",
+    &P_Concat_IMPL,
     NULL
 };
 
@@ -569,7 +579,7 @@ PRT_MACHINEDECL P_MACHINE_GodMachine =
 PRT_VARDECL P_BankEnclave_VARS[] = {
     { "clientSSM", &P_GEND_TYPE_StringType },
     { "clientUSM", &P_GEND_TYPE_StringType },
-    { "result", &P_GEND_TYPE_Si }
+    { "result", &P_GEND_TYPE_SStringType }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER_2[] = { NULL };
@@ -632,8 +642,7 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp10 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 7 } };
-    PRT_VALUE P_LIT_INT32_1 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
+    PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
     PRT_VALUE** P_LVALUE_7 = &(p_this->varValues[1]);
     PrtFreeValue(*P_LVALUE_7);
     *P_LVALUE_7 = PrtCloneValue(*P_VAR_payload);
@@ -670,7 +679,15 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_12 = &(PTMP_tmp3);
     PrtFreeValue(*P_LVALUE_12);
-    *P_LVALUE_12 = PrtCloneValue((&P_LIT_INT32));
+    *P_LVALUE_12 = ((_P_GEN_funval = P_GetThis_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_2;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_2;
+    }
     
     PrtSeqInsertEx(p_this->varValues[2], PTMP_tmp2_1, PTMP_tmp3, PRT_FALSE);
     *(&(PTMP_tmp3)) = NULL;
@@ -687,7 +704,7 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PrtFreeValue(*P_LVALUE_15);
     *P_LVALUE_15 = PrtCloneValue(p_this->varValues[2]);
     
-    PRT_VALUE* P_PTMP_tmp = PrtCloneValue(&(P_LIT_INT32_1));
+    PRT_VALUE* P_PTMP_tmp = PrtCloneValue(&(P_LIT_INT32));
     _P_GEN_funargs[0] = &(PTMP_tmp4);
     _P_GEN_funargs[1] = &(PTMP_tmp5);
     _P_GEN_funargs[2] = &(P_PTMP_tmp);
@@ -731,7 +748,7 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PrtFreeValue(*P_LVALUE_19);
     *P_LVALUE_19 = PrtCloneValue(p_this->varValues[0]);
     
-    PRT_VALUE* P_PTMP_tmp_1 = PrtCloneValue(&(P_LIT_INT32_1));
+    PRT_VALUE* P_PTMP_tmp_1 = PrtCloneValue(&(P_LIT_INT32));
     _P_GEN_funargs[0] = &(PTMP_tmp8);
     _P_GEN_funargs[1] = &(PTMP_tmp9);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_1);
@@ -808,7 +825,7 @@ PRT_MACHINEDECL P_MACHINE_BankEnclave =
 };
 
 PRT_VARDECL P_ClientEnclave_VARS[] = {
-    { "masterSecret", &P_GEND_TYPE_i },
+    { "masterSecret", &P_GEND_TYPE_StringType },
     { "clientUSM", &P_GEND_TYPE_StringType },
     { "result", &P_GEND_TYPE_MKiVi }
 };
@@ -973,10 +990,10 @@ PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_3 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE P_LIT_INT32_2 = { PRT_VALUE_KIND_INT, { .nt = 0 } };
+    PRT_VALUE P_LIT_INT32_1 = { PRT_VALUE_KIND_INT, { .nt = 0 } };
     PRT_VALUE** P_LVALUE_21 = &(PTMP_tmp0_3);
     PrtFreeValue(*P_LVALUE_21);
-    *P_LVALUE_21 = PrtSeqGet(*P_VAR_payload_2, (&P_LIT_INT32_2));
+    *P_LVALUE_21 = PrtSeqGet(*P_VAR_payload_2, (&P_LIT_INT32_1));
     
     {
         PRT_VALUE** P_LVALUE_22 = &(p_this->varValues[0]);
@@ -996,7 +1013,7 @@ PRT_FUNDECL P_FUNCTION_Anon_4 =
 {
     NULL,
     &P_Anon_IMPL_4,
-    &P_GEND_TYPE_Si
+    &P_GEND_TYPE_SStringType
 };
 
 
@@ -1010,10 +1027,11 @@ PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_4 = NULL;
     PRT_VALUE* PTMP_tmp1_2 = NULL;
     PRT_VALUE* PTMP_tmp2_2 = NULL;
+    PRT_VALUE* PTMP_tmp3_1 = NULL;
+    PRT_VALUE* PTMP_tmp4_1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE P_LIT_INT32_3 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
-    PRT_VALUE P_LIT_INT32_4 = { PRT_VALUE_KIND_INT, { .nt = 0 } };
+    PRT_VALUE P_LIT_INT32_2 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
     PRT_VALUE** P_LVALUE_23 = &(PTMP_tmp0_4);
     PrtFreeValue(*P_LVALUE_23);
     *P_LVALUE_23 = PrtCloneValue(p_this->varValues[1]);
@@ -1024,13 +1042,29 @@ PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_25 = &(PTMP_tmp2_2);
     PrtFreeValue(*P_LVALUE_25);
-    *P_LVALUE_25 = PrtMkIntValue(PrtPrimGetInt(*P_VAR_usernamePassword) + PrtPrimGetInt(p_this->varValues[0]));
+    *P_LVALUE_25 = PrtCloneValue(*P_VAR_usernamePassword);
     
-    PRT_VALUE* P_PTMP_tmp_2 = PrtCloneValue(&(P_LIT_INT32_3));
+    PRT_VALUE** P_LVALUE_26 = &(PTMP_tmp3_1);
+    PrtFreeValue(*P_LVALUE_26);
+    *P_LVALUE_26 = PrtCloneValue(p_this->varValues[0]);
+    
+    PRT_VALUE** P_LVALUE_27 = &(PTMP_tmp4_1);
+    PrtFreeValue(*P_LVALUE_27);
+    *P_LVALUE_27 = ((_P_GEN_funargs[0] = &(PTMP_tmp2_2)), (_P_GEN_funargs[1] = &(PTMP_tmp3_1)), (_P_GEN_funval = P_Concat_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp2_2), PTMP_tmp2_2 = NULL), (PrtFreeValue(PTMP_tmp3_1), PTMP_tmp3_1 = NULL), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_5;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_5;
+    }
+    
+    PRT_VALUE* P_PTMP_tmp_2 = PrtCloneValue(&(P_LIT_INT32_2));
     _P_GEN_funargs[0] = &(PTMP_tmp0_4);
     _P_GEN_funargs[1] = &(PTMP_tmp1_2);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_2);
-    _P_GEN_funargs[3] = &(PTMP_tmp2_2);
+    _P_GEN_funargs[3] = &(PTMP_tmp4_1);
     PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_5;
@@ -1041,14 +1075,12 @@ PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return_5;
     }
     
-    PRT_VALUE** P_LVALUE_26 = &(*(PrtMapGetLValue(p_this->varValues[2], (&P_LIT_INT32_4), PRT_TRUE, &P_GEND_TYPE_MKiVi)));
-    PrtFreeValue(*P_LVALUE_26);
-    *P_LVALUE_26 = PrtCloneValue(p_this->varValues[0]);
-    
 p_return_5: ;
     PrtFreeValue(PTMP_tmp0_4); PTMP_tmp0_4 = NULL;
     PrtFreeValue(PTMP_tmp1_2); PTMP_tmp1_2 = NULL;
     PrtFreeValue(PTMP_tmp2_2); PTMP_tmp2_2 = NULL;
+    PrtFreeValue(PTMP_tmp3_1); PTMP_tmp3_1 = NULL;
+    PrtFreeValue(PTMP_tmp4_1); PTMP_tmp4_1 = NULL;
     return _P_GEN_retval;
 }
 
@@ -1056,7 +1088,7 @@ PRT_FUNDECL P_FUNCTION_Anon_5 =
 {
     NULL,
     &P_Anon_IMPL_5,
-    &P_GEND_TYPE_i
+    &P_GEND_TYPE_StringType
 };
 
 
@@ -1098,7 +1130,7 @@ PRT_MACHINEDECL P_MACHINE_ClientEnclave =
 
 PRT_VARDECL P_ClientWebBrowser_VARS[] = {
     { "clientSSM", &P_GEND_TYPE_StringType },
-    { "usernamePassword", &P_GEND_TYPE_i }
+    { "usernamePassword", &P_GEND_TYPE_StringType }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER_4[] = { NULL };
@@ -1270,37 +1302,52 @@ PRT_VALUE* P_Anon_IMPL_6(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_5 = NULL;
     PRT_VALUE* PTMP_tmp1_3 = NULL;
     PRT_VALUE* PTMP_tmp2_3 = NULL;
-    PRT_VALUE* PTMP_tmp3_1 = NULL;
+    PRT_VALUE* PTMP_tmp3_2 = NULL;
+    PRT_VALUE* PTMP_tmp4_2 = NULL;
     PRT_VALUE* P_VAR_P_payload = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE P_LIT_INT32_5 = { PRT_VALUE_KIND_INT, { .nt = 10 } };
-    PRT_VALUE P_LIT_INT32_6 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
-    PRT_VALUE** P_LVALUE_27 = &(p_this->varValues[0]);
-    PrtFreeValue(*P_LVALUE_27);
-    *P_LVALUE_27 = PrtCloneValue(*P_VAR_payload_3);
-    
-    PRT_VALUE** P_LVALUE_28 = &(p_this->varValues[1]);
+    PRT_VALUE P_LIT_INT32_3 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
+    PRT_VALUE** P_LVALUE_28 = &(p_this->varValues[0]);
     PrtFreeValue(*P_LVALUE_28);
-    *P_LVALUE_28 = PrtCloneValue((&P_LIT_INT32_5));
+    *P_LVALUE_28 = PrtCloneValue(*P_VAR_payload_3);
     
     PRT_VALUE** P_LVALUE_29 = &(PTMP_tmp0_5);
     PrtFreeValue(*P_LVALUE_29);
-    *P_LVALUE_29 = PrtCloneValue(p_this->varValues[0]);
+    *P_LVALUE_29 = ((_P_GEN_funval = P_GetThis_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_6;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_6;
+    }
     
-    PRT_VALUE** P_LVALUE_30 = &(PTMP_tmp1_3);
-    PrtFreeValue(*P_LVALUE_30);
-    *P_LVALUE_30 = PrtCloneValue((&P_EVENT_GenerateOTPCodeEvent.value));
+    {
+        PRT_VALUE** P_LVALUE_30 = &(p_this->varValues[1]);
+        PrtFreeValue(*P_LVALUE_30);
+        *P_LVALUE_30 = PTMP_tmp0_5;
+        PTMP_tmp0_5 = NULL;
+    }
     
-    PRT_VALUE** P_LVALUE_31 = &(PTMP_tmp2_3);
+    PRT_VALUE** P_LVALUE_31 = &(PTMP_tmp1_3);
     PrtFreeValue(*P_LVALUE_31);
-    *P_LVALUE_31 = PrtCloneValue(p_this->varValues[1]);
+    *P_LVALUE_31 = PrtCloneValue(p_this->varValues[0]);
     
-    PRT_VALUE* P_PTMP_tmp_3 = PrtCloneValue(&(P_LIT_INT32_6));
-    _P_GEN_funargs[0] = &(PTMP_tmp0_5);
-    _P_GEN_funargs[1] = &(PTMP_tmp1_3);
+    PRT_VALUE** P_LVALUE_32 = &(PTMP_tmp2_3);
+    PrtFreeValue(*P_LVALUE_32);
+    *P_LVALUE_32 = PrtCloneValue((&P_EVENT_GenerateOTPCodeEvent.value));
+    
+    PRT_VALUE** P_LVALUE_33 = &(PTMP_tmp3_2);
+    PrtFreeValue(*P_LVALUE_33);
+    *P_LVALUE_33 = PrtCloneValue(p_this->varValues[1]);
+    
+    PRT_VALUE* P_PTMP_tmp_3 = PrtCloneValue(&(P_LIT_INT32_3));
+    _P_GEN_funargs[0] = &(PTMP_tmp1_3);
+    _P_GEN_funargs[1] = &(PTMP_tmp2_3);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_3);
-    _P_GEN_funargs[3] = &(PTMP_tmp2_3);
+    _P_GEN_funargs[3] = &(PTMP_tmp3_2);
     PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_6;
@@ -1325,11 +1372,11 @@ PRT_VALUE* P_Anon_IMPL_6(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     switch (P_eventId) {
         case 2: {
             PRT_VALUE** P_VAR_payload_4 = &P_VAR_P_payload;
-                        PRT_VALUE** P_LVALUE_32 = &(PTMP_tmp3_1);
-            PrtFreeValue(*P_LVALUE_32);
-            *P_LVALUE_32 = PrtCloneValue(*P_VAR_payload_4);
+                        PRT_VALUE** P_LVALUE_34 = &(PTMP_tmp4_2);
+            PrtFreeValue(*P_LVALUE_34);
+            *P_LVALUE_34 = PrtCloneValue(*P_VAR_payload_4);
             
-            PrtGoto(p_this, 2U, 1, &(PTMP_tmp3_1));
+            PrtGoto(p_this, 2U, 1, &(PTMP_tmp4_2));
             
             p_return_7: ;
 } break;
@@ -1343,7 +1390,8 @@ p_return_6: ;
     PrtFreeValue(PTMP_tmp0_5); PTMP_tmp0_5 = NULL;
     PrtFreeValue(PTMP_tmp1_3); PTMP_tmp1_3 = NULL;
     PrtFreeValue(PTMP_tmp2_3); PTMP_tmp2_3 = NULL;
-    PrtFreeValue(PTMP_tmp3_1); PTMP_tmp3_1 = NULL;
+    PrtFreeValue(PTMP_tmp3_2); PTMP_tmp3_2 = NULL;
+    PrtFreeValue(PTMP_tmp4_2); PTMP_tmp4_2 = NULL;
     PrtFreeValue(P_VAR_P_payload); P_VAR_P_payload = NULL;
     return _P_GEN_retval;
 }
@@ -1363,12 +1411,32 @@ PRT_VALUE* P_Anon_IMPL_7(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE** P_VAR_payload_5 = argRefs[0];
+    PRT_VALUE* PTMP_tmp0_6 = NULL;
+    
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PrtFormatPrintf("OTP Code Received: ", 1, *P_VAR_payload_5, 1, 0, "\n");
+    PrtPrintf("OTP Code Received:\n");
+    
+    PRT_VALUE** P_LVALUE_35 = &(PTMP_tmp0_6);
+    PrtFreeValue(*P_LVALUE_35);
+    *P_LVALUE_35 = PrtCloneValue(*P_VAR_payload_5);
+    
+    _P_GEN_funargs[0] = &(PTMP_tmp0_6);
+    PrtFreeValue(P_PrintString_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(PTMP_tmp0_6);
+    PTMP_tmp0_6 = NULL;
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_8;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_8;
+    }
     
     PrtGoto(p_this, 3U, 0);
     
 p_return_8: ;
+    PrtFreeValue(PTMP_tmp0_6); PTMP_tmp0_6 = NULL;
     return _P_GEN_retval;
 }
 
@@ -1376,7 +1444,7 @@ PRT_FUNDECL P_FUNCTION_Anon_7 =
 {
     NULL,
     &P_Anon_IMPL_7,
-    &P_GEND_TYPE_i
+    &P_GEND_TYPE_StringType
 };
 
 

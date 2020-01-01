@@ -524,6 +524,21 @@ string createString(char* str) {
     return string(strCopy);
 }
 
+extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+
+    PRT_VALUE** P_VAR_payload2 = argRefs[1];
+    PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
+
+    strncat((char*) val, (char*) val2, 200);
+
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
+	sprintf_s(str, 100, (char*)val);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+}
+
 extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
