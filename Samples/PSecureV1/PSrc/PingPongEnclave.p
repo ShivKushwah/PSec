@@ -16,7 +16,7 @@ fun CreateSecureMachineRequest(): StringType;
 fun CreateUSMMachineRequest(): StringType;
 
 event PublicIDEvent : StringType;
-trusted event MasterSecretEvent: seq[StringType];
+trusted event MasterSecretEvent: (int, seq[StringType]);
 event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
 
@@ -43,12 +43,14 @@ secure_machine GodMachine {
 secure_machine BankEnclave {
     var clientSSM: StringType;
     var clientUSM: StringType;
-    var result: seq[StringType];
+    var result: (int, seq[StringType]);
+    var temp: seq[StringType];
     start state Initial {
         entry (payload: StringType) { 
             clientUSM = payload;
             clientSSM = new ClientEnclave(clientUSM);
-            result += (sizeof(result), GetThis());
+            temp += (sizeof(temp), GetThis());
+            result = (7, temp);
 
             // PrintString(clientSSM);
 
@@ -72,8 +74,8 @@ secure_machine ClientEnclave {
     }
 
     state ProvisionEnclaveWithSecret {
-        entry (payload : seq[StringType]){
-            masterSecret = payload[0];
+        entry (payload : (int, seq[StringType])){
+            masterSecret = payload.1[0];
             goto WaitForGenerateOTP;
         }
     }

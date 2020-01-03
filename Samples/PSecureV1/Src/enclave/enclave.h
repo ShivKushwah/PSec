@@ -55,6 +55,6 @@ int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey,
 char* generateCStringFromFormat(char* format_string, char** strings_to_print, int num_strings);
 
 char* serializePrtValueToString(PRT_VALUE* value);
-PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType);
+PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str);
 extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);

@@ -247,12 +247,14 @@ PRT_VALUE* deserializeHelper(char* str, int payloadType) { //assumes only 1 non-
 
 }
 
-PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str, int payloadType) {
+PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str) {
     //TODO code the rest of the types (only int is coded for now)
     PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
     char* temp = str;
+    char* split = strtok(str, ":");
+    int payloadType = atoi(split);
     for (int i = 0; i < numArgs; i++) {
-        char* split = strtok(str, ":");
+        split = strtok(NULL, ":");
         temp = temp + strlen(split) + 2;
         if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_FOREIGN || payloadType == PRT_VALUE_KIND_BOOL) {
             values[i] = deserializeHelper(str, payloadType);
@@ -483,7 +485,11 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
     if (numArgs == 0) {
         PrtSend(NULL, machine, event, 0);
     } else {
-        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payload, payloadType);
+        char* payloadConcat = (char*) malloc(SIZE_OF_MAX_MESSAGE);
+        itoa(payloadType, payloadConcat, 10);
+        strncat(payloadConcat, ":", SIZE_OF_MAX_MESSAGE + 1);
+        strncat(payloadConcat, payload, SIZE_OF_MAX_MESSAGE + 1);
+        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payloadConcat);
         if (payloadType == PRT_VALUE_KIND_TUPLE) {
             PrintTuple(*prtPayload);
         }
@@ -496,8 +502,13 @@ int createMachine(char* machineType, int numArgs, int payloadType, char* payload
     PRT_VALUE* prtPayload;
     if (numArgs > 0) {
         ocall_print("Serialized the following payload");
-        ocall_print(payload);
-        prtPayload = *(deserializeStringToPrtValue(numArgs, payload, payloadType));
+        char* payloadConcat = (char*) malloc(SIZE_OF_MAX_MESSAGE);
+        itoa(payloadType, payloadConcat, 10);
+        strncat(payloadConcat, ":", SIZE_OF_MAX_MESSAGE + 1);
+
+        strncat(payloadConcat, payload, SIZE_OF_MAX_MESSAGE + 1);
+        ocall_print(payloadConcat);
+        prtPayload = *(deserializeStringToPrtValue(numArgs, payloadConcat));
     } else {
         prtPayload = PrtMkNullValue();
     }
