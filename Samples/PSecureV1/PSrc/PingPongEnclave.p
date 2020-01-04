@@ -19,6 +19,7 @@ event PublicIDEvent : StringType;
 trusted event MasterSecretEvent: (int, seq[StringType]);
 event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
+trusted event MapEvent: map[int, int];
 
 machine GodUntrusted {
     var handler: StringType;
@@ -65,6 +66,7 @@ secure_machine ClientEnclave {
     var masterSecret: StringType;
     var clientUSM : StringType;
     var result: map[int, int];
+    var testMachine: StringType;
     start state Initial {
         defer GenerateOTPCodeEvent;
         entry (payload: StringType) {
@@ -84,7 +86,9 @@ secure_machine ClientEnclave {
         on GenerateOTPCodeEvent do (usernamePassword: StringType) {
             //untrusted_send clientUSM, OTPCodeEvent, usernamePassword + masterSecret;
             untrusted_send clientUSM, OTPCodeEvent, Concat(usernamePassword, masterSecret);
-            //result[0] = masterSecret;
+            result[8] = 25;
+            testMachine = new TestMachine();
+            secure_send testMachine, MapEvent, result;
         }
     }
 
@@ -123,4 +127,18 @@ machine ClientWebBrowser {
 
     state Done { }
 
+}
+
+secure_machine TestMachine {
+    start state Initial {
+        on MapEvent goto TestMap;
+    }
+    state TestMap {
+        entry (payload: map[int, int]) {
+            print "Map Value should be 25: {0}\n", payload[8];
+            goto Done;
+        }
+    }
+
+    state Done { }
 }

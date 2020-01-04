@@ -146,6 +146,8 @@ char* serializePrtValueToString(PRT_VALUE* value) {
                 currIndex++;
             }
         }
+        strncat(tupleString, ":END_TUP", 10);
+        currIndex += 8;
         tupleString[currIndex] = '\0';
         return tupleString;
     } else if (value->discriminator == PRT_VALUE_KIND_MAP) {
@@ -186,7 +188,8 @@ char* serializePrtValueToString(PRT_VALUE* value) {
                 currIndex++;
             }
         }
-
+        strncat(mapString, ":END_MAP", 10);
+        currIndex += 8;
         mapString[currIndex] = '\0';
         return mapString;
     } else if (value->discriminator == PRT_VALUE_KIND_SEQ) {
@@ -213,7 +216,8 @@ char* serializePrtValueToString(PRT_VALUE* value) {
                 currIndex++;
             }
         }
-
+        strncat(seqString, ":END_SEQ", 10);
+        currIndex += 8;
         seqString[currIndex] = '\0';
         return seqString;
     }
@@ -225,12 +229,23 @@ char* serializePrtValueToString(PRT_VALUE* value) {
 
 }
 
-PRT_VALUE* deserializeHelper(char* str, int payloadType) { //assumes only 1 non-recursive element
+PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed) { //assumes only 1 non-recursive element
+    char* payload = (char*) malloc(strlen(payloadOriginal) + 1);
+    strncpy(payload, payloadOriginal, strlen(payloadOriginal) + 1);
+    char* reentrant = NULL; 
+    char* payloadTypeString = strtok_r(payload, ":", &reentrant);
+    int payloadType = atoi(payloadTypeString);
+    char* str = strtok_r(NULL, ":", &reentrant);
+    *numCharactersProcessed = strlen(payloadTypeString) + 1 + strlen(str);
     PRT_VALUE* newPrtValue = (PRT_VALUE*)PrtMalloc(sizeof(PRT_VALUE));
     newPrtValue->discriminator = (PRT_VALUE_KIND) payloadType;
     if (payloadType == PRT_VALUE_KIND_INT) {
+        ocall_print("Make Prt Int with Value:");
+        ocall_print(str);
         newPrtValue->valueUnion.nt = atoi(str);
     } else if (payloadType == PRT_VALUE_KIND_FOREIGN) {
+        ocall_print("Make Prt String with Value:");
+        ocall_print(str);
         newPrtValue->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
         newPrtValue->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
         PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
@@ -247,17 +262,30 @@ PRT_VALUE* deserializeHelper(char* str, int payloadType) { //assumes only 1 non-
 
 }
 
-PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str) {
+PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* numCharactersProcessed) {
     //TODO code the rest of the types (only int is coded for now)
+    // ocall_print("Deserialized called!");
+    // ocall_print(strOriginal);
+    *numCharactersProcessed = 0;
+    char* str = (char*) malloc(strlen(strOriginal) + 1);
+    strncpy(str, strOriginal, strlen(strOriginal) + 1);
+    char* strCopy = (char*) malloc(strlen(strOriginal) + 1);
+    strncpy(strCopy, strOriginal, strlen(strOriginal) + 1);
+
     PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
+    char* reentrant = NULL;
     char* temp = str;
-    char* split = strtok(str, ":");
+    char* split = strtok_r(str, ":", &reentrant);
+    *numCharactersProcessed = *numCharactersProcessed + strlen(split) + 1; //+ 1 for ":"
     int payloadType = atoi(split);
     for (int i = 0; i < numArgs; i++) {
-        split = strtok(NULL, ":");
-        temp = temp + strlen(split) + 2;
+        
         if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_FOREIGN || payloadType == PRT_VALUE_KIND_BOOL) {
-            values[i] = deserializeHelper(str, payloadType);
+            ocall_print("Processing Native Type String:");
+            ocall_print(strOriginal);
+            int numProcessedInHelper;
+            values[i] = deserializeHelper(strOriginal, &numProcessedInHelper);
+            *numCharactersProcessed = numProcessedInHelper;
         }
         else if (payloadType == PRT_VALUE_KIND_TUPLE) {
             ocall_print("Deserializing Tuple:");
@@ -266,16 +294,29 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str) {
             values[i]->discriminator = PRT_VALUE_KIND_TUPLE;
             values[i]->valueUnion.tuple = tupPtr;            
             tupPtr->size = 0;
-            char* dataType = split;
+            char* nextTupleElementToProcess = strCopy + strlen(split) + 1; // + 1 for ":"
+            char* nextTupleElementToProcessOriginal = nextTupleElementToProcess;
             tupPtr->values = (PRT_VALUE **)PrtCalloc(MAX_TUPLE_ELEMENT_LENGTH, sizeof(PRT_VALUE*));
-            while (dataType != NULL) {
-                char* payload = strtok(NULL, ":"); //TODO make this safe?
+            while (strncmp(nextTupleElementToProcess, "END_TUP", 7) != 0) {
+                //char* payload = strtok_r(NULL, ":", &reentrant); //TODO make this safe?
+                ocall_print("Processing Element String:");
+                ocall_print(nextTupleElementToProcess);
                 int i = tupPtr->size;
                 tupPtr->size++;
-                tupPtr->values[i] = deserializeHelper(payload, atoi(dataType));
-                dataType = strtok(NULL, ":");
+                int numProcessedInHelper;
+                tupPtr->values[i] = *deserializeStringToPrtValue(1, nextTupleElementToProcess, &numProcessedInHelper);// deserializeStringToPrtValue(1, );
+                ocall_print("Element Processed.");
+                ocall_print("Number of characters in helper is ");
+                ocall_print_int(numProcessedInHelper);
+                // *numCharactersProcessed =  *numCharactersProcessed + numProcessedInHelper + 1; //+1 for ":"
+                nextTupleElementToProcess = nextTupleElementToProcess + numProcessedInHelper + 1;
             }
+            *numCharactersProcessed =  *numCharactersProcessed + (nextTupleElementToProcess - nextTupleElementToProcessOriginal) + 7; //+7 for "END_TUP"
+
         } else if (payloadType == PRT_VALUE_KIND_MAP) {
+
+            char* nextMapKeyValuePairToProcess = strCopy + strlen(split) + 1; // + 1 for ":"
+            char* nextMapKeyValuePairToProcessOriginal = nextMapKeyValuePairToProcess;
 
            
             // PrtMkDefaultValue()
@@ -288,17 +329,23 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str) {
             // map->first = NULL;
             // map->last = NULL;
 
-            char* dataType = split;
-            while (dataType != NULL) {
-                char* payload = strtok(NULL, ":"); //TODO make this safe?
+            while (strncmp(nextMapKeyValuePairToProcess, "END_MAP", 7) != 0) {
+                int numProcessedInHelper;
+                PRT_VALUE* key = *deserializeStringToPrtValue(1, nextMapKeyValuePairToProcess, &numProcessedInHelper);
+                char* dataType = (char*) malloc(strlen(nextMapKeyValuePairToProcess) + 1);
+                strncpy(dataType, nextMapKeyValuePairToProcess, strlen(nextMapKeyValuePairToProcess) + 1);
+                char* reentrant = NULL;
+                strtok_r(dataType, ":", &reentrant);
                 int dType = atoi(dataType);
-                PRT_VALUE* key = deserializeHelper(payload, dType);
-                dataType = strtok(NULL, ":");
+                nextMapKeyValuePairToProcess = nextMapKeyValuePairToProcess + numProcessedInHelper + 1;
 
-                payload = strtok(NULL, ":"); //TODO make this safe?
-                int dType2 = atoi(dataType);
-                PRT_VALUE* value = deserializeHelper(payload, dType2);
-                dataType = strtok(NULL, ":");
+                PRT_VALUE* value = *deserializeStringToPrtValue(1, nextMapKeyValuePairToProcess, &numProcessedInHelper);
+                char* dataType2 = (char*) malloc(strlen(nextMapKeyValuePairToProcess) + 1);
+                strncpy(dataType2, nextMapKeyValuePairToProcess, strlen(nextMapKeyValuePairToProcess) + 1);
+                char* reentrant2 = NULL;
+                strtok_r(dataType2, ":", &reentrant2);
+                int dType2 = atoi(dataType2);
+                nextMapKeyValuePairToProcess = nextMapKeyValuePairToProcess + numProcessedInHelper + 1;
 
                 if (values[i] == NULL) {
 
@@ -313,15 +360,28 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str) {
                 PrtMapUpdate(values[i], key, value);
             }
 
+            ocall_print("Map created");
+            *numCharactersProcessed =  *numCharactersProcessed + (nextMapKeyValuePairToProcess - nextMapKeyValuePairToProcessOriginal) + 7; //+7 for "END_MAP"
+
+
         } else if (payloadType == PRT_VALUE_KIND_SEQ) {
 
-            char* dataType = split;
+            char* nextSeqElementToProcess = strCopy + strlen(split) + 1; // + 1 for ":"
+            char* nextSeqElementToProcessOriginal = nextSeqElementToProcess;
+
             int index = 0;
-            while (dataType != NULL) {
-                char* payload = strtok(NULL, ":"); //TODO make this safe?
+            while (strncmp(nextSeqElementToProcess, "END_SEQ", 7) != 0) {
+                // char* payload = strtok_r(NULL, ":", &reentrant); //TODO make this safe?
+                // int dType = atoi(dataType);
+                int numProcessedInHelper;
+                PRT_VALUE* value = *deserializeStringToPrtValue(1, nextSeqElementToProcess, &numProcessedInHelper);
+                //*numCharactersProcessed =  *numCharactersProcessed + numProcessedInHelper + 1; //+1 for ":"
+
+                char* dataType = (char*) malloc(strlen(nextSeqElementToProcess) + 1);
+                strncpy(dataType, nextSeqElementToProcess, strlen(nextSeqElementToProcess) + 1);
+                char* reentrant = NULL;
+                strtok_r(dataType, ":", &reentrant);
                 int dType = atoi(dataType);
-                PRT_VALUE* value = deserializeHelper(payload, dType);
-                dataType = strtok(NULL, ":");
 
                 if (values[i] == NULL) {
 
@@ -331,9 +391,11 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* str) {
                 }
 
                 PrtSeqInsert(values[i], PrtMkIntValue(index), value);
-
-                index++;
+                nextSeqElementToProcess = nextSeqElementToProcess + numProcessedInHelper + 1;
+                
             }
+            ocall_print("Seq created");
+            *numCharactersProcessed =  *numCharactersProcessed + (nextSeqElementToProcess - nextSeqElementToProcessOriginal) + 7; //+7 for "END_SEQ"
 
         }
     }
@@ -489,7 +551,11 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
         itoa(payloadType, payloadConcat, 10);
         strncat(payloadConcat, ":", SIZE_OF_MAX_MESSAGE + 1);
         strncat(payloadConcat, payload, SIZE_OF_MAX_MESSAGE + 1);
-        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payloadConcat);
+        int numCharactersProcessed;
+        //print out what is being passed to the below method
+        ocall_print("Passing In String To Deserialize:");
+        ocall_print(payloadConcat);
+        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payloadConcat, &numCharactersProcessed);
         if (payloadType == PRT_VALUE_KIND_TUPLE) {
             PrintTuple(*prtPayload);
         }
@@ -505,10 +571,10 @@ int createMachine(char* machineType, int numArgs, int payloadType, char* payload
         char* payloadConcat = (char*) malloc(SIZE_OF_MAX_MESSAGE);
         itoa(payloadType, payloadConcat, 10);
         strncat(payloadConcat, ":", SIZE_OF_MAX_MESSAGE + 1);
-
         strncat(payloadConcat, payload, SIZE_OF_MAX_MESSAGE + 1);
         ocall_print(payloadConcat);
-        prtPayload = *(deserializeStringToPrtValue(numArgs, payloadConcat));
+        int numCharactersProcessed;
+        prtPayload = *(deserializeStringToPrtValue(numArgs, payloadConcat, &numCharactersProcessed));
     } else {
         prtPayload = PrtMkNullValue();
     }
