@@ -222,27 +222,27 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 }
 
 
-extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
+// extern "C" void P_SecureSendPingEventToPongEnclave_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+// {
     
 
-    const char* current_machine_name = "PingMachine";
-    const char* receiving_machine_name = "PongMachine";
+//     const char* current_machine_name = "PingMachine";
+//     const char* receiving_machine_name = "PongMachine";
 
-    //Make secure payload to be the Ping's event unique identifier
-    sprintf(secure_message, "%d", P_EVENT_Ping.value.valueUnion.ev);
+//     //Make secure payload to be the Ping's event unique identifier
+//     sprintf(secure_message, "%d", P_EVENT_Ping.value.valueUnion.ev);
 
-    //NOTE: Should we spawn a thread for network requests?
-    //Send "network" request to Pong enclave to start the remote attestation channel creation process
-    if (ra_network_send_receive(current_machine_name, receiving_machine_name, NULL, NULL) == 0) {
-        printf("\nAttestation Succesful! Ping Event has been Sent!\n");
+//     //NOTE: Should we spawn a thread for network requests?
+//     //Send "network" request to Pong enclave to start the remote attestation channel creation process
+//     if (ra_network_send_receive(current_machine_name, receiving_machine_name, NULL, NULL) == 0) {
+//         printf("\nAttestation Succesful! Ping Event has been Sent!\n");
 
-    } else {
-        printf("\nERROR IN ATTESTATION. Message not sent!\n");
+//     } else {
+//         printf("\nERROR IN ATTESTATION. Message not sent!\n");
 
-    }
+//     }
     
-}
+// }
 
 extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
     //USMs can only make untrusted requests to create machines

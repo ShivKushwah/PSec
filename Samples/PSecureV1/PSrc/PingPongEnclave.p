@@ -1,6 +1,5 @@
 type StringType;
 
-event Ping assert 2;
 event Pong assert 2 : int;
 event UntrustedEventFromPing : int;
 fun CreateMachineSecureChild(): StringType;
@@ -85,10 +84,11 @@ secure_machine ClientEnclave {
     state WaitForGenerateOTP {
         on GenerateOTPCodeEvent do (usernamePassword: StringType) {
             //untrusted_send clientUSM, OTPCodeEvent, usernamePassword + masterSecret;
-            untrusted_send clientUSM, OTPCodeEvent, Concat(usernamePassword, masterSecret);
             result[8] = 25;
             testMachine = new TestMachine();
             secure_send testMachine, MapEvent, result;
+
+            untrusted_send clientUSM, OTPCodeEvent, Concat(usernamePassword, masterSecret);
         }
     }
 
@@ -140,5 +140,9 @@ secure_machine TestMachine {
         }
     }
 
-    state Done { }
+    state Done {
+        entry {
+            print "DONE BOYS";
+        }
+     }
 }

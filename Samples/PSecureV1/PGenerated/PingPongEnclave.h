@@ -7,7 +7,6 @@
 extern "C" {
 #endif
     
-    extern PRT_EVENTDECL P_EVENT_Ping;
     extern PRT_EVENTDECL P_EVENT_Pong;
     extern PRT_EVENTDECL P_EVENT_UntrustedEventFromPing;
     extern PRT_EVENTDECL P_EVENT_Success;

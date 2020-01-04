@@ -558,6 +558,9 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
         PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payloadConcat, &numCharactersProcessed);
         if (payloadType == PRT_VALUE_KIND_TUPLE) {
             PrintTuple(*prtPayload);
+        } else if (payloadType == PRT_VALUE_KIND_MAP) {
+            PrtPrintValue(event);
+            PrtPrintValue(*prtPayload);
         }
         PrtSend(NULL, machine, event, numArgs, prtPayload);
     }
