@@ -24,6 +24,12 @@ enclave {
                                                             [out, size=16] uint8_t* return_payload_tag);
         public int pong_enclave_request_attestation([in, size=16] const char* other_machine_name);
 
+        public int decryptAndSendMessageAPI([in, size=ID_SIZE]char* requestingMachineIDKey, 
+                                            [in, size=ID_SIZE]char* receivingMachineIDKey, 
+                                            [in, size=MAX_ENCRYPTED_MESSAGE]char* encryptedMessage, 
+                                            uint32_t ID_SIZE, 
+                                            uint32_t MAX_ENCRYPTED_MESSAGE);
+
         public int createMachineAPI(sgx_enclave_id_t currentEid,
                                     [in, size=ID_SIZE] char* machineName, 
                                     [in, size=ID_SIZE]char* parentTrustedMachineID,

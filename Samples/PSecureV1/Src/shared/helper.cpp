@@ -646,20 +646,10 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
         char* machineSendingMessage = split;
         split = strtok(NULL, ":");
         char* machineReceivingMessage = split;
-        split = strtok(NULL, ":");
-        char* eventNum = split;
-        split = strtok(NULL, ":");
-        int numArgs = atoi(split);
-        int payloadType = -1;
-        char* payload = (char*) malloc(10);
-        payload[0] = '\0';
-        if (numArgs > 0) {
-            split = strtok(NULL, ":");
-            payloadType = atoi(split);
-            split = strtok(NULL, "\0");
-            payload = split;
+        char* encryptedMessage = machineReceivingMessage + strlen(machineReceivingMessage) + 1;
+        // ocall_print("encrypted message is");
+        // ocall_print(encryptedMessage);
 
-        }
         if (isEnclaveUntrustedHost) {
 
             if (PublicIdentityKeyToEidDictionary.count(machineReceivingMessage) == 0) {
@@ -671,7 +661,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
 
             int ptr;
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-            sgx_status_t status = enclave_sendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, encryptedMessage, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
             return temp;
 
         } else {

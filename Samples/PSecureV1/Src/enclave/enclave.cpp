@@ -208,6 +208,8 @@ void startPrtProcessIfNotStarted() {
 
 }
 
+
+
 char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, bool isSecureCreate, sgx_enclave_id_t enclaveEid) {
     startPrtProcessIfNotStarted();
 
@@ -331,6 +333,26 @@ int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey,
     ocall_print(temp);
     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
     handle_incoming_event(atoi(event), receivingMachinePID, numArgs, payloadType, payload); //TODO update to untrusted send api
+}
+
+int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* encryptedMessage, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE) {
+    
+    char* split = strtok(encryptedMessage, ":");
+    char* eventNum = split;
+    split = strtok(NULL, ":");
+    int numArgs = atoi(split);
+    int payloadType = -1;
+    char* payload = (char*) malloc(10);
+    payload[0] = '\0';
+    if (numArgs > 0) {
+        split = strtok(NULL, ":");
+        payloadType = atoi(split);
+        split = strtok(NULL, "\0");
+        payload = split;
+
+    }
+    sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, 0, 0, 0);
+
 }
 
 int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
