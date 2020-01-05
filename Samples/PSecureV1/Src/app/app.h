@@ -53,3 +53,5 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
 
 extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
+char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost);
+

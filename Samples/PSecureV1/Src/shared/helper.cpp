@@ -4,6 +4,7 @@
 #include "constants.h"
 #include <tuple>
 #include <unordered_map> 
+#include <unordered_set> 
 #include <map> 
 
 #ifdef ENCLAVE_STD_ALT
@@ -24,6 +25,22 @@ typedef tuple <string,string> identityKeyPair; //public, private
 extern unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
 typedef tuple <uint32_t,string> PMachineChildPair; //parentMachineID, childPublicKey
 extern map<PMachineChildPair, string> PMachineToChildCapabilityKey;
+extern unordered_map<string, sgx_enclave_id_t> PublicIdentityKeyToEidDictionary;
+extern unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
+
+extern unordered_set<string> USMAuthorizedTypes;
+
+extern int CURRENT_ENCLAVE_EID_NUM;
+
+extern int initialize_enclave(sgx_enclave_id_t* eid, const std::string& launch_token_path, const std::string& enclave_name);
+
+extern char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload);
+extern char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload);
+extern char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey);
+
+
+extern char* untrusted_enclave1_receiveNetworkRequest(char* request);
+
 
 extern char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey);
 extern char* send_network_request_API(char* request);
@@ -422,6 +439,257 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
     //ocall_print(returnString);
     return returnString;
 
+}
+
+char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
+    char* requestCopy = (char*) malloc(strlen(request) + 1);
+    memcpy(requestCopy, request, strlen(request) + 1);
+
+    #ifdef ENCLAVE_STD_ALT   
+    return "empty";
+    #else
+    char* split = strtok(request, ":");
+    if (strcmp(split, "Create") == 0) {
+        char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+        split = strtok(NULL, ":");
+        char* parentTrustedMachinePublicIDKey = split;
+        split = strtok(NULL, ":");
+        char* machineType = split;
+        split = strtok(NULL, ":");
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload = (char*) malloc(10);
+        payload[0] = '\0';
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, "\0");
+            payload = split;
+
+        }
+
+        if (isEnclaveUntrustedHost) {
+        
+            sgx_enclave_id_t new_enclave_eid = 0;
+            string token = "enclave" + to_string((int)CURRENT_ENCLAVE_EID_NUM) + ".token";
+            CURRENT_ENCLAVE_EID_NUM += 1;
+
+
+            if (initialize_enclave(&new_enclave_eid, token, "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
+                ocall_print("Fail to initialize enclave.");
+            }    
+
+            int ptr;
+
+            // printf("Enclave eid is : %d\n", new_enclave_eid);
+            // printf("machineType is : %s\n", machineType);
+            // printf("parentTrustedIdKey is : %s\n", parentTrustedMachinePublicIDKey);
+            // printf("payload is : %s\n", payload);
+            // printf("numArgs is : %d\n", numArgs);
+            // printf("PayloadType is : %d\n", payloadType);
+            // enclave_eprint(new_enclave_eid, "hello-ddd");
+
+            //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
+            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+            // application of this enclave and have that make an ecall to createMachineAPi
+            sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
+
+            return newMachineID;
+
+        } else {
+            if (USMAuthorizedTypes.count(machineType) > 0) {
+                return createUSMMachineAPI(machineType, numArgs, payloadType, payload);
+            } else {
+                return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+            }
+        }
+
+    // }  else if (strcmp(split, "GetKey") == 0) {
+    //     //TODO move this segmant of code into other ra method because attestation needs to occur first and then call retrieveCapabilityKey
+    //     //TODO move this and use the messageFromMachine int
+    //     //TODO might need to verify the currentMachineIDs signagure before we call attestation, so we need to do that first?
+    //     split = strtok(NULL, ":");
+    //     char currentMachineID[SIZE_OF_IDENTITY_STRING];
+    //     //TODO add check that split is not too big
+    //     memcpy(currentMachineID, split, strlen(split) + 1);
+    //     split = strtok(NULL, ":");
+    //     char childMachineID[SIZE_OF_IDENTITY_STRING];
+    //     memcpy(childMachineID, split, strlen(split) + 1);
+    //     return retrieveCapabilityKey(currentMachineID, childMachineID);
+
+    
+    }  else if (strcmp(split, "UntrustedCreate") == 0) {
+
+        char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+        split = strtok(NULL, ":");
+        char* machineType = split;
+        split = strtok(NULL, ":");
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload = (char*) malloc(10);
+        payload[0] = '\0';
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, "\0");
+            payload = split;
+
+        }
+
+        if (isEnclaveUntrustedHost) {
+
+            sgx_enclave_id_t new_enclave_eid = 0;
+            string token = "enclave" + to_string((int)CURRENT_ENCLAVE_EID_NUM) + ".token";
+            CURRENT_ENCLAVE_EID_NUM += 1;
+
+            if (initialize_enclave(&new_enclave_eid, token, "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
+                ocall_print("Fail to initialize enclave.");
+            }   
+
+            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+            sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
+
+            
+            return newMachineID;
+
+
+        } else {
+            if (USMAuthorizedTypes.count(machineType) > 0) {
+                return createUSMMachineAPI(machineType, numArgs, payloadType, payload);
+            } else {
+                return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+            }
+        }
+
+    
+    } else if (strcmp(split, "InitComm") == 0) {
+
+        char* newSessionKey = (char* ) malloc(SIZE_OF_SESSION_KEY);
+        newSessionKey[0] = '\0';
+        split = strtok(NULL, ":");
+        char* machineInitializingComm = split;
+        split = strtok(NULL, ":");
+        char* machineReceivingComm = split;
+        
+        if (isEnclaveUntrustedHost) {
+        
+            if (PublicIdentityKeyToEidDictionary.count(machineReceivingComm) == 0) {
+                ocall_print("\n No Enclave Eid Found!\n");
+            }
+            
+            sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingComm]; //TODO add check here in case its not in dictionary
+
+            int ptr;
+            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+            sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
+            if (status != SGX_SUCCESS) {
+                printf("Sgx Error Code: %x\n", status);
+            }
+            return newSessionKey;
+
+        } else {
+            if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm)) > 0) {
+                
+                return USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm);
+            
+            } else {
+                return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+            }
+        }
+
+    
+    }  else if (strcmp(split, "UntrustedSend") == 0) {
+
+        char* temp;
+        split = strtok(NULL, ":");
+        char* machineReceivingMessage = split;
+        split = strtok(NULL, ":");
+        char* eventNum = split;
+        split = strtok(NULL, ":");
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload = (char*) malloc(10);
+        payload[0] = '\0';
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, "\0");
+            payload = split;
+
+        }
+
+        if (isEnclaveUntrustedHost) {
+
+            sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingMessage]; //TODO add check here in case its not in dictionary
+
+            int ptr;
+            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+            sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+            return temp;
+
+        } else {
+            string machineReceiveMsgString = string(machineReceivingMessage);
+            // printf("Untrusted Send -> machine checking in dictionary is %s\n", machineReceiveMsgString.c_str());
+            if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
+                // printf("Sending Message to USM in app.cpp\n");
+                return USMsendMessageAPI(machineReceivingMessage, eventNum, numArgs, payloadType, payload);
+                
+            } else {
+                return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+            }
+        }
+
+    } else if (strcmp(split, "Send") == 0) {
+
+        char* temp;
+        split = strtok(NULL, ":");
+        char* machineSendingMessage = split;
+        split = strtok(NULL, ":");
+        char* machineReceivingMessage = split;
+        split = strtok(NULL, ":");
+        char* eventNum = split;
+        split = strtok(NULL, ":");
+        int numArgs = atoi(split);
+        int payloadType = -1;
+        char* payload = (char*) malloc(10);
+        payload[0] = '\0';
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, "\0");
+            payload = split;
+
+        }
+        if (isEnclaveUntrustedHost) {
+
+            if (PublicIdentityKeyToEidDictionary.count(machineReceivingMessage) == 0) {
+                printf("\n No Enclave Eid Found!\n");
+            }
+
+            sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingMessage]; //TODO add check here in case its not in dictionary
+
+
+            int ptr;
+            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+            sgx_status_t status = enclave_sendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+            return temp;
+
+        } else {
+            if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
+
+                //TODO need to implement
+                return "TODO";
+                
+            } else {
+                return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+            }
+        }
+
+
+    } else {
+        return "Command Not Found";
+    }
+    #endif
 }
 
 PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* createTypeCommand, bool isSecureCreate) {
