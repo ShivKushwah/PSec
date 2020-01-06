@@ -495,8 +495,11 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             split = strtok(NULL, ":");
             payloadType = atoi(split);
             split = strtok(NULL, "\0");
+            safe_free(payload);
             payload = split;
 
+        } else {
+            safe_free(payload);
         }
 
         if (isEnclaveUntrustedHost) {
@@ -566,8 +569,11 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             split = strtok(NULL, ":");
             payloadType = atoi(split);
             split = strtok(NULL, "\0");
+            safe_free(payload);
             payload = split;
 
+        } else {
+            safe_free(payload);
         }
 
         if (isEnclaveUntrustedHost) {
@@ -654,8 +660,11 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             split = strtok(NULL, ":");
             payloadType = atoi(split);
             split = strtok(NULL, "\0");
+            safe_free(payload);
             payload = split;
 
+        } else {
+            safe_free(payload);
         }
 
         if (isEnclaveUntrustedHost) {
