@@ -122,6 +122,7 @@ PRT_TYPE_KIND convertKindToType(int kind) {
     }
 }
 
+//Responsibility of Caller to free return
 char* serializePrtValueToString(PRT_VALUE* value) {
     //TODO code the rest of the types
     if (value->discriminator == PRT_VALUE_KIND_INT) {
@@ -153,11 +154,15 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(tupleString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
+            free(typeString);
+            typeString = NULL;
             tupleString[currIndex] = ':';
             currIndex++;
             char* serializedStr = serializePrtValueToString(currValue);
             memcpy(tupleString + currIndex, serializedStr, strlen(serializedStr) + 1);
             currIndex += strlen(serializedStr);
+            free(serializedStr);
+            serializedStr = NULL;
             if (i < tupPtr->size - 1) {
                 tupleString[currIndex] = ':';
                 currIndex++;
@@ -182,11 +187,15 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(mapString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
+            free(typeString);
+            typeString = NULL;
             mapString[currIndex] = ':';
             currIndex++;
             char* serializedKey = serializePrtValueToString(mapKey);
             memcpy(mapString + currIndex, serializedKey, strlen(serializedKey) + 1);
             currIndex += strlen(serializedKey);
+            free(serializedKey);
+            serializedKey = NULL;
             mapString[currIndex] = ':';
             currIndex++;
             PRT_VALUE* mapValue = mapValues->valueUnion.seq->values[i];
@@ -195,11 +204,15 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(mapString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
+            free(typeString);
+            typeString = NULL;
             mapString[currIndex] = ':';
             currIndex++;
             char* serializedValue = serializePrtValueToString(mapValue);
             memcpy(mapString + currIndex, serializedValue, strlen(serializedValue) + 1);
             currIndex += strlen(serializedValue);
+            free(serializedValue);
+            serializedValue = NULL;
             if (i < size - 1) {
                 mapString[currIndex] = ':';
                 currIndex++;
@@ -223,11 +236,15 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(seqString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
+            free(typeString);
+            typeString = NULL;
             seqString[currIndex] = ':';
             currIndex++;
             char* serializedValue = serializePrtValueToString(seqValue);
             memcpy(seqString + currIndex, serializedValue, strlen(serializedValue) + 1);
             currIndex += strlen(serializedValue);
+            free(serializedValue);
+            serializedValue = NULL;
             if (i < size - 1) {
                 seqString[currIndex] = ':';
                 currIndex++;
@@ -275,6 +292,8 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
             newPrtValue->valueUnion.bl = PRT_FALSE;
         } 
     } 
+    free(payload);
+    payload = NULL;
     return newPrtValue;
 
 }
@@ -416,6 +435,10 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
 
         }
     }
+    free(str);
+    str = NULL;
+    free(strCopy);
+    strCopy = NULL;
     return values;
 }
 
@@ -703,7 +726,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     int numArgs = atoi((char*) argRefs[1]);
 
     PRT_VALUE* payloadPrtValue;
-    char* payloadString;  
+    char* payloadString = NULL;  
     int payloadType;
 
     if (numArgs == 1) {
@@ -731,6 +754,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
         }
     }
+    free(payloadString);
+    payloadString = NULL;
     
     
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
@@ -744,6 +769,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     ocall_network_request(createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING + 1);
     // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
     #endif
+    free(createMachineRequest);
+    createMachineRequest = NULL;
     
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine has created a new machine with Identity Public Key as:", machineNameWrapper2, 1)); //TODO use this method for all future ocall_prints
@@ -769,6 +796,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     }
 
     #endif
+    free(currentMachineIDPublicKey);
+    currentMachineIDPublicKey = NULL;
 
     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);

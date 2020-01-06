@@ -181,6 +181,8 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
         int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
             char* temp = serializePrtValueToString(*P_EventMessage_Payload);
             memcpy(eventMessagePayload, temp, strlen(temp) + 1);
+            free(temp);
+            temp = NULL;
     //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
     //     //TODO I assumed only 1 payload for the below
     //     // if (i == 0) {
@@ -207,11 +209,15 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
         snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:0", sendingToMachinePublicID, event);
     }
     free(event);
+    event = NULL;
     free(eventMessagePayload);
+    eventMessagePayload = NULL;
     printf("Untrusted machine is sending out following network request: %s\n", unsecureSendRequest);   
-    char* newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
+    char* newMachinePublicIDKey = NULL;
+    newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
     free(unsecureSendRequest);
-    //free(newMachinePublicIDKey); TODO - shivfree - calling this causes a segfault, which means its already been freed. But how?
+    unsecureSendRequest = NULL;
+    // free(newMachinePublicIDKey); //TODO - shivfree - calling this causes a segfault, which means its already been freed. But how?
 
 
     // // char* empty;
@@ -331,6 +337,7 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     memcpy(usmChildPublicIDKeyCopy, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
     registerMachineWithNetwork(usmChildPublicIDKeyCopy);
     free(usmChildPublicIDKeyCopy);
+    usmChildPublicIDKeyCopy = NULL;
 
     char* usmChildPublicIDKeyCopy2 = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy2, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);

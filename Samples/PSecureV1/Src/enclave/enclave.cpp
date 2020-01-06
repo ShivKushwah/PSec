@@ -430,6 +430,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
     char* temp = serializePrtValueToString(*P_EventMessage_Payload);
     memcpy(eventMessagePayload, temp, strlen(temp) + 1);
+    free(temp);
 
     // for (int i = 0; i < numArgs; i++) {
     //     PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];

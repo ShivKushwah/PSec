@@ -170,6 +170,7 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
     if(resp!=NULL)
     {
         free(resp);
+        resp = NULL;
     }
 }
 
@@ -322,6 +323,7 @@ char* send_network_request_API(char* request) {
     pthread_join(thread_id, &thread_ret); 
     printf("\n Finished Network Request Thread\n"); 
     free(requestCopy);
+    requestCopy = NULL;
 
     return (char*) thread_ret;
 
