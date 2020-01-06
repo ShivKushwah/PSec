@@ -145,6 +145,7 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     sendSendNetworkRequest(context, argRefs, "Send", true);
 }
 
+//Responsibility of caller to free return
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
     int ret;
     char* other_machine_name = "KPS";
@@ -152,6 +153,7 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     char* requestString = (char*) malloc(requestSize);
     snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);    
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, strlen(other_machine_name)+1, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString);
+    safe_free(requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;
@@ -162,6 +164,7 @@ void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid, char* machineTypeToC
     char* newMachinePublicIDKey = createMachineHelper(machineTypeToCreate, "", numArgs, payloadType, payloadString, false, enclaveEid);
     //"Return" the publicIDKey of the new machine
     memcpy(returnNewMachinePublicID, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
+    safe_free(newMachinePublicIDKey);
 }
 
 void eprint(char* printStr) {
@@ -209,7 +212,7 @@ void startPrtProcessIfNotStarted() {
 }
 
 
-
+// Responsibility of caller to free return
 char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, bool isSecureCreate, sgx_enclave_id_t enclaveEid) {
     startPrtProcessIfNotStarted();
 
@@ -225,6 +228,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
     strncpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
     ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, enclaveEid);
+    safe_free(publicIdKeyCopy);
     int newMachinePID = getNextPID(); 
     //Store new machine information in enclave's dictionaries
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
@@ -232,7 +236,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
 
     if (isSecureCreate) {
         //Contacting KPS for capability key
-        string capabilityKeyReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str());
+        string capabilityKeyReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str()); //TODO shivfree how do i deal with malloced std::Strings ?
         ocall_print("Enclave received new capability Key from KPS: ");
         ocall_print(capabilityKeyReceived.c_str());
         MachinePIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
@@ -241,6 +245,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     char* secureChildPublicIDKeyCopy = (char*) malloc(secureChildPublicIDKey.size() + 1);
     memcpy(secureChildPublicIDKeyCopy, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.size() + 1);
     registerMachineWithNetwork(secureChildPublicIDKeyCopy);
+    safe_free(secureChildPublicIDKeyCopy);
 
     if (isSecureCreate) {
         createMachine(machineType, numArgs, payloadType, payload);
@@ -261,8 +266,10 @@ int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* paren
     char* newMachinePublicIDKey = createMachineHelper(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload, true, enclaveEid);
     //"Return" the publicIDKey of the new machine
     memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
+    safe_free(newMachinePublicIDKey);
 }
 
+//Responbility of caller to free return
 char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey) {
     int ret;
     char* other_machine_name = "KPS";
@@ -270,6 +277,7 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     char* requestString = (char*) malloc(requestSize);
     snprintf(requestString, requestSize, "%s:%s", newMachinePublicIDKey, parentTrustedMachineID);
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, strlen(other_machine_name)+1, CREATE_CAPABILITY_KEY_CONSTANT, requestString);
+    safe_free(requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;
@@ -284,6 +292,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
     
     char* networkResult = (char*) malloc(100);
     ocall_network_request(&ret_value, generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2), networkResult, 100);
+    safe_free(num);
     safe_free(networkResult);
 
 }
