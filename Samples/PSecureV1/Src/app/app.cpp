@@ -245,7 +245,7 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
         memcpy(returnSessionkey, newSessionKey.c_str(), newSessionKey.length() + 1);
         return returnSessionkey;
     } else {
-        char* errorMsg = "Already created!";
+        char* errorMsg = createStringLiteralMalloced("Already created!");
         printf("ERROR:Session has already been initalized in the past!\n");
         return errorMsg;
     }
@@ -265,9 +265,10 @@ char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs
     char* temp = (char*) malloc(10);
     snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
     printf(temp);
+    safe_free(temp);
     receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
     handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload);
-    return "Message successfully sent!/n";
+    return createStringLiteralMalloced("Message successfully sent!/n");
 }
 
 // OCall implementations
@@ -409,7 +410,8 @@ int main(int argc, char const *argv[]) {
     // Place the measurement of the enclave into metadata_info.txt
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
 
-    createUSMMachineAPI("GodUntrusted", 0, 0, "");
+    char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "");
+    safe_free(ret);
 
     return 0;
 }

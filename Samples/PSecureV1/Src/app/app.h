@@ -57,3 +57,5 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost);
 
 void safe_free(void* ptr);
 
+char* createStringLiteralMalloced(char* stringLiteral);
+
