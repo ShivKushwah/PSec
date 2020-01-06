@@ -181,7 +181,7 @@ char* forward_request(char* request, int redirect) {
     // } else if (redirect == 2) {
     //     return untrusted_enclave3_receiveNetworkRequest(request);
     } else {
-        return "ERROR:Request not forwarded!";
+        return createStringLiteralMalloced("ERROR:Request not forwarded!");
     }
 }
 

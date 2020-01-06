@@ -236,10 +236,11 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
 
     if (isSecureCreate) {
         //Contacting KPS for capability key
-        string capabilityKeyReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str()); //TODO shivfree how do i deal with malloced std::Strings ?
+        char* capabilityKeyReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str());
         ocall_print("Enclave received new capability Key from KPS: ");
-        ocall_print(capabilityKeyReceived.c_str());
-        MachinePIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
+        ocall_print(capabilityKeyReceived);
+        MachinePIDtoCapabilityKeyDictionary[newMachinePID] = string(capabilityKeyReceived);
+        safe_free(capabilityKeyReceived);
     }
 
     char* secureChildPublicIDKeyCopy = (char*) malloc(secureChildPublicIDKey.size() + 1);
@@ -432,7 +433,8 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             ocall_print(printStr);
             safe_free(printStr);       
             ocall_print(newSessionKey);
-            PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey); //TODO shivfree how do i free a malloced string
+            PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
+            safe_free(newSessionKey);
         }
 
 

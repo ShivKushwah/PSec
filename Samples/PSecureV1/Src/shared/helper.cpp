@@ -483,18 +483,18 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
 }
 //Responbility of caller to free return
 char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
-    ocall_print("helllo");
+    // ocall_print("helllo");
     ocall_print_int(strlen(request));
     //char requestCopy[250];
     char* requestCopy = (char*) malloc(strlen(request) + 1);
-    ocall_print("malloc init");
+    // ocall_print("malloc init");
     strncpy(requestCopy, request, strlen(request) + 1);
     requestCopy[strlen(request)] = '\0';
-    ocall_print("malloc yeeee");
+    // ocall_print("malloc yeeee");
 
 
     #ifdef ENCLAVE_STD_ALT   
-    return "empty";
+    return createStringLiteralMalloced("empty");
     #else
     char* split = strtok(requestCopy, ":");
     if (strcmp(split, "Create") == 0) {
@@ -692,7 +692,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
             safe_free(requestCopy);
-            return temp;
+            return createStringLiteralMalloced("Untrusted Message Succesfully sent!");
 
         } else {
             string machineReceiveMsgString = string(machineReceivingMessage);
@@ -751,7 +751,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
                 safe_free(requestCopy);
                 //TODO need to implement
-                return "TODO";
+                return createStringLiteralMalloced("TODO");
                 
             } else {
                 safe_free(requestCopy);
@@ -857,8 +857,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         safe_free(printStr);
         ocall_print(capabilityKey);
 
-        PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey); //TODO shivfree do i need to free capaibilyKey after bc it was malloced
-
+        PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey);
+        safe_free(capabilityKey);
     }
 
     #endif

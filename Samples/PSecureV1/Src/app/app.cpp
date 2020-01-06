@@ -213,7 +213,9 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     char* newMachinePublicIDKey = NULL;
     newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
     safe_free(unsecureSendRequest);
-    // safe_free(newMachinePublicIDKey); //TODO - shivfree - calling this causes a segfault, which means its already been freed. But how?
+    ocall_print("printing pidk");
+    ocall_print(newMachinePublicIDKey);
+    safe_free(newMachinePublicIDKey);
 }
 
 
@@ -299,7 +301,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
     char* request = generateCStringFromFormat("RegisterMachine:%s:-1", machineKeyWrapper, 1);
     char* returnValue = send_network_request_API(request);
     safe_free(request);
-    safe_free(returnValue); //TODO - shivFree - this errors for some reason
+    safe_free(returnValue);
     return returnValue;
 
 }
