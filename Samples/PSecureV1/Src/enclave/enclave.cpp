@@ -302,7 +302,10 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
     uint32_t val; 
     sgx_read_rand((unsigned char *) &val, 4);
     publicID =  prefix + "SPub" + to_string(val % 100);
+    publicID = publicID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq"; 
     privateID = prefix + "SPriv" + to_string(val % 100);
+    privateID = privateID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq"; 
+
 } 
 
 

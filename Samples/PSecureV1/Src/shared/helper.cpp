@@ -457,7 +457,7 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
         ocall_print("Too many strings passed to generateCStringFromFormat!");
         return "ERROR!";
     }
-    char* returnString = (char*) malloc(100);
+    char* returnString = (char*) malloc(200);
 
     char* str1 = strings_to_print[0];
     char* str2 = strings_to_print[1];
@@ -465,7 +465,7 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
     char* str4 = strings_to_print[3];
     char* str5 = strings_to_print[4];
 
-    snprintf(returnString, 100, format_string, str1, str2, str3, str4, str5);
+    snprintf(returnString, 200, format_string, str1, str2, str3, str4, str5);
     //ocall_print("Return string is");
     //ocall_print(returnString);
     return returnString;
@@ -670,7 +670,6 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
         if (isEnclaveUntrustedHost) {
 
             sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingMessage]; //TODO add check here in case its not in dictionary
-
             int ptr;
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
@@ -711,7 +710,6 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
 
             sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingMessage]; //TODO add check here in case its not in dictionary
 
-
             int ptr;
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, encryptedMessage, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
@@ -733,7 +731,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
 
     } else {
         safe_free(requestCopy);
-        return "Command Not Found";
+        return createStringLiteralMalloced("Command Not Found");
     }
     #endif
 }
