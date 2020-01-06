@@ -110,6 +110,16 @@ char* itoa(int num, char* str, int base)
   
     return str; 
 } 
+
+//Responsibility of caller to free result
+char* concat(char* str1, char* str2) {
+    char* retString = (char*) malloc(strlen(str1) + strlen(str2) + 2);
+    strncpy(retString, str1, strlen(str1) + 1);
+    strncat(retString, str2, strlen(str2) + 1);
+    retString[strlen(str1) + strlen(str2)] = '\0';
+    return retString;
+}
+
 PRT_TYPE_KIND convertKindToType(int kind) {
     if (kind == PRT_VALUE_KIND_INT) {
         return PRT_KIND_INT;
@@ -122,6 +132,7 @@ PRT_TYPE_KIND convertKindToType(int kind) {
     }
 }
 
+//Responsiblity of caller to free result
 char* serializePrtValueToString(PRT_VALUE* value) {
     //TODO code the rest of the types
     if (value->discriminator == PRT_VALUE_KIND_INT) {
@@ -153,11 +164,13 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(tupleString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
+            free(typeString);
             tupleString[currIndex] = ':';
             currIndex++;
             char* serializedStr = serializePrtValueToString(currValue);
             memcpy(tupleString + currIndex, serializedStr, strlen(serializedStr) + 1);
             currIndex += strlen(serializedStr);
+            free(serializedStr);
             if (i < tupPtr->size - 1) {
                 tupleString[currIndex] = ':';
                 currIndex++;
@@ -182,11 +195,13 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(mapString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
+            free(typeString);
             mapString[currIndex] = ':';
             currIndex++;
             char* serializedKey = serializePrtValueToString(mapKey);
             memcpy(mapString + currIndex, serializedKey, strlen(serializedKey) + 1);
             currIndex += strlen(serializedKey);
+            free(serializedKey);
             mapString[currIndex] = ':';
             currIndex++;
             PRT_VALUE* mapValue = mapValues->valueUnion.seq->values[i];
@@ -195,11 +210,13 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(mapString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
+            free(typeString);
             mapString[currIndex] = ':';
             currIndex++;
             char* serializedValue = serializePrtValueToString(mapValue);
             memcpy(mapString + currIndex, serializedValue, strlen(serializedValue) + 1);
             currIndex += strlen(serializedValue);
+            free(serializedValue);
             if (i < size - 1) {
                 mapString[currIndex] = ':';
                 currIndex++;
@@ -223,11 +240,13 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(seqString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
+            free(typeString);
             seqString[currIndex] = ':';
             currIndex++;
             char* serializedValue = serializePrtValueToString(seqValue);
             memcpy(seqString + currIndex, serializedValue, strlen(serializedValue) + 1);
             currIndex += strlen(serializedValue);
+            free(serializedValue);
             if (i < size - 1) {
                 seqString[currIndex] = ':';
                 currIndex++;
@@ -275,6 +294,7 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
             newPrtValue->valueUnion.bl = PRT_FALSE;
         } 
     } 
+    free(payload);
     return newPrtValue;
 
 }
@@ -354,6 +374,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
                 char* reentrant = NULL;
                 strtok_r(dataType, ":", &reentrant);
                 int dType = atoi(dataType);
+                free(dataType);
                 nextMapKeyValuePairToProcess = nextMapKeyValuePairToProcess + numProcessedInHelper + 1;
 
                 PRT_VALUE* value = *deserializeStringToPrtValue(1, nextMapKeyValuePairToProcess, &numProcessedInHelper);
@@ -362,6 +383,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
                 char* reentrant2 = NULL;
                 strtok_r(dataType2, ":", &reentrant2);
                 int dType2 = atoi(dataType2);
+                free(dataType2);
                 nextMapKeyValuePairToProcess = nextMapKeyValuePairToProcess + numProcessedInHelper + 1;
 
                 if (values[i] == NULL) {
@@ -399,6 +421,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
                 char* reentrant = NULL;
                 strtok_r(dataType, ":", &reentrant);
                 int dType = atoi(dataType);
+                free(dataType);
 
                 if (values[i] == NULL) {
 
@@ -416,6 +439,8 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
 
         }
     }
+    free(str);
+    free(strCopy);
     return values;
 }
 
@@ -442,8 +467,15 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
 }
 
 char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
+    ocall_print("helllo");
+    ocall_print_int(strlen(request));
+    //char requestCopy[250];
     char* requestCopy = (char*) malloc(strlen(request) + 1);
-    memcpy(requestCopy, request, strlen(request) + 1);
+    ocall_print("malloc init");
+    strncpy(requestCopy, request, strlen(request) + 1);
+    requestCopy[strlen(request)] = '\0';
+    ocall_print("malloc yeeee");
+
 
     #ifdef ENCLAVE_STD_ALT   
     return "empty";
@@ -493,10 +525,11 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             // application of this enclave and have that make an ecall to createMachineAPi
             sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
-
+            free(requestCopy);
             return newMachineID;
 
         } else {
+            //free(requestCopy);
             if (USMAuthorizedTypes.count(machineType) > 0) {
                 return createUSMMachineAPI(machineType, numArgs, payloadType, payload);
             } else {
@@ -549,12 +582,14 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
 
-            
+            free(requestCopy);
+
             return newMachineID;
 
 
         } else {
             if (USMAuthorizedTypes.count(machineType) > 0) {
+                free(requestCopy);
                 return createUSMMachineAPI(machineType, numArgs, payloadType, payload);
             } else {
                 return untrusted_enclave1_receiveNetworkRequest(requestCopy);
@@ -585,11 +620,12 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             if (status != SGX_SUCCESS) {
                 printf("Sgx Error Code: %x\n", status);
             }
+            free(requestCopy);
             return newSessionKey;
 
         } else {
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm)) > 0) {
-                
+                free(requestCopy);
                 return USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm);
             
             } else {
@@ -625,6 +661,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             int ptr;
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+            free(requestCopy);
             return temp;
 
         } else {
@@ -632,6 +669,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             // printf("Untrusted Send -> machine checking in dictionary is %s\n", machineReceiveMsgString.c_str());
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
                 // printf("Sending Message to USM in app.cpp\n");
+                free(requestCopy);
                 return USMsendMessageAPI(machineReceivingMessage, eventNum, numArgs, payloadType, payload);
                 
             } else {
@@ -646,9 +684,9 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
         char* machineSendingMessage = split;
         split = strtok(NULL, ":");
         char* machineReceivingMessage = split;
-        char* encryptedMessage = machineReceivingMessage + strlen(machineReceivingMessage) + 1;
-        // ocall_print("encrypted message is");
-        // ocall_print(encryptedMessage);
+        char* encryptedMessage = requestCopy + strlen("Send") + 1 + strlen(machineSendingMessage) + 1 + strlen(machineReceivingMessage) + 1;
+        ocall_print("encrypted message is");
+        ocall_print(encryptedMessage);
 
         if (isEnclaveUntrustedHost) {
 
@@ -660,14 +698,32 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
 
 
             int ptr;
+            ocall_print("about to call decrypt");
+            ocall_print(machineSendingMessage);
+            ocall_print_int(strlen(machineSendingMessage) + 1);
+            ocall_print(machineReceivingMessage);
+            ocall_print_int(strlen(machineReceivingMessage) + 1);
+            ocall_print(encryptedMessage);
+            ocall_print_int(strlen(encryptedMessage) + 1);
+            char mSM[strlen(machineSendingMessage) + 1];
+            memcpy(mSM, machineSendingMessage, strlen(machineSendingMessage) + 1);
+            char mRM[strlen(machineReceivingMessage) + 1];
+            memcpy(mRM, machineReceivingMessage, strlen(machineReceivingMessage) + 1);
+            char eM[strlen(encryptedMessage) + 1];
+            memcpy(eM, encryptedMessage, strlen(encryptedMessage) + 1);
+            free(requestCopy);
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, encryptedMessage, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
+            enclave_eprint(enclave_eid, "hiiii");
+
+            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, mSM,mRM, eM, strlen(machineSendingMessage) + 1, strlen(encryptedMessage) + 1);
+            
             return temp;
 
         } else {
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
 
                 //TODO need to implement
+                free(requestCopy);
                 return "TODO";
                 
             } else {
@@ -770,6 +826,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     #endif
 
+    free(createMachineRequest);
+
     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
 	sprintf_s(str, 100, newMachinePublicIDKey);
@@ -855,7 +913,7 @@ int machineTypeIsSecure(char* machineType) {
     return curMachineDecl->isSecure;
 }
 
-
+//responsibility of caller to free string
 string createString(char* str) {
     char* strCopy = (char*) malloc(strlen(str) + 1);
     memcpy(strCopy, str, strlen(str) + 1);

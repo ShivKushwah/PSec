@@ -209,6 +209,8 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     printf("Untrusted machine is sending out following network request: %s\n", unsecureSendRequest);   
     char* newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
 
+    free(unsecureSendRequest);
+
 
     // // char* empty;
     // // int ret_value;
@@ -404,7 +406,8 @@ void startPrtProcessIfNotStarted() {
 
 int main(int argc, char const *argv[]) {
     initNetwork();
-
+    //char* kirat = (char*) malloc(220);
+ 
     // Place the measurement of the enclave into metadata_info.txt
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
 

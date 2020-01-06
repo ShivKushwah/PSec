@@ -289,10 +289,14 @@ char* registerMachineWithNetwork(char* newMachineID) {
 
 //publicID and privateID must be allocated by the caller
 void generateIdentity(string& publicID, string& privateID, string prefix) {
-    uint32_t val; 
-    sgx_read_rand((unsigned char *) &val, 4);
-    publicID =  prefix + "SPub" + to_string(val % 100);
-    privateID = prefix + "SPriv" + to_string(val % 100);
+    if (PROGRAM_DEBUG) {
+        uint32_t val; 
+        sgx_read_rand((unsigned char *) &val, 4);
+        publicID =  prefix + "SPub" + to_string(val % 100);
+        //publicID = publicID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+        privateID = prefix + "SPriv" + to_string(val % 100);
+        //privateID = privateID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+    }
 } 
 
 
@@ -329,6 +333,9 @@ int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey,
     PRT_MACHINEID receivingMachinePID;
     ocall_print("SecureChildMachine has a PID of:");
     char* temp = (char*) malloc(10);
+    if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey)) == 0) {
+        ocall_print("Key not found");
+    }
     snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
     ocall_print(temp);
     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
@@ -336,12 +343,13 @@ int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey,
 }
 
 int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* encryptedMessage, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE) {
-    
+    ocall_print("entered decrypt fn");
     char* split = strtok(encryptedMessage, ":");
     char* eventNum = split;
     split = strtok(NULL, ":");
     int numArgs = atoi(split);
     int payloadType = -1;
+    ocall_print("chillin");
     char* payload = (char*) malloc(10);
     payload[0] = '\0';
     if (numArgs > 0) {
@@ -371,7 +379,7 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
 void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend) {
     //TODO if making changes in this protocol, make changes in app.cpp
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
-
+ 
     ocall_print("Entered Secure Send");
 
     char* currentMachineIDPublicKey;
@@ -407,6 +415,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             ocall_print(generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1));       
             ocall_print(newSessionKey);
             PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
+            free(initComRequest);
         }
 
 
@@ -470,6 +479,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
     ocall_print(generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1));
+    free(sendRequest);
 
 }
 
