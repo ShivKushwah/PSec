@@ -462,7 +462,7 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
     return returnString;
 
 }
-
+//Responbility of caller to free return
 char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
     char* requestCopy = (char*) malloc(strlen(request) + 1);
     memcpy(requestCopy, request, strlen(request) + 1);
@@ -470,7 +470,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
     #ifdef ENCLAVE_STD_ALT   
     return "empty";
     #else
-    char* split = strtok(request, ":");
+    char* split = strtok(requestCopy, ":");
     if (strcmp(split, "Create") == 0) {
         char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
         split = strtok(NULL, ":");
@@ -515,14 +515,17 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             // application of this enclave and have that make an ecall to createMachineAPi
             sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
-
+            safe_free(requestCopy);
             return newMachineID;
 
         } else {
             if (USMAuthorizedTypes.count(machineType) > 0) {
-                return createUSMMachineAPI(machineType, numArgs, payloadType, payload);
+                char* ret = createUSMMachineAPI(machineType, numArgs, payloadType, payload);
+                safe_free(requestCopy);
+                return ret;
             } else {
-                return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+                safe_free(requestCopy);
+                return untrusted_enclave1_receiveNetworkRequest(request);
             }
         }
 
@@ -570,16 +573,18 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
 
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
-
-            
+            safe_free(requestCopy);
             return newMachineID;
 
 
         } else {
             if (USMAuthorizedTypes.count(machineType) > 0) {
-                return createUSMMachineAPI(machineType, numArgs, payloadType, payload);
+                char* ret = createUSMMachineAPI(machineType, numArgs, payloadType, payload);
+                safe_free(requestCopy);
+                return ret;
             } else {
-                return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+                safe_free(requestCopy);
+                return untrusted_enclave1_receiveNetworkRequest(request);
             }
         }
 
@@ -607,15 +612,19 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             if (status != SGX_SUCCESS) {
                 printf("Sgx Error Code: %x\n", status);
             }
+            safe_free(requestCopy);
             return newSessionKey;
 
         } else {
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm)) > 0) {
                 
-                return USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm);
+                char* ret = USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm);
+                safe_free(requestCopy);
+                return ret;
             
             } else {
-                return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+                safe_free(requestCopy);
+                return untrusted_enclave1_receiveNetworkRequest(request);
             }
         }
 
@@ -647,6 +656,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             int ptr;
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+            safe_free(requestCopy);
             return temp;
 
         } else {
@@ -654,10 +664,13 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             // printf("Untrusted Send -> machine checking in dictionary is %s\n", machineReceiveMsgString.c_str());
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
                 // printf("Sending Message to USM in app.cpp\n");
-                return USMsendMessageAPI(machineReceivingMessage, eventNum, numArgs, payloadType, payload);
+                char* ret = USMsendMessageAPI(machineReceivingMessage, eventNum, numArgs, payloadType, payload);
+                safe_free(requestCopy);
+                return ret;
                 
             } else {
-                return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+                safe_free(requestCopy);
+                return untrusted_enclave1_receiveNetworkRequest(request);
             }
         }
 
@@ -684,21 +697,24 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             int ptr;
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, encryptedMessage, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
+            safe_free(requestCopy);
             return temp;
 
         } else {
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
-
+                safe_free(requestCopy);
                 //TODO need to implement
                 return "TODO";
                 
             } else {
-                return untrusted_enclave1_receiveNetworkRequest(requestCopy);
+                safe_free(requestCopy);
+                return untrusted_enclave1_receiveNetworkRequest(request);
             }
         }
 
 
     } else {
+        safe_free(requestCopy);
         return "Command Not Found";
     }
     #endif
