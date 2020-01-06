@@ -812,6 +812,7 @@ int ocall_network_request(char* request, char* response, uint32_t RESPONSE_SIZE)
         printf("ERROR. Message too big!\n");
     }
     memcpy(response, result, strlen(result) + 1);
+    //free(result);
     return 1;
 
 }

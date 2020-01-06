@@ -321,6 +321,7 @@ char* send_network_request_API(char* request) {
     //TODO look into not calling pthread_join but actually let this run asynchoronous
     pthread_join(thread_id, &thread_ret); 
     printf("\n Finished Network Request Thread\n"); 
+    free(requestCopy);
 
     return (char*) thread_ret;
 

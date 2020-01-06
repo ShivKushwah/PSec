@@ -206,8 +206,12 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     } else {
         snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:0", sendingToMachinePublicID, event);
     }
+    free(event);
+    free(eventMessagePayload);
     printf("Untrusted machine is sending out following network request: %s\n", unsecureSendRequest);   
     char* newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
+    free(unsecureSendRequest);
+    //free(newMachinePublicIDKey); TODO - shivfree - calling this causes a segfault, which means its already been freed. But how?
 
 
     // // char* empty;
@@ -236,6 +240,7 @@ char* receiveNetworkRequest(char* request) {
 
 }
 
+//Responsibility of Caller to free return 
 char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey) {
     printf("USM Initialize Communication API Called!\n");
     //TODO need to verify signature over requestingMachineIDKey
@@ -304,6 +309,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
 
 }
 
+//Responbility of caller to free return
 char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload) {
     startPrtProcessIfNotStarted();
     if (machineTypeIsSecure(machineType)) {
@@ -324,6 +330,7 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     char* usmChildPublicIDKeyCopy = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
     registerMachineWithNetwork(usmChildPublicIDKeyCopy);
+    free(usmChildPublicIDKeyCopy);
 
     char* usmChildPublicIDKeyCopy2 = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy2, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
