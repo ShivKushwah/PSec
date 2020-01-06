@@ -190,7 +190,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
     printf("Network Request Received: %s\n", request);
 
     char* requestCopy = (char*) malloc(MAX_NETWORK_MESSAGE);
-    memcpy(requestCopy, request, strlen(request) + 1);
+    memcpy(requestCopy, request, strlen(request) + 1); //NOTE Since I didn't update MAX_NETWORK_MESSAGE, this caused a weird memory bug last time when I increased size of public identity key
 
     char* split = strtok(requestCopy, ":");
     if (strcmp(split, "Create") == 0) {
