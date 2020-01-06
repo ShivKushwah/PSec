@@ -284,6 +284,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
     
     char* networkResult = (char*) malloc(100);
     ocall_network_request(&ret_value, generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2), networkResult, 100);
+    safe_free(networkResult);
 
 }
 
@@ -398,13 +399,17 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             snprintf(initComRequest, requestSize, "InitComm:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID);
             
             char* machineNameWrapper[] = {currentMachineIDPublicKey};
-            ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));
+            char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+            ocall_print(printStr);
+            safe_free(printStr);
             ocall_print(initComRequest);
             char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
             int ret_value;
             ocall_network_request(&ret_value, initComRequest, newSessionKey, SIZE_OF_SESSION_KEY);
             char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-            ocall_print(generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1));       
+            printStr = generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1);
+            ocall_print(printStr);
+            safe_free(printStr);       
             ocall_print(newSessionKey);
             PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
         }
@@ -430,7 +435,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
     char* temp = serializePrtValueToString(*P_EventMessage_Payload);
     memcpy(eventMessagePayload, temp, strlen(temp) + 1);
-    free(temp);
+    safe_free(temp);
 
     // for (int i = 0; i < numArgs; i++) {
     //     PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];
@@ -463,14 +468,18 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     }
     
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));      
+    char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+    ocall_print(printStr);
+    safe_free(printStr);      
     ocall_print(sendRequest);
     char* empty;
     int ret_value;
     ocall_network_request(&ret_value, sendRequest, empty, 0);
 
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1));
+    printStr = generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1);
+    ocall_print(printStr);
+    safe_free(printStr);
 
 }
 

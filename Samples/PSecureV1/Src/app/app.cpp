@@ -310,8 +310,11 @@ int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
 char* registerMachineWithNetwork(char* newMachineID) {
 
     char* machineKeyWrapper[] = {newMachineID};
-    
-    return send_network_request_API(generateCStringFromFormat("RegisterMachine:%s:-1", machineKeyWrapper, 1));
+    char* request = generateCStringFromFormat("RegisterMachine:%s:-1", machineKeyWrapper, 1);
+    char* returnValue = send_network_request_API(request);
+    safe_free(request);
+    // safe_free(returnValue); //TODO - shivFree - this errors for some reason
+    return returnValue;
 
 }
 

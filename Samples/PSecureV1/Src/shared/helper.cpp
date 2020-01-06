@@ -45,6 +45,13 @@ extern char* untrusted_enclave1_receiveNetworkRequest(char* request);
 extern char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey);
 extern char* send_network_request_API(char* request);
 
+void safe_free(void* ptr) {
+    if (ptr != NULL) {
+        free(ptr);
+        ptr = NULL;
+    }
+}
+
 int atoi(char *p) {
     int k = 0;
     while (*p) {
@@ -154,15 +161,13 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(tupleString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
-            free(typeString);
-            typeString = NULL;
+            safe_free(typeString);
             tupleString[currIndex] = ':';
             currIndex++;
             char* serializedStr = serializePrtValueToString(currValue);
             memcpy(tupleString + currIndex, serializedStr, strlen(serializedStr) + 1);
             currIndex += strlen(serializedStr);
-            free(serializedStr);
-            serializedStr = NULL;
+            safe_free(serializedStr);
             if (i < tupPtr->size - 1) {
                 tupleString[currIndex] = ':';
                 currIndex++;
@@ -187,15 +192,13 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(mapString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
-            free(typeString);
-            typeString = NULL;
+            safe_free(typeString);
             mapString[currIndex] = ':';
             currIndex++;
             char* serializedKey = serializePrtValueToString(mapKey);
             memcpy(mapString + currIndex, serializedKey, strlen(serializedKey) + 1);
             currIndex += strlen(serializedKey);
-            free(serializedKey);
-            serializedKey = NULL;
+            safe_free(serializedKey);
             mapString[currIndex] = ':';
             currIndex++;
             PRT_VALUE* mapValue = mapValues->valueUnion.seq->values[i];
@@ -204,15 +207,13 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(mapString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
-            free(typeString);
-            typeString = NULL;
+            safe_free(typeString);
             mapString[currIndex] = ':';
             currIndex++;
             char* serializedValue = serializePrtValueToString(mapValue);
             memcpy(mapString + currIndex, serializedValue, strlen(serializedValue) + 1);
             currIndex += strlen(serializedValue);
-            free(serializedValue);
-            serializedValue = NULL;
+            safe_free(serializedValue);
             if (i < size - 1) {
                 mapString[currIndex] = ':';
                 currIndex++;
@@ -236,15 +237,13 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             itoa(currValueType, typeString, 10);
             memcpy(seqString + currIndex, typeString, strlen(typeString) + 1);
             currIndex += strlen(typeString);
-            free(typeString);
-            typeString = NULL;
+            safe_free(typeString);
             seqString[currIndex] = ':';
             currIndex++;
             char* serializedValue = serializePrtValueToString(seqValue);
             memcpy(seqString + currIndex, serializedValue, strlen(serializedValue) + 1);
             currIndex += strlen(serializedValue);
-            free(serializedValue);
-            serializedValue = NULL;
+            safe_free(serializedValue);
             if (i < size - 1) {
                 seqString[currIndex] = ':';
                 currIndex++;
@@ -292,8 +291,7 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
             newPrtValue->valueUnion.bl = PRT_FALSE;
         } 
     } 
-    free(payload);
-    payload = NULL;
+    safe_free(payload);
     return newPrtValue;
 
 }
@@ -373,6 +371,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
                 char* reentrant = NULL;
                 strtok_r(dataType, ":", &reentrant);
                 int dType = atoi(dataType);
+                safe_free(dataType);
                 nextMapKeyValuePairToProcess = nextMapKeyValuePairToProcess + numProcessedInHelper + 1;
 
                 PRT_VALUE* value = *deserializeStringToPrtValue(1, nextMapKeyValuePairToProcess, &numProcessedInHelper);
@@ -381,6 +380,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
                 char* reentrant2 = NULL;
                 strtok_r(dataType2, ":", &reentrant2);
                 int dType2 = atoi(dataType2);
+                safe_free(dataType2);
                 nextMapKeyValuePairToProcess = nextMapKeyValuePairToProcess + numProcessedInHelper + 1;
 
                 if (values[i] == NULL) {
@@ -418,6 +418,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
                 char* reentrant = NULL;
                 strtok_r(dataType, ":", &reentrant);
                 int dType = atoi(dataType);
+                safe_free(dataType);
 
                 if (values[i] == NULL) {
 
@@ -435,13 +436,11 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
 
         }
     }
-    free(str);
-    str = NULL;
-    free(strCopy);
-    strCopy = NULL;
+    safe_free(str);
+    safe_free(strCopy);
     return values;
 }
-
+//Responsbility of caller to free return
 char* generateCStringFromFormat(char* format_string, char* strings_to_print[], int num_strings) {
         //NOTE make changes in app.cpp as well
 
@@ -754,12 +753,13 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
         }
     }
-    free(payloadString);
-    payloadString = NULL;
+    safe_free(payloadString);
     
     
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine is sending out the following network request:", machineNameWrapper, 1)); //TODO use this method for all future ocall_prints
+    char* printStr = generateCStringFromFormat("%s machine is sending out the following network request:", machineNameWrapper, 1);
+    ocall_print(printStr); //TODO use this method for all future ocall_prints
+    safe_free(printStr);
     ocall_print(createMachineRequest);
     int ret_value; 
 
@@ -769,11 +769,12 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     ocall_network_request(createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING + 1);
     // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
     #endif
-    free(createMachineRequest);
-    createMachineRequest = NULL;
+    safe_free(createMachineRequest);
     
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine has created a new machine with Identity Public Key as:", machineNameWrapper2, 1)); //TODO use this method for all future ocall_prints
+    printStr = generateCStringFromFormat("%s machine has created a new machine with Identity Public Key as:", machineNameWrapper2, 1);
+    ocall_print(printStr); //TODO use this method for all future ocall_prints
+    safe_free(printStr);
     ocall_print(newMachinePublicIDKey);
 
     #ifdef ENCLAVE_STD_ALT
@@ -788,7 +789,9 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
         
         char* machineNameWrapper3[] = {currentMachineIDPublicKey};
-        ocall_print(generateCStringFromFormat("%s machine has received capability key for secure child:", machineNameWrapper3, 1)); //TODO use this method for all future ocall_prints
+        printStr = generateCStringFromFormat("%s machine has received capability key for secure child:", machineNameWrapper3, 1);
+        ocall_print(printStr); //TODO use this method for all future ocall_prints
+        safe_free(printStr);
         ocall_print(capabilityKey);
 
         PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey);
@@ -796,8 +799,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     }
 
     #endif
-    free(currentMachineIDPublicKey);
-    currentMachineIDPublicKey = NULL;
+    safe_free(currentMachineIDPublicKey);
 
     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);

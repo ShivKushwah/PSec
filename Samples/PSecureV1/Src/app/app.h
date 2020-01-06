@@ -55,3 +55,5 @@ extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context
 
 char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost);
 
+void safe_free(void* ptr);
+

@@ -169,8 +169,7 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
 {
     if(resp!=NULL)
     {
-        free(resp);
-        resp = NULL;
+        safe_free(resp);
     }
 }
 
@@ -322,8 +321,7 @@ char* send_network_request_API(char* request) {
     //TODO look into not calling pthread_join but actually let this run asynchoronous
     pthread_join(thread_id, &thread_ret); 
     printf("\n Finished Network Request Thread\n"); 
-    free(requestCopy);
-    requestCopy = NULL;
+    safe_free(requestCopy);
 
     return (char*) thread_ret;
 
