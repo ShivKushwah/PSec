@@ -181,6 +181,7 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
         int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
             char* temp = serializePrtValueToString(*P_EventMessage_Payload);
             memcpy(eventMessagePayload, temp, strlen(temp) + 1);
+            safe_free(temp);
     //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
     //     //TODO I assumed only 1 payload for the below
     //     // if (i == 0) {
@@ -206,21 +207,13 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     } else {
         snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:0", sendingToMachinePublicID, event);
     }
+    safe_free(event);
+    safe_free(eventMessagePayload);
     printf("Untrusted machine is sending out following network request: %s\n", unsecureSendRequest);   
-    char* newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
-
-    free(unsecureSendRequest);
-
-
-    // // char* empty;
-    // // int ret_value;
-    // // ocall_network_request(&ret_value, secureSendRequest, empty, 0);
-
-
-    // // char* networkRequest = "UntrustedCreate:Coordinator";
-    // // char* returnMessage = send_network_request_API(networkRequest);
-    // // printf("Network Message Confirmation: %s", returnMessage);
-    
+    char* newMachinePublicIDKey = NULL;
+    newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
+    safe_free(unsecureSendRequest);
+    // safe_free(newMachinePublicIDKey); //TODO - shivfree - calling this causes a segfault, which means its already been freed. But how?
 }
 
 
@@ -238,6 +231,7 @@ char* receiveNetworkRequest(char* request) {
 
 }
 
+//Responsibility of Caller to free return 
 char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey) {
     printf("USM Initialize Communication API Called!\n");
     //TODO need to verify signature over requestingMachineIDKey
@@ -251,7 +245,7 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
         memcpy(returnSessionkey, newSessionKey.c_str(), newSessionKey.length() + 1);
         return returnSessionkey;
     } else {
-        char* errorMsg = "Already created!";
+        char* errorMsg = createStringLiteralMalloced("Already created!");
         printf("ERROR:Session has already been initalized in the past!\n");
         return errorMsg;
     }
@@ -271,9 +265,10 @@ char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs
     char* temp = (char*) malloc(10);
     snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
     printf(temp);
+    safe_free(temp);
     receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
     handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload);
-    return "Message successfully sent!/n";
+    return createStringLiteralMalloced("Message successfully sent!/n");
 }
 
 // OCall implementations
@@ -301,11 +296,15 @@ int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
 char* registerMachineWithNetwork(char* newMachineID) {
 
     char* machineKeyWrapper[] = {newMachineID};
-    
-    return send_network_request_API(generateCStringFromFormat("RegisterMachine:%s:-1", machineKeyWrapper, 1));
+    char* request = generateCStringFromFormat("RegisterMachine:%s:-1", machineKeyWrapper, 1);
+    char* returnValue = send_network_request_API(request);
+    safe_free(request);
+    safe_free(returnValue); //TODO - shivFree - this errors for some reason
+    return returnValue;
 
 }
 
+//Responbility of caller to free return
 char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload) {
     startPrtProcessIfNotStarted();
     if (machineTypeIsSecure(machineType)) {
@@ -326,6 +325,7 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     char* usmChildPublicIDKeyCopy = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
     registerMachineWithNetwork(usmChildPublicIDKeyCopy);
+    safe_free(usmChildPublicIDKeyCopy);
 
     char* usmChildPublicIDKeyCopy2 = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy2, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
@@ -411,7 +411,8 @@ int main(int argc, char const *argv[]) {
     // Place the measurement of the enclave into metadata_info.txt
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
 
-    createUSMMachineAPI("GodUntrusted", 0, 0, "");
+    char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "");
+    safe_free(ret);
 
     return 0;
 }

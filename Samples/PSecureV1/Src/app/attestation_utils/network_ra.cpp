@@ -169,7 +169,7 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
 {
     if(resp!=NULL)
     {
-        free(resp);
+        safe_free(resp);
     }
 }
 
@@ -190,7 +190,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
     printf("Network Request Received: %s\n", request);
 
     char* requestCopy = (char*) malloc(MAX_NETWORK_MESSAGE);
-    memcpy(requestCopy, request, strlen(request) + 1);
+    memcpy(requestCopy, request, strlen(request) + 1); //NOTE Since I didn't update MAX_NETWORK_MESSAGE, this caused a weird memory bug last time when I increased size of public identity key
 
     char* split = strtok(requestCopy, ":");
     if (strcmp(split, "Create") == 0) {
@@ -204,7 +204,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
             return forward_request(request, TypeOfMachineToEnclaveNum[machineType]);
 
         } else {
-            return "ERROR:Machine Type Not Found!";
+            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         }
 
     
@@ -217,7 +217,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
             return forward_request(request, TypeOfMachineToEnclaveNum[machineType]);
 
         } else {
-            return "ERROR:Machine Type Not Found!";
+            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         }
     
     } else if (strcmp(split, "InitComm") == 0) {
@@ -232,7 +232,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
             return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingComm]);
 
         } else {
-            return "ERROR:Machine Type Not Found!";
+            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         }
 
     
@@ -246,7 +246,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
             return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingMessage]);
 
         } else {
-            return "ERROR:Machine Type Not Found!";
+            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         }
 
     } else if (strcmp(split, "Send") == 0) {
@@ -261,7 +261,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
             return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingMessage]);
 
         } else {
-            return "ERROR:Machine Type Not Found!";
+            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         }
 
     } else if (strcmp(split, "RegisterMachine") == 0) { //When a new machine is created, its public ID key should be registered with network_ra so that network knows who to forward the message to
@@ -275,11 +275,11 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         } else {
             MachinePublicIDToEnclaveNum[string(publicIDRegister)] = atoi(enclaveNumRegister);
         }
-        return "Success!";
+        return createStringLiteralMalloced("Success!");
 
 
     } else {
-        return "Command Not Found";
+        return createStringLiteralMalloced("Command Not Found");
     }
 }
 
@@ -321,8 +321,16 @@ char* send_network_request_API(char* request) {
     //TODO look into not calling pthread_join but actually let this run asynchoronous
     pthread_join(thread_id, &thread_ret); 
     printf("\n Finished Network Request Thread\n"); 
+    safe_free(requestCopy);
 
     return (char*) thread_ret;
 
 }
 
+char* createStringLiteralMalloced(char* stringLiteral) {
+    //TODO if modifying here, modify in helper.cpp
+    char* malloced = (char*) malloc(strlen(stringLiteral));
+    strncpy(malloced, stringLiteral, strlen(stringLiteral) + 1);
+    return malloced;
+
+}

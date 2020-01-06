@@ -145,6 +145,7 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     sendSendNetworkRequest(context, argRefs, "Send", true);
 }
 
+//Responsibility of caller to free return
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
     int ret;
     char* other_machine_name = "KPS";
@@ -152,6 +153,7 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     char* requestString = (char*) malloc(requestSize);
     snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);    
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, strlen(other_machine_name)+1, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString);
+    safe_free(requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;
@@ -162,6 +164,7 @@ void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid, char* machineTypeToC
     char* newMachinePublicIDKey = createMachineHelper(machineTypeToCreate, "", numArgs, payloadType, payloadString, false, enclaveEid);
     //"Return" the publicIDKey of the new machine
     memcpy(returnNewMachinePublicID, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
+    safe_free(newMachinePublicIDKey);
 }
 
 void eprint(char* printStr) {
@@ -209,7 +212,7 @@ void startPrtProcessIfNotStarted() {
 }
 
 
-
+// Responsibility of caller to free return
 char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, bool isSecureCreate, sgx_enclave_id_t enclaveEid) {
     startPrtProcessIfNotStarted();
 
@@ -225,6 +228,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
     strncpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
     ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, enclaveEid);
+    safe_free(publicIdKeyCopy);
     int newMachinePID = getNextPID(); 
     //Store new machine information in enclave's dictionaries
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
@@ -232,7 +236,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
 
     if (isSecureCreate) {
         //Contacting KPS for capability key
-        string capabilityKeyReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str());
+        string capabilityKeyReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str()); //TODO shivfree how do i deal with malloced std::Strings ?
         ocall_print("Enclave received new capability Key from KPS: ");
         ocall_print(capabilityKeyReceived.c_str());
         MachinePIDtoCapabilityKeyDictionary[newMachinePID] = capabilityKeyReceived;
@@ -241,6 +245,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     char* secureChildPublicIDKeyCopy = (char*) malloc(secureChildPublicIDKey.size() + 1);
     memcpy(secureChildPublicIDKeyCopy, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.size() + 1);
     registerMachineWithNetwork(secureChildPublicIDKeyCopy);
+    safe_free(secureChildPublicIDKeyCopy);
 
     if (isSecureCreate) {
         createMachine(machineType, numArgs, payloadType, payload);
@@ -261,8 +266,10 @@ int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* paren
     char* newMachinePublicIDKey = createMachineHelper(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload, true, enclaveEid);
     //"Return" the publicIDKey of the new machine
     memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
+    safe_free(newMachinePublicIDKey);
 }
 
+//Responbility of caller to free return
 char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey) {
     int ret;
     char* other_machine_name = "KPS";
@@ -270,6 +277,7 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     char* requestString = (char*) malloc(requestSize);
     snprintf(requestString, requestSize, "%s:%s", newMachinePublicIDKey, parentTrustedMachineID);
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, strlen(other_machine_name)+1, CREATE_CAPABILITY_KEY_CONSTANT, requestString);
+    safe_free(requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;
@@ -284,19 +292,20 @@ char* registerMachineWithNetwork(char* newMachineID) {
     
     char* networkResult = (char*) malloc(100);
     ocall_network_request(&ret_value, generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2), networkResult, 100);
+    safe_free(num);
+    safe_free(networkResult);
 
 }
 
 //publicID and privateID must be allocated by the caller
 void generateIdentity(string& publicID, string& privateID, string prefix) {
-    if (PROGRAM_DEBUG) {
-        uint32_t val; 
-        sgx_read_rand((unsigned char *) &val, 4);
-        publicID =  prefix + "SPub" + to_string(val % 100);
-        //publicID = publicID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq";
-        privateID = prefix + "SPriv" + to_string(val % 100);
-        //privateID = privateID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq";
-    }
+    uint32_t val; 
+    sgx_read_rand((unsigned char *) &val, 4);
+    publicID =  prefix + "SPub" + to_string(val % 100);
+    publicID = publicID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq"; 
+    privateID = prefix + "SPriv" + to_string(val % 100);
+    privateID = privateID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq"; 
+
 } 
 
 
@@ -338,6 +347,7 @@ int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey,
     }
     snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
     ocall_print(temp);
+    safe_free(temp);
     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
     handle_incoming_event(atoi(event), receivingMachinePID, numArgs, payloadType, payload); //TODO update to untrusted send api
 }
@@ -356,8 +366,11 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
         split = strtok(NULL, ":");
         payloadType = atoi(split);
         split = strtok(NULL, "\0");
+        safe_free(payload);
         payload = split;
 
+    } else {
+        safe_free(payload);
     }
     sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, 0, 0, 0);
 
@@ -406,16 +419,20 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             snprintf(initComRequest, requestSize, "InitComm:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID);
             
             char* machineNameWrapper[] = {currentMachineIDPublicKey};
-            ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));
+            char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+            ocall_print(printStr);
+            safe_free(printStr);
             ocall_print(initComRequest);
             char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
             int ret_value;
             ocall_network_request(&ret_value, initComRequest, newSessionKey, SIZE_OF_SESSION_KEY);
+            safe_free(initComRequest);
             char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-            ocall_print(generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1));       
+            printStr = generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1);
+            ocall_print(printStr);
+            safe_free(printStr);       
             ocall_print(newSessionKey);
-            PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
-            free(initComRequest);
+            PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey); //TODO shivfree how do i free a malloced string
         }
 
 
@@ -439,6 +456,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
     char* temp = serializePrtValueToString(*P_EventMessage_Payload);
     memcpy(eventMessagePayload, temp, strlen(temp) + 1);
+    safe_free(temp);
 
     // for (int i = 0; i < numArgs; i++) {
     //     PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];
@@ -471,15 +489,25 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     }
     
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1));      
+    char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+    ocall_print(printStr);
+    safe_free(printStr);      
     ocall_print(sendRequest);
     char* empty;
     int ret_value;
     ocall_network_request(&ret_value, sendRequest, empty, 0);
+    safe_free(sendRequest);
 
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-    ocall_print(generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1));
-    free(sendRequest);
+    printStr = generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1);
+    ocall_print(printStr);
+    safe_free(printStr);
+
+    safe_free(event);
+    safe_free(eventMessagePayload);
+    safe_free(numArgsPayload);
+
+    safe_free(currentMachineIDPublicKey);
 
 }
 

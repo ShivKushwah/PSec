@@ -147,6 +147,7 @@ char* extract_measurement(FILE* fp)
         //printf("%s", measurement);
         //printf("\nEnd found!\n");
         measurement[i] = '\0';
+        safe_free(linha);
         return measurement;
     }
     if (match_found == true) {
@@ -178,6 +179,8 @@ char* extract_measurement(FILE* fp)
         match_found = true;
     }   
    }
+   safe_free(measurement);
+   safe_free(linha);
 
    return NULL;
 }
@@ -686,7 +689,8 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             ret = SP_QUOTE_VERIFICATION_FAILED;
             break;
         }    
-        fclose(fp1); 
+        fclose(fp1);
+        safe_free(expected_measurement);
 
 
 
@@ -871,6 +875,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 
 
             strcpy((char*)g_secret, capabilityKey);
+            safe_free(capabilityKey);
 
 
             // Generate shared secret and encrypt it with SK, if attestation passed.
@@ -973,7 +978,7 @@ int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachineP
     //printf("New machine ID: %s\n", newMachineID);
 
 }
-
+//Responsibility of caller to free return
 char* retrieveCapabilityKey(char* currentMachinePublicIDKey, char* childMachinePublicIDKey) {
     //printf("Current machine ID: %s\n", currentMachineID);
     //printf("Child machine ID: %s\n", childMachinePublicIDKey);
@@ -984,7 +989,7 @@ char* retrieveCapabilityKey(char* currentMachinePublicIDKey, char* childMachineP
         memcpy(returnCapabilityKey, capabilityKeyDictionary[string(childMachinePublicIDKey)].c_str(), SIZE_OF_CAPABILITYKEY);
         return (char*) returnCapabilityKey;
     } else {
-        return "Access Prohibited!";
+        return createStringLiteralMalloced("Access Prohibited!");
     }
     
 

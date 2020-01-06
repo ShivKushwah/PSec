@@ -49,6 +49,8 @@ int machineTypeIsSecure(char* machineType);
 
 int getNextPID();
 
+void safe_free(void* ptr);
+
 char* registerMachineWithNetwork(char* newMachineID);
 int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload);
 
