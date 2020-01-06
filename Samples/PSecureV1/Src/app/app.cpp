@@ -181,8 +181,7 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
         int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
             char* temp = serializePrtValueToString(*P_EventMessage_Payload);
             memcpy(eventMessagePayload, temp, strlen(temp) + 1);
-            free(temp);
-            temp = NULL;
+            safe_free(temp);
     //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
     //     //TODO I assumed only 1 payload for the below
     //     // if (i == 0) {
@@ -208,27 +207,13 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     } else {
         snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:0", sendingToMachinePublicID, event);
     }
-    free(event);
-    event = NULL;
-    free(eventMessagePayload);
-    eventMessagePayload = NULL;
+    safe_free(event);
+    safe_free(eventMessagePayload);
     printf("Untrusted machine is sending out following network request: %s\n", unsecureSendRequest);   
     char* newMachinePublicIDKey = NULL;
     newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
-    free(unsecureSendRequest);
-    unsecureSendRequest = NULL;
-    // free(newMachinePublicIDKey); //TODO - shivfree - calling this causes a segfault, which means its already been freed. But how?
-
-
-    // // char* empty;
-    // // int ret_value;
-    // // ocall_network_request(&ret_value, secureSendRequest, empty, 0);
-
-
-    // // char* networkRequest = "UntrustedCreate:Coordinator";
-    // // char* returnMessage = send_network_request_API(networkRequest);
-    // // printf("Network Message Confirmation: %s", returnMessage);
-    
+    safe_free(unsecureSendRequest);
+    // safe_free(newMachinePublicIDKey); //TODO - shivfree - calling this causes a segfault, which means its already been freed. But how?
 }
 
 
@@ -313,7 +298,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
     char* request = generateCStringFromFormat("RegisterMachine:%s:-1", machineKeyWrapper, 1);
     char* returnValue = send_network_request_API(request);
     safe_free(request);
-    // safe_free(returnValue); //TODO - shivFree - this errors for some reason
+    safe_free(returnValue); //TODO - shivFree - this errors for some reason
     return returnValue;
 
 }
@@ -339,8 +324,7 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     char* usmChildPublicIDKeyCopy = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
     registerMachineWithNetwork(usmChildPublicIDKeyCopy);
-    free(usmChildPublicIDKeyCopy);
-    usmChildPublicIDKeyCopy = NULL;
+    safe_free(usmChildPublicIDKeyCopy);
 
     char* usmChildPublicIDKeyCopy2 = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy2, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);

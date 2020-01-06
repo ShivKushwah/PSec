@@ -106,6 +106,7 @@ void* network_request_thread_wrapper(void* request);
 char* network_request_logic(char* request);
 void initNetwork();
 char* forward_request(char* request, int redirect);
+char* createStringLiteralMalloced(char* stringLiteral);
 
 #ifdef  __cplusplus
 }

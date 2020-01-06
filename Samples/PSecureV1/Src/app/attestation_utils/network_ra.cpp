@@ -204,7 +204,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
             return forward_request(request, TypeOfMachineToEnclaveNum[machineType]);
 
         } else {
-            return "ERROR:Machine Type Not Found!";
+            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         }
 
     
@@ -217,7 +217,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
             return forward_request(request, TypeOfMachineToEnclaveNum[machineType]);
 
         } else {
-            return "ERROR:Machine Type Not Found!";
+            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         }
     
     } else if (strcmp(split, "InitComm") == 0) {
@@ -232,7 +232,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
             return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingComm]);
 
         } else {
-            return "ERROR:Machine Type Not Found!";
+            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         }
 
     
@@ -246,7 +246,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
             return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingMessage]);
 
         } else {
-            return "ERROR:Machine Type Not Found!";
+            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         }
 
     } else if (strcmp(split, "Send") == 0) {
@@ -261,7 +261,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
             return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingMessage]);
 
         } else {
-            return "ERROR:Machine Type Not Found!";
+            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         }
 
     } else if (strcmp(split, "RegisterMachine") == 0) { //When a new machine is created, its public ID key should be registered with network_ra so that network knows who to forward the message to
@@ -275,11 +275,11 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         } else {
             MachinePublicIDToEnclaveNum[string(publicIDRegister)] = atoi(enclaveNumRegister);
         }
-        return "Success!";
+        return createStringLiteralMalloced("Success!");
 
 
     } else {
-        return "Command Not Found";
+        return createStringLiteralMalloced("Command Not Found");
     }
 }
 
@@ -327,3 +327,10 @@ char* send_network_request_API(char* request) {
 
 }
 
+char* createStringLiteralMalloced(char* stringLiteral) {
+    //TODO if modifying here, modify in helper.cpp
+    char* malloced = (char*) malloc(strlen(stringLiteral));
+    strncpy(malloced, stringLiteral, strlen(stringLiteral) + 1);
+    return malloced;
+
+}
