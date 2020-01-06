@@ -341,6 +341,7 @@ int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey,
     char* temp = (char*) malloc(10);
     snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
     ocall_print(temp);
+    safe_free(temp);
     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
     handle_incoming_event(atoi(event), receivingMachinePID, numArgs, payloadType, payload); //TODO update to untrusted send api
 }
@@ -358,8 +359,11 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
         split = strtok(NULL, ":");
         payloadType = atoi(split);
         split = strtok(NULL, "\0");
+        safe_free(payload);
         payload = split;
 
+    } else {
+        safe_free(payload);
     }
     sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, 0, 0, 0);
 
@@ -415,12 +419,13 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
             int ret_value;
             ocall_network_request(&ret_value, initComRequest, newSessionKey, SIZE_OF_SESSION_KEY);
+            safe_free(initComRequest);
             char* machineNameWrapper2[] = {currentMachineIDPublicKey};
             printStr = generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1);
             ocall_print(printStr);
             safe_free(printStr);       
             ocall_print(newSessionKey);
-            PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
+            PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey); //TODO shivfree how do i free a malloced string
         }
 
 
@@ -484,11 +489,18 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     char* empty;
     int ret_value;
     ocall_network_request(&ret_value, sendRequest, empty, 0);
+    safe_free(sendRequest);
 
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
     printStr = generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1);
     ocall_print(printStr);
     safe_free(printStr);
+
+    safe_free(event);
+    safe_free(eventMessagePayload);
+    safe_free(numArgsPayload);
+
+    safe_free(currentMachineIDPublicKey);
 
 }
 
