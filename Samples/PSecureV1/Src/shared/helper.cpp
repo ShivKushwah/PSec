@@ -838,6 +838,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
 	sprintf_s(str, 100, newMachinePublicIDKey);
+    safe_free(newMachinePublicIDKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
@@ -879,6 +880,7 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
         ocall_print("Passing In String To Deserialize:");
         ocall_print(payloadConcat);
         PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payloadConcat, &numCharactersProcessed);
+        safe_free(payloadConcat);
         if (payloadType == PRT_VALUE_KIND_TUPLE) {
             PrintTuple(*prtPayload);
         } else if (payloadType == PRT_VALUE_KIND_MAP) {
@@ -901,6 +903,7 @@ int createMachine(char* machineType, int numArgs, int payloadType, char* payload
         ocall_print(payloadConcat);
         int numCharactersProcessed;
         prtPayload = *(deserializeStringToPrtValue(numArgs, payloadConcat, &numCharactersProcessed));
+        safe_free(payloadConcat);
     } else {
         prtPayload = PrtMkNullValue();
     }
@@ -922,7 +925,7 @@ int machineTypeIsSecure(char* machineType) {
 
 
 string createString(char* str) {
-    char* strCopy = (char*) malloc(strlen(str) + 1);
+    char* strCopy = (char*) malloc(strlen(str) + 1); //TODO shivfree
     memcpy(strCopy, str, strlen(str) + 1);
     return string(strCopy);
 }
@@ -952,6 +955,7 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
 	sprintf_s(str, 100, currentMachineIDPublicKey);
+    safe_free(currentMachineIDPublicKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
