@@ -224,9 +224,21 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     string machineTypeToCreateString = createString(machineType);
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
-    generateIdentity(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
+    if (NETWORK_DEBUG) {
+        generateIdentityDebug(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
+    } else {
+        sgx_rsa3072_key_t *private_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t)); //TODO shivfree need to free this and below
+        sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
+        void* publicIdentity = NULL;
+        void* privateIdentity = NULL;
+        generateIdentity(public_key, private_key, &publicIdentity, &privateIdentity);
+        secureChildPublicIDKey = string((char*)publicIdentity, SGX_RSA3072_KEY_SIZE);
+        secureChildPrivateIDKey = string((char*)privateIdentity, SGX_RSA3072_KEY_SIZE);
+    }   
     char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
-    strncpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
+    memcpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length());
+    publicIdKeyCopy[secureChildPublicIDKey.length()] = '\0';
+
     ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, enclaveEid);
     safe_free(publicIdKeyCopy);
     int newMachinePID = getNextPID(); 
@@ -274,14 +286,24 @@ int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* paren
 char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey) {
     int ret;
     char* other_machine_name = "KPS";
-    int requestSize = SIZE_OF_IDENTITY_STRING + SIZE_OF_IDENTITY_STRING;
-    char* requestString = (char*) malloc(requestSize);
-    snprintf(requestString, requestSize, "%s:%s", newMachinePublicIDKey, parentTrustedMachineID);
+    char* requestString;
+    if (NETWORK_DEBUG) {    
+        int requestSize = SIZE_OF_IDENTITY_STRING + SIZE_OF_IDENTITY_STRING;
+        requestString = (char*) malloc(requestSize);
+        snprintf(requestString, requestSize, "%s:%s", newMachinePublicIDKey, parentTrustedMachineID);
+    } else {
+        int requestSize = SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1;
+        requestString = (char*) malloc(requestSize);
+        memcpy(requestString, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+        memcpy(requestString + SGX_RSA3072_KEY_SIZE, ":", 1);
+        memcpy(requestString + SGX_RSA3072_KEY_SIZE + 1, parentTrustedMachineID, SGX_RSA3072_KEY_SIZE);
+    }
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, strlen(other_machine_name)+1, CREATE_CAPABILITY_KEY_CONSTANT, requestString);
     safe_free(requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;
+    
 }
 
 char* registerMachineWithNetwork(char* newMachineID) {
@@ -563,7 +585,7 @@ char* checkRawRSAKeySize(char* key) {
 }
 
 //publicID and privateID must be allocated by the caller
-void generateIdentity(string& publicID, string& privateID, string prefix) {
+void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
     uint32_t val; 
     sgx_read_rand((unsigned char *) &val, 4);
     publicID =  prefix + "SPub" + to_string(val % 100);
@@ -655,7 +677,36 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
     ocall_print("Decrypted SessionKey is");
     ocall_print(decryptedMessage);
 
+
+    //test generate identity
+    // sgx_rsa3072_public_key_t *public_key = NULL;
+    // sgx_rsa3072_key_t *private_key = NULL;
+    sgx_rsa3072_key_t *private_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
+    sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
+    void* publicIdentity = NULL;
+    void* privateIdentity = NULL;
+    generateIdentity(public_key, private_key, &publicIdentity, &privateIdentity);
+    if (publicIdentity == NULL || public_key == NULL) {
+        ocall_print("Generate Identity doesnt' work");
+    } else {
+        ocall_print("generate identity works!");
+    }
+
+
 } 
+
+void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *private_key, void** publicIdentity, void** privateIdentity) {
+    // sgx_rsa3072_key_t *sk = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
+    // sgx_rsa3072_public_key_t *pk = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
+    void* sk_raw = NULL;
+    void* pk_raw = NULL;
+    createRsaKeyPair(public_key, private_key, publicIdentity, privateIdentity);
+    // public_key = pk;
+    // private_key = sk;
+    // publicIdentity = (char*)pk_raw;
+    // privateIdentity = (char*)sk_raw;
+
+}
 
 
 int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t ID_SIZE, uint32_t SESSION_KEY_SIZE) {

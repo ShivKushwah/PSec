@@ -833,20 +833,40 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         //We need to send the secure message in this case to the enclave 
         if (message_from_machine_to_enclave == CREATE_CAPABILITY_KEY_CONSTANT) { 
 
-            //Generate the capability key
-            char* split = strtok(optional_message, ":");
-            char* childID = split;
-            split = strtok(NULL, ":");
-            char* parentID = split;
+            if (NETWORK_DEBUG) {
+                //Generate the capability key
+                char* split = strtok(optional_message, ":");
+                char* childID = split;
+                split = strtok(NULL, ":");
+                char* parentID = split;
 
-            createCapabilityKey(childID, parentID);
+                createCapabilityKey(childID, parentID);
 
-            strcpy((char*)g_secret, secure_message);
+                strcpy((char*)g_secret, secure_message);
+                p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE; //TODO figure out why this can't be a bigger size, should I just increase size of message
+            } else {
+                //TODO untested code
+                char* childID = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+                char* parentID = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+                memcpy(childID, optional_message, SGX_RSA3072_KEY_SIZE);
+                memcpy(parentID, optional_message + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+
+                createCapabilityKey(childID, parentID);
+
+                safe_free(childID);
+                safe_free(parentID);
+
+                strcpy((char*)g_secret, secure_message);
+                p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE;
+
+            }
+
+            
 
 
             // Generate shared secret and encrypt it with SK, if attestation passed.
             uint8_t aes_gcm_iv[SAMPLE_SP_IV_SIZE] = {0};
-            p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE;
+            
             if((IAS_QUOTE_OK == attestation_report.status) &&
             (IAS_PSE_OK == attestation_report.pse_status) &&
             (isv_policy_passed == true))
@@ -969,13 +989,23 @@ int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,
 
 
 int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachinePublicIDKey) {
-    //TODO Make this generate a random key
-    sprintf(secure_message, "%s", "CAPTAINKEY");
-    capabilityKeyDictionary[string(newMachinePublicIDKey)] = string(secure_message);
-    //printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
+    if (NETWORK_DEBUG) {
+        //TODO Make this generate a random key
+        sprintf(secure_message, "%s", "CAPTAINKEY");
+        capabilityKeyDictionary[string(newMachinePublicIDKey)] = string(secure_message);
+        //printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
 
-    capabilityKeyAccessDictionary[string(newMachinePublicIDKey)] = string(parentTrustedMachinePublicIDKey);
-    //printf("New machine ID: %s\n", newMachineID);
+        capabilityKeyAccessDictionary[string(newMachinePublicIDKey)] = string(parentTrustedMachinePublicIDKey);
+        //printf("New machine ID: %s\n", newMachineID);
+    } else {
+        sprintf(secure_message, "%s", "CAPTAINKEY");
+        capabilityKeyDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(secure_message);
+        //printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
+
+        capabilityKeyAccessDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(parentTrustedMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+        //printf("New machine ID: %s\n", newMachineID);
+    }
+    
 
 }
 //Responsibility of caller to free return

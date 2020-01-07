@@ -826,8 +826,14 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have netw
 
 
 void ocall_add_identity_to_eid_dictionary(char* newMachineID, sgx_enclave_id_t enclave_eid) {
-        string identityString = string(newMachineID);
-        PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
+        if (NETWORK_DEBUG) {
+            string identityString = string(newMachineID);
+            PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
+        } else {
+            string identityString = string(newMachineID, SGX_RSA3072_KEY_SIZE);
+            PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
+        }
+        
         // ocall_print(newMachineID);
         // ocall_print("has enclave ID");
         // ocall_print_int(enclave_eid);
