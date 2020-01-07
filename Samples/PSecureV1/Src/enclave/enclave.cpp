@@ -520,11 +520,11 @@ char* generateSessionKeyTest() {
     sgx_read_rand((unsigned char*)sessionKey, 98);
     sessionKey[98] = '!';
     sessionKey[99] = '\0';
-    // for (int i = 0; i < 99; i ++) {
-    //     if (sessionKey[i] == '\0') {
-    //         sessionKey[i] ='~';
-    //     }
-    // }
+    for (int i = 0; i < 99; i ++) {
+        if (sessionKey[i] == '\0') {
+            sessionKey[i] ='0';
+        }
+    }
     return sessionKey;
 }
 
@@ -535,6 +535,31 @@ char* concatVoid(void* str1, size_t str1_size, void* str2, size_t str2_size) {
     memcpy(returnString + str1_size , (char*)str2, str2_size);
     returnString[str1_size + str2_size + 1] = '\0';
     return returnString;
+}
+
+char* serializeEncryptedMessage(char* encryptedMessage) {
+    for (int i = 0; i < SGX_RSA3072_KEY_SIZE; i ++) {
+        if (encryptedMessage[i] == '\0') {
+            encryptedMessage[i] ='0';
+        } else if (encryptedMessage[i] == ':') {
+            encryptedMessage[i] ='~';
+        }
+    }
+}
+
+char* checkRawRSAKeySize(char* key) {
+    char* temp = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    memcpy(temp, key, SGX_RSA3072_KEY_SIZE);
+    return temp;
+    // for (int i = 0; i < SGX_RSA3072_KEY_SIZE; i ++) {
+    //     if (key[i] == '\0') {
+    //         key[i] ='0';
+    //     } else if (key[i] == ':') {
+    //         key[i] ='~';
+    //     }
+    // }
+    // key[SGX_RSA3072_KEY_SIZE] = '/0';
+    // return key;
 }
 
 //publicID and privateID must be allocated by the caller
@@ -607,8 +632,10 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
     ocall_print("Session Key is");
     ocall_print(sessionKey);
 
+    char* serializedKey = checkRawRSAKeySize((char*)public_B_key_raw);
+
     int encryptedSessionKeyLength;
-    char* encryptedSessionKey = encryptMessageExternalPublicKey(sessionKey, 100, public_B_key_raw, encryptedSessionKeyLength);
+    char* encryptedSessionKey = encryptMessageExternalPublicKey(sessionKey, 100, serializedKey, encryptedSessionKeyLength);
     ocall_print("Encrypted Session Key is");
     ocall_print(encryptedSessionKey);
 
@@ -627,12 +654,6 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
     decryptedMessage = decryptMessageInteralPrivateKey(split, encryptedSessionKeyLength, private_B_key_raw);
     ocall_print("Decrypted SessionKey is");
     ocall_print(decryptedMessage);
-
-
-
-
-
-
 
 } 
 
