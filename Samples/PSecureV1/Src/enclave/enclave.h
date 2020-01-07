@@ -7,6 +7,8 @@
 #include <map> 
 #include <list> 
 #include "constants.h"
+#include "sgx_tcrypto.h"
+#include "sgx_trts.h"
 using namespace std;
 
 extern sgx_enclave_id_t current_eid;
