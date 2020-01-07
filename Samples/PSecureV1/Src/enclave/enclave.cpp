@@ -300,16 +300,6 @@ char* registerMachineWithNetwork(char* newMachineID) {
 
 //Caller needs to allocate space for public_key and private_key
 void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *private_key, void** public_key_raw, void** private_key_raw) {
-    // sgx_ecc_state_handle_t handle;
-    // sgx_ec256_private_t sk;
-    // sgx_ec256_public_t pk;
-    // sgx_status_t status;
-
-    // status = sgx_create_rsa_key_pair(256, 256, )
-    // if (status != SGX_SUCCESS)
-    // {
-    //     ocall_print("create rsaKeyPair error!");
-    // }
     int n_byte_size = SGX_RSA3072_KEY_SIZE;
     int e_byte_size = SGX_RSA3072_PUB_EXP_SIZE;
     unsigned char *p_n = (unsigned char *)malloc(n_byte_size);
@@ -364,7 +354,6 @@ void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *p
         }
     } else {
         ocall_print("Able to make void** rsapubkey!");
-        // ocall_print((char*)*public_key_raw);
     }
 
     status = sgx_create_rsa_priv2_key(
@@ -390,23 +379,8 @@ void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *p
         // ocall_print((char*)*public_key_raw);
     }
 
-    // char* message = "dddddddd";
-    // size_t encrypted_data_length;
-    // char* encrypted_data = (char*) malloc(MAX_NETWORK_MESSAGE); //TODO note if message is bigger than this size, then we can run into issues
-    
-    // status = sgx_rsa_pub_encrypt_sha256(*public_key_raw, NULL, &encrypted_data_length, (unsigned char*) message, strlen(message) + 1);
-
-    // status = sgx_rsa_pub_encrypt_sha256(*public_key_raw, (unsigned char*) encrypted_data, &encrypted_data_length, (unsigned char*) message, strlen(message) + 1);
-
-    // if (status != SGX_SUCCESS) {
-    //     ocall_print("Error in encrypting using public key! KIRAT");
-    //     // ocall_print((char*)*public_key_raw);
-    // } else {
-    //     ocall_print("Able to encrypt using public key! KIRAT");
-    // }
-
-    ocall_print("Pub key is");
-    ocall_print((char*) *public_key_raw);
+    // ocall_print("Pub key is");
+    // ocall_print((char*) *public_key_raw);
 
     free(p_n);
 	free(p_d);
@@ -440,49 +414,9 @@ char* decryptMessageInteralPrivateKey(char* encryptedData, void* private_key) {
     // ocall_print_int(strlen(message) + 1);
     // ocall_print_int(encrypted_data_length);
     decrypted_data[decrypted_data_length] = '\0';
-    ocall_print("Decrypted data is");
-    ocall_print(decrypted_data);
+    // ocall_print("Decrypted data is");
+    // ocall_print(decrypted_data);
     return decrypted_data;
-
-
-    // void* rsa_priv_key = NULL;
-
-
-    // sgx_status_t status = sgx_create_rsa_priv2_key(
-    //                    SGX_RSA3072_KEY_SIZE,
-    //                    SGX_RSA3072_PUB_EXP_SIZE,
-    //                    (const unsigned char*)private_key->e,
-    //                     ->mod,
-    //                    (const unsigned char*)other_party_public_key->exp,
-    //                    &rsa_priv_key);
-    // if (status != SGX_SUCCESS) {
-    //     ocall_print("Error in creating void** rsa_priv_key!");
-    //     if (status == SGX_ERROR_INVALID_PARAMETER) {
-    //         ocall_print("Invalid parameters");
-    //     }
-    //     if (status == SGX_ERROR_UNEXPECTED) {
-    //         ocall_print("Unexpected error");
-    //     }
-    // } else {
-    //     ocall_print("Able to make void** rsa_priv_key!");
-    // }
-
-    // size_t encrypted_data_length;
-    // char* encrypted_data = (char*) malloc(MAX_NETWORK_MESSAGE); //TODO note if message is bigger than this size, then we can run into issues
-    
-    // status = sgx_rsa_pub_encrypt_sha256(rsa_pub_key, NULL, &encrypted_data_length, (unsigned char*) message, strlen(message) + 1);
-
-    // status = sgx_rsa_pub_encrypt_sha256(rsa_pub_key, (unsigned char*) encrypted_data, &encrypted_data_length, (unsigned char*) message, strlen(message) + 1);
-
-    // if (status != SGX_SUCCESS) {
-    //     ocall_print("Error in decrypting using private key!");
-    // } else {
-    //     ocall_print("Able to decrypt using private key!");
-    // }
-    // ocall_print_int(strlen(message) + 1);
-    // ocall_print_int(encrypted_data_length);
-    // encrypted_data[encrypted_data_length] = '\0';
-    // return encrypted_data;
 }
 
 char* encryptMessageExternalPublicKey(char* message, void* other_party_public_key_raw) {
@@ -495,16 +429,34 @@ char* encryptMessageExternalPublicKey(char* message, void* other_party_public_ke
     
     sgx_status_t status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, NULL, &encrypted_data_length, (unsigned char*) message, strlen(message) + 1);
 
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error in encrypting using public key!");
+        // ocall_print((char*)**other_party_public_key_raw);
+        if (status == SGX_ERROR_UNEXPECTED) {
+            ocall_print("unexpected error :(");
+        } else if (status == SGX_ERROR_INVALID_PARAMETER) {
+            ocall_print("invalid parameters");
+        }
+    } else {
+        ocall_print("Encrypted data length will be");
+        ocall_print_int(encrypted_data_length);
+    }
+
     status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, (unsigned char*) encrypted_data, &encrypted_data_length, (unsigned char*) message, strlen(message) + 1);
 
     if (status != SGX_SUCCESS) {
         ocall_print("Error in encrypting using public key!");
         // ocall_print((char*)**other_party_public_key_raw);
+        if (status == SGX_ERROR_UNEXPECTED) {
+            ocall_print("unexpected error :(");
+        } else if (status == SGX_ERROR_INVALID_PARAMETER) {
+            ocall_print("invalid parameters");
+        }
     } else {
         ocall_print("Able to encrypt using public key!");
     }
-    ocall_print_int(strlen(message) + 1);
-    ocall_print_int(encrypted_data_length);
+    // ocall_print_int(strlen(message) + 1);
+    // ocall_print_int(encrypted_data_length);
     encrypted_data[encrypted_data_length] = '\0';
     return encrypted_data;
 }
@@ -568,64 +520,8 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
     privateID = prefix + "SPriv" + to_string(val % 100);
     privateID = privateID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq";
 
-    // sgx_ecc_state_handle_t handle;
-    // sgx_ec256_private_t sk;
-    // sgx_ec256_public_t pk;
-    // sgx_status_t status;
-
-    // status = sgx_ecc256_open_context(&handle);
-    // if (status != SGX_SUCCESS)
-    // {
-    //     ocall_print("eec256 open context error!");
-    // }
-
-    // status = sgx_ecc256_create_key_pair(&sk, &pk, handle);
-    // if (status != SGX_SUCCESS)
-    // {
-    //     ocall_print("eec256 create key pair error!");
-
-    // }
-
-    // sgx_ecc_state_handle_t handle2;
-    // sgx_ec256_private_t sk2;
-    // sgx_ec256_public_t pk2;
-    // sgx_status_t status2;
-
-    // status2 = sgx_ecc256_open_context(&handle2);
-    // if (status2 != SGX_SUCCESS)
-    // {
-    //     ocall_print("eec256 open context error!");
-    // }
-
-    // status2 = sgx_ecc256_create_key_pair(&sk2, &pk2, handle2);
-    // if (status2)
-    // {
-    //     ocall_print("eec256 create key pair error!");
-
-    // }
-
-    // sgx_ec256_dh_shared_t sharedKey;
-    // sgx_ec256_dh_shared_t sharedKey2;
-
-    // // ocall_print("Public key is ");
-    // // ocall_print((char*) pk.gx);
-
-    // sgx_ecc256_compute_shared_dhkey(&sk, &pk2, &sharedKey, handle);
-    // sgx_ecc256_compute_shared_dhkey(&sk2, &pk2, &sharedKey2, handle);
-
-
-    // ocall_print("shared key 1");
-    // ocall_print((char*)sharedKey.s);
-    // ocall_print("shared key 2");
-    // ocall_print((char*)sharedKey2.s);
-
-    // sgx_ec256_signature_t
     sgx_rsa3072_key_t *private_capabilityB_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
     sgx_rsa3072_public_key_t *public_capabilityB_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
-    // void* temp = NULL;
-    // void* temp2 = NULL;
-    // void** private_capabilityB_key_raw = &temp;
-    // void** public_capabilityB_key_raw = &temp2;
     void* private_capabilityB_key_raw = NULL;
     void* public_capabilityB_key_raw = NULL;
     createRsaKeyPair(public_capabilityB_key, private_capabilityB_key, &public_capabilityB_key_raw, &private_capabilityB_key_raw);
@@ -634,26 +530,18 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
 
     sgx_rsa3072_key_t *private_B_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
     sgx_rsa3072_public_key_t *public_B_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
-    // void* temp3 = NULL;
-    // void* temp4 = NULL;
-    // void** private_B_key_raw = &temp3;
-    // void** public_B_key_raw = &temp4;
     void* private_B_key_raw = NULL;
     void* public_B_key_raw = NULL;
     createRsaKeyPair(public_B_key, private_B_key, &public_B_key_raw, &private_B_key_raw);
 
     sgx_rsa3072_key_t *private_A_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
     sgx_rsa3072_public_key_t *public_A_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
-    // void* temp5 = NULL;
-    // void* temp6 = NULL;
-    // void** private_A_key_raw = &temp5;
-    // void** public_A_key_raw = &temp6;
     void* private_A_key_raw = NULL;
     void* public_A_key_raw = NULL;
     createRsaKeyPair(public_A_key, private_A_key, &public_A_key_raw, &private_A_key_raw);
 
 
-    char* secureMessage = "Encryption Works!";
+    char* secureMessage = "Encrypted Hello!";
 
     sgx_rsa3072_signature_t* signatureSecureMessage = signStringMessage(secureMessage, private_capabilityB_key);
 
@@ -667,7 +555,9 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
     ocall_print("Encrypted Message is");
     ocall_print(encryptedMessage);
 
-    decryptMessageInteralPrivateKey(encryptedMessage, private_B_key_raw);
+    char* decryptedMessage = decryptMessageInteralPrivateKey(encryptedMessage, private_B_key_raw);
+    ocall_print("Decrypted Message is");
+    ocall_print(decryptedMessage);
 
     //TODO try with message of length 400
 
