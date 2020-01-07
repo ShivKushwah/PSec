@@ -152,7 +152,7 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     int requestSize = SIZE_OF_IDENTITY_STRING + SIZE_OF_IDENTITY_STRING;
     char* requestString = (char*) malloc(requestSize);
     snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);    
-    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, strlen(other_machine_name)+1, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString);
+    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString);
     safe_free(requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
@@ -300,7 +300,7 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
         memcpy(requestString + SGX_RSA3072_KEY_SIZE, ":", 1);
         memcpy(requestString + SGX_RSA3072_KEY_SIZE + 1, parentTrustedMachineID, SGX_RSA3072_KEY_SIZE);
     }
-    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, strlen(other_machine_name)+1, CREATE_CAPABILITY_KEY_CONSTANT, requestString);
+    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, CREATE_CAPABILITY_KEY_CONSTANT, requestString);
     safe_free(requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
@@ -309,6 +309,7 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
 }
 
 char* registerMachineWithNetwork(char* newMachineID) {
+    //TODO shiv next make this NETWORK DEBUG
 
     int ret_value;
     char* num = (char*) malloc(10);
@@ -316,7 +317,22 @@ char* registerMachineWithNetwork(char* newMachineID) {
     char* machineKeyWrapper[] = {newMachineID, num};
     
     char* networkResult = (char*) malloc(100);
-    ocall_network_request(&ret_value, generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2), networkResult, 100);
+    if (NETWORK_DEBUG) {
+        char* networkRequest = generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2);
+        ocall_network_request(&ret_value, networkRequest, networkResult, 100);
+        safe_free(networkRequest);
+    } else {
+        //TODO need to test this request
+        char* requestType = "RegisterMachine:";
+        char* temp = concatVoid(requestType, strlen(requestType), newMachineID, SGX_RSA3072_KEY_SIZE);
+        char* colon = ":";
+        char* temp2 = concatVoid(temp, strlen(requestType) + SGX_RSA3072_KEY_SIZE, colon, strlen(colon));
+        char* networkRequest = concatVoid(temp2, strlen(requestType) + SGX_RSA3072_KEY_SIZE + strlen(colon), num, strlen(num));
+        safe_free(temp);
+        safe_free(temp2);
+        ocall_network_request(&ret_value, networkRequest, networkResult, 100);
+        safe_free(networkRequest);
+    }
     safe_free(num);
     safe_free(networkResult);
 
