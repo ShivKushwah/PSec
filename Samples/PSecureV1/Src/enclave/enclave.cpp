@@ -256,7 +256,8 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     }
 
     char* secureChildPublicIDKeyCopy = (char*) malloc(secureChildPublicIDKey.size() + 1);
-    memcpy(secureChildPublicIDKeyCopy, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.size() + 1);
+    memcpy(secureChildPublicIDKeyCopy, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length());
+    secureChildPublicIDKeyCopy[secureChildPublicIDKey.length()] = '\0';
     registerMachineWithNetwork(secureChildPublicIDKeyCopy);
     safe_free(secureChildPublicIDKeyCopy);
 
@@ -268,7 +269,8 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     }
 
     char* returnNewMachinePublicIDKey = (char*) malloc(secureChildPublicIDKey.length() + 1);
-    memcpy(returnNewMachinePublicIDKey, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length() + 1);
+    memcpy(returnNewMachinePublicIDKey, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length());
+    returnNewMachinePublicIDKey[secureChildPublicIDKey.length()] = '\0';
     return returnNewMachinePublicIDKey;
 
 }
