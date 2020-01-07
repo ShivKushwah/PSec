@@ -396,14 +396,14 @@ bool receivePublicKeyPlainText() {
 
 }
 
-char* decryptMessageInteralPrivateKey(char* encryptedData, void* private_key) {
+char* decryptMessageInteralPrivateKey(char* encryptedData, size_t encryptedDataSize, void* private_key) {
 
     size_t decrypted_data_length;
     char* decrypted_data = (char*) malloc(MAX_NETWORK_MESSAGE); //TODO note if message is bigger than this size, then we can run into issues
 
-    sgx_status_t status = sgx_rsa_priv_decrypt_sha256(private_key, NULL, &decrypted_data_length, (unsigned char*) encryptedData, strlen(encryptedData) + 1);
+    sgx_status_t status = sgx_rsa_priv_decrypt_sha256(private_key, NULL, &decrypted_data_length, (unsigned char*) encryptedData, encryptedDataSize);
 
-    status = sgx_rsa_priv_decrypt_sha256(private_key, (unsigned char*)decrypted_data, &decrypted_data_length, (unsigned char*) encryptedData, strlen(encryptedData) + 1);
+    status = sgx_rsa_priv_decrypt_sha256(private_key, (unsigned char*)decrypted_data, &decrypted_data_length, (unsigned char*) encryptedData, encryptedDataSize);
 
     if (status != SGX_SUCCESS) {
         ocall_print("Error in decrypting using private key!");
@@ -419,7 +419,7 @@ char* decryptMessageInteralPrivateKey(char* encryptedData, void* private_key) {
     return decrypted_data;
 }
 
-char* encryptMessageExternalPublicKey(char* message, void* other_party_public_key_raw) {
+char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_null_byte, void* other_party_public_key_raw, int& output_encrypted_message_length) {
 
     // ocall_print("Pub key received is");
     // ocall_print((char*) other_party_public_key_raw);
@@ -427,7 +427,7 @@ char* encryptMessageExternalPublicKey(char* message, void* other_party_public_ke
     size_t encrypted_data_length;
     char* encrypted_data = (char*) malloc(MAX_NETWORK_MESSAGE); //TODO note if message is bigger than this size, then we can run into issues
     
-    sgx_status_t status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, NULL, &encrypted_data_length, (unsigned char*) message, strlen(message) + 1);
+    sgx_status_t status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, NULL, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
 
     if (status != SGX_SUCCESS) {
         ocall_print("Error in encrypting using public key!");
@@ -442,7 +442,9 @@ char* encryptMessageExternalPublicKey(char* message, void* other_party_public_ke
         ocall_print_int(encrypted_data_length);
     }
 
-    status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, (unsigned char*) encrypted_data, &encrypted_data_length, (unsigned char*) message, strlen(message) + 1);
+    // encrypted_data_length = 384*2;
+
+    status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, (unsigned char*) encrypted_data, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
 
     if (status != SGX_SUCCESS) {
         ocall_print("Error in encrypting using public key!");
@@ -458,6 +460,7 @@ char* encryptMessageExternalPublicKey(char* message, void* other_party_public_ke
     // ocall_print_int(strlen(message) + 1);
     // ocall_print_int(encrypted_data_length);
     encrypted_data[encrypted_data_length] = '\0';
+    output_encrypted_message_length = encrypted_data_length;
     return encrypted_data;
 }
 
@@ -511,6 +514,29 @@ sgx_rsa3072_signature_t* signStringMessage(char* message, sgx_rsa3072_key_t *pri
     return signatureMessage;
 }
 
+//Responsibilty of caller to free return
+char* generateSessionKeyTest() {
+    char* sessionKey = (char*) malloc(100);
+    sgx_read_rand((unsigned char*)sessionKey, 98);
+    sessionKey[98] = '!';
+    sessionKey[99] = '\0';
+    // for (int i = 0; i < 99; i ++) {
+    //     if (sessionKey[i] == '\0') {
+    //         sessionKey[i] ='~';
+    //     }
+    // }
+    return sessionKey;
+}
+
+//Responsibilty of caller to free return
+char* concatVoid(void* str1, size_t str1_size, void* str2, size_t str2_size) {
+    char* returnString = (char*) malloc(str1_size + str2_size + 1);
+    memcpy(returnString, (char*)str1, str1_size);
+    memcpy(returnString + str1_size , (char*)str2, str2_size);
+    returnString[str1_size + str2_size + 1] = '\0';
+    return returnString;
+}
+
 //publicID and privateID must be allocated by the caller
 void generateIdentity(string& publicID, string& privateID, string prefix) {
     uint32_t val; 
@@ -545,25 +571,67 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
 
     sgx_rsa3072_signature_t* signatureSecureMessage = signStringMessage(secureMessage, private_capabilityB_key);
 
+    char* sigPrefix = "SIG:";
+
+    char* temp = concatVoid(secureMessage, strlen(secureMessage), sigPrefix, strlen(sigPrefix));
+
+    // ocall_print("temp is");
+    // ocall_print(temp);
+
+    // char* concatMessageWithSig = concatVoid(temp, strlen(temp), signatureSecureMessage, SGX_RSA3072_KEY_SIZE);
+    // ocall_print("Concated message is");
+    // ocall_print(concatMessageWithSig);
+
+    free(temp);
+
     if (verifySignature(secureMessage, signatureSecureMessage, public_capabilityB_key)) {
         ocall_print("Verifying Signature works!!!!");
     } else {
         ocall_print("Verification Failed!");
     }
     
-    char* encryptedMessage = encryptMessageExternalPublicKey(secureMessage, public_B_key_raw);
+    int encryptedMessageSize;
+    char* encryptedMessage = encryptMessageExternalPublicKey(secureMessage, strlen(secureMessage) + 1, public_B_key_raw, encryptedMessageSize);
     ocall_print("Encrypted Message is");
     ocall_print(encryptedMessage);
 
-    char* decryptedMessage = decryptMessageInteralPrivateKey(encryptedMessage, private_B_key_raw);
+    char* decryptedMessage = decryptMessageInteralPrivateKey(encryptedMessage, encryptedMessageSize, private_B_key_raw);
     ocall_print("Decrypted Message is");
     ocall_print(decryptedMessage);
 
-    //TODO try with message of length 400
+
+
+    /////
+
+    char* sessionKey = generateSessionKeyTest();
+    ocall_print("Session Key is");
+    ocall_print(sessionKey);
+
+    int encryptedSessionKeyLength;
+    char* encryptedSessionKey = encryptMessageExternalPublicKey(sessionKey, 100, public_B_key_raw, encryptedSessionKeyLength);
+    ocall_print("Encrypted Session Key is");
+    ocall_print(encryptedSessionKey);
+
+    char* network_message = concatVoid(sigPrefix, strlen(sigPrefix), encryptedSessionKey, encryptedSessionKeyLength);
+    // ocall_print(network_message);
+    char* reentrant = NULL;
+    char* split = strtok_r(network_message, ":", &reentrant);
+    split = network_message + strlen(split) + 1;
+    ocall_print(split);
+
+
+    // char* split = network_message + 5;// strtok(network_message, ":SIG:");
+
+    // split = strtok(NULL, ":SIG:");
+
+    decryptedMessage = decryptMessageInteralPrivateKey(split, encryptedSessionKeyLength, private_B_key_raw);
+    ocall_print("Decrypted SessionKey is");
+    ocall_print(decryptedMessage);
 
 
 
-    
+
+
 
 
 } 
