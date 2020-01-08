@@ -1,23 +1,23 @@
-const int SIZE_OF_IDENTITY_STRING = 384;
-const int SIZE_OF_MESSAGE = 70;
+const int SIZE_OF_IDENTITY_STRING = 385; //TODO why does this need to be this big?
+const int SIZE_OF_MESSAGE = 800;
 const int SIZE_OF_CAPABILITYKEY = 70;
 const int SIZE_OF_NEWMACHINETYPE = 20;
 const int SIZE_OF_SESSION_KEY = 70;
-const int SIZE_OF_MAX_MESSAGE = 600;
-const int MAX_NETWORK_MESSAGE = 1600;
+const int SIZE_OF_MAX_MESSAGE = 1600;
+const int MAX_NETWORK_MESSAGE = 3200;
 
 
-const int SIZE_OF_MAX_SERIALIZED_TUPLE = 100;
-const int MAX_TUPLE_ELEMENT_LENGTH = 100;
+const int SIZE_OF_MAX_SERIALIZED_TUPLE = 1000;
+const int MAX_TUPLE_ELEMENT_LENGTH = 1000;
 
-const int SIZE_OF_MAX_SERIALIZED_MAP = 100;
+const int SIZE_OF_MAX_SERIALIZED_MAP = 1000;
 
-const int SIZE_OF_MAX_SERIALIZED_SEQ = 100;
+const int SIZE_OF_MAX_SERIALIZED_SEQ = 1000;
 
 
 
 const int SIZE_OF_MAX_EVENT_NAME = 20;
-const int SIZE_OF_MAX_EVENT_PAYLOAD = 100;
+const int SIZE_OF_MAX_EVENT_PAYLOAD = 1000;
 
 const int ENCLAVE_NUMBER = 0; //TODO retrieve this from network after registering this entire enclave
 

@@ -300,8 +300,8 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
         ocall_print(str);
         newPrtValue->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
         newPrtValue->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
-        PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-        sprintf_s(prtStr, 100, str);
+        PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SGX_RSA3072_KEY_SIZE + 1));
+        sprintf_s(prtStr, SGX_RSA3072_KEY_SIZE + 1, str);
         newPrtValue->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
     } else if (payloadType == PRT_VALUE_KIND_BOOL) {
         if (strcmp(str, "true") == 0) {
@@ -467,7 +467,7 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
         ocall_print("Too many strings passed to generateCStringFromFormat!");
         return "ERROR!";
     }
-    char* returnString = (char*) malloc(200);
+    char* returnString = (char*) malloc(1600);
 
     char* str1 = strings_to_print[0];
     char* str2 = strings_to_print[1];
@@ -475,7 +475,7 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
     char* str4 = strings_to_print[3];
     char* str5 = strings_to_print[4];
 
-    snprintf(returnString, 200, format_string, str1, str2, str3, str4, str5);
+    snprintf(returnString, 1600, format_string, str1, str2, str3, str4, str5);
     //ocall_print("Return string is");
     //ocall_print(returnString);
     return returnString;
@@ -993,8 +993,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     safe_free(currentMachineIDPublicKey);
 
     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * SGX_RSA3072_KEY_SIZE);
-	sprintf_s(str, SGX_RSA3072_KEY_SIZE, newMachinePublicIDKey);
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (2*SGX_RSA3072_KEY_SIZE + 1));
+	sprintf_s(str, 2*SGX_RSA3072_KEY_SIZE + 1, newMachinePublicIDKey);
     safe_free(newMachinePublicIDKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
@@ -1097,8 +1097,8 @@ extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRe
 
     strncat((char*) val, (char*) val2, 200);
 
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, (char*)val);
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (2*SGX_RSA3072_KEY_SIZE + 1));
+	sprintf_s(str, 2*SGX_RSA3072_KEY_SIZE + 1, (char*)val);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
@@ -1110,8 +1110,8 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, currentMachineIDPublicKey);
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (2*SGX_RSA3072_KEY_SIZE + 1));
+	sprintf_s(str, 2*SGX_RSA3072_KEY_SIZE + 1, currentMachineIDPublicKey);
     safe_free(currentMachineIDPublicKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
@@ -1130,8 +1130,8 @@ extern "C" PRT_BOOLEAN P_ISEQUAL_StringType_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64
 
 extern "C" PRT_STRING P_TOSTRING_StringType_IMPL(PRT_UINT64 frgnVal)
 {
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, "String : %lld", frgnVal);
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (2*SGX_RSA3072_KEY_SIZE + 1));
+	sprintf_s(str, 2*SGX_RSA3072_KEY_SIZE + 1, "String : %lld", frgnVal);
 	return str;
 }
 
@@ -1142,15 +1142,15 @@ extern "C" PRT_UINT32 P_GETHASHCODE_StringType_IMPL(PRT_UINT64 frgnVal)
 
 extern "C" PRT_UINT64 P_MKDEF_StringType_IMPL(void)
 {
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, "xyx$12");
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (2*SGX_RSA3072_KEY_SIZE + 1));
+	sprintf_s(str, 2*SGX_RSA3072_KEY_SIZE + 1, "xyx$12");
 	return (PRT_UINT64)str;
 }
 
 extern "C" PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64 frgnVal)
 {
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, (PRT_STRING)frgnVal);
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (2*SGX_RSA3072_KEY_SIZE + 1));
+	sprintf_s(str, 2*SGX_RSA3072_KEY_SIZE + 1, (PRT_STRING)frgnVal);
 	return (PRT_UINT64)str;
 }
 

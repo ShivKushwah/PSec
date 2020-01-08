@@ -87,8 +87,10 @@ secure_machine ClientEnclave {
             //untrusted_send clientUSM, OTPCodeEvent, usernamePassword + masterSecret;
             result[8] = 25;
             testMachine = new TestMachine();
+
+            // print "YELLO\n"; 
             secure_send testMachine, MapEvent, result;
-            
+
             untrusted_send clientUSM, OTPCodeEvent, Concat(usernamePassword, masterSecret);
         }
     }
@@ -107,6 +109,7 @@ machine ClientWebBrowser {
             clientSSM = payload;
             usernamePassword = GetThis();
             // PrintString(clientSSM);
+            // print "YEE AUTHENTICATE\n";
             untrusted_send clientSSM, GenerateOTPCodeEvent, usernamePassword;
             receive {
                 case OTPCodeEvent : (payload : StringType) {

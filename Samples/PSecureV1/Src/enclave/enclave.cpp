@@ -623,10 +623,13 @@ char* checkRawRSAKeySize(char* key) {
 void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
     uint32_t val; 
     sgx_read_rand((unsigned char *) &val, 4);
-    publicID =  prefix + "SPub" + to_string(val % 100);
-    publicID = publicID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq";
-    privateID = prefix + "SPriv" + to_string(val % 100);
-    privateID = privateID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+    // publicID =  prefix + "SPub" + to_string(val % 100);
+    // publicID = publicID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+    // privateID = prefix + "SPriv" + to_string(val % 100);
+    // privateID = privateID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+        publicID = prefix.substr(0, 1) + "UPub" + to_string(val % 100) + "QMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
+        privateID = prefix.substr(0, 1) + "UPri" + to_string(val % 100) + "QMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
+
 
     // sgx_rsa3072_key_t *private_capabilityB_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
     // sgx_rsa3072_public_key_t *public_capabilityB_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
@@ -834,9 +837,15 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
 
+    ocall_print("Inside machine");
+    ocall_print(currentMachineIDPublicKey);
+
     PRT_VALUE** P_ToMachine_Payload = argRefs[0];
     PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
     char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
+
+    ocall_print("Need to send to machine (received via P argument)");
+    ocall_print(sendingToMachinePublicID);
 
     if (isSecureSend) {
 
