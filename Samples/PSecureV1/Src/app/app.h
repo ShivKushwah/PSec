@@ -23,7 +23,7 @@ char* serializePrtValueToString(PRT_VALUE* value);
 
 void generateIdentity(string& publicID, string& privateID, string prefix);
 
-char* receiveNetworkRequest(char* request);
+char* receiveNetworkRequest(char* request, size_t requestSize);
 
 void startPrtProcessIfNotStarted();
 
@@ -53,7 +53,7 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
 
 extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost);
+char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEnclaveUntrustedHost);
 
 void safe_free(void* ptr);
 

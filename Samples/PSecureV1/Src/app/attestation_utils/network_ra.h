@@ -42,6 +42,10 @@ struct Encrypted_Message{
     uint32_t secret_size;
     uint8_t* payload_tag;
 };
+struct Network_Request_Wrapper{
+    char* request;
+    uint32_t requestSize;
+};
 
 static const Encrypted_Message default_Encrypted_Message = {NULL, 0, NULL};
 
@@ -103,7 +107,7 @@ int ra_network_send_receive(const char *sending_machine_name,
 void ra_free_network_response_buffer(ra_samp_response_header_t *resp);
 char* send_network_request_API(char* request, size_t requestSize);
 void* network_request_thread_wrapper(void* request);
-char* network_request_logic(char* request);
+char* network_request_logic(char* request, size_t requestSize);
 void initNetwork();
 char* forward_request(char* request, int redirect);
 char* createStringLiteralMalloced(char* stringLiteral);

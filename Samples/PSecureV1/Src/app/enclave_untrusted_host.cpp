@@ -818,9 +818,9 @@ int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, 
 }
 
 
-char* untrusted_enclave1_receiveNetworkRequest(char* request) { //TODO have network ra forward to this
+char* untrusted_enclave1_receiveNetworkRequest(char* request, size_t requestSize) { //TODO have network ra forward to this
 
-    return receiveNetworkRequestHelper(request, true);
+    return receiveNetworkRequestHelper(request, requestSize, true);
 
 }
 

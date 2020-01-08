@@ -173,9 +173,9 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
     }
 }
 
-char* forward_request(char* request, int redirect) {
+char* forward_request(char* request, size_t requestSize, int redirect) {
     if (redirect == 0 || redirect == -1) {
-        return receiveNetworkRequest(request);
+        return receiveNetworkRequest(request, requestSize);
     // } else if (redirect == 1) {
     //     return untrusted_enclave2_receiveNetworkRequest(request);
     // } else if (redirect == 2) {
@@ -185,23 +185,33 @@ char* forward_request(char* request, int redirect) {
     }
 }
 
-char* network_request_logic(char* request) { //TODO Make this function generalizable for multiple enclaves and machines
-
+char* network_request_logic(char* request, size_t requestSize) { //TODO Make this function generalizable for multiple enclaves and machines
     printf("Network Request Received: %s\n", request);
 
-    char* requestCopy = (char*) malloc(MAX_NETWORK_MESSAGE);
-    memcpy(requestCopy, request, strlen(request) + 1); //NOTE Since I didn't update MAX_NETWORK_MESSAGE, this caused a weird memory bug last time when I increased size of public identity key
+    char* requestCopy = (char*) malloc(requestSize);
+    memcpy(requestCopy, request, requestSize); //NOTE Since I didn't update MAX_NETWORK_MESSAGE, this caused a weird memory bug last time when I increased size of public identity key
 
     char* split = strtok(requestCopy, ":");
     if (strcmp(split, "Create") == 0) {
+
+        char* machineType;
+
+        if (NETWORK_DEBUG) {
+            split = strtok(NULL, ":");
+            char* parentTrustedMachinePublicIDKey = split;
+            split = strtok(NULL, ":");
+            machineType = split;
+        } else {
+            char* parentTrustedMachinePublicIDKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(parentTrustedMachinePublicIDKey, requestCopy + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+            machineType = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1;
+            ocall_print("machine type requested is :");
+            ocall_print(machineType);
+        }
         
-        split = strtok(NULL, ":");
-        char* parentTrustedMachinePublicIDKey = split;
-        split = strtok(NULL, ":");
-        char* machineType = split;
         if (TypeOfMachineToEnclaveNum.count(string(machineType)) == 1) {
 
-            return forward_request(request, TypeOfMachineToEnclaveNum[machineType]);
+            return forward_request(request, requestSize, TypeOfMachineToEnclaveNum[machineType]);
 
         } else {
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
@@ -214,7 +224,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
         char* machineType = split;
         if (TypeOfMachineToEnclaveNum.count(string(machineType)) == 1) {
 
-            return forward_request(request, TypeOfMachineToEnclaveNum[machineType]);
+            return forward_request(request, requestSize, TypeOfMachineToEnclaveNum[machineType]);
 
         } else {
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
@@ -229,7 +239,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 
         if (MachinePublicIDToEnclaveNum.count(string(machineReceivingComm)) == 1) {
 
-            return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingComm]);
+            return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[machineReceivingComm]);
 
         } else {
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
@@ -243,7 +253,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 
         if (MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage)) == 1) {
 
-            return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingMessage]);
+            return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[machineReceivingMessage]);
 
         } else {
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
@@ -258,7 +268,7 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 
         if (MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage)) == 1) {
 
-            return forward_request(request, MachinePublicIDToEnclaveNum[machineReceivingMessage]);
+            return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[machineReceivingMessage]);
 
         } else {
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
@@ -320,21 +330,24 @@ void initNetwork() {
 }
 
 
-void* network_request_thread_wrapper(void* request) {
-    return (void*) network_request_logic((char*) request);
+void* network_request_thread_wrapper(void* parameters) {
+    struct Network_Request_Wrapper* p = (struct Network_Request_Wrapper*)parameters;
+    return (void*) network_request_logic(p->request, p->requestSize);
 }
 
 //TODO change this API to take in who is sending the request
 char* send_network_request_API(char* request, size_t requestSize) {
     char* requestCopy = (char*) malloc(requestSize);
     // printf("Request: %s", request);
-    memcpy( requestCopy, request, requestSize);
+    memcpy(requestCopy, request, requestSize);
     // printf("Request Copy: %s", requestCopy);
+
+    struct Network_Request_Wrapper parameters = {requestCopy, requestSize};
 
     void* thread_ret;
     pthread_t thread_id; 
     printf("\n Calling Network Request Thread\n"); 
-    pthread_create(&thread_id, NULL, network_request_thread_wrapper, (void*) requestCopy);
+    pthread_create(&thread_id, NULL, network_request_thread_wrapper, (void*) &parameters);
     //TODO look into not calling pthread_join but actually let this run asynchoronous
     pthread_join(thread_id, &thread_ret); 
     printf("\n Finished Network Request Thread\n"); 

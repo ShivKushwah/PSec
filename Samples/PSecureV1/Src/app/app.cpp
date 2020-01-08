@@ -228,9 +228,9 @@ extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context
     return temp;// PrtMkIntValue(3);//PrtCloneValue(temp);
 }
 
-char* receiveNetworkRequest(char* request) {
+char* receiveNetworkRequest(char* request, size_t requestSize) {
 
-    return receiveNetworkRequestHelper(request, false);
+    return receiveNetworkRequestHelper(request, requestSize, false);
 
 }
 

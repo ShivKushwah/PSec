@@ -39,7 +39,7 @@ extern char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int 
 extern char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey);
 
 
-extern char* untrusted_enclave1_receiveNetworkRequest(char* request);
+extern char* untrusted_enclave1_receiveNetworkRequest(char* request, size_t requestSize);
 
 
 extern char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey);
@@ -510,7 +510,7 @@ char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], i
 
 }
 //Responbility of caller to free return
-char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
+char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEnclaveUntrustedHost) {
     // ocall_print("helllo");
     ocall_print_int(strlen(request));
     //char requestCopy[250];
@@ -583,7 +583,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
                 return ret;
             } else {
                 safe_free(requestCopy);
-                return untrusted_enclave1_receiveNetworkRequest(request);
+                return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
             }
         }
 
@@ -645,7 +645,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
                 return ret;
             } else {
                 safe_free(requestCopy);
-                return untrusted_enclave1_receiveNetworkRequest(request);
+                return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
             }
         }
 
@@ -685,7 +685,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
             
             } else {
                 safe_free(requestCopy);
-                return untrusted_enclave1_receiveNetworkRequest(request);
+                return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
             }
         }
 
@@ -733,7 +733,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
                 
             } else {
                 safe_free(requestCopy);
-                return untrusted_enclave1_receiveNetworkRequest(request);
+                return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
             }
         }
 
@@ -783,7 +783,7 @@ char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
                 
             } else {
                 safe_free(requestCopy);
-                return untrusted_enclave1_receiveNetworkRequest(request);
+                return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
             }
         }
 
