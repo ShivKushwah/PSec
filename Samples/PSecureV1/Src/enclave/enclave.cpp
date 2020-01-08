@@ -132,7 +132,7 @@ extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context
 
 extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    return sendCreateMachineNetworkRequest(context, argRefs, "Create:", true);
+    return sendCreateMachineNetworkRequest(context, argRefs, "Create", true);
 }
 
 extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -149,9 +149,19 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
     int ret;
     char* other_machine_name = "KPS";
-    int requestSize = SIZE_OF_IDENTITY_STRING + SIZE_OF_IDENTITY_STRING;
-    char* requestString = (char*) malloc(requestSize);
-    snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);    
+    char* requestString;
+    if (NETWORK_DEBUG) {
+        int requestSize = SIZE_OF_IDENTITY_STRING + SIZE_OF_IDENTITY_STRING;
+        requestString = (char*) malloc(requestSize);
+        snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);  
+    } else {
+        char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey};
+        int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
+        requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+        // snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);  
+
+    }
+      
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString);
     safe_free(requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
@@ -163,7 +173,11 @@ void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid, char* machineTypeToC
     current_eid = currentEid;
     char* newMachinePublicIDKey = createMachineHelper(machineTypeToCreate, "", numArgs, payloadType, payloadString, false, enclaveEid);
     //"Return" the publicIDKey of the new machine
-    memcpy(returnNewMachinePublicID, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
+    if (NETWORK_DEBUG) {
+        memcpy(returnNewMachinePublicID, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
+    } else {
+        memcpy(returnNewMachinePublicID, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+    }
     safe_free(newMachinePublicIDKey);
 }
 
@@ -280,7 +294,11 @@ int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* paren
     current_eid = currentEid;
     char* newMachinePublicIDKey = createMachineHelper(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload, true, enclaveEid);
     //"Return" the publicIDKey of the new machine
-    memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
+    if (NETWORK_DEBUG){
+        memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
+    } else {
+        memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+    }
     safe_free(newMachinePublicIDKey);
 }
 

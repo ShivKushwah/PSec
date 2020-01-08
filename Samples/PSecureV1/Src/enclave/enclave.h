@@ -64,3 +64,4 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
 extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 char* concatVoid(void* str1, size_t str1_size, void* str2, size_t str2_size);
+char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], int size_array);

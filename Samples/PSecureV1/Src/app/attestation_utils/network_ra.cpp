@@ -266,15 +266,32 @@ char* network_request_logic(char* request) { //TODO Make this function generaliz
 
     } else if (strcmp(split, "RegisterMachine") == 0) { //When a new machine is created, its public ID key should be registered with network_ra so that network knows who to forward the message to
         //TODO allow USMs to be registered as well, maybe make them be -1 ?
-        split = strtok(NULL, ":");
-        char* publicIDRegister = split;
-        split = strtok(NULL, ":");
-        char* enclaveNumRegister = split;
-        if (enclaveNumRegister != NULL && enclaveNumRegister[0] != '\0' && enclaveNumRegister[0] == '-') {
-            MachinePublicIDToEnclaveNum[string(publicIDRegister)] = -1;
+        char* publicIDRegister = NULL;
+        char* enclaveNumRegister = NULL;
+        if (NETWORK_DEBUG) {
+            split = strtok(NULL, ":");
+            publicIDRegister = split;
+            split = strtok(NULL, ":");
+            enclaveNumRegister = split;
+            if (enclaveNumRegister != NULL && enclaveNumRegister[0] != '\0' && enclaveNumRegister[0] == '-') {
+                MachinePublicIDToEnclaveNum[string(publicIDRegister)] = -1;
+            } else {
+                MachinePublicIDToEnclaveNum[string(publicIDRegister)] = atoi(enclaveNumRegister);
+            }
         } else {
-            MachinePublicIDToEnclaveNum[string(publicIDRegister)] = atoi(enclaveNumRegister);
+            publicIDRegister = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(publicIDRegister, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+            enclaveNumRegister = (char*) malloc(10);
+            strncpy(enclaveNumRegister, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, 10);
+            if (enclaveNumRegister != NULL && enclaveNumRegister[0] != '\0' && enclaveNumRegister[0] == '-') {
+                MachinePublicIDToEnclaveNum[string(publicIDRegister, SGX_RSA3072_KEY_SIZE)] = -1;
+            } else {
+                MachinePublicIDToEnclaveNum[string(publicIDRegister, SGX_RSA3072_KEY_SIZE)] = atoi(enclaveNumRegister);
+            }
+            safe_free(publicIDRegister);
+            safe_free(enclaveNumRegister);
         }
+
         return createStringLiteralMalloced("Success!");
 
 

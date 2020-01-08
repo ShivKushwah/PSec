@@ -481,6 +481,29 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
     return returnString;
 
 }
+
+//Responsbility of caller to free return
+char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], int size_array) {
+        //NOTE make changes in app.cpp as well
+
+    int total_size = 0;
+    for (int i = 0; i < size_array; i++) {
+        total_size += lengths[i];
+    }
+
+    char* returnString = (char*) malloc(total_size + 1);
+    char* ptr = returnString;
+    for (int i = 0; i < size_array; i++) {
+        memcpy(ptr, strings_to_concat[i], lengths[i]);
+        ptr = ptr + lengths[i];
+    }
+    returnString[total_size] = '\0';
+
+    //ocall_print("Return string is");
+    //ocall_print(returnString);
+    return returnString;
+
+}
 //Responbility of caller to free return
 char* receiveNetworkRequestHelper(char* request, bool isEnclaveUntrustedHost) {
     // ocall_print("helllo");
@@ -785,6 +808,11 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     // }
 
+    // ocall_print("KIRAT TEST");
+    // char* constructString2[] = {"kirat", ":", "sidhu"};
+    //             int constructStringLengths2[] = {strlen("kirat"), 1, strlen("sidhu")};
+    //             ocall_print(concatMutipleStringsWithLength(constructString2, constructStringLengths2, 3));
+
     int numArgs = atoi((char*) argRefs[1]);
 
     PRT_VALUE* payloadPrtValue;
@@ -800,22 +828,63 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
     int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1 + 10 + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
-    if (isSecureCreate) {
-        if (numArgs == 0) {
-            snprintf(createMachineRequest, requestSize, "%s:%s:%s:0", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
+    
+         if (isSecureCreate) {
+            if (numArgs == 0) {
+
+                if (NETWORK_DEBUG) {
+                    // char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":0"};
+                    // int constructStringLengths[] = {strlen(createTypeCommand), 1, strlen(currentMachineIDPublicKey), 1, strlen(requestedNewMachineTypeToCreate), 2};
+                    // safe_free(createMachineRequest);
+                    // createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 6);
+                    snprintf(createMachineRequest, requestSize, "%s:%s:%s:0", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
+
+                } else {
+                    char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":0"};
+                    int constructStringLengths[] = {strlen(createTypeCommand), 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedNewMachineTypeToCreate), 2};
+                    safe_free(createMachineRequest);
+                    createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 6);
+
+                }
+            } else {
+                
+                // ocall_print("GURGY");
+                if (NETWORK_DEBUG) {
+                    // char* numArgsString = (char*) argRefs[1];
+                    // char* payloadTypeString = (char*) malloc(10);
+                    // itoa(payloadType, payloadTypeString, 10);
+                    // char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":", numArgsString, ":", payloadTypeString, ":", payloadString};
+                    // int constructStringLengths[] = {strlen(createTypeCommand), 1, strlen(currentMachineIDPublicKey), 1, strlen(requestedNewMachineTypeToCreate), 1, strlen(numArgsString), 1, strlen(payloadTypeString), 1, strlen(payloadString)};
+                    // safe_free(createMachineRequest);
+                    // createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 11);
+                    snprintf(createMachineRequest, requestSize, "%s:%s:%s:%d:%d:%s", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
+
+                } else {
+                    char* numArgsString = (char*) argRefs[1];
+                    char* payloadTypeString = (char*) malloc(10);
+                    itoa(payloadType, payloadTypeString, 10);
+                    char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":", numArgsString, ":", payloadTypeString, ":", payloadString};
+                    int constructStringLengths[] = {strlen(createTypeCommand), 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedNewMachineTypeToCreate), 1, strlen(numArgsString), 1, strlen(payloadTypeString), 1, strlen(payloadString)};
+                    safe_free(createMachineRequest);
+                    safe_free(payloadTypeString);
+                    createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 11);
+                }
+                // ocall_print(createMachineRequest);
+            }
+        
+
+        // concatMutipleStringsWithLength
+
         } else {
-            snprintf(createMachineRequest, requestSize, "%s:%s:%s:%d:%d:%s", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
+            if (numArgs == 0) {
+                snprintf(createMachineRequest, requestSize, "%s:%s:0", createTypeCommand, requestedNewMachineTypeToCreate);
+            } else {
+                snprintf(createMachineRequest, requestSize, "%s:%s:%d:%d:%s", createTypeCommand, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
 
+            }
         }
-
-    } else {
-        if (numArgs == 0) {
-            snprintf(createMachineRequest, requestSize, "%s:%s:0", createTypeCommand, requestedNewMachineTypeToCreate);
-        } else {
-            snprintf(createMachineRequest, requestSize, "%s:%s:%d:%d:%s", createTypeCommand, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
-
-        }
-    }
+    
+   
     safe_free(payloadString);
     
     
@@ -845,7 +914,12 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     if (isSecureCreate) {
 
         //Now, need to retrieve capabilityKey for this newMachinePublicIDKey and store (thisMachineID, newMachinePublicIDKey) -> capabilityKey
-        string request = "GetKey:" + string(currentMachineIDPublicKey) + ":" + string(newMachinePublicIDKey);//TODO unhardcode current Machine name
+        string request;
+        if (NETWORK_DEBUG) {
+            request = "GetKey:" + string(currentMachineIDPublicKey) + ":" + string(newMachinePublicIDKey);//TODO unhardcode current Machine name
+        } else {
+            request = "GetKey:" + string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE) + ":" + string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);//TODO unhardcode current Machine name
+        }
         //TODO replace above line with snprintf as did with createMachineRequest, and do this everywhere in code
         char* getChildMachineIDRequest = (char*) request.c_str(); 
         char* capabilityKey = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey);//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
@@ -865,8 +939,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     safe_free(currentMachineIDPublicKey);
 
     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-	sprintf_s(str, 100, newMachinePublicIDKey);
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * SGX_RSA3072_KEY_SIZE);
+	sprintf_s(str, SGX_RSA3072_KEY_SIZE, newMachinePublicIDKey);
     safe_free(newMachinePublicIDKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
