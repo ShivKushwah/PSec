@@ -300,8 +300,8 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
         ocall_print(str);
         newPrtValue->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
         newPrtValue->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
-        PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SGX_RSA3072_KEY_SIZE + 1));
-        sprintf_s(prtStr, SGX_RSA3072_KEY_SIZE + 1, str);
+        PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (2*SGX_RSA3072_KEY_SIZE + 1));
+        sprintf_s(prtStr, 2*SGX_RSA3072_KEY_SIZE + 1, str);
         newPrtValue->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
     } else if (payloadType == PRT_VALUE_KIND_BOOL) {
         if (strcmp(str, "true") == 0) {
@@ -1095,7 +1095,7 @@ extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRe
     PRT_VALUE** P_VAR_payload2 = argRefs[1];
     PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
 
-    strncat((char*) val, (char*) val2, 200);
+    strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1);
 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (2*SGX_RSA3072_KEY_SIZE + 1));
 	sprintf_s(str, 2*SGX_RSA3072_KEY_SIZE + 1, (char*)val);

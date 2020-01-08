@@ -90,6 +90,8 @@ secure_machine ClientEnclave {
 
             // print "YELLO\n"; 
             secure_send testMachine, MapEvent, result;
+            print "Harmina";
+            PrintString(Concat(usernamePassword, masterSecret));
 
             untrusted_send clientUSM, OTPCodeEvent, Concat(usernamePassword, masterSecret);
         }
