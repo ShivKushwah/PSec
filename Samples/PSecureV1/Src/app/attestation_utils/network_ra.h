@@ -101,7 +101,7 @@ int ra_network_send_receive(const char *sending_machine_name,
                             Encrypted_Message optional_Message = default_Encrypted_Message,
                             char* plain_text_message = NULL);
 void ra_free_network_response_buffer(ra_samp_response_header_t *resp);
-char* send_network_request_API(char* request);
+char* send_network_request_API(char* request, size_t requestSize);
 void* network_request_thread_wrapper(void* request);
 char* network_request_logic(char* request);
 void initNetwork();

@@ -325,10 +325,10 @@ void* network_request_thread_wrapper(void* request) {
 }
 
 //TODO change this API to take in who is sending the request
-char* send_network_request_API(char* request) {
-    char* requestCopy = (char*) malloc(strlen(request) + 1);
+char* send_network_request_API(char* request, size_t requestSize) {
+    char* requestCopy = (char*) malloc(requestSize);
     // printf("Request: %s", request);
-    memcpy( requestCopy, request, strlen(request) + 1);
+    memcpy( requestCopy, request, requestSize);
     // printf("Request Copy: %s", requestCopy);
 
     void* thread_ret;

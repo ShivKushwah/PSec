@@ -211,7 +211,8 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     safe_free(eventMessagePayload);
     printf("Untrusted machine is sending out following network request: %s\n", unsecureSendRequest);   
     char* newMachinePublicIDKey = NULL;
-    newMachinePublicIDKey = send_network_request_API(unsecureSendRequest);
+    size_t requestSz = strlen(unsecureSendRequest) + 1;
+    newMachinePublicIDKey = send_network_request_API(unsecureSendRequest, requestSz);
     safe_free(unsecureSendRequest);
     ocall_print("printing pidk");
     ocall_print(newMachinePublicIDKey);
@@ -299,7 +300,8 @@ char* registerMachineWithNetwork(char* newMachineID) {
 
     char* machineKeyWrapper[] = {newMachineID};
     char* request = generateCStringFromFormat("RegisterMachine:%s:-1", machineKeyWrapper, 1);
-    char* returnValue = send_network_request_API(request);
+    size_t requestSz = strlen(request) + 1;
+    char* returnValue = send_network_request_API(request, requestSz);
     safe_free(request);
     safe_free(returnValue);
     return returnValue;
