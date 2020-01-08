@@ -482,14 +482,19 @@ char* generateCStringFromFormat(char* format_string, char* strings_to_print[], i
 
 }
 
+int returnTotalSizeofLengthArray(int lengths[], int length){
+    int total_size = 0;
+    for (int i = 0; i < length; i++) {
+        total_size += lengths[i];
+    }
+    return total_size;
+}
+
 //Responsbility of caller to free return
 char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], int size_array) {
         //NOTE make changes in app.cpp as well
-
-    int total_size = 0;
-    for (int i = 0; i < size_array; i++) {
-        total_size += lengths[i];
-    }
+    int total_size = returnTotalSizeofLengthArray(lengths, size_array);
+    
 
     char* returnString = (char*) malloc(total_size + 1);
     char* ptr = returnString;
@@ -828,7 +833,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
     int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1 + 10 + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
-    
+    int requestLength;
          if (isSecureCreate) {
             if (numArgs == 0) {
 
@@ -838,12 +843,13 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
                     // safe_free(createMachineRequest);
                     // createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 6);
                     snprintf(createMachineRequest, requestSize, "%s:%s:%s:0", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
-
+                    requestLength = strlen(createMachineRequest) + 1;
                 } else {
                     char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":0"};
                     int constructStringLengths[] = {strlen(createTypeCommand), 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedNewMachineTypeToCreate), 2};
                     safe_free(createMachineRequest);
                     createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 6);
+                    requestLength = returnTotalSizeofLengthArray(constructStringLengths, 6) + 1;
 
                 }
             } else {
@@ -858,7 +864,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
                     // safe_free(createMachineRequest);
                     // createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 11);
                     snprintf(createMachineRequest, requestSize, "%s:%s:%s:%d:%d:%s", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
-
+                    requestLength = strlen(createMachineRequest) + 1;
                 } else {
                     char* numArgsString = (char*) argRefs[1];
                     char* payloadTypeString = (char*) malloc(10);
@@ -868,6 +874,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
                     safe_free(createMachineRequest);
                     safe_free(payloadTypeString);
                     createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 11);
+                    requestLength = returnTotalSizeofLengthArray(constructStringLengths, 11) + 1;
                 }
                 // ocall_print(createMachineRequest);
             }
@@ -882,6 +889,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
                 snprintf(createMachineRequest, requestSize, "%s:%s:%d:%d:%s", createTypeCommand, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
 
             }
+            requestLength = strlen(createMachineRequest) + 1;
         }
     
    
@@ -896,9 +904,9 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     int ret_value; 
 
     #ifdef ENCLAVE_STD_ALT   
-    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING + 1);
+    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, requestLength, SIZE_OF_IDENTITY_STRING + 1);
     #else
-    ocall_network_request(createMachineRequest, newMachinePublicIDKey, SIZE_OF_IDENTITY_STRING + 1);
+    ocall_network_request(createMachineRequest, newMachinePublicIDKey, requestLength, SIZE_OF_IDENTITY_STRING + 1);
     // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
     #endif
     safe_free(createMachineRequest);

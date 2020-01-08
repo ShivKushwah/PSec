@@ -795,7 +795,7 @@ int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* 
 
 }
 
-int ocall_network_request(char* request, char* response, uint32_t RESPONSE_SIZE) {
+int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE) {
     printf("Network Request is : %s\n", request);
 
     char* result = send_network_request_API(request);

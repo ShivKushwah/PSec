@@ -35,7 +35,7 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_ping_machine_receive_encrypted_message, 
 #endif
 #ifndef OCALL_NETWORK_REQUEST_DEFINED__
 #define OCALL_NETWORK_REQUEST_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_network_request, (char* request, char* response, uint32_t RESPONSE_SIZE));
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_network_request, (char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE));
 #endif
 #ifndef OCALL_ADD_IDENTITY_TO_EID_DICTIONARY_DEFINED__
 #define OCALL_ADD_IDENTITY_TO_EID_DICTIONARY_DEFINED__

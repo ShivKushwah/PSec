@@ -168,6 +168,7 @@ typedef struct ms_ocall_network_request_t {
 	int ms_retval;
 	char* ms_request;
 	char* ms_response;
+	uint32_t ms_REQUEST_SIZE;
 	uint32_t ms_RESPONSE_SIZE;
 } ms_ocall_network_request_t;
 
@@ -272,7 +273,7 @@ static sgx_status_t SGX_CDECL enclave_ocall_ping_machine_receive_encrypted_messa
 static sgx_status_t SGX_CDECL enclave_ocall_network_request(void* pms)
 {
 	ms_ocall_network_request_t* ms = SGX_CAST(ms_ocall_network_request_t*, pms);
-	ms->ms_retval = ocall_network_request(ms->ms_request, ms->ms_response, ms->ms_RESPONSE_SIZE);
+	ms->ms_retval = ocall_network_request(ms->ms_request, ms->ms_response, ms->ms_REQUEST_SIZE, ms->ms_RESPONSE_SIZE);
 
 	return SGX_SUCCESS;
 }

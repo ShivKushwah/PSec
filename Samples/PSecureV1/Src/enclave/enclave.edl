@@ -88,11 +88,12 @@ enclave {
                                                     [in,size=other_machine_name_size] char* other_machine_name, 
                                                     uint32_t other_machine_name_size,
                                                     int message_from_machine_to_enclave,
-                                                    [in,string] char* optional_message);
+                                                    [in,string] char* optional_message); //TODO shividentity
         int ocall_ping_machine_receive_encrypted_message([in,size=secret_size] uint8_t *p_secret, 
                                 uint32_t secret_size,
                                  [in,count=16] uint8_t *p_gcm_mac);
-        int ocall_network_request([in, string]char* request, [out, size=RESPONSE_SIZE]char* response, uint32_t RESPONSE_SIZE);
+                                 //below passes when i do string
+        int ocall_network_request([in, size=REQUEST_SIZE]char* request, [out, size=RESPONSE_SIZE]char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE);
         void ocall_add_identity_to_eid_dictionary([in, string]char* newMachineID, sgx_enclave_id_t enclave_eid);
     };
 };
