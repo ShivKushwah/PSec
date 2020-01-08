@@ -1,4 +1,4 @@
-const int SIZE_OF_IDENTITY_STRING = 385; //TODO why does this need to be this big?
+const int SIZE_OF_IDENTITY_STRING = 384;
 const int SIZE_OF_MESSAGE = 800;
 const int SIZE_OF_CAPABILITYKEY = 70;
 const int SIZE_OF_NEWMACHINETYPE = 20;
