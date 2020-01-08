@@ -203,8 +203,8 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
             machineType = split;
         } else {
             char* parentTrustedMachinePublicIDKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(parentTrustedMachinePublicIDKey, requestCopy + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
-            machineType = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1;
+            memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+            machineType = request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1;
             ocall_print("machine type requested is :");
             ocall_print(machineType);
         }

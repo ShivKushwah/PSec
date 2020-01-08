@@ -512,12 +512,12 @@ char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], i
 //Responbility of caller to free return
 char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEnclaveUntrustedHost) {
     // ocall_print("helllo");
-    ocall_print_int(strlen(request));
+    // ocall_print_int(strlen(request));
     //char requestCopy[250];
-    char* requestCopy = (char*) malloc(strlen(request) + 1);
+    char* requestCopy = (char*) malloc(requestSize);
     // ocall_print("malloc init");
-    strncpy(requestCopy, request, strlen(request) + 1);
-    requestCopy[strlen(request)] = '\0';
+    strncpy(requestCopy, request, requestSize);
+    // requestCopy[strlen(request)] = '\0';
     // ocall_print("malloc yeeee");
 
 
@@ -526,26 +526,64 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
     #else
     char* split = strtok(requestCopy, ":");
     if (strcmp(split, "Create") == 0) {
-        char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
-        split = strtok(NULL, ":");
-        char* parentTrustedMachinePublicIDKey = split;
-        split = strtok(NULL, ":");
-        char* machineType = split;
-        split = strtok(NULL, ":");
-        int numArgs = atoi(split);
-        int payloadType = -1;
-        char* payload = (char*) malloc(10);
-        payload[0] = '\0';
-        if (numArgs > 0) {
-            split = strtok(NULL, ":");
-            payloadType = atoi(split);
-            split = strtok(NULL, "\0");
-            safe_free(payload);
-            payload = split;
+        char* newMachineID;
+        char* parentTrustedMachinePublicIDKey;
+        char* machineType;
+        int numArgs;
+        int payloadType;
+        char* payload;
 
+
+        if (NETWORK_DEBUG) {
+            newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+            split = strtok(NULL, ":");
+            parentTrustedMachinePublicIDKey = split;
+            split = strtok(NULL, ":");
+            machineType = split;
+            split = strtok(NULL, ":");
+            numArgs = atoi(split);
+            payloadType = -1;
+            payload = (char*) malloc(10);
+            payload[0] = '\0';
+            if (numArgs > 0) {
+                split = strtok(NULL, ":");
+                payloadType = atoi(split);
+                split = strtok(NULL, "\0");
+                safe_free(payload);
+                payload = split;
+
+            } else {
+                safe_free(payload);
+            }
         } else {
-            safe_free(payload);
+            newMachineID = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
+
+            parentTrustedMachinePublicIDKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+            char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1;
+
+            char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
+            strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
+
+            split = strtok(newTokenizerString, ":");
+            machineType = split;
+            split = strtok(NULL, ":");
+            numArgs = atoi(split);
+            payloadType = -1;
+            payload = (char*) malloc(10);
+            payload[0] = '\0';
+            if (numArgs > 0) {
+                split = strtok(NULL, ":");
+                payloadType = atoi(split);
+                split = strtok(NULL, "\0");
+                safe_free(payload);
+                payload = split;
+
+            } else {
+                safe_free(payload);
+            }
         }
+        
 
         if (isEnclaveUntrustedHost) {
         
@@ -571,7 +609,11 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             // application of this enclave and have that make an ecall to createMachineAPi
-            sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
+            if (NETWORK_DEBUG) {
+                sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
+            } else {
+                sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
+            }
             safe_free(requestCopy);
             return newMachineID;
 
@@ -633,7 +675,11 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             }   
 
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-            sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
+            if (NETWORK_DEBUG) {
+                sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
+            } else {
+                sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
+            }
             safe_free(requestCopy);
             return newMachineID;
 
