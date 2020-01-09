@@ -156,18 +156,21 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
         int requestSize = SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
         requestString = (char*) malloc(requestSize);
         requestStringSize = requestSize;
-        snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);  
+        snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey); 
+        // ocall_print(currentMachinePublicIDKey);
+        // ocall_print(childPublicIDKey); 
     } else {
         char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey};
         int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
         requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
         requestStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
         // snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);  
-
+        //printRSAKey(currentMachinePublicIDKey);
+        // ocall_print("Child public id key is");
+        // printRSAKey(childPublicIDKey);
     }
 
-    ocall_print(currentMachinePublicIDKey);
-    ocall_print(childPublicIDKey);
+    
       
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString, requestStringSize);
     safe_free(requestString);
