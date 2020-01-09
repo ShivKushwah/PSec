@@ -229,6 +229,8 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
 
         split = strtok(NULL, ":");
         char* machineType = split;
+        ocall_print("machine type requested is :");
+        ocall_print(machineType);
         if (TypeOfMachineToEnclaveNum.count(string(machineType)) == 1) {
 
             return forward_request(request, requestSize, TypeOfMachineToEnclaveNum[machineType]);
@@ -243,6 +245,8 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
         char* machineInitializingComm = split;
         split = strtok(NULL, ":");
         char* machineReceivingComm = split;
+        ocall_print("machine Receiving comm is :");
+        ocall_print(machineReceivingComm);
 
         if (MachinePublicIDToEnclaveNum.count(string(machineReceivingComm)) == 1) {
 
@@ -257,6 +261,8 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
 
         split = strtok(NULL, ":");
         char* machineReceivingMessage = split;
+        ocall_print("machine Receiving message is :");
+        ocall_print(machineReceivingMessage);
 
         if (MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage)) == 1) {
 
@@ -272,6 +278,8 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
         char* machineSendingMessage = split;
         split = strtok(NULL, ":");
         char* machineReceivingMessage = split;
+        ocall_print("machine Receiving message is :");
+        ocall_print(machineReceivingMessage);
 
         if (MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage)) == 1) {
 

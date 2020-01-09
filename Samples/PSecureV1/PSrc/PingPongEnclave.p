@@ -83,11 +83,15 @@ secure_machine ClientEnclave {
     }
 
     state WaitForGenerateOTP {
+        entry {
+            print "HARHARHAR";
+        }
         on GenerateOTPCodeEvent do (usernamePassword: StringType) {
             //untrusted_send clientUSM, OTPCodeEvent, usernamePassword + masterSecret;
+            print "HIIII";
             result[8] = 25;
             testMachine = new TestMachine();
-
+            print "BYEEE";
             // print "YELLO\n"; 
             secure_send testMachine, MapEvent, result;
             print "Harmina";
@@ -111,7 +115,7 @@ machine ClientWebBrowser {
             clientSSM = payload;
             usernamePassword = GetThis();
             // PrintString(clientSSM);
-            // print "YEE AUTHENTICATE\n";
+            print "YEE AUTHENTICATE\n";
             untrusted_send clientSSM, GenerateOTPCodeEvent, usernamePassword;
             receive {
                 case OTPCodeEvent : (payload : StringType) {

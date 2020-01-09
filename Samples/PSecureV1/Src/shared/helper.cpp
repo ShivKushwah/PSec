@@ -518,7 +518,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
     //char requestCopy[250];
     char* requestCopy = (char*) malloc(requestSize);
     // ocall_print("malloc init");
-    strncpy(requestCopy, request, requestSize);
+    memcpy(requestCopy, request, requestSize);
     // requestCopy[strlen(request)] = '\0';
     // ocall_print("malloc yeeee");
 
@@ -566,6 +566,8 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
             char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
             strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
+            ocall_print("New tokenizer is ");
+            ocall_print(newTokenizerString);
 
             split = strtok(newTokenizerString, ":");
             machineType = split;
