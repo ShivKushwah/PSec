@@ -494,6 +494,8 @@ int returnTotalSizeofLengthArray(int lengths[], int length){
 char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], int size_array) {
         //NOTE make changes in app.cpp as well
     int total_size = returnTotalSizeofLengthArray(lengths, size_array);
+    ocall_print("Total size of concat is ");
+    ocall_print_int(total_size);
     
 
     char* returnString = (char*) malloc(total_size + 1);
@@ -504,8 +506,8 @@ char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], i
     }
     returnString[total_size] = '\0';
 
-    //ocall_print("Return string is");
-    //ocall_print(returnString);
+    ocall_print("Concat return string is");
+    ocall_print(returnString);
     return returnString;
 
 }
@@ -560,7 +562,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
             parentTrustedMachinePublicIDKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
             memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
-            char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1;
+            char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1; //TODO using requestcopy here might be an issue
 
             char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
             strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
@@ -912,15 +914,20 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
                     snprintf(createMachineRequest, requestSize, "%s:%s:%s:%d:%d:%s", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
                     requestLength = strlen(createMachineRequest) + 1;
                 } else {
+                    ocall_print("requested new type of machine to create is");
+                    ocall_print(requestedNewMachineTypeToCreate);
                     char* numArgsString = (char*) argRefs[1];
                     char* payloadTypeString = (char*) malloc(10);
                     itoa(payloadType, payloadTypeString, 10);
                     char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":", numArgsString, ":", payloadTypeString, ":", payloadString};
                     int constructStringLengths[] = {strlen(createTypeCommand), 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedNewMachineTypeToCreate), 1, strlen(numArgsString), 1, strlen(payloadTypeString), 1, strlen(payloadString)};
                     safe_free(createMachineRequest);
-                    safe_free(payloadTypeString);
                     createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 11);
                     requestLength = returnTotalSizeofLengthArray(constructStringLengths, 11) + 1;
+                    safe_free(payloadTypeString);
+
+                    ocall_print("KURUT");
+                    ocall_print(createMachineRequest);
                 }
                 // ocall_print(createMachineRequest);
             }
