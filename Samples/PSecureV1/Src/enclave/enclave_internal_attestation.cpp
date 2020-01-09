@@ -446,10 +446,4 @@ sgx_status_t encrypt_secure_message(
     return ret;
 }
 
-int pong_enclave_request_attestation(const char* other_machine_name) {
-    int ret;
-    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, 1 ,"");
-    return ret;
-}
-
 

@@ -781,7 +781,7 @@ inline void* pong_enclave_attestation_thread(void* parameters) { //message_from_
     return (void*) pong_enclave_start_attestation(p->currentEid, p->machineName,  p->message_from_machine_to_enclave, p->optional_message);
 }
 
-int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, char* optional_message) {
+int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, char* optional_message, uint32_t OPTIONAL_MESSAGE_SIZE) {
     struct Enclave_start_attestation_wrapper_arguments parameters = {currentEid, other_machine_name, message_from_machine_to_enclave, optional_message};
     void* thread_ret;
     pthread_t thread_id; 

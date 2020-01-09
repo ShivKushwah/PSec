@@ -144,16 +144,6 @@ int ra_network_send_receive(const char *sending_machine_name,
                                 optional_Message.secret_size,
                                  optional_Message.payload_tag);
 
-    //Request to PongMachine to initialize a secure attestation channel
-    } else if (strcmp(receiving_machine_name, "PongMachine") == 0) { //TODO SHIV NOTE
-        //TODO move this inside an untrusted.cpp file, also this particular code logic isn't called for some reason
-        int ptr;
-        sgx_status_t status = enclave_pong_enclave_request_attestation(global_eid, &ptr, sending_machine_name);
-        if (status == SGX_SUCCESS && ptr == 0) {
-            return ptr;
-        } else {
-            printf("\nEnclave Request Attestation SGX Error!\n");
-        }
     } else {
         return -1;
     }

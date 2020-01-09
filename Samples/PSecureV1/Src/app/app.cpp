@@ -299,6 +299,7 @@ int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
 }
 
 char* registerMachineWithNetwork(char* newMachineID) {
+    //TODO shividentity make compatible
     ocall_print("ChildPublicIDKey size is");
     ocall_print_int(strlen(newMachineID));
 

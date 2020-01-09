@@ -22,7 +22,6 @@ enclave {
                                                             [out, size=requested_secret_size] uint8_t* return_encrypted_string,
                                                             uint32_t requested_secret_size,
                                                             [out, size=16] uint8_t* return_payload_tag);
-        public int pong_enclave_request_attestation([in, size=16] const char* other_machine_name);
 
         public int decryptAndSendMessageAPI([in, size=ID_SIZE]char* requestingMachineIDKey, 
                                             [in, size=ID_SIZE]char* receivingMachineIDKey, 
@@ -88,7 +87,8 @@ enclave {
                                                     [in,size=other_machine_name_size] char* other_machine_name, 
                                                     uint32_t other_machine_name_size,
                                                     int message_from_machine_to_enclave,
-                                                    [in,string] char* optional_message); //TODO shividentity
+                                                    [in,size=OPTIONAL_MESSAGE_SIZE] char* optional_message,
+                                                    uint32_t OPTIONAL_MESSAGE_SIZE); //TODO shividentity
         int ocall_ping_machine_receive_encrypted_message([in,size=secret_size] uint8_t *p_secret, 
                                 uint32_t secret_size,
                                  [in,count=16] uint8_t *p_gcm_mac);

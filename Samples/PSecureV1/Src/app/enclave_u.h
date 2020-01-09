@@ -27,7 +27,7 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_print_int, (int intPrint));
 #endif
 #ifndef OCALL_PONG_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
 #define OCALL_PONG_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_pong_enclave_attestation_in_thread, (sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t other_machine_name_size, int message_from_machine_to_enclave, char* optional_message));
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_pong_enclave_attestation_in_thread, (sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t other_machine_name_size, int message_from_machine_to_enclave, char* optional_message, uint32_t OPTIONAL_MESSAGE_SIZE));
 #endif
 #ifndef OCALL_PING_MACHINE_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
 #define OCALL_PING_MACHINE_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
@@ -83,7 +83,6 @@ sgx_status_t enclave_enclave_ra_close(sgx_enclave_id_t eid, sgx_status_t* retval
 sgx_status_t enclave_verify_att_result_mac(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* message, size_t message_size, uint8_t* mac, size_t mac_size);
 sgx_status_t enclave_put_secret_data(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* p_secret, uint32_t secret_size, uint8_t* gcm_mac);
 sgx_status_t enclave_encrypt_secure_message(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint8_t* return_encrypted_string, uint32_t requested_secret_size, uint8_t* return_payload_tag);
-sgx_status_t enclave_pong_enclave_request_attestation(sgx_enclave_id_t eid, int* retval, const char* other_machine_name);
 sgx_status_t enclave_decryptAndSendMessageAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* encryptedMessage, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE);
 sgx_status_t enclave_createMachineAPI(sgx_enclave_id_t eid, int* retval, sgx_enclave_id_t currentEid, char* machineName, char* parentTrustedMachineID, char* returnNewMachineID, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid);
 sgx_status_t enclave_initializeCommunicationAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t ID_SIZE, uint32_t SESSION_SIZE);

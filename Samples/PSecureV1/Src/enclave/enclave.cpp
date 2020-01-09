@@ -147,25 +147,30 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 
 //Responsibility of caller to free return
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
+    ocall_print("IF THIS WORKS THEN WOO BOY");
     int ret;
     char* other_machine_name = "KPS";
     char* requestString;
+    int requestStringSize;
     if (NETWORK_DEBUG) {
-        int requestSize = SIZE_OF_IDENTITY_STRING + SIZE_OF_IDENTITY_STRING;
+        int requestSize = SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
         requestString = (char*) malloc(requestSize);
+        requestStringSize = requestSize;
         snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);  
     } else {
         char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey};
         int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
         requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+        requestStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
         // snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);  
 
     }
       
-    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString);
+    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString, requestStringSize);
     safe_free(requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
+    ocall_print("WORKS");
     return capabilityKey;
 }
                                         
@@ -310,18 +315,20 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     int ret;
     char* other_machine_name = "KPS";
     char* requestString;
+    int requestStringSize;
     if (NETWORK_DEBUG) {    
-        int requestSize = SIZE_OF_IDENTITY_STRING + SIZE_OF_IDENTITY_STRING;
+        int requestSize = SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
         requestString = (char*) malloc(requestSize);
+        requestStringSize = requestSize;
         snprintf(requestString, requestSize, "%s:%s", newMachinePublicIDKey, parentTrustedMachineID);
     } else {
-        int requestSize = SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1;
-        requestString = (char*) malloc(requestSize);
-        memcpy(requestString, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
-        memcpy(requestString + SGX_RSA3072_KEY_SIZE, ":", 1);
-        memcpy(requestString + SGX_RSA3072_KEY_SIZE + 1, parentTrustedMachineID, SGX_RSA3072_KEY_SIZE);
+
+        char* concatStrings[] = {newMachinePublicIDKey, ":", parentTrustedMachineID};
+        int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
+        requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+        requestStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
     }
-    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, CREATE_CAPABILITY_KEY_CONSTANT, requestString);
+    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, CREATE_CAPABILITY_KEY_CONSTANT, requestString, requestStringSize);
     safe_free(requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
@@ -330,8 +337,6 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
 }
 
 char* registerMachineWithNetwork(char* newMachineID) {
-    //TODO shiv next make this NETWORK DEBUG
-
     int ret_value;
     char* num = (char*) malloc(10);
     itoa(ENCLAVE_NUMBER, num, 10);
@@ -347,7 +352,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
         char* requestType = "RegisterMachine:";
         char* colon = ":";
         char* concatStrings[] = {requestType, newMachineID, colon, num};
-        int concatLenghts[] = {strlen(requestType), strlen(newMachineID), strlen(colon), strlen(num)};
+        int concatLenghts[] = {strlen(requestType), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(num)};
         char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
         int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
         ocall_network_request(&ret_value, networkRequest, networkResult, networkRequestSize, 100);
