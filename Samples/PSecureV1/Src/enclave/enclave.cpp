@@ -165,6 +165,9 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
         // snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);  
 
     }
+
+    ocall_print(currentMachinePublicIDKey);
+    ocall_print(childPublicIDKey);
       
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString, requestStringSize);
     safe_free(requestString);
@@ -300,6 +303,13 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
 
 int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
     current_eid = currentEid;
+   
+    if (!NETWORK_DEBUG) {
+         ocall_print("we at create machine api level now");
+        ocall_print("printing parentTrustedMachinePublicKey");
+        printRSAKey(parentTrustedMachinePublicIDKey);
+    }
+    
     char* newMachinePublicIDKey = createMachineHelper(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload, true, enclaveEid);
     //"Return" the publicIDKey of the new machine
     if (NETWORK_DEBUG){
@@ -328,6 +338,11 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
         requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
         requestStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
     }
+    ocall_print("Enclave is asking for creation of new cap key using");
+    printRSAKey(newMachinePublicIDKey);
+    printRSAKey(parentTrustedMachineID);
+    // ocall_print("last one should be same as");
+    // printRSAKey(requestString + SGX_RSA3072_KEY_SIZE + 1);
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, CREATE_CAPABILITY_KEY_CONSTANT, requestString, requestStringSize);
     safe_free(requestString);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
@@ -701,6 +716,10 @@ void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
     // ocall_print(sessionKey);
 
     // char* serializedKey = checkRawRSAKeySize((char*)public_B_key_raw);
+
+    // ocall_print("THESE SHOULD BE THE SAME");
+    // printRSAKey(serializedKey);
+    // printRSAKey((char*)public_B_key_raw);
 
     // int encryptedSessionKeyLength;
     // char* encryptedSessionKey = encryptMessageExternalPublicKey(sessionKey, 100, serializedKey, encryptedSessionKeyLength);

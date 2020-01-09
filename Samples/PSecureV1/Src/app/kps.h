@@ -151,6 +151,8 @@ int receive_encrypted_message(uint8_t *p_secret,
 int createCapabilityKey(char* newMachineID, char* parentTrustedMachineID);
 char* retrieveCapabilityKey(char* currentMachineID, char* childMachineID);
 
+void printRSAKey(char* key);
+
 
 int sp_ra_free_msg2(
     sample_ra_msg2_t *p_msg2);

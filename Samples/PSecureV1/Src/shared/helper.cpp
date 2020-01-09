@@ -490,6 +490,23 @@ int returnTotalSizeofLengthArray(int lengths[], int length){
     return total_size;
 }
 
+void printRSAKey(char* key) {
+    //NOTE if modifying this method, modify it in kps.cpp also
+    char* keyCopy = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    memcpy(keyCopy, key, SGX_RSA3072_KEY_SIZE);
+    ocall_print("key:");
+    char* temp = keyCopy;
+    for (int i = 0; i < SGX_RSA3072_KEY_SIZE; i++) {
+        if (temp[i] == '\0') {
+            temp[i] = 'D';
+        }
+    }
+    keyCopy[SGX_RSA3072_KEY_SIZE - 1] = '\0';
+    
+    ocall_print(keyCopy);
+    safe_free(keyCopy);
+}
+
 //Responsbility of caller to free return
 char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], int size_array) {
         //NOTE make changes in app.cpp as well
@@ -558,6 +575,9 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
                 safe_free(payload);
             }
         } else {
+            // char* requestCopyCopy = (char*) malloc(requestSize);
+            // memcpy(requestCopyCopy, request, requestSize);
+
             newMachineID = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
 
             parentTrustedMachinePublicIDKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
@@ -616,6 +636,8 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             if (NETWORK_DEBUG) {
                 sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
             } else {
+                ocall_print("at helper.cpp level");
+                printRSAKey(parentTrustedMachinePublicIDKey);
                 sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
             }
             safe_free(requestCopy);
@@ -850,8 +872,15 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
 
-    char* currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str())); 
+    char* currentMachineIDPublicKey;
+
+    if (NETWORK_DEBUG) {
+        currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+        snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str())); 
+    } else {
+        currentMachineIDPublicKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        memcpy(currentMachineIDPublicKey, (char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()), SGX_RSA3072_KEY_SIZE);
+    }
   
 
     // if (!machineTypeIsSecure(requestedNewMachineTypeToCreate)) {
@@ -918,6 +947,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
                 } else {
                     ocall_print("requested new type of machine to create is");
                     ocall_print(requestedNewMachineTypeToCreate);
+                    ocall_print("current RSA key is");
+                    printRSAKey(currentMachineIDPublicKey);
                     char* numArgsString = (char*) argRefs[1];
                     char* payloadTypeString = (char*) malloc(10);
                     itoa(payloadType, payloadTypeString, 10);
@@ -970,7 +1001,13 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     printStr = generateCStringFromFormat("%s machine has created a new machine with Identity Public Key as:", machineNameWrapper2, 1);
     ocall_print(printStr); //TODO use this method for all future ocall_prints
     safe_free(printStr);
-    ocall_print(newMachinePublicIDKey);
+
+    if (NETWORK_DEBUG) {
+        ocall_print(newMachinePublicIDKey);
+    } else {
+        printRSAKey(newMachinePublicIDKey);
+    }
+    
 
     #ifdef ENCLAVE_STD_ALT
 

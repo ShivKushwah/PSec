@@ -783,6 +783,10 @@ inline void* pong_enclave_attestation_thread(void* parameters) { //message_from_
 
 int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, char* optional_message, uint32_t OPTIONAL_MESSAGE_SIZE) {
     struct Enclave_start_attestation_wrapper_arguments parameters = {currentEid, other_machine_name, message_from_machine_to_enclave, optional_message};
+    // ocall_print("inside ocall_pong_enclave_attestation_in_thread");
+    // printRSAKey(optional_message);
+    // ocall_print("same as");
+    // printRSAKey(optional_message + SGX_RSA3072_KEY_SIZE + 1);
     void* thread_ret;
     pthread_t thread_id; 
     printf("\n Calling Attestation Thread\n"); 
@@ -812,7 +816,12 @@ int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, 
     else if (strlen(result) + 1 > RESPONSE_SIZE) {
         printf("ERROR. Message too big!\n");
     }
-    memcpy(response, result, strlen(result) + 1);
+    if (NETWORK_DEBUG) {
+        memcpy(response, result, strlen(result) + 1);
+    } else {
+        memcpy(response, result, RESPONSE_SIZE);
+    }
+    
     safe_free(result);
     return 1;
 

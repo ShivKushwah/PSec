@@ -88,7 +88,7 @@ enclave {
                                                     uint32_t other_machine_name_size,
                                                     int message_from_machine_to_enclave,
                                                     [in,size=OPTIONAL_MESSAGE_SIZE] char* optional_message,
-                                                    uint32_t OPTIONAL_MESSAGE_SIZE); //TODO shividentity
+                                                    uint32_t OPTIONAL_MESSAGE_SIZE);
         int ocall_ping_machine_receive_encrypted_message([in,size=secret_size] uint8_t *p_secret, 
                                 uint32_t secret_size,
                                  [in,count=16] uint8_t *p_gcm_mac);
