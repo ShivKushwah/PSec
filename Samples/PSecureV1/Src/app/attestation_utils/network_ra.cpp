@@ -186,12 +186,12 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
 
         char* machineType;
 
-        if (NETWORK_DEBUG) {
-            split = strtok(NULL, ":");
-            char* parentTrustedMachinePublicIDKey = split;
-            split = strtok(NULL, ":");
-            machineType = split;
-        } else {
+        // if (NETWORK_DEBUG) {
+        //     split = strtok(NULL, ":");
+        //     char* parentTrustedMachinePublicIDKey = split;
+        //     split = strtok(NULL, ":");
+        //     machineType = split;
+        // } else {
             char* parentTrustedMachinePublicIDKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
             memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
             char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1;
@@ -204,7 +204,7 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
             
             ocall_print("machine type requested is :");
             ocall_print(machineType);
-        }
+        // }
         
         if (TypeOfMachineToEnclaveNum.count(string(machineType)) == 1) {
 
@@ -234,37 +234,37 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
         char* machineInitializingComm;
         char* machineReceivingComm;
 
-        if (NETWORK_DEBUG) {
-            split = strtok(NULL, ":");
-            machineInitializingComm = split;
-            split = strtok(NULL, ":");
-            machineReceivingComm = split;
-            ocall_print("machine Receiving comm is :");
-            ocall_print(machineReceivingComm);
-        } else {
+        // if (NETWORK_DEBUG) {
+        //     split = strtok(NULL, ":");
+        //     machineInitializingComm = split;
+        //     split = strtok(NULL, ":");
+        //     machineReceivingComm = split;
+        //     ocall_print("machine Receiving comm is :");
+        //     ocall_print(machineReceivingComm);
+        // } else {
             machineInitializingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
             memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
             machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
             memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
             ocall_print("machine Receiving comm is :");
             printRSAKey(machineReceivingComm);
-        }
+        // }
 
         
         int count;
-        if (NETWORK_DEBUG) {
-            count = MachinePublicIDToEnclaveNum.count(string(machineReceivingComm));
-        } else {
+        // if (NETWORK_DEBUG) {
+        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingComm));
+        // } else {
             count = MachinePublicIDToEnclaveNum.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE));
-        }
+        // }
 
 
         if (count == 1) {
-            if (NETWORK_DEBUG)  {
-                return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingComm)]);
-            } else {
+            // if (NETWORK_DEBUG)  {
+            //     return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingComm)]);
+            // } else {
                 return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)]);
-            }
+            // }
 
         } else {
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
@@ -275,32 +275,32 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
 
         char* machineReceivingMessage;
 
-        if (NETWORK_DEBUG) {
-            split = strtok(NULL, ":");
-            machineReceivingMessage = split;
-            ocall_print("machine Receiving message is :");
-            ocall_print(machineReceivingMessage);
-        } else {
+        // if (NETWORK_DEBUG) {
+        //     split = strtok(NULL, ":");
+        //     machineReceivingMessage = split;
+        //     ocall_print("machine Receiving message is :");
+        //     ocall_print(machineReceivingMessage);
+        // } else {
             machineReceivingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
             memcpy(machineReceivingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
             ocall_print("machine Receiving message is :");
             printRSAKey(machineReceivingMessage);
-        }
+        // }
 
         int count;
-        if (NETWORK_DEBUG) {
-            count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage));
-        } else {
+        // if (NETWORK_DEBUG) {
+        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage));
+        // } else {
             count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
-        }
+        // }
         
 
         if (count == 1) {
-            if (NETWORK_DEBUG) {
-                return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage)]);
-            } else {
+            // if (NETWORK_DEBUG) {
+            //     return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage)]);
+            // } else {
                 return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)]);
-            }
+            // }
 
         } else {
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
@@ -311,36 +311,36 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
         char* machineSendingMessage;
         char* machineReceivingMessage;
 
-        if (NETWORK_DEBUG) {
-            split = strtok(NULL, ":");
-            machineSendingMessage = split;
-            split = strtok(NULL, ":");
-            machineReceivingMessage = split;
-            ocall_print("machine Receiving message is :");
-            ocall_print(machineReceivingMessage);
-        } else {
+        // if (NETWORK_DEBUG) {
+        //     split = strtok(NULL, ":");
+        //     machineSendingMessage = split;
+        //     split = strtok(NULL, ":");
+        //     machineReceivingMessage = split;
+        //     ocall_print("machine Receiving message is :");
+        //     ocall_print(machineReceivingMessage);
+        // } else {
             machineSendingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
             memcpy(machineSendingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
             machineReceivingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
             memcpy(machineReceivingMessage, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
             ocall_print("machine Receiving message is :");
             printRSAKey(machineReceivingMessage);
-        }
+        // }
 
         int count;
-        if (NETWORK_DEBUG) {
-            count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage));
-        } else {
+        // if (NETWORK_DEBUG) {
+        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage));
+        // } else {
             count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
-        }
+        // }
         
 
         if (count == 1) {
-            if (NETWORK_DEBUG) {
-                return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage)]);
-            } else {
+            // if (NETWORK_DEBUG) {
+            //     return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage)]);
+            // } else {
                 return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)]);
-            }
+            // }
 
         } else {
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");

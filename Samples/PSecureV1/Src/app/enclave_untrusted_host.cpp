@@ -817,11 +817,11 @@ int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, 
     else if (strlen(result) + 1 > RESPONSE_SIZE) {
         printf("ERROR. Message too big!\n");
     }
-    if (NETWORK_DEBUG) {
-        memcpy(response, result, strlen(result) + 1);
-    } else {
+    // if (NETWORK_DEBUG) {
+    //     memcpy(response, result, strlen(result) + 1);
+    // } else {
         memcpy(response, result, RESPONSE_SIZE);
-    }
+    // }
     
     safe_free(result);
     return 1;
@@ -837,13 +837,13 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request, size_t requestSize
 
 
 void ocall_add_identity_to_eid_dictionary(char* newMachineID, uint32_t ID_SIZE, sgx_enclave_id_t enclave_eid) {
-        if (NETWORK_DEBUG) {
-            string identityString = string(newMachineID);
-            PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
-        } else {
+        // if (NETWORK_DEBUG) {
+        //     string identityString = string(newMachineID);
+        //     PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
+        // } else {
             string identityString = string(newMachineID, ID_SIZE);
             PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
-        }
+        // }
         
         // ocall_print(newMachineID);
         // ocall_print("has enclave ID");
