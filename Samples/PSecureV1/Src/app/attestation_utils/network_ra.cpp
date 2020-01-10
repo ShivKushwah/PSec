@@ -350,17 +350,17 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
         //TODO allow USMs to be registered as well, maybe make them be -1 ?
         char* publicIDRegister = NULL;
         char* enclaveNumRegister = NULL;
-        if (NETWORK_DEBUG) {
-            split = strtok(NULL, ":");
-            publicIDRegister = split;
-            split = strtok(NULL, ":");
-            enclaveNumRegister = split;
-            if (enclaveNumRegister != NULL && enclaveNumRegister[0] != '\0' && enclaveNumRegister[0] == '-') {
-                MachinePublicIDToEnclaveNum[string(publicIDRegister)] = -1;
-            } else {
-                MachinePublicIDToEnclaveNum[string(publicIDRegister)] = atoi(enclaveNumRegister);
-            }
-        } else {
+        // if (NETWORK_DEBUG) {
+        //     split = strtok(NULL, ":");
+        //     publicIDRegister = split;
+        //     split = strtok(NULL, ":");
+        //     enclaveNumRegister = split;
+        //     if (enclaveNumRegister != NULL && enclaveNumRegister[0] != '\0' && enclaveNumRegister[0] == '-') {
+        //         MachinePublicIDToEnclaveNum[string(publicIDRegister)] = -1;
+        //     } else {
+        //         MachinePublicIDToEnclaveNum[string(publicIDRegister)] = atoi(enclaveNumRegister);
+        //     }
+        // } else {
             publicIDRegister = (char*) malloc(SGX_RSA3072_KEY_SIZE);
             memcpy(publicIDRegister, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
             enclaveNumRegister = (char*) malloc(10);
@@ -372,7 +372,7 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
             }
             safe_free(publicIDRegister);
             safe_free(enclaveNumRegister);
-        }
+        // }
 
         return createStringLiteralMalloced("Success!");
 
