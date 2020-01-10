@@ -1054,11 +1054,12 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         payloadStringSize = 0; //TODO shividentity
         payloadString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
         char* temp = serializePrtValueToString(payloadPrtValue, payloadStringSize);
-        payloadStringSize = payloadStringSize + 1;
-        memcpy(payloadString, temp, payloadStringSize);
-        payloadString[payloadStringSize - 1] = '\0';
+        memcpy(payloadString, temp, payloadStringSize + 1);
+        payloadString[payloadStringSize] = '\0';
         ocall_print("EVENT MESSAGE PAYLOAD IS");
-            ocall_print(payloadString);
+        ocall_print(payloadString);
+        ocall_print("Length is");
+        ocall_print_int(payloadStringSize);
         safe_free(temp);
 
     }

@@ -189,14 +189,15 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
         int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
         char* eventPayloadTypeString = (char*) malloc(10);
         itoa(eventPayloadType, eventPayloadTypeString, 10);
-        int final_size_serialized = 0;
-            char* temp = serializePrtValueToString(*P_EventMessage_Payload, final_size_serialized);
-            final_size_serialized = final_size_serialized + 1;
-            memcpy(eventMessagePayload, temp, final_size_serialized);
-            eventMessagePayload[final_size_serialized - 1] = '\0';
-            ocall_print("EVENT MESSAGE PAYLOAD IS");
-            ocall_print(eventMessagePayload);
-            safe_free(temp);
+        int eventMessagePayloadSize = 0;
+        char* temp = serializePrtValueToString(*P_EventMessage_Payload, eventMessagePayloadSize);
+        memcpy(eventMessagePayload, temp, eventMessagePayloadSize + 1);
+        eventMessagePayload[eventMessagePayloadSize] = '\0';
+        ocall_print("EVENT MESSAGE PAYLOAD IS");
+        ocall_print(eventMessagePayload);
+        ocall_print("Length is");
+        ocall_print_int(eventMessagePayloadSize);
+        safe_free(temp);
     //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
     //     //TODO I assumed only 1 payload for the below
     //     // if (i == 0) {
@@ -222,7 +223,7 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     if (numArgs > 0) {
         char* colon = ":";
         char* concatStrings[] = {"UntrustedSend", colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayload};
-        int concatLenghts[] = {strlen("UntrustedSend"), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), final_size_serialized};
+        int concatLenghts[] = {strlen("UntrustedSend"), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), eventMessagePayloadSize};
         unsecureSendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 11);
         requestSize = returnTotalSizeofLengthArray(concatLenghts, 11) + 1;
         // snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:%s", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);

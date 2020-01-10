@@ -1021,13 +1021,14 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
     char* eventPayloadTypeString = (char*) malloc(10);
     itoa(eventPayloadType, eventPayloadTypeString, 10);
-    int final_size_seralized = 0;
-    char* temp = serializePrtValueToString(*P_EventMessage_Payload, final_size_seralized);
-    final_size_seralized = final_size_seralized + 1;
-    memcpy(eventMessagePayload, temp, final_size_seralized);
-            eventMessagePayload[final_size_seralized - 1] = '\0';
-            ocall_print("EVENT MESSAGE PAYLOAD IS");
-            ocall_print(eventMessagePayload);
+    int eventMessagePayloadSize = 0;
+    char* temp = serializePrtValueToString(*P_EventMessage_Payload, eventMessagePayloadSize);
+    memcpy(eventMessagePayload, temp, eventMessagePayloadSize + 1);
+    eventMessagePayload[eventMessagePayloadSize] = '\0';
+    ocall_print("EVENT MESSAGE PAYLOAD IS");
+    ocall_print(eventMessagePayload);
+    ocall_print("Length is");
+    ocall_print_int(eventMessagePayloadSize);
     // memcpy(eventMessagePayload, temp, strlen(temp) + 1); //TODO shividentity
     safe_free(temp);
 
@@ -1075,7 +1076,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             if (numArgs > 0) {
                 char* colon = ":";
                 char* concatStrings[] = {sendTypeCommand, colon, currentMachineIDPublicKey, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayload};
-                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), final_size_seralized};
+                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), eventMessagePayloadSize};
                 sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
                 requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
                 // snprintf(sendRequest, requestSize, "%s:%s:%s:%s:%d:%d:%s", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
@@ -1092,7 +1093,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             if (numArgs > 0) {
                 char* colon = ":";
                 char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayload};
-                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), final_size_seralized};
+                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), eventMessagePayloadSize};
                 sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 11);
                 requestSize = returnTotalSizeofLengthArray(concatLenghts, 11) + 1;
                 // snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:%s", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
