@@ -160,6 +160,8 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
 
 extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
 {   
+    //TODO shivIdentity
+
     //If we are making changes in here, then make appropiate changes in enclave.cpp
     //TODO we need to attest the other enclave before sending it a message, even if we are sending an untrusted message
     PRT_VALUE** P_ToMachine_Payload = argRefs[0];
@@ -238,7 +240,7 @@ char* receiveNetworkRequest(char* request, size_t requestSize) {
 }
 
 //Responsibility of Caller to free return 
-char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey) {
+char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey) { //TODO shividentity
     printf("USM Initialize Communication API Called!\n");
     //TODO need to verify signature over requestingMachineIDKey
     if (USMPublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))) == 0) {
@@ -269,10 +271,18 @@ char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs
    PRT_MACHINEID receivingMachinePID;
     printf("Machine receiving message has a PID of:");
     char* temp = (char*) malloc(10);
-    snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
-    printf(temp);
-    safe_free(temp);
-    receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
+    if (NETWORK_DEBUG) {
+        snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
+        printf(temp);
+        safe_free(temp);
+        receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
+    } else {
+        snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
+        printf(temp);
+        safe_free(temp);
+        receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+    }
+    
     handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload);
     return createStringLiteralMalloced("Message successfully sent!/n");
 }
@@ -316,6 +326,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
 
 //Responbility of caller to free return
 char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload) {
+    //TODO shividentity make compatibile
     startPrtProcessIfNotStarted();
     if (machineTypeIsSecure(machineType)) {
         return "Error: Tried to create SSM inside app!";

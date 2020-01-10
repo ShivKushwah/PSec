@@ -793,40 +793,97 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
     
     }  else if (strcmp(split, "UntrustedSend") == 0) {
 
+        char* machineReceivingMessage;
+        char* eventNum;
         char* temp;
-        split = strtok(NULL, ":");
-        char* machineReceivingMessage = split;
-        split = strtok(NULL, ":");
-        char* eventNum = split;
-        split = strtok(NULL, ":");
-        int numArgs = atoi(split);
-        int payloadType = -1;
-        char* payload = (char*) malloc(10);
-        payload[0] = '\0';
-        if (numArgs > 0) {
-            split = strtok(NULL, ":");
-            payloadType = atoi(split);
-            split = strtok(NULL, "\0");
-            safe_free(payload);
-            payload = split;
+        int numArgs;
+        int payloadType;
+        char* payload;
 
+        if (NETWORK_DEBUG) {
+            split = strtok(NULL, ":");
+            machineReceivingMessage = split;
+            split = strtok(NULL, ":");
+            eventNum = split;
+            split = strtok(NULL, ":");
+            numArgs = atoi(split);
+            payloadType = -1;
+            payload = (char*) malloc(10);
+            payload[0] = '\0';
+            if (numArgs > 0) {
+                split = strtok(NULL, ":");
+                payloadType = atoi(split);
+                split = strtok(NULL, "\0");
+                safe_free(payload);
+                payload = split;
+
+            } else {
+                safe_free(payload);
+            }
         } else {
-            safe_free(payload);
+            machineReceivingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(machineReceivingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+
+            char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1; //TODO using requestcopy here might be an issue
+
+            char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
+            strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
+            ocall_print("New tokenizer is ");
+            ocall_print(newTokenizerString);
+
+            split = strtok(newTokenizerString, ":");
+            eventNum = split;
+            split = strtok(NULL, ":");
+            numArgs = atoi(split);
+            payloadType = -1;
+            payload = (char*) malloc(10);
+            payload[0] = '\0';
+            if (numArgs > 0) {
+                split = strtok(NULL, ":");
+                payloadType = atoi(split);
+                split = strtok(NULL, "\0");
+                safe_free(payload);
+                payload = split;
+
+            } else {
+                safe_free(payload);
+            }
+            
         }
+
+        
 
         if (isEnclaveUntrustedHost) {
 
-            sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingMessage]; //TODO add check here in case its not in dictionary
-            int ptr;
-            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-            sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+            if (NETWORK_DEBUG) {
+                sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage)]; //TODO add check here in case its not in dictionary
+                int ptr;
+                //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+                sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+            } else {
+                sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)]; //TODO add check here in case its not in dictionary
+                int ptr;
+                //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+                sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+            }
+
+            
             safe_free(requestCopy);
             return createStringLiteralMalloced("Untrusted Message Succesfully sent!");
 
         } else {
-            string machineReceiveMsgString = string(machineReceivingMessage);
+            string machineReceiveMsgString;
+            int count;
+            if (NETWORK_DEBUG) {
+                machineReceiveMsgString = string(machineReceivingMessage);
+                count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage));
+            } else {
+                machineReceiveMsgString = string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE);
+                count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
+            }
+            
             // printf("Untrusted Send -> machine checking in dictionary is %s\n", machineReceiveMsgString.c_str());
-            if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
+            if (count > 0) {
                 // printf("Sending Message to USM in app.cpp\n");
                 char* ret = USMsendMessageAPI(machineReceivingMessage, eventNum, numArgs, payloadType, payload);
                 safe_free(requestCopy);
