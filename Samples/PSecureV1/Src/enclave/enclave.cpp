@@ -260,7 +260,18 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
         // secureChildPublicIDKey = string((char*)publicIdentity, SGX_RSA3072_KEY_SIZE);
         // secureChildPrivateIDKey = string((char*)privateIdentity, SGX_RSA3072_KEY_SIZE);
         //TODO uncomment above
+    if (NETWORK_DEBUG) {
         generateIdentityDebug(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
+    } else {
+        sgx_rsa3072_key_t *private_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t)); //TODO shivfree need to free this and below
+        sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
+        void* publicIdentity = NULL;
+        void* privateIdentity = NULL;
+        generateIdentity(public_key, private_key, &publicIdentity, &privateIdentity);
+        secureChildPublicIDKey = string((char*)publicIdentity, SGX_RSA3072_KEY_SIZE);
+        secureChildPrivateIDKey = string((char*)privateIdentity, SGX_RSA3072_KEY_SIZE);
+    }
+        
 
     // }   
     char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
