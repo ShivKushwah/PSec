@@ -203,8 +203,8 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
                 currIndex++;
             }
         }
-        strncat(tupleString, ":END_TUP", 10);
-        //memcpy(tupleString + currIndex, ":END_TUP", 8);
+        // strncat(tupleString, ":END_TUP", 10);
+        memcpy(tupleString + currIndex, ":END_TUP", 8);
         currIndex += 8;
         tupleString[currIndex] = '\0';
         final_size = currIndex;
@@ -253,8 +253,8 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
                 currIndex++;
             }
         }
-        strncat(mapString, ":END_MAP", 10);
-        // memcpy(mapString + currIndex, ":END_MAP", 8);
+        // strncat(mapString, ":END_MAP", 10);
+        memcpy(mapString + currIndex, ":END_MAP", 8);
         currIndex += 8;
         mapString[currIndex] = '\0';
         final_size = currIndex;
@@ -286,12 +286,12 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
                 currIndex++;
             }
         }
-        strncat(seqString, ":END_SEQ", 10);
+        // strncat(seqString, ":END_SEQ", 10);
         ocall_print("sequence so far");
         ocall_print(seqString);
         ocall_print("checking location of currIndex");
         ocall_print_int(currIndex);
-        // memcpy(seqString + currIndex, ":END_SEQ", 9);
+        memcpy(seqString + currIndex, ":END_SEQ", 9);
         ocall_print("new seq");
         ocall_print(seqString);
         currIndex += 8;
@@ -1308,10 +1308,11 @@ extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRe
     PRT_VALUE** P_VAR_payload2 = argRefs[1];
     PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
 
-    strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
+    // strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (char*)val);
+    memcpy(str, (char*)val, SIZE_OF_PRT_STRING_SERIALIZED);
+	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (char*)val);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
@@ -1324,7 +1325,8 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); //TODO shivIdentity
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey); //TODO shividentity
+    memcpy(str, currentMachineIDPublicKey, SIZE_OF_PRT_STRING_SERIALIZED);
+	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey); //TODO shividentity
     safe_free(currentMachineIDPublicKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
