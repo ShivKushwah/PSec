@@ -266,8 +266,13 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
     memcpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length());
     publicIdKeyCopy[secureChildPublicIDKey.length()] = '\0';
-
-    ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, enclaveEid);
+    
+    if (NETWORK_DEBUG) {
+        ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, SIZE_OF_IDENTITY_STRING, enclaveEid);
+    } else {
+        ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, SGX_RSA3072_KEY_SIZE, enclaveEid);
+    }
+    
     safe_free(publicIdKeyCopy);
     int newMachinePID = getNextPID(); 
     //Store new machine information in enclave's dictionaries
@@ -780,12 +785,23 @@ void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *p
 
 int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t ID_SIZE, uint32_t SESSION_KEY_SIZE) {
     ocall_print("Initialize Communication API Called!");
+
+    int count;
+    if (NETWORK_DEBUG) {
+        count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey)));
+    } else {
+        count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)));
+    }
     //TODO need to verify signature over requestingMachineIDKey
-    if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))) == 0) {
+    if (count == 0) {
         //TODO this logic needs to be diffie hellman authenticated encryption
         string newSessionKey;
         generateSessionKey(newSessionKey);
-        PublicIdentityKeyToChildSessionKey[make_tuple(receivingMachineIDKey, requestingMachineIDKey)] = newSessionKey;
+        if (NETWORK_DEBUG) {
+            PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))] = newSessionKey;
+        } else {
+            PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
+        }
         memcpy(returnSessionKey, (char*)newSessionKey.c_str(), SIZE_OF_SESSION_KEY);
         ocall_print("Returning correct session key!");
         return 0;
@@ -882,7 +898,12 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
 
     ocall_print("Need to send to machine (received via P argument)");
-    ocall_print(sendingToMachinePublicID);
+    if (NETWORK_DEBUG) {
+        ocall_print(sendingToMachinePublicID);
+    } else {
+        printRSAKey(sendingToMachinePublicID);
+    }
+    
 
     if (isSecureSend) {
         // string capabilityKey;
@@ -902,11 +923,16 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         // }
         // string capabilityKey;
         if (NETWORK_DEBUG) {
-            ocall_print("KIRAT NETWORK DEBUG");
             if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID))) == 0) {
                 ocall_print("ERROR: No Capability Key found!");
             }
             string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID))];
+            ocall_print((char*)capabilityKey.c_str());
+        } else {
+            if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
+                ocall_print("ERROR: No Capability Key found!");
+            }
+            string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
             ocall_print((char*)capabilityKey.c_str());
         }
         
@@ -914,32 +940,60 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
         //Check if we don't have a pre-existing session key with the other machine, if so 
         //we need to intialize communications and establish a session key
-        if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))) == 0) {
-            int requestSize = 8 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
-            char* initComRequest = (char*) malloc(requestSize);
-            snprintf(initComRequest, requestSize, "InitComm:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID);
-            
-            char* machineNameWrapper[] = {currentMachineIDPublicKey};
-            char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
-            ocall_print(printStr);
-            safe_free(printStr);
-            ocall_print(initComRequest);
-            char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
-            int ret_value;
-            ocall_network_request(&ret_value, initComRequest, newSessionKey, strlen(initComRequest) + 1, SIZE_OF_SESSION_KEY); //TOdo shividentity dont use strlen
-            safe_free(initComRequest);
-            char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-            printStr = generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1);
-            ocall_print(printStr);
-            safe_free(printStr);       
-            ocall_print(newSessionKey);
-            PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
-            safe_free(newSessionKey);
+        if (NETWORK_DEBUG) {
+            if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))) == 0) {
+                int requestSize = 8 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
+                char* initComRequest = (char*) malloc(requestSize);
+                snprintf(initComRequest, requestSize, "InitComm:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID);
+                
+                char* machineNameWrapper[] = {currentMachineIDPublicKey};
+                char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+                ocall_print(printStr);
+                safe_free(printStr);
+                ocall_print(initComRequest);
+                char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
+                int ret_value;
+                ocall_network_request(&ret_value, initComRequest, newSessionKey, strlen(initComRequest) + 1, SIZE_OF_SESSION_KEY); //TOdo shividentity dont use strlen
+                safe_free(initComRequest);
+                char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+                printStr = generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1);
+                ocall_print(printStr);
+                safe_free(printStr);       
+                ocall_print(newSessionKey);
+                PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
+                safe_free(newSessionKey);
+
+                string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))];
+                //TODO use sessionKey to encrypt message
+            }
+        } else {
+            if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
+                char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", sendingToMachinePublicID};
+                int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
+                char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
+                int requestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1;
+                
+                char* machineNameWrapper[] = {currentMachineIDPublicKey};
+                char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+                ocall_print(printStr);
+                safe_free(printStr);
+                ocall_print(initComRequest);
+                char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
+                int ret_value;
+                ocall_network_request(&ret_value, initComRequest, newSessionKey, requestSize, SIZE_OF_SESSION_KEY); //TOdo shividentity dont use strlen
+                safe_free(initComRequest);
+                char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+                printStr = generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1);
+                ocall_print(printStr);
+                safe_free(printStr);       
+                ocall_print(newSessionKey);
+                PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = string(newSessionKey);
+                safe_free(newSessionKey);
+
+                string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+                //TODO use sessionKey to encrypt message
+            }
         }
-
-
-        string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))];
-        //TODO use sessionKey to encrypt message
     }
     PRT_VALUE** P_Event_Payload = argRefs[1];
     char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
@@ -957,7 +1011,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     PRT_VALUE** P_EventMessage_Payload = argRefs[3];
     int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
     char* temp = serializePrtValueToString(*P_EventMessage_Payload);
-    memcpy(eventMessagePayload, temp, strlen(temp) + 1);
+    memcpy(eventMessagePayload, temp, strlen(temp) + 1); //TODO shividentity
     safe_free(temp);
 
     // for (int i = 0; i < numArgs; i++) {
@@ -994,9 +1048,9 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
     ocall_print(printStr);
     safe_free(printStr);      
-    ocall_print(sendRequest);
-    ocall_print_int(strlen(sendRequest) + 1);
-    ocall_print("KUUUURUT");
+    // ocall_print(sendRequest);
+    // ocall_print_int(strlen(sendRequest) + 1);
+    // ocall_print("KUUUURUT");
     char* empty = (char*) malloc(10);
     int ret_value;
     sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, strlen(sendRequest) + 1, 0); //TODO shividentity

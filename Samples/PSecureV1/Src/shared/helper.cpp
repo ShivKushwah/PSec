@@ -726,29 +726,58 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
         char* newSessionKey = (char* ) malloc(SIZE_OF_SESSION_KEY);
         newSessionKey[0] = '\0';
-        split = strtok(NULL, ":");
-        char* machineInitializingComm = split;
-        split = strtok(NULL, ":");
-        char* machineReceivingComm = split;
+
+        char* machineInitializingComm;
+        char* machineReceivingComm;
+
+        if (NETWORK_DEBUG) {
+            split = strtok(NULL, ":");
+            machineInitializingComm = split;
+            split = strtok(NULL, ":");
+            machineReceivingComm = split;
+        } else {
+            machineInitializingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+            machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+        }
         
         if (isEnclaveUntrustedHost) {
-        
-            if (PublicIdentityKeyToEidDictionary.count(machineReceivingComm) == 0) {
-                ocall_print("\n No Enclave Eid Found!\n");
-            }
-            
-            sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingComm]; //TODO add check here in case its not in dictionary
 
-            int ptr;
-            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-            sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
-            if (status != SGX_SUCCESS) {
-                printf("Sgx Error Code: %x\n", status);
+            if (NETWORK_DEBUG) {
+                if (PublicIdentityKeyToEidDictionary.count(string(machineReceivingComm)) == 0) {
+                    ocall_print("\n No Enclave Eid Found!\n");
+                }
+                
+                sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingComm)]; //TODO add check here in case its not in dictionary
+
+                int ptr;
+                //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+                sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
+                if (status != SGX_SUCCESS) {
+                    printf("Sgx Error Code: %x\n", status);
+                }
+            } else {
+                if (PublicIdentityKeyToEidDictionary.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)) == 0) {
+                    ocall_print("\n No Enclave Eid Found!\n");
+                }
+                
+                sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)]; //TODO add check here in case its not in dictionary
+
+                int ptr;
+                //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+                sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SGX_RSA3072_KEY_SIZE, SIZE_OF_SESSION_KEY);
+                if (status != SGX_SUCCESS) {
+                    printf("Sgx Error Code: %x\n", status);
+                }
             }
+        
+            
             safe_free(requestCopy);
             return newSessionKey;
 
         } else {
+            //TODO shivIdentity
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm)) > 0) {
                 
                 char* ret = USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm);
@@ -1031,7 +1060,12 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         safe_free(printStr);
         ocall_print(capabilityKey);
 
-        PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey);
+        if (NETWORK_DEBUG) {
+            PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey); //TODO shiv identity
+        } else {
+            PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))] = string(capabilityKey); //TODO shiv identity
+        }
+
         safe_free(capabilityKey);
     }
 
@@ -1040,7 +1074,12 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (2*SGX_RSA3072_KEY_SIZE + 1));
-	sprintf_s(str, 2*SGX_RSA3072_KEY_SIZE + 1, newMachinePublicIDKey);
+    if (NETWORK_DEBUG) {
+        sprintf_s(str, 2*SGX_RSA3072_KEY_SIZE + 1, newMachinePublicIDKey);
+    } else {
+        memcpy(str, newMachinePublicIDKey, 2*SGX_RSA3072_KEY_SIZE + 1);
+    }
+	
     safe_free(newMachinePublicIDKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
@@ -1196,7 +1235,12 @@ extern "C" PRT_UINT64 P_MKDEF_StringType_IMPL(void)
 extern "C" PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64 frgnVal)
 {
 	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (2*SGX_RSA3072_KEY_SIZE + 1));
-	sprintf_s(str, 2*SGX_RSA3072_KEY_SIZE + 1, (PRT_STRING)frgnVal);
+    if (NETWORK_DEBUG) {
+        sprintf_s(str, 2*SGX_RSA3072_KEY_SIZE + 1, (PRT_STRING)frgnVal);
+    } else {
+        memcpy(str, (void*)frgnVal, 2*SGX_RSA3072_KEY_SIZE + 1);
+    }
+	
 	return (PRT_UINT64)str;
 }
 
@@ -1206,5 +1250,14 @@ extern "C" void P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRef
     PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
     ocall_print("String P value is:");
     ocall_print((char*) val);
+    
+}
+
+extern "C" void P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    ocall_print("FOREIGN PRINT KEY IS:");
+    printRSAKey((char*) val);
     
 }

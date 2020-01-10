@@ -94,6 +94,6 @@ enclave {
                                  [in,count=16] uint8_t *p_gcm_mac);
                                  //below passes when i do string
         int ocall_network_request([in, size=REQUEST_SIZE]char* request, [out, size=RESPONSE_SIZE]char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE);
-        void ocall_add_identity_to_eid_dictionary([in, string]char* newMachineID, sgx_enclave_id_t enclave_eid);
+        void ocall_add_identity_to_eid_dictionary([in, size=ID_SIZE]char* newMachineID, uint32_t ID_SIZE, sgx_enclave_id_t enclave_eid);
     };
 };

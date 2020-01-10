@@ -39,7 +39,7 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_network_request, (char* request, char* r
 #endif
 #ifndef OCALL_ADD_IDENTITY_TO_EID_DICTIONARY_DEFINED__
 #define OCALL_ADD_IDENTITY_TO_EID_DICTIONARY_DEFINED__
-void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_add_identity_to_eid_dictionary, (char* newMachineID, sgx_enclave_id_t enclave_eid));
+void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_add_identity_to_eid_dictionary, (char* newMachineID, uint32_t ID_SIZE, sgx_enclave_id_t enclave_eid));
 #endif
 #ifndef SGX_OC_CPUIDEX_DEFINED__
 #define SGX_OC_CPUIDEX_DEFINED__

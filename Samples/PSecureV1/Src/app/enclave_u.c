@@ -170,6 +170,7 @@ typedef struct ms_ocall_network_request_t {
 
 typedef struct ms_ocall_add_identity_to_eid_dictionary_t {
 	char* ms_newMachineID;
+	uint32_t ms_ID_SIZE;
 	sgx_enclave_id_t ms_enclave_eid;
 } ms_ocall_add_identity_to_eid_dictionary_t;
 
@@ -277,7 +278,7 @@ static sgx_status_t SGX_CDECL enclave_ocall_network_request(void* pms)
 static sgx_status_t SGX_CDECL enclave_ocall_add_identity_to_eid_dictionary(void* pms)
 {
 	ms_ocall_add_identity_to_eid_dictionary_t* ms = SGX_CAST(ms_ocall_add_identity_to_eid_dictionary_t*, pms);
-	ocall_add_identity_to_eid_dictionary(ms->ms_newMachineID, ms->ms_enclave_eid);
+	ocall_add_identity_to_eid_dictionary(ms->ms_newMachineID, ms->ms_ID_SIZE, ms->ms_enclave_eid);
 
 	return SGX_SUCCESS;
 }

@@ -14,6 +14,7 @@ fun UntrustedSend(publicID: StringType, even : event, payload: int);
 fun InitializeUntrustedMachine();
 fun CreateSecureMachineRequest(): StringType;
 fun CreateUSMMachineRequest(): StringType;
+fun PrintKey(input : StringType);
 
 event PublicIDEvent : StringType;
 trusted event MasterSecretEvent: (int, seq[StringType]);
@@ -37,6 +38,7 @@ secure_machine GodMachine {
     start state Initial {
         entry {
             bankSSM = new BankEnclave();
+            PrintKey(bankSSM);
             secure_send bankSSM, TestEvent, 7;
         }
     }

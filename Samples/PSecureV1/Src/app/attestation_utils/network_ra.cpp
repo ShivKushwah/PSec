@@ -231,16 +231,40 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
     
     } else if (strcmp(split, "InitComm") == 0) {
 
-        split = strtok(NULL, ":");
-        char* machineInitializingComm = split;
-        split = strtok(NULL, ":");
-        char* machineReceivingComm = split;
-        ocall_print("machine Receiving comm is :");
-        ocall_print(machineReceivingComm);
+        char* machineInitializingComm;
+        char* machineReceivingComm;
 
-        if (MachinePublicIDToEnclaveNum.count(string(machineReceivingComm)) == 1) {
+        if (NETWORK_DEBUG) {
+            split = strtok(NULL, ":");
+            machineInitializingComm = split;
+            split = strtok(NULL, ":");
+            machineReceivingComm = split;
+            ocall_print("machine Receiving comm is :");
+            ocall_print(machineReceivingComm);
+        } else {
+            machineInitializingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+            machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+            ocall_print("machine Receiving comm is :");
+            printRSAKey(machineReceivingComm);
+        }
 
-            return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[machineReceivingComm]);
+        
+        int count;
+        if (NETWORK_DEBUG) {
+            count = MachinePublicIDToEnclaveNum.count(string(machineReceivingComm));
+        } else {
+            count = MachinePublicIDToEnclaveNum.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE));
+        }
+
+
+        if (count == 1) {
+            if (NETWORK_DEBUG)  {
+                return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingComm)]);
+            } else {
+                return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)]);
+            }
 
         } else {
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");

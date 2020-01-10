@@ -800,7 +800,7 @@ int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* 
 }
 
 int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE) {
-    ocall_print("GUUUUGY");
+    // ocall_print("GUUUUGY");
     printf("Network Request is : %s\n", request);
     fflush(stdout);
 
@@ -836,12 +836,12 @@ char* untrusted_enclave1_receiveNetworkRequest(char* request, size_t requestSize
 }
 
 
-void ocall_add_identity_to_eid_dictionary(char* newMachineID, sgx_enclave_id_t enclave_eid) {
+void ocall_add_identity_to_eid_dictionary(char* newMachineID, uint32_t ID_SIZE, sgx_enclave_id_t enclave_eid) {
         if (NETWORK_DEBUG) {
             string identityString = string(newMachineID);
             PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
         } else {
-            string identityString = string(newMachineID, SGX_RSA3072_KEY_SIZE);
+            string identityString = string(newMachineID, ID_SIZE);
             PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
         }
         
