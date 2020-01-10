@@ -903,7 +903,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
                 p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE;
 
             } else {
-                ocall_print("DUUUUURP");
+                // ocall_print("DUUUUURP");
                 char* currentMachineID = (char*) malloc(SGX_RSA3072_KEY_SIZE);
                 char* childID = (char*) malloc(SGX_RSA3072_KEY_SIZE);
                 memcpy(currentMachineID, optional_message, SGX_RSA3072_KEY_SIZE);
@@ -1046,9 +1046,9 @@ int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachineP
 
         capabilityKeyAccessDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(parentTrustedMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
         //printf("New machine ID: %s\n", newMachineID);
-        ocall_print("CREATING CAPABILITY USING");
-        printRSAKey(newMachinePublicIDKey);
-        printRSAKey(parentTrustedMachinePublicIDKey);
+        // ocall_print("CREATING CAPABILITY USING");
+        // printRSAKey(newMachinePublicIDKey);
+        // printRSAKey(parentTrustedMachinePublicIDKey);
     }
     
 
@@ -1069,10 +1069,10 @@ char* retrieveCapabilityKey(char* currentMachinePublicIDKey, char* childMachineP
         }
 
     } else {
-        ocall_print("Yeet?");
-        ocall_print("RETRIEVING CAPABILITY USING");
-        printRSAKey(currentMachinePublicIDKey);
-        printRSAKey(childMachinePublicIDKey);
+        // ocall_print("Yeet?");
+        // ocall_print("RETRIEVING CAPABILITY USING");
+        // printRSAKey(currentMachinePublicIDKey);
+        // printRSAKey(childMachinePublicIDKey);
         if (capabilityKeyAccessDictionary[string(childMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)].compare(string(currentMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
             //printf("The capability key is : %s", capabilityKeyDictionary[string(childMachinePublicIDKey)].c_str());
             char* returnCapabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);

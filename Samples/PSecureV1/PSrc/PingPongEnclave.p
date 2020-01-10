@@ -21,6 +21,8 @@ event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
 trusted event MapEvent: map[int, int];
 
+trusted event TestEvent: int;
+
 machine GodUntrusted {
     var handler: StringType;
     start state Initial {
@@ -31,128 +33,164 @@ machine GodUntrusted {
 }
 
 secure_machine GodMachine {
-    var clientUSM: StringType;
     var bankSSM: StringType;
     start state Initial {
         entry {
-            clientUSM = new ClientWebBrowser();
-            bankSSM = new BankEnclave(clientUSM);
+            bankSSM = new BankEnclave();
+            secure_send bankSSM, TestEvent, 7;
         }
     }
 }
 
 secure_machine BankEnclave {
-    var clientSSM: StringType;
-    var clientUSM: StringType;
-    var result: (int, seq[StringType]);
-    var temp: seq[StringType];
     start state Initial {
-        entry (payload: StringType) { 
-            clientUSM = payload;
-            clientSSM = new ClientEnclave(clientUSM);
-            temp += (sizeof(temp), GetThis());
-            result = (7, temp);
-
-            // PrintString(clientSSM);
-
-            secure_send clientSSM, MasterSecretEvent, result;
-            PrintString(clientSSM);
-            untrusted_send clientUSM, PublicIDEvent, clientSSM;
-        } 
-    }
-}
-
-secure_machine ClientEnclave {
-    var masterSecret: StringType;
-    var clientUSM : StringType;
-    var result: map[int, int];
-    var testMachine: StringType;
-    start state Initial {
-        defer GenerateOTPCodeEvent;
-        entry (payload: StringType) {
-            clientUSM = payload;
-        }
-        on MasterSecretEvent goto ProvisionEnclaveWithSecret;
+        on TestEvent goto NextState;
     }
 
-    state ProvisionEnclaveWithSecret {
-        entry (payload : (int, seq[StringType])){
-            masterSecret = payload.1[0];
-            goto WaitForGenerateOTP;
-        }
-    }
-
-    state WaitForGenerateOTP {
-        entry {
-            print "HARHARHAR";
-        }
-        on GenerateOTPCodeEvent do (usernamePassword: StringType) {
-            //untrusted_send clientUSM, OTPCodeEvent, usernamePassword + masterSecret;
-            print "HIIII";
-            result[8] = 25;
-            testMachine = new TestMachine();
-            print "BYEEE";
-            // print "YELLO\n"; 
-            secure_send testMachine, MapEvent, result;
-            print "Harmina";
-            PrintString(Concat(usernamePassword, masterSecret));
-
-            untrusted_send clientUSM, OTPCodeEvent, Concat(usernamePassword, masterSecret);
-        }
-    }
-
-}
-
-machine ClientWebBrowser {
-    var clientSSM: StringType;
-    var usernamePassword: StringType;
-    start state Initial {
-        on PublicIDEvent goto Authenticate;
-    }
-    
-    state Authenticate {
-        entry (payload: StringType) {
-            clientSSM = payload;
-            usernamePassword = GetThis();
-            // PrintString(clientSSM);
-            print "YEE AUTHENTICATE\n";
-            untrusted_send clientSSM, GenerateOTPCodeEvent, usernamePassword;
-            receive {
-                case OTPCodeEvent : (payload : StringType) {
-                    goto SaveOTPCode, payload;
-                }
+    state NextState {
+        entry (payload: int) {
+            if (payload == 7) {
+                print "Test1 Success!";
+            } else {
+                print "Test1 Failure";
             }
+            
         }
     }
-
-    state SaveOTPCode {
-        entry (payload : StringType) {
-            //print "OTP Code Received: {0}\n", payload;
-            print "OTP Code Received:\n";
-            PrintString(payload);
-            goto Done;
-        }
-
-    }
-
-    state Done { }
-
 }
 
-secure_machine TestMachine {
-    start state Initial {
-        on MapEvent goto TestMap;
-    }
-    state TestMap {
-        entry (payload: map[int, int]) {
-            print "Map Value should be 25: {0}\n", payload[8];
-            goto Done;
-        }
-    }
+// machine GodUntrusted {
+//     var handler: StringType;
+//     start state Initial {
+//         entry {
+//             handler = new GodMachine();
+//         }
+//     }
+// }
 
-    state Done {
-        entry {
-            print "DONE BOYS";
-        }
-     }
-}
+// secure_machine GodMachine {
+//     var clientUSM: StringType;
+//     var bankSSM: StringType;
+//     start state Initial {
+//         entry {
+//             clientUSM = new ClientWebBrowser();
+//             bankSSM = new BankEnclave(clientUSM);
+//         }
+//     }
+// }
+
+// secure_machine BankEnclave {
+//     var clientSSM: StringType;
+//     var clientUSM: StringType;
+//     var result: (int, seq[StringType]);
+//     var temp: seq[StringType];
+//     start state Initial {
+//         entry (payload: StringType) { 
+//             clientUSM = payload;
+//             clientSSM = new ClientEnclave(clientUSM);
+//             temp += (sizeof(temp), GetThis());
+//             result = (7, temp);
+
+//             // PrintString(clientSSM);
+
+//             secure_send clientSSM, MasterSecretEvent, result;
+//             PrintString(clientSSM);
+//             untrusted_send clientUSM, PublicIDEvent, clientSSM;
+//         } 
+//     }
+// }
+
+// secure_machine ClientEnclave {
+//     var masterSecret: StringType;
+//     var clientUSM : StringType;
+//     var result: map[int, int];
+//     var testMachine: StringType;
+//     start state Initial {
+//         defer GenerateOTPCodeEvent;
+//         entry (payload: StringType) {
+//             clientUSM = payload;
+//         }
+//         on MasterSecretEvent goto ProvisionEnclaveWithSecret;
+//     }
+
+//     state ProvisionEnclaveWithSecret {
+//         entry (payload : (int, seq[StringType])){
+//             masterSecret = payload.1[0];
+//             goto WaitForGenerateOTP;
+//         }
+//     }
+
+//     state WaitForGenerateOTP {
+//         entry {
+//             print "HARHARHAR";
+//         }
+//         on GenerateOTPCodeEvent do (usernamePassword: StringType) {
+//             //untrusted_send clientUSM, OTPCodeEvent, usernamePassword + masterSecret;
+//             print "HIIII";
+//             result[8] = 25;
+//             testMachine = new TestMachine();
+//             print "BYEEE";
+//             // print "YELLO\n"; 
+//             secure_send testMachine, MapEvent, result;
+//             print "Harmina";
+//             PrintString(Concat(usernamePassword, masterSecret));
+
+//             untrusted_send clientUSM, OTPCodeEvent, Concat(usernamePassword, masterSecret);
+//         }
+//     }
+
+// }
+
+// machine ClientWebBrowser {
+//     var clientSSM: StringType;
+//     var usernamePassword: StringType;
+//     start state Initial {
+//         on PublicIDEvent goto Authenticate;
+//     }
+    
+//     state Authenticate {
+//         entry (payload: StringType) {
+//             clientSSM = payload;
+//             usernamePassword = GetThis();
+//             // PrintString(clientSSM);
+//             print "YEE AUTHENTICATE\n";
+//             untrusted_send clientSSM, GenerateOTPCodeEvent, usernamePassword;
+//             receive {
+//                 case OTPCodeEvent : (payload : StringType) {
+//                     goto SaveOTPCode, payload;
+//                 }
+//             }
+//         }
+//     }
+
+//     state SaveOTPCode {
+//         entry (payload : StringType) {
+//             //print "OTP Code Received: {0}\n", payload;
+//             print "OTP Code Received:\n";
+//             PrintString(payload);
+//             goto Done;
+//         }
+
+//     }
+
+//     state Done { }
+
+// }
+
+// secure_machine TestMachine {
+//     start state Initial {
+//         on MapEvent goto TestMap;
+//     }
+//     state TestMap {
+//         entry (payload: map[int, int]) {
+//             print "Map Value should be 25: {0}\n", payload[8];
+//             goto Done;
+//         }
+//     }
+
+//     state Done {
+//         entry {
+//             print "DONE BOYS";
+//         }
+//      }
+// }

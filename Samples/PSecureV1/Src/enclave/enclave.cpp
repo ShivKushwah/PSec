@@ -649,6 +649,7 @@ char* checkRawRSAKeySize(char* key) {
 void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
     uint32_t val; 
     sgx_read_rand((unsigned char *) &val, 4);
+    val = (val + 10) % 100;
     // publicID =  prefix + "SPub" + to_string(val % 100);
     // publicID = publicID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq";
     // privateID = prefix + "SPriv" + to_string(val % 100);
@@ -864,8 +865,14 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     ocall_print("Entered Secure Send");
 
     char* currentMachineIDPublicKey;
-    currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
+
+    if (NETWORK_DEBUG) {
+        currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+        snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str())); 
+    } else {
+        currentMachineIDPublicKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        memcpy(currentMachineIDPublicKey, (char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()), SGX_RSA3072_KEY_SIZE);
+    }
 
     ocall_print("Inside machine");
     ocall_print(currentMachineIDPublicKey);
@@ -878,12 +885,32 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     ocall_print(sendingToMachinePublicID);
 
     if (isSecureSend) {
+        // string capabilityKey;
+        // if (NETWORK_DEBUG) {
+        //     if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID))) == 0) {
+        //         ocall_print("ERROR: No Capability Key found!");
+        //     }
+        //     string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID))];
+        //     ocall_print((char*)capabilityKey.c_str());
 
-        if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID))) == 0) {
-            ocall_print("ERROR: No Capability Key found!");
+        // } else {
+        //     if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
+        //         ocall_print("ERROR: No Capability Key found!");
+        //     }
+        //    string  capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+        //     ocall_print((char*)capabilityKey.c_str()); //TODO shivcapability see what size i need to make capability key later
+        // }
+        // string capabilityKey;
+        if (NETWORK_DEBUG) {
+            ocall_print("KIRAT NETWORK DEBUG");
+            if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID))) == 0) {
+                ocall_print("ERROR: No Capability Key found!");
+            }
+            string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID))];
+            ocall_print((char*)capabilityKey.c_str());
         }
-        string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID))];
-        ocall_print((char*)capabilityKey.c_str());
+        
+        
 
         //Check if we don't have a pre-existing session key with the other machine, if so 
         //we need to intialize communications and establish a session key
@@ -968,9 +995,11 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     ocall_print(printStr);
     safe_free(printStr);      
     ocall_print(sendRequest);
-    char* empty;
+    ocall_print_int(strlen(sendRequest) + 1);
+    ocall_print("KUUUURUT");
+    char* empty = (char*) malloc(10);
     int ret_value;
-    ocall_network_request(&ret_value, sendRequest, empty, strlen(sendRequest) + 1, 0); //TODO shividentity
+    sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, strlen(sendRequest) + 1, 0); //TODO shividentity
     safe_free(sendRequest);
 
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
