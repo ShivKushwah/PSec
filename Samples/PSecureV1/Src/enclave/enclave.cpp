@@ -152,14 +152,14 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     char* other_machine_name = "KPS";
     char* requestString;
     int requestStringSize;
-    if (NETWORK_DEBUG) {
-        int requestSize = SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
-        requestString = (char*) malloc(requestSize);
-        requestStringSize = requestSize;
-        snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey); 
-        // ocall_print(currentMachinePublicIDKey);
-        // ocall_print(childPublicIDKey); 
-    } else {
+    // if (NETWORK_DEBUG) {
+    //     int requestSize = SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
+    //     requestString = (char*) malloc(requestSize);
+    //     requestStringSize = requestSize;
+    //     snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey); 
+    //     // ocall_print(currentMachinePublicIDKey);
+    //     // ocall_print(childPublicIDKey); 
+    // } else {
         char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey};
         int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
         requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
@@ -168,7 +168,7 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
         //printRSAKey(currentMachinePublicIDKey);
         // ocall_print("Child public id key is");
         // printRSAKey(childPublicIDKey);
-    }
+    // }
 
     
       
@@ -184,11 +184,11 @@ void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid, char* machineTypeToC
     current_eid = currentEid;
     char* newMachinePublicIDKey = createMachineHelper(machineTypeToCreate, "", numArgs, payloadType, payloadString, false, enclaveEid);
     //"Return" the publicIDKey of the new machine
-    if (NETWORK_DEBUG) {
-        memcpy(returnNewMachinePublicID, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
-    } else {
+    // if (NETWORK_DEBUG) {
+    //     memcpy(returnNewMachinePublicID, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
+    // } else {
         memcpy(returnNewMachinePublicID, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
-    }
+    // }
     safe_free(newMachinePublicIDKey);
 }
 
@@ -249,6 +249,17 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     string machineTypeToCreateString = createString(machineType);
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
+    // if (NETWORK_DEBUG) {
+    //     generateIdentityDebug(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
+    // } else {
+        // sgx_rsa3072_key_t *private_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t)); //TODO shivfree need to free this and below
+        // sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
+        // void* publicIdentity = NULL;
+        // void* privateIdentity = NULL;
+        // generateIdentity(public_key, private_key, &publicIdentity, &privateIdentity);
+        // secureChildPublicIDKey = string((char*)publicIdentity, SGX_RSA3072_KEY_SIZE);
+        // secureChildPrivateIDKey = string((char*)privateIdentity, SGX_RSA3072_KEY_SIZE);
+        //TODO uncomment above
     if (NETWORK_DEBUG) {
         generateIdentityDebug(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
     } else {
@@ -259,19 +270,19 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
         generateIdentity(public_key, private_key, &publicIdentity, &privateIdentity);
         secureChildPublicIDKey = string((char*)publicIdentity, SGX_RSA3072_KEY_SIZE);
         secureChildPrivateIDKey = string((char*)privateIdentity, SGX_RSA3072_KEY_SIZE);
-        //TODO uncomment above
-        // generateIdentityDebug(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
+    }
+        
 
-    }   
+    // }   
     char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
     memcpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length());
     publicIdKeyCopy[secureChildPublicIDKey.length()] = '\0';
     
-    if (NETWORK_DEBUG) {
-        ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, SIZE_OF_IDENTITY_STRING, enclaveEid);
-    } else {
+    // if (NETWORK_DEBUG) {
+    //     ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, SIZE_OF_IDENTITY_STRING, enclaveEid);
+    // } else {
         ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, SGX_RSA3072_KEY_SIZE, enclaveEid);
-    }
+    // }
     
     safe_free(publicIdKeyCopy);
     int newMachinePID = getNextPID(); 
@@ -320,11 +331,11 @@ int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* paren
     
     char* newMachinePublicIDKey = createMachineHelper(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload, true, enclaveEid);
     //"Return" the publicIDKey of the new machine
-    if (NETWORK_DEBUG){
-        memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
-    } else {
+    // if (NETWORK_DEBUG){
+    //     memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
+    // } else {
         memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
-    }
+    // }
     safe_free(newMachinePublicIDKey);
 }
 
@@ -334,18 +345,18 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     char* other_machine_name = "KPS";
     char* requestString;
     int requestStringSize;
-    if (NETWORK_DEBUG) {    
-        int requestSize = SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
-        requestString = (char*) malloc(requestSize);
-        requestStringSize = requestSize;
-        snprintf(requestString, requestSize, "%s:%s", newMachinePublicIDKey, parentTrustedMachineID);
-    } else {
+    // if (NETWORK_DEBUG) {    
+    //     int requestSize = SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
+    //     requestString = (char*) malloc(requestSize);
+    //     requestStringSize = requestSize;
+    //     snprintf(requestString, requestSize, "%s:%s", newMachinePublicIDKey, parentTrustedMachineID);
+    // } else {
 
         char* concatStrings[] = {newMachinePublicIDKey, ":", parentTrustedMachineID};
         int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
         requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
         requestStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
-    }
+    // }
     ocall_print("Enclave is asking for creation of new cap key using");
     printRSAKey(newMachinePublicIDKey);
     printRSAKey(parentTrustedMachineID);
@@ -366,11 +377,11 @@ char* registerMachineWithNetwork(char* newMachineID) {
     char* machineKeyWrapper[] = {newMachineID, num};
     
     char* networkResult = (char*) malloc(100);
-    if (NETWORK_DEBUG) {
-        char* networkRequest = generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2);
-        ocall_network_request(&ret_value, networkRequest, networkResult, strlen(networkRequest) + 1, 100);
-        safe_free(networkRequest);
-    } else {
+    // if (NETWORK_DEBUG) {
+    //     char* networkRequest = generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2);
+    //     ocall_network_request(&ret_value, networkRequest, networkResult, strlen(networkRequest) + 1, 100);
+    //     safe_free(networkRequest);
+    // } else {
         //TODO need to test this request
         char* requestType = "RegisterMachine:";
         char* colon = ":";
@@ -380,7 +391,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
         int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
         ocall_network_request(&ret_value, networkRequest, networkResult, networkRequestSize, 100);
         safe_free(networkRequest);
-    }
+    // }
     safe_free(num);
     safe_free(networkResult);
 
@@ -655,6 +666,9 @@ void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
     uint32_t val; 
     sgx_read_rand((unsigned char *) &val, 4);
     val = (val + 10) % 100;
+    if (val < 10) {
+        val = 29;
+    }
     // publicID =  prefix + "SPub" + to_string(val % 100);
     // publicID = publicID + "qqqqqqqqqqqqqqqqqqqqqqqqqqqq";
     // privateID = prefix + "SPriv" + to_string(val % 100);
@@ -787,21 +801,21 @@ int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMach
     ocall_print("Initialize Communication API Called!");
 
     int count;
-    if (NETWORK_DEBUG) {
-        count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey)));
-    } else {
+    // if (NETWORK_DEBUG) {
+    //     count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey)));
+    // } else {
         count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)));
-    }
+    // }
     //TODO need to verify signature over requestingMachineIDKey
     if (count == 0) {
         //TODO this logic needs to be diffie hellman authenticated encryption
         string newSessionKey;
         generateSessionKey(newSessionKey);
-        if (NETWORK_DEBUG) {
-            PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))] = newSessionKey;
-        } else {
+        // if (NETWORK_DEBUG) {
+        //     PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))] = newSessionKey;
+        // } else {
             PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
-        }
+        // }
         memcpy(returnSessionKey, (char*)newSessionKey.c_str(), SIZE_OF_SESSION_KEY);
         ocall_print("Returning correct session key!");
         return 0;
@@ -827,15 +841,15 @@ int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey,
     PRT_MACHINEID receivingMachinePID;
     ocall_print("SecureChildMachine has a PID of:");
     char* temp = (char*) malloc(10);
-    if (NETWORK_DEBUG) {
-        if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey)) == 0) {
-            ocall_print("Key not found");
-        }
-        snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
-        ocall_print(temp);
-        safe_free(temp);
-        receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
-    } else {
+    // if (NETWORK_DEBUG) {
+    //     if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey)) == 0) {
+    //         ocall_print("Key not found");
+    //     }
+    //     snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
+    //     ocall_print(temp);
+    //     safe_free(temp);
+    //     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
+    // } else {
         if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
             ocall_print("Key not found");
         }
@@ -843,7 +857,7 @@ int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey,
         ocall_print(temp);
         safe_free(temp);
         receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
-    }
+    // }
     
     handle_incoming_event(atoi(event), receivingMachinePID, numArgs, payloadType, payload); //TODO update to untrusted send api
 }
@@ -893,13 +907,13 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
     char* currentMachineIDPublicKey;
 
-    if (NETWORK_DEBUG) {
-        currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-        snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str())); 
-    } else {
+    // if (NETWORK_DEBUG) {
+    //     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    //     snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str())); 
+    // } else {
         currentMachineIDPublicKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
         memcpy(currentMachineIDPublicKey, (char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()), SGX_RSA3072_KEY_SIZE);
-    }
+    // }
 
     ocall_print("Inside machine");
     ocall_print(currentMachineIDPublicKey);
@@ -909,59 +923,59 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
 
     ocall_print("Need to send to machine (received via P argument)");
-    if (NETWORK_DEBUG) {
-        ocall_print(sendingToMachinePublicID);
-    } else {
+    // if (NETWORK_DEBUG) {
+    //     ocall_print(sendingToMachinePublicID);
+    // } else {
         printRSAKey(sendingToMachinePublicID);
-    }
+    // }
     
 
     if (isSecureSend) {
-        if (NETWORK_DEBUG) {
-            if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID))) == 0) {
-                ocall_print("ERROR: No Capability Key found!");
-            }
-            string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID))];
-            ocall_print((char*)capabilityKey.c_str());
-        } else {
+        // if (NETWORK_DEBUG) {
+        //     if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID))) == 0) {
+        //         ocall_print("ERROR: No Capability Key found!");
+        //     }
+        //     string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID))];
+        //     ocall_print((char*)capabilityKey.c_str());
+        // } else {
             if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
                 ocall_print("ERROR: No Capability Key found!");
             }
             string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
             ocall_print((char*)capabilityKey.c_str());
-        }
+        // }
         
         
 
         //Check if we don't have a pre-existing session key with the other machine, if so 
         //we need to intialize communications and establish a session key
-        if (NETWORK_DEBUG) {
-            if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))) == 0) {
-                int requestSize = 8 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
-                char* initComRequest = (char*) malloc(requestSize);
-                snprintf(initComRequest, requestSize, "InitComm:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID);
+        // if (NETWORK_DEBUG) {
+        //     if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))) == 0) {
+        //         int requestSize = 8 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
+        //         char* initComRequest = (char*) malloc(requestSize);
+        //         snprintf(initComRequest, requestSize, "InitComm:%s:%s", currentMachineIDPublicKey, sendingToMachinePublicID);
                 
-                char* machineNameWrapper[] = {currentMachineIDPublicKey};
-                char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
-                ocall_print(printStr);
-                safe_free(printStr);
-                ocall_print(initComRequest);
-                char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
-                int ret_value;
-                ocall_network_request(&ret_value, initComRequest, newSessionKey, strlen(initComRequest) + 1, SIZE_OF_SESSION_KEY); //TOdo shividentity dont use strlen
-                safe_free(initComRequest);
-                char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-                printStr = generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1);
-                ocall_print(printStr);
-                safe_free(printStr);       
-                ocall_print(newSessionKey);
-                PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
-                safe_free(newSessionKey);
+        //         char* machineNameWrapper[] = {currentMachineIDPublicKey};
+        //         char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+        //         ocall_print(printStr);
+        //         safe_free(printStr);
+        //         ocall_print(initComRequest);
+        //         char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
+        //         int ret_value;
+        //         ocall_network_request(&ret_value, initComRequest, newSessionKey, strlen(initComRequest) + 1, SIZE_OF_SESSION_KEY); //TOdo shividentity dont use strlen
+        //         safe_free(initComRequest);
+        //         char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+        //         printStr = generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1);
+        //         ocall_print(printStr);
+        //         safe_free(printStr);       
+        //         ocall_print(newSessionKey);
+        //         PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))] = string(newSessionKey);
+        //         safe_free(newSessionKey);
 
-                string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))];
-                //TODO use sessionKey to encrypt message
-            }
-        } else {
+        //         string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey), string(sendingToMachinePublicID))];
+        //         //TODO use sessionKey to encrypt message
+        //     }
+        // } else {
             if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
                 char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", sendingToMachinePublicID};
                 int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
@@ -988,7 +1002,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
                 //TODO use sessionKey to encrypt message
             }
-        }
+        // }
     }
     PRT_VALUE** P_Event_Payload = argRefs[1];
     char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
@@ -1033,35 +1047,35 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     int requestSize = 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + size_of_max_num_args + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* sendRequest;
 
-    int eventMessageSize = 9; //TODO shivIdentity
-    char* eventMessageSizeStr = (char*) malloc(10);
+    // int eventMessageSize = 9; //TODO shivIdentity
+    // char* eventMessageSizeStr = (char*) malloc(10);
 
-    if (NETWORK_DEBUG) {
-        sendRequest = (char*) malloc(requestSize);
-        if (isSecureSend) {
-            if (numArgs > 0) {
-                snprintf(sendRequest, requestSize, "%s:%s:%s:%s:%d:%d:", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType/*, eventMessageSize*/);
-                memcpy(sendRequest + strlen(sendRequest), eventMessagePayload, final_size_seralized);
-            } else  {
-                snprintf(sendRequest, requestSize, "%s:%s:%s:%s:0", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event);
-            }
-        } else {
-            if (numArgs > 0) {
-                snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType/*, eventMessageSize*/);
-                memcpy(sendRequest + strlen(sendRequest), eventMessagePayload, final_size_seralized);
+    // if (NETWORK_DEBUG) {
+    //     sendRequest = (char*) malloc(requestSize);
+    //     if (isSecureSend) {
+    //         if (numArgs > 0) {
+    //             snprintf(sendRequest, requestSize, "%s:%s:%s:%s:%d:%d:", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType/*, eventMessageSize*/);
+    //             memcpy(sendRequest + strlen(sendRequest), eventMessagePayload, final_size_seralized);
+    //         } else  {
+    //             snprintf(sendRequest, requestSize, "%s:%s:%s:%s:0", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event);
+    //         }
+    //     } else {
+    //         if (numArgs > 0) {
+    //             snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType/*, eventMessageSize*/);
+    //             memcpy(sendRequest + strlen(sendRequest), eventMessagePayload, final_size_seralized);
 
-            } else {
-                snprintf(sendRequest, requestSize, "%s:%s:%s:0", sendTypeCommand, sendingToMachinePublicID, event);
-            }
+    //         } else {
+    //             snprintf(sendRequest, requestSize, "%s:%s:%s:0", sendTypeCommand, sendingToMachinePublicID, event);
+    //         }
 
-        }
-    } else {
+    //     }
+    // } else {
         // sendRequest = (char*) malloc(requestSize);
         if (isSecureSend) {
             if (numArgs > 0) {
                 char* colon = ":";
                 char* concatStrings[] = {sendTypeCommand, colon, currentMachineIDPublicKey, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayload};
-                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayload)};
+                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), final_size_seralized};
                 sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
                 requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
                 // snprintf(sendRequest, requestSize, "%s:%s:%s:%s:%d:%d:%s", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
@@ -1078,7 +1092,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             if (numArgs > 0) {
                 char* colon = ":";
                 char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayload};
-                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayload)};
+                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), final_size_seralized};
                 sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 11);
                 requestSize = returnTotalSizeofLengthArray(concatLenghts, 11) + 1;
                 // snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:%s", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
@@ -1093,10 +1107,10 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             }
 
         }
-    }
+    // }
 
     safe_free(eventPayloadTypeString);
-    safe_free(eventMessageSizeStr);
+    // safe_free(eventMessageSizeStr);
     
     
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
@@ -1108,11 +1122,11 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     // ocall_print("KUUUURUT");
     char* empty = (char*) malloc(10);
     int ret_value;
-    if (NETWORK_DEBUG) {
-        sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, strlen(sendRequest) + 1, 0);
-    } else {
+    // if (NETWORK_DEBUG) {
+    //     sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, strlen(sendRequest) + 1, 0);
+    // } else {
         sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, requestSize, 0);
-    }
+    // }
     safe_free(sendRequest);
 
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};

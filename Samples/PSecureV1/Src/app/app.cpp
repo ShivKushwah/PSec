@@ -128,6 +128,9 @@ static void RunToIdle(void* process)
 void generateIdentity(string& publicID, string& privateID, string prefix) {
     uint32_t randNum = rand() % 100;
     randNum = (randNum + 10) % 100;
+    if (randNum < 10) {
+        randNum = 39;
+    }
     // publicID = prefix + "UPub" + to_string(randNum);
     // privateID = prefix + "UPriv" + to_string(randNum);
     publicID = prefix.substr(0, 1) + "UPub" + to_string(randNum) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
@@ -184,6 +187,8 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     // for (int i = 0; i < numArgs; i++) {
         PRT_VALUE** P_EventMessage_Payload = argRefs[3];
         int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
+        char* eventPayloadTypeString = (char*) malloc(10);
+        itoa(eventPayloadType, eventPayloadTypeString, 10);
         int final_size_serialized = 0;
             char* temp = serializePrtValueToString(*P_EventMessage_Payload, final_size_serialized);
             final_size_serialized = final_size_serialized + 1;
@@ -209,21 +214,38 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 
     PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
     int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
+    char* numArgsPayload = (char*) malloc(size_of_max_num_args);
+    itoa(numArgs, numArgsPayload, 10);
 
     int requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* unsecureSendRequest = (char*) malloc(requestSize);
     if (numArgs > 0) {
-        snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%d:%d:", sendingToMachinePublicID, event, numArgs, eventPayloadType);
-        memcpy(unsecureSendRequest + strlen(unsecureSendRequest), eventMessagePayload, final_size_serialized);
-
+        char* colon = ":";
+        char* concatStrings[] = {"UntrustedSend", colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayload};
+        int concatLenghts[] = {strlen("UntrustedSend"), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), final_size_serialized};
+        unsecureSendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 11);
+        requestSize = returnTotalSizeofLengthArray(concatLenghts, 11) + 1;
+        // snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:%s", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
     } else {
-        snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:0", sendingToMachinePublicID, event);
+        char* colon = ":";
+        char* zero = "0";
+        char* concatStrings[] = {"UntrustedSend", colon, sendingToMachinePublicID, colon, event, colon, zero};
+        int concatLenghts[] = {strlen("UntrustedSend"), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(zero)};
+        unsecureSendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 7);
+        requestSize = returnTotalSizeofLengthArray(concatLenghts, 7) + 1;
+        // snprintf(sendRequest, requestSize, "%s:%s:%s:0", sendTypeCommand, sendingToMachinePublicID, event);
     }
+
+    // if (numArgs > 0) {
+    //     snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%d:%d:%s", sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+    // } else {
+    //     snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:0", sendingToMachinePublicID, event);
+    // }
     safe_free(event);
     safe_free(eventMessagePayload);
     printf("Untrusted machine is sending out following network request: %s\n", unsecureSendRequest);   
     char* newMachinePublicIDKey = NULL;
-    size_t requestSz = strlen(unsecureSendRequest) + 1;
+    size_t requestSz = strlen(unsecureSendRequest) + 1; //TODO shividentity
     newMachinePublicIDKey = send_network_request_API(unsecureSendRequest, requestSz);
     safe_free(unsecureSendRequest);
     ocall_print("printing pidk");
@@ -278,17 +300,17 @@ char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs
    PRT_MACHINEID receivingMachinePID;
     printf("Machine receiving message has a PID of:");
     char* temp = (char*) malloc(10);
-    if (NETWORK_DEBUG) {
-        snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
-        printf(temp);
-        safe_free(temp);
-        receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
-    } else {
+    // if (NETWORK_DEBUG) {
+    //     snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
+    //     printf(temp);
+    //     safe_free(temp);
+    //     receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
+    // } else {
         snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
         printf(temp);
         safe_free(temp);
         receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
-    }
+    // }
     
     handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload);
     return createStringLiteralMalloced("Message successfully sent!/n");
@@ -321,13 +343,39 @@ char* registerMachineWithNetwork(char* newMachineID) {
     ocall_print("ChildPublicIDKey size is");
     ocall_print_int(strlen(newMachineID));
 
-    char* machineKeyWrapper[] = {newMachineID};
-    char* request = generateCStringFromFormat("RegisterMachine:%s:-1", machineKeyWrapper, 1);
-    size_t requestSz = strlen(request) + 1;
-    char* returnValue = send_network_request_API(request, requestSz);
-    safe_free(request);
-    safe_free(returnValue);
-    return returnValue;
+    // char* machineKeyWrapper[] = {newMachineID};
+    // char* request = generateCStringFromFormat("RegisterMachine:%s:-1", machineKeyWrapper, 1);
+    // size_t requestSz = strlen(request) + 1;
+    // char* returnValue = send_network_request_API(request, requestSz);
+    // safe_free(request);
+    // safe_free(returnValue);
+    // return returnValue;
+
+    int ret_value;
+    char* num = "-1";
+    // char* machineKeyWrapper[] = {newMachineID, num};
+    
+    // char* networkResult = (char*) malloc(100);
+    // if (NETWORK_DEBUG) {
+    //     char* networkRequest = generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2);
+    //     ocall_network_request(&ret_value, networkRequest, networkResult, strlen(networkRequest) + 1, 100);
+    //     safe_free(networkRequest);
+    // } else {
+        //TODO need to test this request
+        char* requestType = "RegisterMachine:";
+        char* colon = ":";
+        char* concatStrings[] = {requestType, newMachineID, colon, num};
+        int concatLenghts[] = {strlen(requestType), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(num)};
+        char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
+        int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
+        char* returnValue = send_network_request_API(networkRequest, networkRequestSize);
+                safe_free(networkRequest);
+
+        return returnValue;
+        // ocall_network_request(&ret_value, networkRequest, networkResult, networkRequestSize, 100);
+    // }
+    // safe_free(num);
+    // safe_free(networkResult);
 
 }
 
