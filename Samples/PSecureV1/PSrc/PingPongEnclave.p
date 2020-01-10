@@ -23,6 +23,7 @@ event OTPCodeEvent : StringType;
 trusted event MapEvent: map[int, int];
 
 trusted event TestEvent: int;
+event TestEvent2: int;
 
 machine GodUntrusted {
     var handler: StringType;
@@ -35,16 +36,18 @@ machine GodUntrusted {
 
 secure_machine GodMachine {
     var bankSSM: StringType;
+    var clientUSM: StringType;
     start state Initial {
         entry {
             bankSSM = new BankEnclave();
-            PrintKey(bankSSM);
+            // PrintKey(bankSSM);
             secure_send bankSSM, TestEvent, 7;
         }
     }
 }
 
 secure_machine BankEnclave {
+    var clientUSM: StringType;
     start state Initial {
         on TestEvent goto NextState;
     }
@@ -56,9 +59,26 @@ secure_machine BankEnclave {
             } else {
                 print "Test1 Failure";
             }
+            clientUSM = new ClientUSM();
+            untrusted_send clientUSM, TestEvent2, 9;
             
         }
     }
+}
+
+machine ClientUSM {
+    start state Init {
+        on TestEvent2 goto NextState;
+    }
+
+    state NextState {
+        entry (payload : int) {
+            if (payload == 9) {
+                print "Test2 Successs!";
+            }
+        }
+    }
+
 }
 
 // machine GodUntrusted {
