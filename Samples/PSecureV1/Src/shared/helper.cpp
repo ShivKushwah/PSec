@@ -840,44 +840,75 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
     } else if (strcmp(split, "Send") == 0) {
 
+        char* machineSendingMessage;
+        char* machineReceivingMessage;
+        char* encryptedMessage;
         char* temp;
-        split = strtok(NULL, ":");
-        char* machineSendingMessage = split;
-        split = strtok(NULL, ":");
-        char* machineReceivingMessage = split;
-        char* encryptedMessage = requestCopy + strlen("Send") + 1 + strlen(machineSendingMessage) + 1 + strlen(machineReceivingMessage) + 1;
+
+        if (NETWORK_DEBUG) {
+            split = strtok(NULL, ":");
+            machineSendingMessage = split;
+            split = strtok(NULL, ":");
+            machineReceivingMessage = split;
+            encryptedMessage = requestCopy + strlen("Send") + 1 + strlen(machineSendingMessage) + 1 + strlen(machineReceivingMessage) + 1;
+        } else {
+            machineSendingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(machineSendingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+            machineReceivingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(machineReceivingMessage, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+
+            encryptedMessage = requestCopy + strlen("Send") + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1;
+        }
+
+        
         ocall_print("encrypted message is");
         ocall_print(encryptedMessage);
 
         if (isEnclaveUntrustedHost) {
 
-            if (PublicIdentityKeyToEidDictionary.count(machineReceivingMessage) == 0) {
+            int count;
+            int ptr;
+            sgx_enclave_id_t enclave_eid;
+            if (NETWORK_DEBUG) {
+                count = PublicIdentityKeyToEidDictionary.count(string(machineReceivingMessage));
+                enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage)]; //TODO add check here in case its not in dictionary
+                // ocall_print("about to call decrypt");
+                // ocall_print(machineSendingMessage);
+                // ocall_print_int(strlen(machineSendingMessage) + 1);
+                // ocall_print(machineReceivingMessage);
+                // ocall_print_int(strlen(machineReceivingMessage) + 1);
+                // ocall_print(encryptedMessage);
+                // ocall_print_int(strlen(encryptedMessage) + 1);
+                // char mSM[strlen(machineSendingMessage) + 1];
+                // memcpy(mSM, machineSendingMessage, strlen(machineSendingMessage) + 1);
+                // char mRM[strlen(machineReceivingMessage) + 1];
+                // memcpy(mRM, machineReceivingMessage, strlen(machineReceivingMessage) + 1);
+                // char eM[strlen(encryptedMessage) + 1];
+                // memcpy(eM, encryptedMessage, strlen(encryptedMessage) + 1);
+                //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+                sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, encryptedMessage, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
+            } else {
+                count = PublicIdentityKeyToEidDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
+                enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)];
+                sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, encryptedMessage, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_EVENT_PAYLOAD);
+            }
+            
+
+            if (count == 0) {
                 printf("\n No Enclave Eid Found!\n");
             }
-
-            sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[machineReceivingMessage]; //TODO add check here in case its not in dictionary
-
-            int ptr;
-            // ocall_print("about to call decrypt");
-            // ocall_print(machineSendingMessage);
-            // ocall_print_int(strlen(machineSendingMessage) + 1);
-            // ocall_print(machineReceivingMessage);
-            // ocall_print_int(strlen(machineReceivingMessage) + 1);
-            // ocall_print(encryptedMessage);
-            // ocall_print_int(strlen(encryptedMessage) + 1);
-            // char mSM[strlen(machineSendingMessage) + 1];
-            // memcpy(mSM, machineSendingMessage, strlen(machineSendingMessage) + 1);
-            // char mRM[strlen(machineReceivingMessage) + 1];
-            // memcpy(mRM, machineReceivingMessage, strlen(machineReceivingMessage) + 1);
-            // char eM[strlen(encryptedMessage) + 1];
-            // memcpy(eM, encryptedMessage, strlen(encryptedMessage) + 1);
-            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, encryptedMessage, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD);
+            
             safe_free(requestCopy);
             return temp;
 
         } else {
-            if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage)) > 0) {
+            int count;
+            if (NETWORK_DEBUG) {
+                count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage));
+            } else {
+                count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
+            }
+            if (count > 0) {
                 safe_free(requestCopy);
                 //TODO need to implement
                 return createStringLiteralMalloced("TODO");
