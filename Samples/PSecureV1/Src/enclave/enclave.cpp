@@ -1007,8 +1007,14 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
     char* eventPayloadTypeString = (char*) malloc(10);
     itoa(eventPayloadType, eventPayloadTypeString, 10);
-    char* temp = serializePrtValueToString(*P_EventMessage_Payload);
-    memcpy(eventMessagePayload, temp, strlen(temp) + 1); //TODO shividentity
+    int final_size_seralized = 0;
+    char* temp = serializePrtValueToString(*P_EventMessage_Payload, final_size_seralized);
+    final_size_seralized = final_size_seralized + 1;
+    memcpy(eventMessagePayload, temp, final_size_seralized);
+            eventMessagePayload[final_size_seralized - 1] = '\0';
+            ocall_print("EVENT MESSAGE PAYLOAD IS");
+            ocall_print(eventMessagePayload);
+    // memcpy(eventMessagePayload, temp, strlen(temp) + 1); //TODO shividentity
     safe_free(temp);
 
     // for (int i = 0; i < numArgs; i++) {
@@ -1027,17 +1033,23 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     int requestSize = 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + size_of_max_num_args + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* sendRequest;
 
+    int eventMessageSize = 9; //TODO shivIdentity
+    char* eventMessageSizeStr = (char*) malloc(10);
+
     if (NETWORK_DEBUG) {
         sendRequest = (char*) malloc(requestSize);
         if (isSecureSend) {
             if (numArgs > 0) {
-                snprintf(sendRequest, requestSize, "%s:%s:%s:%s:%d:%d:%s", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+                snprintf(sendRequest, requestSize, "%s:%s:%s:%s:%d:%d:", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType/*, eventMessageSize*/);
+                memcpy(sendRequest + strlen(sendRequest), eventMessagePayload, final_size_seralized);
             } else  {
                 snprintf(sendRequest, requestSize, "%s:%s:%s:%s:0", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event);
             }
         } else {
             if (numArgs > 0) {
-                snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:%s", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+                snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType/*, eventMessageSize*/);
+                memcpy(sendRequest + strlen(sendRequest), eventMessagePayload, final_size_seralized);
+
             } else {
                 snprintf(sendRequest, requestSize, "%s:%s:%s:0", sendTypeCommand, sendingToMachinePublicID, event);
             }
@@ -1084,6 +1096,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     }
 
     safe_free(eventPayloadTypeString);
+    safe_free(eventMessageSizeStr);
     
     
     char* machineNameWrapper[] = {currentMachineIDPublicKey};

@@ -149,25 +149,35 @@ PRT_TYPE_KIND convertKindToType(int kind) {
 }
 
 //Responsibility of Caller to free return
-char* serializePrtValueToString(PRT_VALUE* value) {
+char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
     //TODO code the rest of the types
     if (value->discriminator == PRT_VALUE_KIND_INT) {
         char* integer = (char*) malloc(10);
         itoa(value->valueUnion.nt, integer, 10);
+        final_size += strlen(integer);
         return integer;
     } else if (value->discriminator == PRT_VALUE_KIND_FOREIGN) {
         if (value->valueUnion.frgn->typeTag == 0) { //if StringType
-            return (char*) value->valueUnion.frgn->value;
+            char* string = (char*) malloc(SIZE_OF_PRT_STRING_SERIALIZED);
+            memcpy(string, (char*) value->valueUnion.frgn->value, SIZE_OF_PRT_STRING_SERIALIZED);
+            ocall_print("the actual PRT value is");
+            ocall_print((char*)value->valueUnion.frgn->value);
+            //string[SIZE_OF_PRT_STRING_SERIALIZED] = '\0';
+            final_size += SIZE_OF_PRT_STRING_SERIALIZED;
+            return string;
         } else {
-            return "UNSUPPORTED_TYPE";
+            return createStringLiteralMalloced("UNSUPPORTED_TYPE");
         }
     } else if (value->discriminator == PRT_VALUE_KIND_BOOL) {
         if (value->valueUnion.bl == PRT_TRUE) {
-            return "true";
+            final_size += 4;
+            return createStringLiteralMalloced("true");
         } else if (value->valueUnion.bl == PRT_FALSE) {
-            return "false";
+            final_size += 5;
+            return createStringLiteralMalloced("false");
         } else {
-            return "ERROR: Boolean not found";
+            final_size += 24;
+            return createStringLiteralMalloced("ERROR: Boolean not found");
         }
     } else if (value->discriminator == PRT_VALUE_KIND_TUPLE) {
         char* tupleString = (char*) malloc(SIZE_OF_MAX_SERIALIZED_TUPLE);
@@ -183,9 +193,10 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             safe_free(typeString);
             tupleString[currIndex] = ':';
             currIndex++;
-            char* serializedStr = serializePrtValueToString(currValue);
-            memcpy(tupleString + currIndex, serializedStr, strlen(serializedStr) + 1);
-            currIndex += strlen(serializedStr);
+            int szSerializedStr = 0;
+            char* serializedStr = serializePrtValueToString(currValue, szSerializedStr);
+            memcpy(tupleString + currIndex, serializedStr, szSerializedStr + 1);
+            currIndex += szSerializedStr;
             safe_free(serializedStr);
             if (i < tupPtr->size - 1) {
                 tupleString[currIndex] = ':';
@@ -193,8 +204,10 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             }
         }
         strncat(tupleString, ":END_TUP", 10);
+        //memcpy(tupleString + currIndex, ":END_TUP", 8);
         currIndex += 8;
         tupleString[currIndex] = '\0';
+        final_size = currIndex;
         return tupleString;
     } else if (value->discriminator == PRT_VALUE_KIND_MAP) {
         char* mapString = (char*) malloc(SIZE_OF_MAX_SERIALIZED_MAP);
@@ -214,9 +227,10 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             safe_free(typeString);
             mapString[currIndex] = ':';
             currIndex++;
-            char* serializedKey = serializePrtValueToString(mapKey);
-            memcpy(mapString + currIndex, serializedKey, strlen(serializedKey) + 1);
-            currIndex += strlen(serializedKey);
+            int serializedKeySz = 0;
+            char* serializedKey = serializePrtValueToString(mapKey, serializedKeySz);
+            memcpy(mapString + currIndex, serializedKey, serializedKeySz + 1);
+            currIndex += serializedKeySz;
             safe_free(serializedKey);
             mapString[currIndex] = ':';
             currIndex++;
@@ -229,9 +243,10 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             safe_free(typeString);
             mapString[currIndex] = ':';
             currIndex++;
-            char* serializedValue = serializePrtValueToString(mapValue);
-            memcpy(mapString + currIndex, serializedValue, strlen(serializedValue) + 1);
-            currIndex += strlen(serializedValue);
+            int serializedValueSz = 0;
+            char* serializedValue = serializePrtValueToString(mapValue, serializedValueSz);
+            memcpy(mapString + currIndex, serializedValue, serializedValueSz + 1);
+            currIndex += serializedValueSz;
             safe_free(serializedValue);
             if (i < size - 1) {
                 mapString[currIndex] = ':';
@@ -239,8 +254,10 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             }
         }
         strncat(mapString, ":END_MAP", 10);
+        // memcpy(mapString + currIndex, ":END_MAP", 8);
         currIndex += 8;
         mapString[currIndex] = '\0';
+        final_size = currIndex;
         return mapString;
     } else if (value->discriminator == PRT_VALUE_KIND_SEQ) {
         char* seqString = (char*) malloc(SIZE_OF_MAX_SERIALIZED_SEQ);
@@ -259,9 +276,10 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             safe_free(typeString);
             seqString[currIndex] = ':';
             currIndex++;
-            char* serializedValue = serializePrtValueToString(seqValue);
-            memcpy(seqString + currIndex, serializedValue, strlen(serializedValue) + 1);
-            currIndex += strlen(serializedValue);
+            int serializedValueSz = 0;
+            char* serializedValue = serializePrtValueToString(seqValue, serializedValueSz);
+            memcpy(seqString + currIndex, serializedValue, serializedValueSz + 1);
+            currIndex += serializedValueSz;
             safe_free(serializedValue);
             if (i < size - 1) {
                 seqString[currIndex] = ':';
@@ -269,14 +287,22 @@ char* serializePrtValueToString(PRT_VALUE* value) {
             }
         }
         strncat(seqString, ":END_SEQ", 10);
+        ocall_print("sequence so far");
+        ocall_print(seqString);
+        ocall_print("checking location of currIndex");
+        ocall_print_int(currIndex);
+        // memcpy(seqString + currIndex, ":END_SEQ", 9);
+        ocall_print("new seq");
+        ocall_print(seqString);
         currIndex += 8;
         seqString[currIndex] = '\0';
+        final_size = currIndex;
         return seqString;
     }
     
     
      else {
-        return "UNSUPPORTED_TYPE";
+        return createStringLiteralMalloced("UNSUPPORTED_TYPE");
     }
 
 }
@@ -301,7 +327,8 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
         newPrtValue->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
         newPrtValue->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
         PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-        sprintf_s(prtStr, SIZE_OF_PRT_STRING_SERIALIZED, str);
+        // sprintf_s(prtStr, SIZE_OF_PRT_STRING_SERIALIZED, str);
+        memcpy(prtStr, str, SIZE_OF_PRT_STRING_SERIALIZED);
         newPrtValue->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
     } else if (payloadType == PRT_VALUE_KIND_BOOL) {
         if (strcmp(str, "true") == 0) {
@@ -1019,11 +1046,21 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     PRT_VALUE* payloadPrtValue;
     char* payloadString = NULL;  
     int payloadType;
+    int payloadStringSize;
 
     if (numArgs == 1) {
         payloadPrtValue = *(argRefs[2]);
         payloadType = payloadPrtValue->discriminator;
-        payloadString = serializePrtValueToString(payloadPrtValue);
+        payloadStringSize = 0; //TODO shividentity
+        payloadString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
+        char* temp = serializePrtValueToString(payloadPrtValue, payloadStringSize);
+        payloadStringSize = payloadStringSize + 1;
+        memcpy(payloadString, temp, payloadStringSize);
+        payloadString[payloadStringSize - 1] = '\0';
+        ocall_print("EVENT MESSAGE PAYLOAD IS");
+            ocall_print(payloadString);
+        safe_free(temp);
+
     }
 
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
@@ -1059,7 +1096,9 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
                     // int constructStringLengths[] = {strlen(createTypeCommand), 1, strlen(currentMachineIDPublicKey), 1, strlen(requestedNewMachineTypeToCreate), 1, strlen(numArgsString), 1, strlen(payloadTypeString), 1, strlen(payloadString)};
                     // safe_free(createMachineRequest);
                     // createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 11);
-                    snprintf(createMachineRequest, requestSize, "%s:%s:%s:%d:%d:%s", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
+                    snprintf(createMachineRequest, requestSize, "%s:%s:%s:%d:%d:", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadType);
+                    memcpy(createMachineRequest + strlen(createMachineRequest), payloadString, payloadStringSize);
+
                     requestLength = strlen(createMachineRequest) + 1;
                 } else {
                     ocall_print("requested new type of machine to create is");
@@ -1089,7 +1128,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
             if (numArgs == 0) {
                 snprintf(createMachineRequest, requestSize, "%s:%s:0", createTypeCommand, requestedNewMachineTypeToCreate);
             } else {
-                snprintf(createMachineRequest, requestSize, "%s:%s:%d:%d:%s", createTypeCommand, requestedNewMachineTypeToCreate, numArgs, payloadType, payloadString);
+                snprintf(createMachineRequest, requestSize, "%s:%s:%d:%d:", createTypeCommand, requestedNewMachineTypeToCreate, numArgs, payloadType);
+                memcpy(createMachineRequest + strlen(createMachineRequest), payloadString, payloadStringSize);
 
             }
             requestLength = strlen(createMachineRequest) + 1;
@@ -1163,7 +1203,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
     if (NETWORK_DEBUG) {
-        sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, newMachinePublicIDKey);
+         memcpy(str, newMachinePublicIDKey, SIZE_OF_PRT_STRING_SERIALIZED);
+        // sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, newMachinePublicIDKey);
     } else {
         memcpy(str, newMachinePublicIDKey, SIZE_OF_PRT_STRING_SERIALIZED);
     }
@@ -1268,7 +1309,7 @@ extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRe
     PRT_VALUE** P_VAR_payload2 = argRefs[1];
     PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
 
-    strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1);
+    strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
 	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (char*)val);
@@ -1281,10 +1322,10 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     char* currentMachineIDPublicKey;
  
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); 
+    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); //TODO shivIdentity
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey);
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey); //TODO shividentity
     safe_free(currentMachineIDPublicKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
@@ -1324,7 +1365,8 @@ extern "C" PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64 frgnVal)
 {
 	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
     if (NETWORK_DEBUG) {
-        sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
+        memcpy(str, (void*)frgnVal, SIZE_OF_PRT_STRING_SERIALIZED);
+        // sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
     } else {
         memcpy(str, (void*)frgnVal, SIZE_OF_PRT_STRING_SERIALIZED);
     }

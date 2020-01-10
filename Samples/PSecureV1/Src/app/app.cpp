@@ -184,8 +184,13 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     // for (int i = 0; i < numArgs; i++) {
         PRT_VALUE** P_EventMessage_Payload = argRefs[3];
         int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
-            char* temp = serializePrtValueToString(*P_EventMessage_Payload);
-            memcpy(eventMessagePayload, temp, strlen(temp) + 1);
+        int final_size_serialized = 0;
+            char* temp = serializePrtValueToString(*P_EventMessage_Payload, final_size_serialized);
+            final_size_serialized = final_size_serialized + 1;
+            memcpy(eventMessagePayload, temp, final_size_serialized);
+            eventMessagePayload[final_size_serialized - 1] = '\0';
+            ocall_print("EVENT MESSAGE PAYLOAD IS");
+            ocall_print(eventMessagePayload);
             safe_free(temp);
     //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
     //     //TODO I assumed only 1 payload for the below
@@ -208,7 +213,9 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     int requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* unsecureSendRequest = (char*) malloc(requestSize);
     if (numArgs > 0) {
-        snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%d:%d:%s", sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+        snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:%d:%d:", sendingToMachinePublicID, event, numArgs, eventPayloadType);
+        memcpy(unsecureSendRequest + strlen(unsecureSendRequest), eventMessagePayload, final_size_serialized);
+
     } else {
         snprintf(unsecureSendRequest, requestSize, "UntrustedSend:%s:%s:0", sendingToMachinePublicID, event);
     }
