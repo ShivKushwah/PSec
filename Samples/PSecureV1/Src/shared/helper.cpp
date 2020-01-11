@@ -1071,6 +1071,9 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1 + 10 + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
     int requestLength;
+    char* numArgsString = (char*) argRefs[1];
+    char* payloadTypeString = (char*) malloc(10);
+    itoa(payloadType, payloadTypeString, 10);
          if (isSecureCreate) {
             if (numArgs == 0) {
 
@@ -1109,9 +1112,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
                     ocall_print(requestedNewMachineTypeToCreate);
                     ocall_print("current RSA key is");
                     printRSAKey(currentMachineIDPublicKey);
-                    char* numArgsString = (char*) argRefs[1];
-                    char* payloadTypeString = (char*) malloc(10);
-                    itoa(payloadType, payloadTypeString, 10);
+                    
                     char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":", numArgsString, ":", payloadTypeString, ":", payloadString};
                     int constructStringLengths[] = {strlen(createTypeCommand), 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedNewMachineTypeToCreate), 1, strlen(numArgsString), 1, strlen(payloadTypeString), 1, payloadStringSize};
                     safe_free(createMachineRequest);
@@ -1130,13 +1131,25 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
         } else {
             if (numArgs == 0) {
-                snprintf(createMachineRequest, requestSize, "%s:%s:0", createTypeCommand, requestedNewMachineTypeToCreate);
+                char* constructString[] = {createTypeCommand, ":", requestedNewMachineTypeToCreate, ":0"};
+                int constructStringLengths[] = {strlen(createTypeCommand), 1, strlen(requestedNewMachineTypeToCreate), 2};
+                safe_free(createMachineRequest);
+                createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 4);
+                requestLength = returnTotalSizeofLengthArray(constructStringLengths, 4) + 1;
+
+                // snprintf(createMachineRequest, requestSize, "%s:%s:0", createTypeCommand, requestedNewMachineTypeToCreate);
             } else {
-                snprintf(createMachineRequest, requestSize, "%s:%s:%d:%d:", createTypeCommand, requestedNewMachineTypeToCreate, numArgs, payloadType);
-                memcpy(createMachineRequest + strlen(createMachineRequest), payloadString, payloadStringSize);
+                char* constructString[] = {createTypeCommand, ":", requestedNewMachineTypeToCreate, ":", numArgsString, ":", payloadTypeString, ":", payloadString};
+                int constructStringLengths[] = {strlen(createTypeCommand), 1, strlen(requestedNewMachineTypeToCreate), 1, strlen(numArgsString), 1, strlen(payloadTypeString), 1, payloadStringSize};
+                safe_free(createMachineRequest);
+                createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 9);
+                requestLength = returnTotalSizeofLengthArray(constructStringLengths, 9) + 1;
+
+                // snprintf(createMachineRequest, requestSize, "%s:%s:%d:%d:", createTypeCommand, requestedNewMachineTypeToCreate, numArgs, payloadType);
+                // memcpy(createMachineRequest + strlen(createMachineRequest), payloadString, payloadStringSize);
 
             }
-            requestLength = strlen(createMachineRequest) + 1;
+            // requestLength = strlen(createMachineRequest) + 1;
         }
     
    
