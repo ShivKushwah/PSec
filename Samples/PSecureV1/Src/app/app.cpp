@@ -313,7 +313,7 @@ char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs
         receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
     // }
     
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload);
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, strlen(payload)); //TODO shividentity
     return createStringLiteralMalloced("Message successfully sent!/n");
 }
 

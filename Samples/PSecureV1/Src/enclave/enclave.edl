@@ -44,16 +44,6 @@ enclave {
                                               uint32_t ID_SIZE,
                                              uint32_t SESSION_SIZE);
 
-        public int sendMessageAPI([in, size=ID_SIZE]char* requestingMachineIDKey, 
-                                 [in, size=ID_SIZE]char* receivingMachineIDKey, 
-                                [in, size=MESSAGE_SIZE]char* event,
-                                int numArgs,
-                                int payloadType,
-                                [in, size=MAX_PAYLOAD_SIZE]char* payload,
-                                 uint32_t ID_SIZE,
-                                uint32_t MESSAGE_SIZE,
-                                uint32_t MAX_PAYLOAD_SIZE);
-
         public void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid,
                                                 [in, size=lengthString]char* machineTypeToCreate, 
                                                 int lengthString,

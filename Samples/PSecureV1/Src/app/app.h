@@ -18,7 +18,7 @@ typedef tuple <string,string> identityKeyPair; //public, private
 
 int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier);
 
-int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload);
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize);
 char* serializePrtValueToString(PRT_VALUE* value, int& final_size);
 
 void generateIdentity(string& publicID, string& privateID, string prefix);

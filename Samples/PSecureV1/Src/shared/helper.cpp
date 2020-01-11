@@ -1236,7 +1236,7 @@ void PrintTuple(PRT_VALUE* tuple){
 
 }
 
-int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload) {
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize) {
     PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
     PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
     if (numArgs == 0) {
@@ -1245,7 +1245,10 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
         char* payloadConcat = (char*) malloc(SIZE_OF_MAX_MESSAGE);
         itoa(payloadType, payloadConcat, 10);
         strncat(payloadConcat, ":", SIZE_OF_MAX_MESSAGE + 1);
-        strncat(payloadConcat, payload, SIZE_OF_MAX_MESSAGE + 1);
+        int sizeSoFar = strlen(payloadConcat);
+        memcpy(payloadConcat + sizeSoFar, payload, payloadSize);
+        payloadConcat[sizeSoFar + payloadSize] = '\0';
+        // strncat(payloadConcat, payload, SIZE_OF_MAX_MESSAGE + 1);
         int numCharactersProcessed;
         //print out what is being passed to the below method
         ocall_print("Passing In String To Deserialize:");

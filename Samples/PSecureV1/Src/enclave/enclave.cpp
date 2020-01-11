@@ -835,7 +835,7 @@ void generateSessionKey(string& newSessionKey) {
     newSessionKey = "GenSessionKe" + to_string(val % 100);
 } 
 
-int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload) {
+int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize) {
     //TODO if modifying this, modify USMsendMessageAPI in app.cpp
     //TODO eventNum should be encrypted and requestingMachineIDKey should be verified with signature
     PRT_MACHINEID receivingMachinePID;
@@ -859,7 +859,7 @@ int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey,
         receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
     // }
     
-    handle_incoming_event(atoi(event), receivingMachinePID, numArgs, payloadType, payload); //TODO update to untrusted send api
+    handle_incoming_event(atoi(event), receivingMachinePID, numArgs, payloadType, payload, payloadSize); //TODO update to untrusted send api
 }
 
 int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* encryptedMessage, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE) {
@@ -871,27 +871,32 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
     int payloadType = -1;
     ocall_print("chillin");
     char* payload = (char*) malloc(10);
+    int payloadSize;
     payload[0] = '\0';
     if (numArgs > 0) {
         split = strtok(NULL, ":");
         payloadType = atoi(split);
-        split = strtok(NULL, "\0");
+        split = strtok(NULL, ":");
+        payloadSize = atoi(split);
+
+
+        // split = strtok(NULL, "\0");
         safe_free(payload);
-        payload = split;
+        payload = split + strlen(split) + 1;
 
     } else {
         safe_free(payload);
     }
-    sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, 0, 0, 0);
+    sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
 
 }
 
-int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
-    sendMessageHelper(requestingMachineIDKey, receivingMachineIDKey, event, numArgs, payloadType, payload);
+int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize) {
+    sendMessageHelper(requestingMachineIDKey, receivingMachineIDKey, event, numArgs, payloadType, payload, payloadSize);
 }
 
 int sendUntrustedMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
-    sendMessageHelper("", receivingMachineIDKey, eventNum, numArgs, payloadType, payload);
+    sendMessageHelper("", receivingMachineIDKey, eventNum, numArgs, payloadType, payload, strlen(payload)); //TODO shiv identity
 }
 
 extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -1032,6 +1037,9 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     // memcpy(eventMessagePayload, temp, strlen(temp) + 1); //TODO shividentity
     safe_free(temp);
 
+    char* eventMessagePayloadSizeString = (char*) malloc(10);
+    itoa(eventMessagePayloadSize, eventMessagePayloadSizeString, 10);
+
     // for (int i = 0; i < numArgs; i++) {
     //     PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];
     //     char* payload = serializePrtValueToString(*P_EventMessage_Payload);
@@ -1075,10 +1083,10 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         if (isSecureSend) {
             if (numArgs > 0) {
                 char* colon = ":";
-                char* concatStrings[] = {sendTypeCommand, colon, currentMachineIDPublicKey, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayload};
-                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), eventMessagePayloadSize};
-                sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
-                requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
+                char* concatStrings[] = {sendTypeCommand, colon, currentMachineIDPublicKey, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
+                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayloadSizeString), strlen(colon), eventMessagePayloadSize};
+                sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 15);
+                requestSize = returnTotalSizeofLengthArray(concatLenghts, 15) + 1;
                 // snprintf(sendRequest, requestSize, "%s:%s:%s:%s:%d:%d:%s", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
             } else  {
                 char* colon = ":";

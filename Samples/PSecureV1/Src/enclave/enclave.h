@@ -36,7 +36,7 @@ extern uint8_t g_secret[SIZE_OF_MESSAGE];
 void startPrtProcessIfNotStarted();
 char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, bool isSecureCreate,sgx_enclave_id_t enclaveEid);
 int handle_incoming_events_pong_enclave(PRT_UINT32 eventIdentifier);
-int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload);
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize);
 void generateIdentityDebug(string& publicID, string& privateID, string prefix);
 void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *private_key, void** publicIdentity, void** privateIdentity);
 string createString(char* str);
@@ -54,8 +54,10 @@ int getNextPID();
 
 void safe_free(void* ptr);
 
+int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize);
+
 char* registerMachineWithNetwork(char* newMachineID);
-int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload);
+int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize);
 
 char* generateCStringFromFormat(char* format_string, char** strings_to_print, int num_strings);
 
