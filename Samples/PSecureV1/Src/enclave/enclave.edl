@@ -36,6 +36,7 @@ enclave {
                                     int numArgs, 
                                     int payloadType,
                                     [in, size=PAYLOAD_SIZE]char* payload, 
+                                    int payloadSize,
                                     uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid);
         
         public int initializeCommunicationAPI([in, size=ID_SIZE]char* requestingMachineIDKey,
@@ -51,6 +52,7 @@ enclave {
                                                 int numArgs, 
                                                 int payloadType,
                                                 [in, size=payload_size] char* payload,
+                                                int payload_length,
                                                 int output_length, 
                                                 int payload_size,
                                                 sgx_enclave_id_t enclaveEid);

@@ -384,7 +384,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
 }
 
 //Responbility of caller to free return
-char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload) {
+char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize) {
     //TODO shividentity make compatibile
     startPrtProcessIfNotStarted();
     if (machineTypeIsSecure(machineType)) {
@@ -410,7 +410,7 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     char* usmChildPublicIDKeyCopy2 = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy2, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
 
-    createMachine(machineType, numArgs, payloadType, payload);
+    createMachine(machineType, numArgs, payloadType, payload, payloadSize);
 
     //Return the publicIDKey of the new machine
     return usmChildPublicIDKeyCopy2;
@@ -491,7 +491,7 @@ int main(int argc, char const *argv[]) {
     // Place the measurement of the enclave into metadata_info.txt
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
 
-    char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "");
+    char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "", 0);
     safe_free(ret);
 
     return 0;

@@ -180,9 +180,9 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     return capabilityKey;
 }
                                         
-void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int ID_SIZE, int PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
+void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int payloadSize, int ID_SIZE, int PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
     current_eid = currentEid;
-    char* newMachinePublicIDKey = createMachineHelper(machineTypeToCreate, "", numArgs, payloadType, payloadString, false, enclaveEid);
+    char* newMachinePublicIDKey = createMachineHelper(machineTypeToCreate, "", numArgs, payloadType, payloadString, payloadSize, false, enclaveEid);
     //"Return" the publicIDKey of the new machine
     // if (NETWORK_DEBUG) {
     //     memcpy(returnNewMachinePublicID, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
@@ -238,7 +238,7 @@ void startPrtProcessIfNotStarted() {
 
 
 // Responsibility of caller to free return
-char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, bool isSecureCreate, sgx_enclave_id_t enclaveEid) {
+char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, int payloadSize, bool isSecureCreate, sgx_enclave_id_t enclaveEid) {
     startPrtProcessIfNotStarted();
 
     if (!machineTypeIsSecure(machineType)) {
@@ -258,7 +258,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
         // void* privateIdentity = NULL;
         // generateIdentity(public_key, private_key, &publicIdentity, &privateIdentity);
         // secureChildPublicIDKey = string((char*)publicIdentity, SGX_RSA3072_KEY_SIZE);
-        // secureChildPrivateIDKey = string((char*)privateIdentity, SGX_RSA3072_KEY_SIZE);
+        // secureChildPrivateIDKey = string((char*)privateIdentity, SGUntrustedCreateX_RSA3072_KEY_SIZE);
         //TODO uncomment above
     if (NETWORK_DEBUG) {
         generateIdentityDebug(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
@@ -306,10 +306,10 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     safe_free(secureChildPublicIDKeyCopy);
 
     if (isSecureCreate) {
-        createMachine(machineType, numArgs, payloadType, payload);
+        createMachine(machineType, numArgs, payloadType, payload, payloadSize);
 
     } else {
-        createMachine(machineType, 0, PRT_VALUE_KIND_INT, "");
+        createMachine(machineType, 0, PRT_VALUE_KIND_INT, "", 0);
     }
 
     char* returnNewMachinePublicIDKey = (char*) malloc(secureChildPublicIDKey.length() + 1);
@@ -320,7 +320,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
 }
 
 
-int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
+int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, int payloadSize, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
     current_eid = currentEid;
    
     if (!NETWORK_DEBUG) {
@@ -329,7 +329,7 @@ int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* paren
         printRSAKey(parentTrustedMachinePublicIDKey);
     }
     
-    char* newMachinePublicIDKey = createMachineHelper(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload, true, enclaveEid);
+    char* newMachinePublicIDKey = createMachineHelper(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload, payloadSize, true, enclaveEid);
     //"Return" the publicIDKey of the new machine
     // if (NETWORK_DEBUG){
     //     memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);

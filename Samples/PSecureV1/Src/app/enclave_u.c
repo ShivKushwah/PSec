@@ -55,6 +55,7 @@ typedef struct ms_createMachineAPI_t {
 	int ms_numArgs;
 	int ms_payloadType;
 	char* ms_payload;
+	int ms_payloadSize;
 	uint32_t ms_ID_SIZE;
 	uint32_t ms_PAYLOAD_SIZE;
 	sgx_enclave_id_t ms_enclaveEid;
@@ -77,6 +78,7 @@ typedef struct ms_UntrustedCreateMachineAPI_t {
 	int ms_numArgs;
 	int ms_payloadType;
 	char* ms_payload;
+	int ms_payload_length;
 	int ms_output_length;
 	int ms_payload_size;
 	sgx_enclave_id_t ms_enclaveEid;
@@ -441,7 +443,7 @@ sgx_status_t enclave_decryptAndSendMessageAPI(sgx_enclave_id_t eid, int* retval,
 	return status;
 }
 
-sgx_status_t enclave_createMachineAPI(sgx_enclave_id_t eid, int* retval, sgx_enclave_id_t currentEid, char* machineName, char* parentTrustedMachineID, char* returnNewMachineID, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid)
+sgx_status_t enclave_createMachineAPI(sgx_enclave_id_t eid, int* retval, sgx_enclave_id_t currentEid, char* machineName, char* parentTrustedMachineID, char* returnNewMachineID, int numArgs, int payloadType, char* payload, int payloadSize, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid)
 {
 	sgx_status_t status;
 	ms_createMachineAPI_t ms;
@@ -452,6 +454,7 @@ sgx_status_t enclave_createMachineAPI(sgx_enclave_id_t eid, int* retval, sgx_enc
 	ms.ms_numArgs = numArgs;
 	ms.ms_payloadType = payloadType;
 	ms.ms_payload = payload;
+	ms.ms_payloadSize = payloadSize;
 	ms.ms_ID_SIZE = ID_SIZE;
 	ms.ms_PAYLOAD_SIZE = PAYLOAD_SIZE;
 	ms.ms_enclaveEid = enclaveEid;
@@ -474,7 +477,7 @@ sgx_status_t enclave_initializeCommunicationAPI(sgx_enclave_id_t eid, int* retva
 	return status;
 }
 
-sgx_status_t enclave_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, sgx_enclave_id_t currentEid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payload, int output_length, int payload_size, sgx_enclave_id_t enclaveEid)
+sgx_status_t enclave_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, sgx_enclave_id_t currentEid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payload, int payload_length, int output_length, int payload_size, sgx_enclave_id_t enclaveEid)
 {
 	sgx_status_t status;
 	ms_UntrustedCreateMachineAPI_t ms;
@@ -485,6 +488,7 @@ sgx_status_t enclave_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, sgx_enclave
 	ms.ms_numArgs = numArgs;
 	ms.ms_payloadType = payloadType;
 	ms.ms_payload = payload;
+	ms.ms_payload_length = payload_length;
 	ms.ms_output_length = output_length;
 	ms.ms_payload_size = payload_size;
 	ms.ms_enclaveEid = enclaveEid;

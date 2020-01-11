@@ -34,7 +34,7 @@ extern uint8_t g_secret[SIZE_OF_MESSAGE];
 
 
 void startPrtProcessIfNotStarted();
-char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, bool isSecureCreate,sgx_enclave_id_t enclaveEid);
+char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, int payloadSize, bool isSecureCreate,sgx_enclave_id_t enclaveEid);
 int handle_incoming_events_pong_enclave(PRT_UINT32 eventIdentifier);
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize);
 void generateIdentityDebug(string& publicID, string& privateID, string prefix);
@@ -42,7 +42,7 @@ void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *p
 string createString(char* str);
 char* itoa(int num, char* str, int base);
 PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* createTypeCommand, bool isSecureCreate);
-int createMachine(char* machineType, int numArgs, int payloadType, char* payload);
+int createMachine(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize);
 char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey);
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey);
 void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend);

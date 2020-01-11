@@ -31,11 +31,11 @@ int getNextPID();
 
 string createString(char* str);
 
-int createMachine(char* machineType, int numArgs, int payloadType, char* payload);
+int createMachine(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize);
 
 int machineTypeIsSecure(char* machineType);
 
-char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload);
+char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize);
 
 char* registerMachineWithNetwork(char* newMachineID);
 
