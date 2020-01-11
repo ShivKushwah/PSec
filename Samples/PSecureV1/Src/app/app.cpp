@@ -315,7 +315,8 @@ char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs
         safe_free(temp);
         receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
     // }
-    
+    ocall_print("Inside USMsendMessageAPI");
+    // printRSAKey(payload);
     handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize); //TODO shividentity
     return createStringLiteralMalloced("Message successfully sent!/n");
 }

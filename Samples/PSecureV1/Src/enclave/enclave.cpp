@@ -1031,7 +1031,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     memcpy(eventMessagePayload, temp, eventMessagePayloadSize + 1);
     eventMessagePayload[eventMessagePayloadSize] = '\0';
     ocall_print("EVENT MESSAGE PAYLOAD IS");
-    ocall_print(eventMessagePayload);
+    printRSAKey(eventMessagePayload);
     ocall_print("Length is");
     ocall_print_int(eventMessagePayloadSize);
     // memcpy(eventMessagePayload, temp, strlen(temp) + 1); //TODO shividentity

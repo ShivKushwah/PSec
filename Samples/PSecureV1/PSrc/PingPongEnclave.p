@@ -116,7 +116,9 @@ secure_machine BankEnclave {
             // PrintString(clientSSM);
 
             secure_send clientSSM, MasterSecretEvent, result;
-            PrintString(clientSSM);
+            // PrintString(clientSSM);
+            print "Bank Enclave about to print clientSSM";
+            PrintKey(clientSSM);
             untrusted_send clientUSM, PublicIDEvent, clientSSM;
         } 
     }
@@ -176,6 +178,7 @@ machine ClientWebBrowser {
             usernamePassword = GetThis();
             // PrintString(clientSSM);
             print "YEE AUTHENTICATE\n";
+            PrintKey(clientSSM);
             untrusted_send clientSSM, GenerateOTPCodeEvent, usernamePassword;
             receive {
                 case OTPCodeEvent : (payload : StringType) {

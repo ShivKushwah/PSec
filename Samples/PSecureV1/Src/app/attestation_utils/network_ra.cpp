@@ -196,8 +196,10 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
             memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
             char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1;
 
-            char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
-            strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
+            // char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
+            // strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
+            char* newTokenizerString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
+            memcpy(newTokenizerString, nextIndex, SIZE_OF_MAX_EVENT_PAYLOAD);
 
             split = strtok(newTokenizerString, ":");
             machineType = split;

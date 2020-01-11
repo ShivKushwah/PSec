@@ -52,6 +52,25 @@ void safe_free(void* ptr) {
     }
 }
 
+void printRSAKey(char* key) {
+    //NOTE if modifying this method, modify it in kps.cpp also
+    char* keyCopy = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    memcpy(keyCopy, key, SGX_RSA3072_KEY_SIZE);
+    ocall_print("key:");
+    char* temp = keyCopy;
+    for (int i = 0; i < SGX_RSA3072_KEY_SIZE; i++) {
+        if (temp[i] == '\0') {
+            temp[i] = 'D';
+        }
+    }
+    keyCopy[SGX_RSA3072_KEY_SIZE - 1] = '\0';
+    
+    ocall_print(keyCopy);
+    safe_free(keyCopy);
+}
+
+
+
 //Responsiblity of caller to free return
 char* createStringLiteralMalloced(char* stringLiteral) {
     //TODO if modifying here, modify in network_ra.cpp
@@ -323,12 +342,14 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
         newPrtValue->valueUnion.nt = atoi(str);
     } else if (payloadType == PRT_VALUE_KIND_FOREIGN) {
         ocall_print("Make Prt String with Value:");
-        ocall_print(str);
+        // ocall_print(str);
+        
         newPrtValue->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
         newPrtValue->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
         PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
         // sprintf_s(prtStr, SIZE_OF_PRT_STRING_SERIALIZED, str);
-        str = payloadTypeString + strlen(payloadTypeString) + 1;
+        str = payloadOriginal + strlen(payloadTypeString) + 1;
+        printRSAKey(str);
         memcpy(prtStr, str, SIZE_OF_PRT_STRING_SERIALIZED);
         newPrtValue->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
         *numCharactersProcessed = strlen(payloadTypeString) + 1 + SIZE_OF_PRT_STRING_SERIALIZED;
@@ -346,9 +367,9 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
 
 PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payloadSize, int* numCharactersProcessed) { //TODO shiv add string size (payload size) here
     //TODO code the rest of the types (only int is coded for now)
-    // ocall_print("Deserialized called!");
-    // ocall_print(strOriginal);
-    // ocall_print_int(payloadSize + 2);
+    ocall_print("Deserialized called!");
+    ocall_print(strOriginal);
+    ocall_print_int(payloadSize + 2);
     *numCharactersProcessed = 0;
     char* str = (char*) malloc(payloadSize + 3);
     memcpy(str, strOriginal, payloadSize + 3);
@@ -370,7 +391,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
         
         if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_FOREIGN || payloadType == PRT_VALUE_KIND_BOOL) {
             ocall_print("Processing Native Type String:");
-            ocall_print(strOriginal);
+            printRSAKey(strOriginal);
             int numProcessedInHelper;
             values[i] = deserializeHelper(strOriginal, &numProcessedInHelper);
             *numCharactersProcessed = numProcessedInHelper;
@@ -525,23 +546,6 @@ int returnTotalSizeofLengthArray(int lengths[], int length){
     return total_size;
 }
 
-void printRSAKey(char* key) {
-    //NOTE if modifying this method, modify it in kps.cpp also
-    char* keyCopy = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-    memcpy(keyCopy, key, SGX_RSA3072_KEY_SIZE);
-    ocall_print("key:");
-    char* temp = keyCopy;
-    for (int i = 0; i < SGX_RSA3072_KEY_SIZE; i++) {
-        if (temp[i] == '\0') {
-            temp[i] = 'D';
-        }
-    }
-    keyCopy[SGX_RSA3072_KEY_SIZE - 1] = '\0';
-    
-    ocall_print(keyCopy);
-    safe_free(keyCopy);
-}
-
 //Responsbility of caller to free return
 char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], int size_array) {
         //NOTE make changes in app.cpp as well
@@ -619,8 +623,10 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
             char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1; //TODO using requestcopy here might be an issue
 
-            char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
-            strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
+            // char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
+            // strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
+            char* newTokenizerString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
+            memcpy(newTokenizerString, nextIndex, SIZE_OF_MAX_EVENT_PAYLOAD);
             ocall_print("New tokenizer is ");
             ocall_print(newTokenizerString);
 
@@ -865,8 +871,8 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
             char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1; //TODO using requestcopy here might be an issue
 
-            char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
-            strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
+            char* newTokenizerString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
+            memcpy(newTokenizerString, nextIndex, SIZE_OF_MAX_EVENT_PAYLOAD); // strncpy(newTokenizerString
             ocall_print("New tokenizer is ");
             ocall_print(newTokenizerString);
 
@@ -1282,6 +1288,8 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
         // strncat(payloadConcat, payload, SIZE_OF_MAX_MESSAGE + 1);
         int numCharactersProcessed;
         //print out what is being passed to the below method
+        // ocall_print("payload key is ");
+        // printRSAKey(payload);
         ocall_print("Passing In String To Deserialize:");
         ocall_print(payloadConcat);
         PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payloadConcat, payloadSize, &numCharactersProcessed);
