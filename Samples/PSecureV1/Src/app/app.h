@@ -45,7 +45,7 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
 
 void generateSessionKey(string& newSessionKey);
 
-char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload);
+char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, int payloadSize);
 
 PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* createTypeCommand, bool isSecureCreate);
 

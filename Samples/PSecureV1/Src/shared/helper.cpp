@@ -35,7 +35,7 @@ extern int CURRENT_ENCLAVE_EID_NUM;
 extern int initialize_enclave(sgx_enclave_id_t* eid, const std::string& launch_token_path, const std::string& enclave_name);
 
 extern char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload);
-extern char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload);
+extern char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, int payloadSize);
 extern char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey);
 
 
@@ -865,16 +865,19 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             payloadType = -1;
             payload = (char*) malloc(10);
             payload[0] = '\0';
+            int payloadSize;
             if (numArgs > 0) {
                 split = strtok(NULL, ":");
                 payloadType = atoi(split);
-                split = strtok(NULL, "\0");
+                split = strtok(NULL, ":");
+                payloadSize = atoi(split);
                 safe_free(payload);
-                payload = split;
+                payload = split + strlen(split) + 1;
 
             } else {
                 safe_free(payload);
             }
+
             
         // }
 
@@ -891,7 +894,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
                 sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)]; //TODO add check here in case its not in dictionary
                 int ptr;
                 //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-                sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
+                sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, payloadSize, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
             // }
 
             
@@ -912,7 +915,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             // printf("Untrusted Send -> machine checking in dictionary is %s\n", machineReceiveMsgString.c_str());
             if (count > 0) {
                 // printf("Sending Message to USM in app.cpp\n");
-                char* ret = USMsendMessageAPI(machineReceivingMessage, eventNum, numArgs, payloadType, payload);
+                char* ret = USMsendMessageAPI(machineReceivingMessage, eventNum, numArgs, payloadType, payload, payloadSize);
                 safe_free(requestCopy);
                 return ret;
                 

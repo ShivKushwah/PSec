@@ -198,6 +198,9 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
         ocall_print("Length is");
         ocall_print_int(eventMessagePayloadSize);
         safe_free(temp);
+
+        char* eventMessagePayloadSizeString = (char*) malloc(10);
+        itoa(eventMessagePayloadSize, eventMessagePayloadSizeString, 10);
     //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
     //     //TODO I assumed only 1 payload for the below
     //     // if (i == 0) {
@@ -222,10 +225,10 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     char* unsecureSendRequest = (char*) malloc(requestSize);
     if (numArgs > 0) {
         char* colon = ":";
-        char* concatStrings[] = {"UntrustedSend", colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayload};
-        int concatLenghts[] = {strlen("UntrustedSend"), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), eventMessagePayloadSize};
-        unsecureSendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 11);
-        requestSize = returnTotalSizeofLengthArray(concatLenghts, 11) + 1;
+        char* concatStrings[] = {"UntrustedSend", colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
+        int concatLenghts[] = {strlen("UntrustedSend"), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayloadSizeString), strlen(colon), eventMessagePayloadSize};
+        unsecureSendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
+        requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
         // snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:%s", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
     } else {
         char* colon = ":";
@@ -246,7 +249,7 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     safe_free(eventMessagePayload);
     printf("Untrusted machine is sending out following network request: %s\n", unsecureSendRequest);   
     char* newMachinePublicIDKey = NULL;
-    size_t requestSz = strlen(unsecureSendRequest) + 1; //TODO shividentity
+    size_t requestSz = requestSize;
     newMachinePublicIDKey = send_network_request_API(unsecureSendRequest, requestSz);
     safe_free(unsecureSendRequest);
     ocall_print("printing pidk");
@@ -296,7 +299,7 @@ void generateSessionKey(string& newSessionKey) {
     newSessionKey = "GenSessionKe" + to_string(randNum);
 } 
 
-char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload) {
+char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, int payloadSize) {
     //TODO if modifying this, modify sendUntrustedMessageAPI in enclave.cpp
    PRT_MACHINEID receivingMachinePID;
     printf("Machine receiving message has a PID of:");
@@ -313,7 +316,7 @@ char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs
         receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
     // }
     
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, strlen(payload)); //TODO shividentity
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize); //TODO shividentity
     return createStringLiteralMalloced("Message successfully sent!/n");
 }
 

@@ -895,8 +895,8 @@ int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, ch
     sendMessageHelper(requestingMachineIDKey, receivingMachineIDKey, event, numArgs, payloadType, payload, payloadSize);
 }
 
-int sendUntrustedMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
-    sendMessageHelper("", receivingMachineIDKey, eventNum, numArgs, payloadType, payload, strlen(payload)); //TODO shiv identity
+int sendUntrustedMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, int payloadSize, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
+    sendMessageHelper("", receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
 }
 
 extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -1100,10 +1100,10 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         } else {
             if (numArgs > 0) {
                 char* colon = ":";
-                char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayload};
-                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), eventMessagePayloadSize};
-                sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 11);
-                requestSize = returnTotalSizeofLengthArray(concatLenghts, 11) + 1;
+                char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
+                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayloadSizeString), strlen(colon), eventMessagePayloadSize};
+                sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
+                requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
                 // snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:%s", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
             } else {
                 char* colon = ":";

@@ -50,7 +50,7 @@ enclave {
                                                 [out, size=output_length] char* returnNewMachinePublicID,
                                                 int numArgs, 
                                                 int payloadType,
-                                                [in, size=payload_size] char* payload, 
+                                                [in, size=payload_size] char* payload,
                                                 int output_length, 
                                                 int payload_size,
                                                 sgx_enclave_id_t enclaveEid);
@@ -60,6 +60,7 @@ enclave {
                                 int numArgs,
                                 int payloadType,
                                 [in, size=MAX_PAYLOAD_SIZE]char* payload,
+                                 int payloadSize,
                                  uint32_t ID_SIZE,
                                 uint32_t MESSAGE_SIZE,
                                 uint32_t MAX_PAYLOAD_SIZE);
