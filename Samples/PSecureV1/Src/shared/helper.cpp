@@ -328,8 +328,10 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
         newPrtValue->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
         PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
         // sprintf_s(prtStr, SIZE_OF_PRT_STRING_SERIALIZED, str);
+        str = payloadTypeString + strlen(payloadTypeString) + 1;
         memcpy(prtStr, str, SIZE_OF_PRT_STRING_SERIALIZED);
         newPrtValue->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
+        *numCharactersProcessed = strlen(payloadTypeString) + 1 + SIZE_OF_PRT_STRING_SERIALIZED;
     } else if (payloadType == PRT_VALUE_KIND_BOOL) {
         if (strcmp(str, "true") == 0) {
             newPrtValue->valueUnion.bl = PRT_TRUE;
@@ -342,15 +344,21 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
 
 }
 
-PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* numCharactersProcessed) {
+PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payloadSize, int* numCharactersProcessed) { //TODO shiv add string size (payload size) here
     //TODO code the rest of the types (only int is coded for now)
     // ocall_print("Deserialized called!");
     // ocall_print(strOriginal);
+    // ocall_print_int(payloadSize + 2);
     *numCharactersProcessed = 0;
-    char* str = (char*) malloc(strlen(strOriginal) + 1);
-    strncpy(str, strOriginal, strlen(strOriginal) + 1);
-    char* strCopy = (char*) malloc(strlen(strOriginal) + 1);
-    strncpy(strCopy, strOriginal, strlen(strOriginal) + 1);
+    char* str = (char*) malloc(payloadSize + 3);
+    memcpy(str, strOriginal, payloadSize + 3);
+    char* strCopy = (char*) malloc(payloadSize + 3);
+    memcpy(strCopy, strOriginal, payloadSize + 3);
+
+    // char* str = (char*) malloc(strlen(strOriginal) + 1);
+    // strncpy(str, strOriginal, strlen(strOriginal) + 1);
+    // char* strCopy = (char*) malloc(strlen(strOriginal) + 1);
+    // strncpy(strCopy, strOriginal, strlen(strOriginal) + 1);
 
     PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
     char* reentrant = NULL;
@@ -384,7 +392,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
                 int i = tupPtr->size;
                 tupPtr->size++;
                 int numProcessedInHelper;
-                tupPtr->values[i] = *deserializeStringToPrtValue(1, nextTupleElementToProcess, &numProcessedInHelper);// deserializeStringToPrtValue(1, );
+                tupPtr->values[i] = *deserializeStringToPrtValue(1, nextTupleElementToProcess, payloadSize - (nextTupleElementToProcess - strCopy), &numProcessedInHelper);// deserializeStringToPrtValue(1, );
                 ocall_print("Element Processed.");
                 ocall_print("Number of characters in helper is ");
                 ocall_print_int(numProcessedInHelper);
@@ -411,7 +419,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
 
             while (strncmp(nextMapKeyValuePairToProcess, "END_MAP", 7) != 0) {
                 int numProcessedInHelper;
-                PRT_VALUE* key = *deserializeStringToPrtValue(1, nextMapKeyValuePairToProcess, &numProcessedInHelper);
+                PRT_VALUE* key = *deserializeStringToPrtValue(1, nextMapKeyValuePairToProcess, payloadSize - (nextMapKeyValuePairToProcess - strCopy), &numProcessedInHelper);
                 char* dataType = (char*) malloc(strlen(nextMapKeyValuePairToProcess) + 1);
                 strncpy(dataType, nextMapKeyValuePairToProcess, strlen(nextMapKeyValuePairToProcess) + 1);
                 char* reentrant = NULL;
@@ -420,7 +428,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
                 safe_free(dataType);
                 nextMapKeyValuePairToProcess = nextMapKeyValuePairToProcess + numProcessedInHelper + 1;
 
-                PRT_VALUE* value = *deserializeStringToPrtValue(1, nextMapKeyValuePairToProcess, &numProcessedInHelper);
+                PRT_VALUE* value = *deserializeStringToPrtValue(1, nextMapKeyValuePairToProcess, payloadSize - (nextMapKeyValuePairToProcess - strCopy), &numProcessedInHelper);
                 char* dataType2 = (char*) malloc(strlen(nextMapKeyValuePairToProcess) + 1);
                 strncpy(dataType2, nextMapKeyValuePairToProcess, strlen(nextMapKeyValuePairToProcess) + 1);
                 char* reentrant2 = NULL;
@@ -456,7 +464,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int* num
                 // char* payload = strtok_r(NULL, ":", &reentrant); //TODO make this safe?
                 // int dType = atoi(dataType);
                 int numProcessedInHelper;
-                PRT_VALUE* value = *deserializeStringToPrtValue(1, nextSeqElementToProcess, &numProcessedInHelper);
+                PRT_VALUE* value = *deserializeStringToPrtValue(1, nextSeqElementToProcess, payloadSize - (nextSeqElementToProcess - strCopy), &numProcessedInHelper);
                 //*numCharactersProcessed =  *numCharactersProcessed + numProcessedInHelper + 1; //+1 for ":"
 
                 char* dataType = (char*) malloc(strlen(nextSeqElementToProcess) + 1);
@@ -1276,7 +1284,7 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
         //print out what is being passed to the below method
         ocall_print("Passing In String To Deserialize:");
         ocall_print(payloadConcat);
-        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payloadConcat, &numCharactersProcessed);
+        PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payloadConcat, payloadSize, &numCharactersProcessed);
         safe_free(payloadConcat);
         if (payloadType == PRT_VALUE_KIND_TUPLE) {
             PrintTuple(*prtPayload);
@@ -1301,7 +1309,7 @@ int createMachine(char* machineType, int numArgs, int payloadType, char* payload
         payloadConcat[sizeSoFar + payloadSize] = '\0';
         ocall_print(payloadConcat);
         int numCharactersProcessed;
-        prtPayload = *(deserializeStringToPrtValue(numArgs, payloadConcat, &numCharactersProcessed));
+        prtPayload = *(deserializeStringToPrtValue(numArgs, payloadConcat, payloadSize, &numCharactersProcessed));
         safe_free(payloadConcat);
     } else {
         prtPayload = PrtMkNullValue();
