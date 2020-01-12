@@ -6,6 +6,10 @@ const int SIZE_OF_SESSION_KEY = 70;
 const int SIZE_OF_MAX_MESSAGE = 3200;
 const int MAX_NETWORK_MESSAGE = 6400;
 
+const int SIZE_OF_REAL_SESSION_KEY = 16;
+const int SIZE_OF_IV = 12;
+
+
 
 const int SIZE_OF_MAX_SERIALIZED_TUPLE = 2000;
 const int MAX_TUPLE_ELEMENT_LENGTH = 2000;
@@ -31,5 +35,5 @@ const int ENABLE_ENCLAVE_ATTESTATION_PRINT = 0;
 
 const int PROGRAM_DEBUG = 1;
 
-const int NETWORK_DEBUG = 0;
+const int NETWORK_DEBUG = 1;
 

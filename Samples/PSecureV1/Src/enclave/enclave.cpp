@@ -512,7 +512,7 @@ char* decryptMessageInteralPrivateKey(char* encryptedData, size_t encryptedDataS
     }
     // ocall_print_int(strlen(message) + 1);
     // ocall_print_int(encrypted_data_length);
-    decrypted_data[decrypted_data_length] = '\0';
+    //decrypted_data[decrypted_data_length] = '\0';
     // ocall_print("Decrypted data is");
     // ocall_print(decrypted_data);
     return decrypted_data;
@@ -524,7 +524,7 @@ char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_
     // ocall_print((char*) other_party_public_key_raw);
 
     size_t encrypted_data_length;
-    char* encrypted_data = (char*) malloc(MAX_NETWORK_MESSAGE); //TODO note if message is bigger than this size, then we can run into issues
+    char* encrypted_data = (char*) malloc(SGX_RSA3072_KEY_SIZE); //TODO note if message is bigger than this size, then we can run into issues
     
     sgx_status_t status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, NULL, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
 
@@ -558,7 +558,7 @@ char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_
     }
     // ocall_print_int(strlen(message) + 1);
     // ocall_print_int(encrypted_data_length);
-    encrypted_data[encrypted_data_length] = '\0';
+    // encrypted_data[encrypted_data_length] = '\0';
     output_encrypted_message_length = encrypted_data_length;
     return encrypted_data;
 }
@@ -615,16 +615,30 @@ sgx_rsa3072_signature_t* signStringMessage(char* message, sgx_rsa3072_key_t *pri
 
 //Responsibilty of caller to free return
 char* generateSessionKeyTest() {
-    char* sessionKey = (char*) malloc(100);
-    sgx_read_rand((unsigned char*)sessionKey, 98);
-    sessionKey[98] = '!';
-    sessionKey[99] = '\0';
-    for (int i = 0; i < 99; i ++) {
-        if (sessionKey[i] == '\0') {
-            sessionKey[i] ='0';
-        }
-    }
+    char* sessionKey = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
+    sgx_read_rand((unsigned char*)sessionKey, SIZE_OF_REAL_SESSION_KEY);
+    // sessionKey[98] = '!';
+    // sessionKey[99] = '\0';
+    // for (int i = 0; i < 99; i ++) {
+    //     if (sessionKey[i] == '\0') {
+    //         sessionKey[i] ='0';
+    //     }
+    // }
     return sessionKey;
+}
+
+//Responsibilty of caller to free return
+char* generateIV() {
+    char* ivKey = (char*) malloc(SIZE_OF_IV);
+    sgx_read_rand((unsigned char*)ivKey, SIZE_OF_IV);
+    // sessionKey[98] = '!';
+    // sessionKey[99] = '\0';
+    // for (int i = 0; i < 99; i ++) {
+    //     if (sessionKey[i] == '\0') {
+    //         sessionKey[i] ='0';
+    //     }
+    // }
+    return ivKey;
 }
 
 //Responsibilty of caller to free return
@@ -661,6 +675,23 @@ char* checkRawRSAKeySize(char* key) {
     // return key;
 }
 
+void printSessionKey(char* key) {
+    //NOTE if modifying this method, modify it in kps.cpp also
+    char* keyCopy = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
+    memcpy(keyCopy, key, SIZE_OF_REAL_SESSION_KEY);
+    ocall_print("session key:");
+    char* temp = keyCopy;
+    for (int i = 0; i < SIZE_OF_REAL_SESSION_KEY; i++) {
+        if (temp[i] == '\0') {
+            temp[i] = 'D';
+        }
+    }
+    keyCopy[SIZE_OF_REAL_SESSION_KEY - 1] = '\0';
+    
+    ocall_print(keyCopy);
+    safe_free(keyCopy);
+}
+
 //publicID and privateID must be allocated by the caller
 void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
     uint32_t val; 
@@ -677,62 +708,62 @@ void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
         privateID = prefix.substr(0, 1) + "SPri" + to_string(val % 100) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
 
 
-    // sgx_rsa3072_key_t *private_capabilityB_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
-    // sgx_rsa3072_public_key_t *public_capabilityB_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
-    // void* private_capabilityB_key_raw = NULL;
-    // void* public_capabilityB_key_raw = NULL;
-    // createRsaKeyPair(public_capabilityB_key, private_capabilityB_key, &public_capabilityB_key_raw, &private_capabilityB_key_raw);
-    // ocall_print("capability key is");
-    // ocall_print((char*)public_capabilityB_key_raw);
+    sgx_rsa3072_key_t *private_capabilityB_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
+    sgx_rsa3072_public_key_t *public_capabilityB_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
+    void* private_capabilityB_key_raw = NULL;
+    void* public_capabilityB_key_raw = NULL;
+    createRsaKeyPair(public_capabilityB_key, private_capabilityB_key, &public_capabilityB_key_raw, &private_capabilityB_key_raw);
+    ocall_print("capability key is");
+    ocall_print((char*)public_capabilityB_key_raw);
 
-    // sgx_rsa3072_key_t *private_B_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
-    // sgx_rsa3072_public_key_t *public_B_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
-    // void* private_B_key_raw = NULL;
-    // void* public_B_key_raw = NULL;
-    // createRsaKeyPair(public_B_key, private_B_key, &public_B_key_raw, &private_B_key_raw);
+    sgx_rsa3072_key_t *private_B_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
+    sgx_rsa3072_public_key_t *public_B_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
+    void* private_B_key_raw = NULL;
+    void* public_B_key_raw = NULL;
+    createRsaKeyPair(public_B_key, private_B_key, &public_B_key_raw, &private_B_key_raw);
 
-    // sgx_rsa3072_key_t *private_A_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
-    // sgx_rsa3072_public_key_t *public_A_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
-    // void* private_A_key_raw = NULL;
-    // void* public_A_key_raw = NULL;
-    // createRsaKeyPair(public_A_key, private_A_key, &public_A_key_raw, &private_A_key_raw);
+    sgx_rsa3072_key_t *private_A_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
+    sgx_rsa3072_public_key_t *public_A_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
+    void* private_A_key_raw = NULL;
+    void* public_A_key_raw = NULL;
+    createRsaKeyPair(public_A_key, private_A_key, &public_A_key_raw, &private_A_key_raw);
 
 
-    // char* secureMessage = "Encrypted Hello!";
+    char* secureMessage = "Encrypted Hello!";
 
-    // sgx_rsa3072_signature_t* signatureSecureMessage = signStringMessage(secureMessage, private_capabilityB_key);
+    sgx_rsa3072_signature_t* signatureSecureMessage = signStringMessage(secureMessage, private_capabilityB_key);
 
-    // char* sigPrefix = "SIG:";
+    char* sigPrefix = "SIG:";
 
-    // char* temp = concatVoid(secureMessage, strlen(secureMessage), sigPrefix, strlen(sigPrefix));
+    char* temp = concatVoid(secureMessage, strlen(secureMessage), sigPrefix, strlen(sigPrefix));
 
-    // // ocall_print("temp is");
-    // // ocall_print(temp);
+    // ocall_print("temp is");
+    // ocall_print(temp);
 
-    // // char* concatMessageWithSig = concatVoid(temp, strlen(temp), signatureSecureMessage, SGX_RSA3072_KEY_SIZE);
-    // // ocall_print("Concated message is");
-    // // ocall_print(concatMessageWithSig);
+    // char* concatMessageWithSig = concatVoid(temp, strlen(temp), signatureSecureMessage, SGX_RSA3072_KEY_SIZE);
+    // ocall_print("Concated message is");
+    // ocall_print(concatMessageWithSig);
 
-    // free(temp);
+    free(temp);
 
-    // if (verifySignature(secureMessage, signatureSecureMessage, public_capabilityB_key)) {
-    //     ocall_print("Verifying Signature works!!!!");
-    // } else {
-    //     ocall_print("Verification Failed!");
-    // }
+    if (verifySignature(secureMessage, signatureSecureMessage, public_capabilityB_key)) {
+        ocall_print("Verifying Signature works!!!!");
+    } else {
+        ocall_print("Verification Failed!");
+    }
     
-    // int encryptedMessageSize;
-    // char* encryptedMessage = encryptMessageExternalPublicKey(secureMessage, strlen(secureMessage) + 1, public_B_key_raw, encryptedMessageSize);
-    // ocall_print("Encrypted Message is");
-    // ocall_print(encryptedMessage);
+    int encryptedMessageSize;
+    char* encryptedMessage = encryptMessageExternalPublicKey(secureMessage, strlen(secureMessage) + 1, public_B_key_raw, encryptedMessageSize);
+    ocall_print("Encrypted Message is");
+    ocall_print(encryptedMessage);
 
-    // char* decryptedMessage = decryptMessageInteralPrivateKey(encryptedMessage, encryptedMessageSize, private_B_key_raw);
-    // ocall_print("Decrypted Message is");
-    // ocall_print(decryptedMessage);
+    char* decryptedMessage = decryptMessageInteralPrivateKey(encryptedMessage, SGX_RSA3072_KEY_SIZE, private_B_key_raw);
+    ocall_print("Decrypted Message is");
+    ocall_print(decryptedMessage);
 
 
 
-    // /////
+    /////
 
     // char* sessionKey = generateSessionKeyTest();
     // ocall_print("Session Key is");
@@ -779,6 +810,72 @@ void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
     // } else {
     //     ocall_print("generate identity works!");
     // }
+
+
+    //Init Comm Protocol Test
+    char* sessionKey = generateSessionKeyTest();
+    ocall_print("Initial Session Key is");
+    printSessionKey(sessionKey);
+
+    int encryptedSessionKeyLength;
+    char* encryptedSessionKey = encryptMessageExternalPublicKey(sessionKey, SIZE_OF_REAL_SESSION_KEY, public_A_key_raw, encryptedSessionKeyLength);
+    ocall_print("Encrypted Session key is");
+    printSessionKey(encryptedSessionKey);
+
+    char* decryptedSessionKey = decryptMessageInteralPrivateKey(encryptedSessionKey, SGX_RSA3072_KEY_SIZE, private_A_key_raw);
+    ocall_print("Decrypted Session key is");
+    printSessionKey(decryptedSessionKey);
+
+    char* key = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
+    memcpy(key, sessionKey, SIZE_OF_REAL_SESSION_KEY);
+
+    //Secure Send Protocol Test
+
+    //Machine A
+    char* iv = generateIV();
+    secureMessage = "TrustedEventPayload!";
+    int secureMessageSize = strlen(secureMessage);
+
+    /*sgx_rsa3072_signature_t* */ signatureSecureMessage = signStringMessage(secureMessage, private_capabilityB_key);
+    int sizeOfSignature = SGX_RSA3072_KEY_SIZE;
+    char* concatString[] = {secureMessage, (char*)signatureSecureMessage};
+    int concatLengths[] = {secureMessageSize, sizeOfSignature};
+    char* trustedPayload = concatMutipleStringsWithLength(concatString, concatLengths, 2);
+    int trustedPayloadLength = returnTotalSizeofLengthArray(concatLengths, 2) + 1;
+
+    sgx_aes_ctr_128bit_key_t g_region_key;
+    sgx_aes_gcm_128bit_tag_t g_mac;
+    memcpy(g_region_key, key, 16);
+
+    encryptedMessage = (char*) malloc(trustedPayloadLength);
+
+    sgx_status_t status = sgx_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) trustedPayload, trustedPayloadLength, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    ocall_print("Encrypted Message is");
+    ocall_print(encryptedMessage);
+
+    //Machine B
+    decryptedMessage = (char*) malloc(trustedPayloadLength);
+    status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) encryptedMessage, trustedPayloadLength, (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    
+    sgx_rsa3072_signature_t* decryptedSignature = (sgx_rsa3072_signature_t*) malloc(SGX_RSA3072_KEY_SIZE);
+    char* decryptedTrustedEvent = (char*) malloc(secureMessageSize); //extract size of decrypted message by string parsing into decyrpted message for the size
+    memcpy(decryptedTrustedEvent, decryptedMessage, secureMessageSize);
+    memcpy(decryptedSignature, decryptedMessage + secureMessageSize, SGX_RSA3072_KEY_SIZE);
+    if (verifySignature(decryptedTrustedEvent, decryptedSignature, public_capabilityB_key)) {
+        ocall_print("Verifying Signature works!!!!");
+    } else {
+        ocall_print("Verification Failed!");
+    }
+
+    ocall_print("Decrypted Message is");
+    ocall_print(decryptedTrustedEvent);
+
+
+
+
+
+
+
 
 
 } 
