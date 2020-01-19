@@ -858,7 +858,8 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
                 safe_free(childID);
                 safe_free(parentID);
 
-                strcpy((char*)g_secret, secure_message); //TODO shividentity
+                // strcpy((char*)g_secret, secure_message); //TODO shividentity
+                memcpy(g_secret, secure_message, SIZE_OF_MESSAGE);
                 p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE;
 
             // }
@@ -918,7 +919,8 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
                 safe_free(childID);
                 safe_free(currentMachineID);
 
-                strcpy((char*)g_secret, secure_message);
+                // strcpy((char*)g_secret, secure_message);
+                memcpy(g_secret, secure_message, SIZE_OF_MESSAGE);
                 p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE;
             // }
 
@@ -1042,68 +1044,51 @@ void initKPS() {
 
 
 int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachinePublicIDKey) {
-    // if (NETWORK_DEBUG) {
-    //     //TODO Make this generate a random key
-    //     sprintf(secure_message, "%s", "CAPTAINKEY");
-    //     capabilityKeyDictionary[string(newMachinePublicIDKey)] = string(secure_message);
-    //     //printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
-
-    //     capabilityKeyAccessDictionary[string(newMachinePublicIDKey)] = string(parentTrustedMachinePublicIDKey);
-    //     //printf("New machine ID: %s\n", newMachineID);
-    // } else {
-        sprintf(secure_message, "%s", "CAPTAINKEY");
-        capabilityKeyDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(secure_message);
-        //printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
-
-
-        capabilityKeyAccessDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(parentTrustedMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
-        //printf("New machine ID: %s\n", newMachineID);
-        // ocall_print("CREATING CAPABILITY USING");
-        // printRSAKey(newMachinePublicIDKey);
-        // printRSAKey(parentTrustedMachinePublicIDKey);
-    // }
+    // sprintf(secure_message, "%s", "mvj7D5pI5rxraubh69FGG6Qkf0Wk53I8MRMUApXsJGLltzIWXjDlj470fLHGp61nYZLQHzqloS0ZXiWzKSirLdgREew8lWKDBd03hlvcxkHzA71IaOpm26JM1RF81ksceOjLMOF8pDhggxIWzilIhIdkPCIh4NPEzbXqwdbb8LFDUeYQSGaKeA3qJYKkF84pKaqnr3goz21lJkHjVyaDxRXwf8FATXcWLQI731FKYgLeAiCm0wEYq8GBP0O2inKK3A6GX1rJa88xfHYq1jcFNPlWTzTlkHSYwhKB4D15jEJm9GELAmS67A9ThTJ1J9dNyGoS3BWP1U6MimEM7QofMPNMCY4uq0UoWtWrmi6B5zKEccU09B0bedOdwyOUeZ8F2cVZcHNBWXBCGidJfbx28RygugN6qJn2YPzgC0G1ZA1TyKr4uCs38RaSvg5WSYo9MpwMMWk7GVruwazqRdz1xlCdoP115Nar8ac9Oz2f386jZBEnaPJQQen3OdMDqSrkN0ApCzrOGLVebGK8RKns5w7PKQ6ckXf5tuqdP3eAivfv6ZsWA6gqkMOTPlzOrjWqAhRaIFrPmVJEtxynAzfpkWTwliyZru0n3CBJxewP0XEt7kDHlxXnGkTJ7fDP7rh2sKqy86xj5PHn7MZSYE95B0tGBM86LEDa1LsTZE0XNTy0k4euL3J65HCQ1qk1ICoYjKsBbMWC5yLZhdnlg7hhVrtZFZIB9Qc8pcAvWwSs4z55BZvfiAlAEd1ByxUjivPc");
+    // capabilityKeyDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(secure_message);
+    // //printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
+    // capabilityKeyAccessDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(parentTrustedMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+    // //printf("New machine ID: %s\n", newMachineID);
+    // // ocall_print("CREATING CAPABILITY USING");
+    // // printRSAKey(newMachinePublicIDKey);
+    // // printRSAKey(parentTrustedMachinePublicIDKey);
     char* private_capability_key = (char*) malloc(SGX_RSA3072_KEY_SIZE);
     char* public_capability_key = (char*) malloc(SGX_RSA3072_KEY_SIZE);
     sgx_status_t status = enclave_createRsaKeyPairEcall(kps_enclave_eid, public_capability_key, private_capability_key, SGX_RSA3072_KEY_SIZE); 
     if (status != SGX_SUCCESS) {
         ocall_print("KPS Error in generating capability keys!");
-    } else  {
-        ocall_print("KPS able to generate capability keys!");
+    // } else  {
+    //     ocall_print("KPS able to generate capability keys!");
     }
+    // printRSAKey(private_capability_key);
+
+    char* concatStrings[] = {public_capability_key, ":", private_capability_key};
+    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
+    char* capabilityKey = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+    int capabilityKeyLen = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+
+    memcpy(secure_message, capabilityKey, SIZE_OF_CAPABILITYKEY);
+    capabilityKeyAccessDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(parentTrustedMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+    capabilityKeyDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(capabilityKey, SIZE_OF_CAPABILITYKEY);
+
+    
 
 }
 //Responsibility of caller to free return
 char* retrieveCapabilityKey(char* currentMachinePublicIDKey, char* childMachinePublicIDKey) {
     //printf("Current machine ID: %s\n", currentMachineID);
     //printf("Child machine ID: %s\n", childMachinePublicIDKey);
-
-    // if (NETWORK_DEBUG) {
-    //     if (capabilityKeyAccessDictionary[string(childMachinePublicIDKey)].compare(string(currentMachinePublicIDKey)) == 0) {
-    //         //printf("The capability key is : %s", capabilityKeyDictionary[string(childMachinePublicIDKey)].c_str());
-    //         char* returnCapabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
-    //         memcpy(returnCapabilityKey, capabilityKeyDictionary[string(childMachinePublicIDKey)].c_str(), SIZE_OF_CAPABILITYKEY);
-    //         return (char*) returnCapabilityKey;
-    //     } else {
-    //         return createStringLiteralMalloced("Access Prohibited!");
-    //     }
-
-    // } else {
-        // ocall_print("Yeet?");
-        // ocall_print("RETRIEVING CAPABILITY USING");
-        // printRSAKey(currentMachinePublicIDKey);
-        // printRSAKey(childMachinePublicIDKey);
-        if (capabilityKeyAccessDictionary[string(childMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)].compare(string(currentMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
-            //printf("The capability key is : %s", capabilityKeyDictionary[string(childMachinePublicIDKey)].c_str());
-            char* returnCapabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
-            memcpy(returnCapabilityKey, capabilityKeyDictionary[string(childMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)].c_str(), SIZE_OF_CAPABILITYKEY);
-        
-            return (char*) returnCapabilityKey;
-        } else {
-            return createStringLiteralMalloced("Access Prohibited!");
-        }
-    // }
-
+    // ocall_print("RETRIEVING CAPABILITY USING");
+    // printRSAKey(currentMachinePublicIDKey);
+    // printRSAKey(childMachinePublicIDKey);
+    if (capabilityKeyAccessDictionary[string(childMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)].compare(string(currentMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
+        //printf("The capability key is : %s", capabilityKeyDictionary[string(childMachinePublicIDKey)].c_str());
+        char* returnCapabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
+        memcpy(returnCapabilityKey, capabilityKeyDictionary[string(childMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)].c_str(), SIZE_OF_CAPABILITYKEY);
     
-    
+        return (char*) returnCapabilityKey;
+    } else {
+        return createStringLiteralMalloced("Access Prohibited!");
+    }    
 
 }

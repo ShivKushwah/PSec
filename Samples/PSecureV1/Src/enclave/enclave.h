@@ -70,3 +70,5 @@ char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], i
 int returnTotalSizeofLengthArray(int lengths[], int size);
 void printRSAKey(char* key);
 void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *private_key, void** public_key_raw, void** private_key_raw);
+char* retrievePublicCapabilityKey(char* capabilityPayload);
+char* retrievePrivateCapabilityKey(char* capabilityPayload);

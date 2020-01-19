@@ -1,6 +1,6 @@
 const int SIZE_OF_IDENTITY_STRING = 385; //TODO figure out why i cant make this 384
-const int SIZE_OF_MESSAGE = 1600;
-const int SIZE_OF_CAPABILITYKEY = 70;
+const int SIZE_OF_CAPABILITYKEY = 384 + 1 + 384;
+const int SIZE_OF_MESSAGE = SIZE_OF_CAPABILITYKEY;
 const int SIZE_OF_NEWMACHINETYPE = 20;
 const int SIZE_OF_SESSION_KEY = 70;
 const int SIZE_OF_MAX_MESSAGE = 3200;

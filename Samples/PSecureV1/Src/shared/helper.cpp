@@ -69,6 +69,20 @@ void printRSAKey(char* key) {
     safe_free(keyCopy);
 }
 
+//Responsiblity of caller to free
+char* retrievePublicCapabilityKey(char* capabilityPayload) {
+    char* publicKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    memcpy(publicKey, capabilityPayload, SGX_RSA3072_KEY_SIZE);
+    return publicKey;
+}
+
+//Responsiblity of caller to free
+char* retrievePrivateCapabilityKey(char* capabilityPayload) {
+    char* privateKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    memcpy(privateKey, capabilityPayload + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+    return privateKey;
+}
+
 
 
 //Responsiblity of caller to free return
@@ -1220,22 +1234,24 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         // }
         //TODO replace above line with snprintf as did with createMachineRequest, and do this everywhere in code
         char* getChildMachineIDRequest = (char*) request.c_str(); 
-        char* capabilityKey = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey);//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
-        //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKey, SIZE_OF_CAPABILITYKEY);
+        char* capabilityKeyPayload = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey);//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
+        //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKeyPayload, SIZE_OF_CAPABILITYKEY);        
         
+
         char* machineNameWrapper3[] = {currentMachineIDPublicKey};
         printStr = generateCStringFromFormat("%s machine has received capability key for secure child:", machineNameWrapper3, 1);
-        ocall_print(printStr); //TODO use this method for all future ocall_prints
+        ocall_print(printStr);
         safe_free(printStr);
-        ocall_print(capabilityKey);
+        char* publicCapabilityKey = retrievePublicCapabilityKey(capabilityKeyPayload);
+        char* privateCapabilityKey = retrievePrivateCapabilityKey(capabilityKeyPayload);
+        printRSAKey(publicCapabilityKey);
+        printRSAKey(privateCapabilityKey);
 
-        // if (NETWORK_DEBUG) {
-        //     PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey))] = string(capabilityKey); //TODO shiv identity
-        // } else {
-            PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))] = string(capabilityKey); //TODO shiv identity
-        // }
+        PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))] = string(capabilityKeyPayload, SIZE_OF_CAPABILITYKEY); //TODO shiv identity
 
-        safe_free(capabilityKey);
+        safe_free(publicCapabilityKey);
+        safe_free(privateCapabilityKey);
+        safe_free(capabilityKeyPayload);
     }
 
     #endif
