@@ -894,31 +894,23 @@ void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *p
 }
 
 
-int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t ID_SIZE, uint32_t SESSION_KEY_SIZE) {
+int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey, char* returnMessage, uint32_t ID_SIZE, uint32_t SESSION_KEY_SIZE) {
     ocall_print("Initialize Communication API Called!");
 
     int count;
-    // if (NETWORK_DEBUG) {
-    //     count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey)));
-    // } else {
-        count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)));
-    // }
-    //TODO need to verify signature over requestingMachineIDKey
+    count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)));
+    
     if (count == 0) {
-        //TODO this logic needs to be diffie hellman authenticated encryption
-        string newSessionKey;
-        generateSessionKey(newSessionKey);
-        // if (NETWORK_DEBUG) {
-        //     PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))] = newSessionKey;
-        // } else {
-            PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
-        // }
-        memcpy(returnSessionKey, (char*)newSessionKey.c_str(), SIZE_OF_SESSION_KEY);
+        PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = string(newSessionKey, SIZE_OF_REAL_SESSION_KEY);
+        char* successMessage = "Success: Session Key Received!";
+        ocall_print(successMessage);
+        printSessionKey(newSessionKey);
+        memcpy(returnMessage, successMessage, strlen(successMessage) + 1);
         ocall_print("Returning correct session key!");
         return 0;
     } else {
-        char* errorMsg = "Already created!";
-        memcpy(returnSessionKey, errorMsg, strlen(errorMsg) + 1); 
+        char* errorMsg = "Error: Already created session!";
+        memcpy(returnMessage, errorMsg, strlen(errorMsg) + 1); 
         ocall_print("ERROR:Session has already been initalized in the past!");
         return 1;
     }
@@ -927,9 +919,16 @@ int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMach
 
 void generateSessionKey(string& newSessionKey) {
     //TODO Make this generate a random key
-    uint32_t val; 
-    sgx_read_rand((unsigned char *) &val, 4);
-    newSessionKey = "GenSessionKe" + to_string(val % 100);
+    if (NETWORK_DEBUG) {
+        uint32_t val; 
+        sgx_read_rand((unsigned char *) &val, 4);
+        newSessionKey = string("GenSessionKeyREA", SIZE_OF_REAL_SESSION_KEY);
+    } else {
+        char* sessionKey = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
+        sgx_read_rand((unsigned char*)sessionKey, SIZE_OF_REAL_SESSION_KEY);
+        newSessionKey = string(sessionKey, SIZE_OF_REAL_SESSION_KEY);
+    }
+    
 } 
 
 int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize) {
@@ -1079,27 +1078,30 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         //     }
         // } else {
             if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
-                char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", sendingToMachinePublicID};
-                int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
-                char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
-                int requestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1;
+                string newSessionKey;
+                generateSessionKey(newSessionKey);
+                char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", sendingToMachinePublicID, ":", (char*)newSessionKey.c_str()};
+                int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_REAL_SESSION_KEY};
+                char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 6);
+                int requestSize = returnTotalSizeofLengthArray(concatLenghts, 6) + 1;
                 
                 char* machineNameWrapper[] = {currentMachineIDPublicKey};
                 char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
                 ocall_print(printStr);
                 safe_free(printStr);
                 ocall_print(initComRequest);
-                char* newSessionKey = (char*) malloc(SIZE_OF_SESSION_KEY);
+                char* returnMessage = (char*) malloc(100);
                 int ret_value;
-                ocall_network_request(&ret_value, initComRequest, newSessionKey, requestSize, SIZE_OF_SESSION_KEY); //TOdo shividentity dont use strlen
+                ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY); //TOdo shividentity dont use strlen
                 safe_free(initComRequest);
                 char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-                printStr = generateCStringFromFormat("%s machine has received new session key:", machineNameWrapper2, 1);
+                printStr = generateCStringFromFormat("%s machine has received session key request message:", machineNameWrapper2, 1);
                 ocall_print(printStr);
                 safe_free(printStr);       
-                ocall_print(newSessionKey);
-                PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = string(newSessionKey);
-                safe_free(newSessionKey);
+                ocall_print(returnMessage);
+                PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
+                // safe_free(newSessionKey);
+                safe_free(returnMessage);
 
                 string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
                 //TODO use sessionKey to encrypt message

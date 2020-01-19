@@ -41,7 +41,8 @@ enclave {
         
         public int initializeCommunicationAPI([in, size=ID_SIZE]char* requestingMachineIDKey,
                                              [in, size=ID_SIZE]char* receivingMachineIDKey, 
-                                             [out, size=SESSION_SIZE]char* returnSessionKey, 
+                                             [in, size=SESSION_SIZE]char* newSessionKey, 
+                                             [out, size=100]char* returnMessage,
                                               uint32_t ID_SIZE,
                                              uint32_t SESSION_SIZE);
 

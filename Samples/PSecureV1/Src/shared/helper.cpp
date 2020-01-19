@@ -769,8 +769,8 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
     
     } else if (strcmp(split, "InitComm") == 0) {
 
-        char* newSessionKey = (char* ) malloc(SIZE_OF_SESSION_KEY);
-        newSessionKey[0] = '\0';
+        char* newSessionKey;
+        //newSessionKey[0] = '\0';
 
         char* machineInitializingComm;
         char* machineReceivingComm;
@@ -785,6 +785,9 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
             machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
             memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+            newSessionKey = (char* ) malloc(SIZE_OF_REAL_SESSION_KEY);
+            memcpy(newSessionKey, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1, SIZE_OF_REAL_SESSION_KEY);
+            
         // }
         
         if (isEnclaveUntrustedHost) {
@@ -808,10 +811,10 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
                 }
                 
                 sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)]; //TODO add check here in case its not in dictionary
-
+                char* returnMessage = (char*) malloc(100);
                 int ptr;
                 //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-                sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SGX_RSA3072_KEY_SIZE, SIZE_OF_SESSION_KEY);
+                sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, returnMessage, SGX_RSA3072_KEY_SIZE, SIZE_OF_REAL_SESSION_KEY);
                 if (status != SGX_SUCCESS) {
                     printf("Sgx Error Code: %x\n", status);
                 }
@@ -819,7 +822,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         
             
             safe_free(requestCopy);
-            return newSessionKey;
+            return returnMessage;
 
         } else {
             //TODO shivIdentity

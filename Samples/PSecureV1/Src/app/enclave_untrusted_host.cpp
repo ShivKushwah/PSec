@@ -814,9 +814,9 @@ int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, 
         printf("ERROR. No Message Received!\n");
         return 0;
     }
-    else if (strlen(result) + 1 > RESPONSE_SIZE) {
-        printf("ERROR. Message too big!\n");
-    }
+    // else if (strlen(result) + 1 > RESPONSE_SIZE) {
+    //     printf("ERROR. Message too big!\n");
+    // }
     // if (NETWORK_DEBUG) {
     //     memcpy(response, result, strlen(result) + 1);
     // } else {

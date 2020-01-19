@@ -65,7 +65,8 @@ typedef struct ms_initializeCommunicationAPI_t {
 	int ms_retval;
 	char* ms_requestingMachineIDKey;
 	char* ms_receivingMachineIDKey;
-	char* ms_returnSessionKey;
+	char* ms_newSessionKey;
+	char* ms_returnMessage;
 	uint32_t ms_ID_SIZE;
 	uint32_t ms_SESSION_SIZE;
 } ms_initializeCommunicationAPI_t;
@@ -463,13 +464,14 @@ sgx_status_t enclave_createMachineAPI(sgx_enclave_id_t eid, int* retval, sgx_enc
 	return status;
 }
 
-sgx_status_t enclave_initializeCommunicationAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* returnSessionKey, uint32_t ID_SIZE, uint32_t SESSION_SIZE)
+sgx_status_t enclave_initializeCommunicationAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey, char* returnMessage, uint32_t ID_SIZE, uint32_t SESSION_SIZE)
 {
 	sgx_status_t status;
 	ms_initializeCommunicationAPI_t ms;
 	ms.ms_requestingMachineIDKey = requestingMachineIDKey;
 	ms.ms_receivingMachineIDKey = receivingMachineIDKey;
-	ms.ms_returnSessionKey = returnSessionKey;
+	ms.ms_newSessionKey = newSessionKey;
+	ms.ms_returnMessage = returnMessage;
 	ms.ms_ID_SIZE = ID_SIZE;
 	ms.ms_SESSION_SIZE = SESSION_SIZE;
 	status = sgx_ecall(eid, 7, &ocall_table_enclave, &ms);
