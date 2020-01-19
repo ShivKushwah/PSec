@@ -487,6 +487,7 @@ void startPrtProcessIfNotStarted() {
 
 int main(int argc, char const *argv[]) {
     initNetwork();
+    initKPS();
     //char* kirat = (char*) malloc(220);
  
     // Place the measurement of the enclave into metadata_info.txt

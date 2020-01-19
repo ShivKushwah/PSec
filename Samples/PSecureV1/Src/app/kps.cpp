@@ -32,7 +32,7 @@
 
 #include "kps.h"
 #include "enclave_u.h"
-
+#include "sgx_utils/sgx_utils.h"
 #include "sample_libcrypto.h"
 
 #include "ecp.h"
@@ -61,6 +61,8 @@ using namespace std;
 
 unordered_map<string, string> capabilityKeyAccessDictionary;
 unordered_map<string, string> capabilityKeyDictionary;
+
+sgx_enclave_id_t kps_enclave_eid;
 
 
 //This represents the payload we are going to send to the enclave after a succesful attestation
@@ -1029,6 +1031,15 @@ int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,
 //     safe_free(keyCopy);
 // }
 
+void initKPS() {
+    kps_enclave_eid = 0;
+    string token = "enclavekps.token";
+
+    if (initialize_enclave(&kps_enclave_eid, token, "enclave.signed.so") < 0) {
+        ocall_print("Fail to initialize enclave.");
+    }    
+}
+
 
 int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachinePublicIDKey) {
     // if (NETWORK_DEBUG) {
@@ -1044,12 +1055,21 @@ int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachineP
         capabilityKeyDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(secure_message);
         //printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
 
+
         capabilityKeyAccessDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(parentTrustedMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
         //printf("New machine ID: %s\n", newMachineID);
         // ocall_print("CREATING CAPABILITY USING");
         // printRSAKey(newMachinePublicIDKey);
         // printRSAKey(parentTrustedMachinePublicIDKey);
     // }
+
+    // sgx_rsa3072_key_t *private_capabilityB_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
+    // sgx_rsa3072_public_key_t *public_capabilityB_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
+    // void* private_capabilityB_key_raw = NULL;
+    // void* public_capabilityB_key_raw = NULL;
+    // createRsaKeyPair(public_capabilityB_key, private_capabilityB_key, &public_capabilityB_key_raw, &private_capabilityB_key_raw);
+    // ocall_print("capability key is");
+    // ocall_print((char*)public_capabilityB_key_raw);
     
 
 }

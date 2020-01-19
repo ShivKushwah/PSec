@@ -151,6 +151,8 @@ int receive_encrypted_message(uint8_t *p_secret,
 int createCapabilityKey(char* newMachineID, char* parentTrustedMachineID);
 char* retrieveCapabilityKey(char* currentMachineID, char* childMachineID);
 
+// void initKPS();
+
 // void printRSAKey(char* key);
 
 

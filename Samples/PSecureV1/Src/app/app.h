@@ -62,3 +62,5 @@ char* createStringLiteralMalloced(char* stringLiteral);
 char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], int size_array);
 int returnTotalSizeofLengthArray(int lengths[], int size);
 void printRSAKey(char* key);
+
+extern void initKPS();
