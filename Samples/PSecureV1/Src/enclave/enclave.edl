@@ -67,6 +67,9 @@ enclave {
                                  uint32_t ID_SIZE,
                                 uint32_t MESSAGE_SIZE,
                                 uint32_t MAX_PAYLOAD_SIZE);
+        public void createRsaKeyPairEcall([out, size=KEY_SIZE]char* public_key_raw_out, 
+                                    [out, size=KEY_SIZE]char* private_key_raw_out, 
+                                    uint32_t KEY_SIZE);
 
         public void eprint([in, size=50]char* printStr);
 

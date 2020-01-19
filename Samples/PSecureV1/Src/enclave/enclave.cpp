@@ -377,24 +377,27 @@ char* registerMachineWithNetwork(char* newMachineID) {
     char* machineKeyWrapper[] = {newMachineID, num};
     
     char* networkResult = (char*) malloc(100);
-    // if (NETWORK_DEBUG) {
-    //     char* networkRequest = generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2);
-    //     ocall_network_request(&ret_value, networkRequest, networkResult, strlen(networkRequest) + 1, 100);
-    //     safe_free(networkRequest);
-    // } else {
-        //TODO need to test this request
-        char* requestType = "RegisterMachine:";
-        char* colon = ":";
-        char* concatStrings[] = {requestType, newMachineID, colon, num};
-        int concatLenghts[] = {strlen(requestType), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(num)};
-        char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
-        int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
-        ocall_network_request(&ret_value, networkRequest, networkResult, networkRequestSize, 100);
-        safe_free(networkRequest);
-    // }
+    char* requestType = "RegisterMachine:";
+    char* colon = ":";
+    char* concatStrings[] = {requestType, newMachineID, colon, num};
+    int concatLenghts[] = {strlen(requestType), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(num)};
+    char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
+    int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
+    ocall_network_request(&ret_value, networkRequest, networkResult, networkRequestSize, 100);
+    safe_free(networkRequest);
     safe_free(num);
     safe_free(networkResult);
 
+}
+
+void createRsaKeyPairEcall(char* public_key_raw_out, char* private_key_raw_out, uint32_t KEY_SIZE) {
+    sgx_rsa3072_key_t *private_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
+    sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
+    void* private_key_raw = NULL;
+    void* public_key_raw = NULL;
+    createRsaKeyPair(public_key, private_key, &public_key_raw, &private_key_raw);
+    memcpy(public_key_raw_out, public_key_raw, SGX_RSA3072_KEY_SIZE);
+    memcpy(private_key_raw_out, private_key_raw, SGX_RSA3072_KEY_SIZE);
 }
 
 //Caller needs to allocate space for public_key and private_key

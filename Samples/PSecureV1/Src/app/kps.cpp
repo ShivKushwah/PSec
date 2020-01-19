@@ -1062,15 +1062,14 @@ int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachineP
         // printRSAKey(newMachinePublicIDKey);
         // printRSAKey(parentTrustedMachinePublicIDKey);
     // }
-
-    // sgx_rsa3072_key_t *private_capabilityB_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
-    // sgx_rsa3072_public_key_t *public_capabilityB_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
-    // void* private_capabilityB_key_raw = NULL;
-    // void* public_capabilityB_key_raw = NULL;
-    // createRsaKeyPair(public_capabilityB_key, private_capabilityB_key, &public_capabilityB_key_raw, &private_capabilityB_key_raw);
-    // ocall_print("capability key is");
-    // ocall_print((char*)public_capabilityB_key_raw);
-    
+    char* private_capability_key = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    char* public_capability_key = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    sgx_status_t status = enclave_createRsaKeyPairEcall(kps_enclave_eid, public_capability_key, private_capability_key, SGX_RSA3072_KEY_SIZE); 
+    if (status != SGX_SUCCESS) {
+        ocall_print("KPS Error in generating capability keys!");
+    } else  {
+        ocall_print("KPS able to generate capability keys!");
+    }
 
 }
 //Responsibility of caller to free return

@@ -69,3 +69,4 @@ char* concatVoid(void* str1, size_t str1_size, void* str2, size_t str2_size);
 char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], int size_array);
 int returnTotalSizeofLengthArray(int lengths[], int size);
 void printRSAKey(char* key);
+void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *private_key, void** public_key_raw, void** private_key_raw);
