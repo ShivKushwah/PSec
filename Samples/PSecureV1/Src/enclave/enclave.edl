@@ -25,6 +25,8 @@ enclave {
 
         public int decryptAndSendMessageAPI([in, size=ID_SIZE]char* requestingMachineIDKey, 
                                             [in, size=ID_SIZE]char* receivingMachineIDKey, 
+                                            [in, size=12] char* iv,
+                                            [in, size=16] char* mac,
                                             [in, size=MAX_ENCRYPTED_MESSAGE]char* encryptedMessage, 
                                             uint32_t ID_SIZE, 
                                             uint32_t MAX_ENCRYPTED_MESSAGE);
