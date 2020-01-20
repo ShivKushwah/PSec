@@ -965,30 +965,36 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
     ocall_print("entered decrypt fn");
     char* split = strtok(encryptedMessage, ":");
     char* encryptedMessageSize = split;
-    split = strtok(NULL, ":");
-    char* eventNum = split;
-    split = strtok(NULL, ":");
-    int numArgs = atoi(split);
-    int payloadType = -1;
-    ocall_print("MAC IS");
-    ocall_print(mac);
-    char* payload = (char*) malloc(10);
+    char* eventNum;
+    int numArgs;
+    int payloadType;
+    char* payload;
     int payloadSize;
-    payload[0] = '\0';
-    if (numArgs > 0) {
+
+    if (NETWORK_DEBUG || !NETWORK_DEBUG) {
         split = strtok(NULL, ":");
-        payloadType = atoi(split);
+        eventNum = split;
         split = strtok(NULL, ":");
-        payloadSize = atoi(split);
+        numArgs = atoi(split);
+        payloadType = -1;
+        // ocall_print("MAC IS");
+        // ocall_print(mac);
+        payload = (char*) malloc(10);
+        payloadSize;
+        payload[0] = '\0';
+        if (numArgs > 0) {
+            split = strtok(NULL, ":");
+            payloadType = atoi(split);
+            split = strtok(NULL, ":");
+            payloadSize = atoi(split);
+            safe_free(payload);
+            payload = split + strlen(split) + 1;
 
-
-        // split = strtok(NULL, "\0");
-        safe_free(payload);
-        payload = split + strlen(split) + 1;
-
-    } else {
-        safe_free(payload);
+        } else {
+            safe_free(payload);
+        }
     }
+    
     sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
 
 }
@@ -1145,27 +1151,30 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         if (isSecureSend) {
             char* iv = generateIV();
             char* mac = "1234567891234567";
+            char* encryptedMessage;
+            int encryptedMessageSize;
+            char* encryptedMessageSizeString;
+            
             if (numArgs > 0) {
-                int encryptedMessageSize = strlen(event) + strlen(colon) + strlen(numArgsPayload) + strlen(colon) + strlen(eventPayloadTypeString) + strlen(colon) + strlen(eventMessagePayloadSizeString) + strlen(colon) + eventMessagePayloadSize;
-                char* encryptedMessageSizeString = (char*) malloc(10);
-                itoa(encryptedMessageSize, encryptedMessageSizeString, 10);
-
-                char* concatStrings[] = {sendTypeCommand, colon, currentMachineIDPublicKey, colon, sendingToMachinePublicID, colon, iv, colon, mac, colon, encryptedMessageSizeString, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
-                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageSizeString), strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayloadSizeString), strlen(colon), eventMessagePayloadSize};
-                sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 21);
-                requestSize = returnTotalSizeofLengthArray(concatLenghts, 21) + 1;
-                // snprintf(sendRequest, requestSize, "%s:%s:%s:%s:%d:%d:%s", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+                char* encryptStrings[] = {event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
+                int encryptLenghts[] = {strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayloadSizeString), strlen(colon), eventMessagePayloadSize};
+                encryptedMessage = concatMutipleStringsWithLength(encryptStrings, encryptLenghts, 9);
+                encryptedMessageSize = returnTotalSizeofLengthArray(encryptLenghts, 9);
+                encryptedMessageSizeString = (char*) malloc(10);
+                itoa(encryptedMessageSize, encryptedMessageSizeString, 10);                
             } else  {
-                int encryptedMessageSize = strlen(event) + strlen(colon) + strlen(zero);
-                char* encryptedMessageSizeString = (char*) malloc(10);
+                char* encryptStrings[] = {event, colon, zero};
+                int encryptLenghts[] = {strlen(event), strlen(colon), strlen(zero)};
+                encryptedMessage = concatMutipleStringsWithLength(encryptStrings, encryptLenghts, 3);
+                encryptedMessageSize = returnTotalSizeofLengthArray(encryptLenghts, 3);
+                encryptedMessageSizeString = (char*) malloc(10);
                 itoa(encryptedMessageSize, encryptedMessageSizeString, 10);
-
-                char* concatStrings[] = {sendTypeCommand, colon, currentMachineIDPublicKey, colon, sendingToMachinePublicID, colon, iv, colon, mac, colon, encryptedMessageSizeString, colon, event, colon, zero};
-                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageSizeString), strlen(colon), strlen(event), strlen(colon), strlen(zero)};
-                sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 15);
-                requestSize = returnTotalSizeofLengthArray(concatLenghts, 15) + 1;
-                // snprintf(sendRequest, requestSize, "%s:%s:%s:%s:0", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event);
             }
+
+            char* concatStrings[] = {sendTypeCommand, colon, currentMachineIDPublicKey, colon, sendingToMachinePublicID, colon, iv, colon, mac, colon, encryptedMessageSizeString, colon, encryptedMessage};
+            int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageSizeString), strlen(colon), encryptedMessageSize};
+            sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
+            requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
         } else {
             if (numArgs > 0) {
                 char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
