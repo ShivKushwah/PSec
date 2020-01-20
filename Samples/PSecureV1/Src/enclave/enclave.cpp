@@ -997,7 +997,8 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
             return 0;
         }
         safe_free(checkMyPublicIdentity);
-        char* message = decryptedMessage + SGX_RSA3072_KEY_SIZE + 1;
+        char* message = (char*) malloc(atoi(encryptedMessageSize)); 
+        memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, atoi(encryptedMessageSize));
         next = message;
 
     }
