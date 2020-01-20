@@ -103,6 +103,8 @@ typedef struct ms_sendUntrustedMessageAPI_t {
 typedef struct ms_createRsaKeyPairEcall_t {
 	char* ms_public_key_raw_out;
 	char* ms_private_key_raw_out;
+	char* ms_public_key_out;
+	char* ms_private_key_out;
 	uint32_t ms_KEY_SIZE;
 } ms_createRsaKeyPairEcall_t;
 
@@ -526,12 +528,14 @@ sgx_status_t enclave_sendUntrustedMessageAPI(sgx_enclave_id_t eid, int* retval, 
 	return status;
 }
 
-sgx_status_t enclave_createRsaKeyPairEcall(sgx_enclave_id_t eid, char* public_key_raw_out, char* private_key_raw_out, uint32_t KEY_SIZE)
+sgx_status_t enclave_createRsaKeyPairEcall(sgx_enclave_id_t eid, char* public_key_raw_out, char* private_key_raw_out, char* public_key_out, char* private_key_out, uint32_t KEY_SIZE)
 {
 	sgx_status_t status;
 	ms_createRsaKeyPairEcall_t ms;
 	ms.ms_public_key_raw_out = public_key_raw_out;
 	ms.ms_private_key_raw_out = private_key_raw_out;
+	ms.ms_public_key_out = public_key_out;
+	ms.ms_private_key_out = private_key_out;
 	ms.ms_KEY_SIZE = KEY_SIZE;
 	status = sgx_ecall(eid, 10, &ocall_table_enclave, &ms);
 	return status;

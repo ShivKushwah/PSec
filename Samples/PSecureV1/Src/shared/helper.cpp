@@ -71,15 +71,15 @@ void printRSAKey(char* key) {
 
 //Responsiblity of caller to free
 char* retrievePublicCapabilityKey(char* capabilityPayload) {
-    char* publicKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-    memcpy(publicKey, capabilityPayload, SGX_RSA3072_KEY_SIZE);
+    char* publicKey = (char*) malloc(sizeof(sgx_rsa3072_public_key_t));
+    memcpy(publicKey, capabilityPayload, sizeof(sgx_rsa3072_public_key_t));
     return publicKey;
 }
 
 //Responsiblity of caller to free
 char* retrievePrivateCapabilityKey(char* capabilityPayload) {
-    char* privateKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-    memcpy(privateKey, capabilityPayload + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+    char* privateKey = (char*) malloc(sizeof(sgx_rsa3072_key_t));
+    memcpy(privateKey, capabilityPayload + sizeof(sgx_rsa3072_public_key_t) + 1, sizeof(sgx_rsa3072_key_t));
     return privateKey;
 }
 
@@ -1220,8 +1220,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         safe_free(printStr);
         char* publicCapabilityKey = retrievePublicCapabilityKey(capabilityKeyPayload);
         char* privateCapabilityKey = retrievePrivateCapabilityKey(capabilityKeyPayload);
-        printRSAKey(publicCapabilityKey);
-        printRSAKey(privateCapabilityKey);
+        // printRSAKey(publicCapabilityKey);
+        // printRSAKey(privateCapabilityKey);
 
         PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))] = string(capabilityKeyPayload, SIZE_OF_CAPABILITYKEY); //TODO shiv identity
 

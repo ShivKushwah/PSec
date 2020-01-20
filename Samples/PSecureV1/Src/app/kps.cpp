@@ -1052,9 +1052,11 @@ int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachineP
     // // ocall_print("CREATING CAPABILITY USING");
     // // printRSAKey(newMachinePublicIDKey);
     // // printRSAKey(parentTrustedMachinePublicIDKey);
-    char* private_capability_key = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-    char* public_capability_key = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-    sgx_status_t status = enclave_createRsaKeyPairEcall(kps_enclave_eid, public_capability_key, private_capability_key, SGX_RSA3072_KEY_SIZE); 
+    char* private_capability_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    char* public_capability_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    char* private_capability_key = (char*) malloc(sizeof(sgx_rsa3072_key_t));
+    char* public_capability_key = (char*) malloc(sizeof(sgx_rsa3072_public_key_t));
+    sgx_status_t status = enclave_createRsaKeyPairEcall(kps_enclave_eid, public_capability_key_raw, private_capability_key_raw, public_capability_key, private_capability_key, SGX_RSA3072_KEY_SIZE); 
     if (status != SGX_SUCCESS) {
         ocall_print("KPS Error in generating capability keys!");
     // } else  {
@@ -1063,7 +1065,7 @@ int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachineP
     // printRSAKey(private_capability_key);
 
     char* concatStrings[] = {public_capability_key, ":", private_capability_key};
-    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
+    int concatLengths[] = {sizeof(sgx_rsa3072_public_key_t), 1, sizeof(sgx_rsa3072_key_t)};
     char* capabilityKey = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
     int capabilityKeyLen = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
 

@@ -147,37 +147,22 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 
 //Responsibility of caller to free return
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
-    ocall_print("IF THIS WORKS THEN WOO BOY");
+    // ocall_print("IF THIS WORKS THEN WOO BOY");
     int ret;
     char* other_machine_name = "KPS";
     char* requestString;
     int requestStringSize;
-    // if (NETWORK_DEBUG) {
-    //     int requestSize = SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
-    //     requestString = (char*) malloc(requestSize);
-    //     requestStringSize = requestSize;
-    //     snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey); 
-    //     // ocall_print(currentMachinePublicIDKey);
-    //     // ocall_print(childPublicIDKey); 
-    // } else {
-        char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey};
-        int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
-        requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
-        requestStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
-        // snprintf(requestString, requestSize, "%s:%s", currentMachinePublicIDKey, childPublicIDKey);  
-        //printRSAKey(currentMachinePublicIDKey);
-        // ocall_print("Child public id key is");
-        // printRSAKey(childPublicIDKey);
-    // }
-
-    
+    char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey};
+    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
+    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
       
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString, requestStringSize);
     safe_free(requestString);
-    char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
-    memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
-    ocall_print("WORKS");
-    return capabilityKey;
+    char* capabilityKeyPayload = (char*) malloc(SIZE_OF_CAPABILITYKEY);
+    memcpy(capabilityKeyPayload, g_secret, SIZE_OF_CAPABILITYKEY);
+    // ocall_print("WORKS");
+    return capabilityKeyPayload;
 }
                                         
 void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int payloadSize, int ID_SIZE, int PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
@@ -296,8 +281,8 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
         ocall_print("Enclave received new capability Key from KPS: ");
         char* publicCapabilityKey = retrievePublicCapabilityKey(capabilityKeyPayloadReceived);
         char* privateCapabilityKey = retrievePrivateCapabilityKey(capabilityKeyPayloadReceived);
-        printRSAKey(publicCapabilityKey);
-        printRSAKey(privateCapabilityKey);
+        // printRSAKey(publicCapabilityKey);
+        // printRSAKey(privateCapabilityKey);
         MachinePIDtoCapabilityKeyDictionary[newMachinePID] = string(capabilityKeyPayloadReceived, SIZE_OF_CAPABILITYKEY);
         
         safe_free(publicCapabilityKey);
@@ -396,7 +381,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
 
 }
 
-void createRsaKeyPairEcall(char* public_key_raw_out, char* private_key_raw_out, uint32_t KEY_SIZE) {
+void createRsaKeyPairEcall(char* public_key_raw_out, char* private_key_raw_out, char* public_key_out, char* private_key_out, uint32_t KEY_SIZE) {
     sgx_rsa3072_key_t *private_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
     sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
     void* private_key_raw = NULL;
@@ -404,6 +389,8 @@ void createRsaKeyPairEcall(char* public_key_raw_out, char* private_key_raw_out, 
     createRsaKeyPair(public_key, private_key, &public_key_raw, &private_key_raw);
     memcpy(public_key_raw_out, public_key_raw, SGX_RSA3072_KEY_SIZE);
     memcpy(private_key_raw_out, private_key_raw, SGX_RSA3072_KEY_SIZE);
+    memcpy(public_key_out, public_key, sizeof(sgx_rsa3072_public_key_t));
+    memcpy(private_key_out, private_key, sizeof(sgx_rsa3072_key_t));
 }
 
 //Caller needs to allocate space for public_key and private_key
