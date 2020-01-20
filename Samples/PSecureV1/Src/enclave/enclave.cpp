@@ -970,32 +970,62 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
     int payloadType;
     char* payload;
     int payloadSize;
+    char* next = NULL;
 
-    if (NETWORK_DEBUG || !NETWORK_DEBUG) {
-        split = strtok(NULL, ":");
-        eventNum = split;
-        split = strtok(NULL, ":");
-        numArgs = atoi(split);
-        payloadType = -1;
-        // ocall_print("MAC IS");
-        // ocall_print(mac);
-        payload = (char*) malloc(10);
-        payloadSize;
-        payload[0] = '\0';
-        if (numArgs > 0) {
-            split = strtok(NULL, ":");
-            payloadType = atoi(split);
-            split = strtok(NULL, ":");
-            payloadSize = atoi(split);
-            safe_free(payload);
-            payload = split + strlen(split) + 1;
+    char* decryptedMessage = NULL;
 
-        } else {
-            safe_free(payload);
+    if (!NETWORK_DEBUG) {
+        int machinePID = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+        string sendingToMachineCapabilityKeyPayload = MachinePIDtoCapabilityKeyDictionary[machinePID];
+        char* privateCapabilityKeySendingToMachine = retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+
+        string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
+
+        sgx_aes_ctr_128bit_key_t g_region_key;
+        sgx_aes_gcm_128bit_tag_t g_mac;
+        memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+        memcpy(g_mac, mac, SIZE_OF_MAC);
+
+        char* actualEncryptedMessage = encryptedMessage + strlen(encryptedMessageSize) + 1;
+        decryptedMessage = (char*) malloc(atoi(encryptedMessageSize));
+        sgx_status_t status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) actualEncryptedMessage, atoi(encryptedMessageSize), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+ 
+        char* checkMyPublicIdentity = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        memcpy(checkMyPublicIdentity, decryptedMessage, SGX_RSA3072_KEY_SIZE);
+        if (string(checkMyPublicIdentity, SGX_RSA3072_KEY_SIZE) != string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) {
+            ocall_print("ERROR: Checking Public Identity Key inside Message FAILED in Secure Send");
+            return 0;
         }
+        safe_free(checkMyPublicIdentity);
+        char* message = decryptedMessage + SGX_RSA3072_KEY_SIZE + 1;
+        next = message;
+
+    }
+
+    split = strtok(next, ":");
+    eventNum = split;
+    split = strtok(NULL, ":");
+    numArgs = atoi(split);
+    payloadType = -1;
+    // ocall_print("MAC IS");
+    // ocall_print(mac);
+    payload = (char*) malloc(10);
+    payloadSize;
+    payload[0] = '\0';
+    if (numArgs > 0) {
+        split = strtok(NULL, ":");
+        payloadType = atoi(split);
+        split = strtok(NULL, ":");
+        payloadSize = atoi(split);
+        safe_free(payload);
+        payload = split + strlen(split) + 1;
+
+    } else {
+        safe_free(payload);
     }
     
     sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
+    safe_free(decryptedMessage);
 
 }
 
@@ -1171,8 +1201,41 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
             if (!NETWORK_DEBUG) {
                 //add encryption logic here
-                encryptedMessage = messageToEncrypt;
-                encryptedMessageSize = messageToEncryptSize;
+                char* concatStrings[] = {sendingToMachinePublicID, colon, messageToEncrypt};
+                int concatLengths[] = {SGX_RSA3072_KEY_SIZE, strlen(colon), messageToEncryptSize};
+                char* M = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+                int MSize = returnTotalSizeofLengthArray(concatLengths, 3);
+
+                string sendingToMachineCapabilityKeyPayload = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+                char* privateCapabilityKeySendingToMachine = retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+
+                // sgx_rsa3072_signature_t* signatureM = signStringMessage(M, (sgx_rsa3072_key_t*) privateCapabilityKeySendingToMachine);
+                // int sizeOfSignature = SGX_RSA3072_KEY_SIZE;
+                // char* concatString[] = {M, (char*)signatureM};
+                // int concatLengths[] = {MSize, sizeOfSignature};
+                // char* trustedPayload = concatMutipleStringsWithLength(concatString, concatLengths, 2);
+                // int trustedPayloadLength = returnTotalSizeofLengthArray(concatLengths, 2);
+
+                char* trustedPayload = M;
+                int trustedPayloadLength = MSize;
+
+                sgx_aes_ctr_128bit_key_t g_region_key;
+                sgx_aes_gcm_128bit_tag_t g_mac;
+                string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+
+                memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+
+                encryptedMessageSize = trustedPayloadLength;
+                encryptedMessage = (char*) malloc(encryptedMessageSize);
+
+                sgx_status_t status = sgx_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) trustedPayload, trustedPayloadLength, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+                // ocall_print("Encrypted Message is");
+                // ocall_print(encryptedMessage);
+                mac = (char*) malloc(SIZE_OF_MAC);
+                memcpy(mac, (char*)g_mac, SIZE_OF_MAC);
+
+                safe_free(M);
+                
             } else {
                 encryptedMessage = messageToEncrypt;
                 encryptedMessageSize = messageToEncryptSize;
@@ -1184,6 +1247,14 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageSizeString), strlen(colon), encryptedMessageSize};
             sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
             requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
+
+            safe_free(encryptedMessage);
+            safe_free(encryptedMessageSizeString);
+
+            if (!NETWORK_DEBUG) {
+                safe_free(mac);    
+            }
+
         } else {
             if (numArgs > 0) {
                 char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
