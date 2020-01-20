@@ -1152,24 +1152,33 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             char* iv = generateIV();
             char* mac = "1234567891234567";
             char* encryptedMessage;
+            char* messageToEncrypt;
+            int messageToEncryptSize;
             int encryptedMessageSize;
             char* encryptedMessageSizeString;
-            
+
             if (numArgs > 0) {
                 char* encryptStrings[] = {event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
                 int encryptLenghts[] = {strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayloadSizeString), strlen(colon), eventMessagePayloadSize};
-                encryptedMessage = concatMutipleStringsWithLength(encryptStrings, encryptLenghts, 9);
-                encryptedMessageSize = returnTotalSizeofLengthArray(encryptLenghts, 9);
-                encryptedMessageSizeString = (char*) malloc(10);
-                itoa(encryptedMessageSize, encryptedMessageSizeString, 10);                
+                messageToEncrypt = concatMutipleStringsWithLength(encryptStrings, encryptLenghts, 9);
+                messageToEncryptSize = returnTotalSizeofLengthArray(encryptLenghts, 9);              
             } else  {
                 char* encryptStrings[] = {event, colon, zero};
                 int encryptLenghts[] = {strlen(event), strlen(colon), strlen(zero)};
-                encryptedMessage = concatMutipleStringsWithLength(encryptStrings, encryptLenghts, 3);
-                encryptedMessageSize = returnTotalSizeofLengthArray(encryptLenghts, 3);
-                encryptedMessageSizeString = (char*) malloc(10);
-                itoa(encryptedMessageSize, encryptedMessageSizeString, 10);
+                messageToEncrypt = concatMutipleStringsWithLength(encryptStrings, encryptLenghts, 3);
+                messageToEncryptSize = returnTotalSizeofLengthArray(encryptLenghts, 3);
             }
+
+            if (!NETWORK_DEBUG) {
+                //add encryption logic here
+                encryptedMessage = messageToEncrypt;
+                encryptedMessageSize = messageToEncryptSize;
+            } else {
+                encryptedMessage = messageToEncrypt;
+                encryptedMessageSize = messageToEncryptSize;
+            }
+            encryptedMessageSizeString = (char*) malloc(10);
+            itoa(encryptedMessageSize, encryptedMessageSizeString, 10);
 
             char* concatStrings[] = {sendTypeCommand, colon, currentMachineIDPublicKey, colon, sendingToMachinePublicID, colon, iv, colon, mac, colon, encryptedMessageSizeString, colon, encryptedMessage};
             int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageSizeString), strlen(colon), encryptedMessageSize};
