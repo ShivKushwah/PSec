@@ -559,33 +559,6 @@ char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_
     return encrypted_data;
 }
 
-bool verifySignature(char* message, sgx_rsa3072_signature_t* signature, sgx_rsa3072_public_key_t* public_key) {
-
-    uint8_t* p_data = (uint8_t*) message;
-    uint32_t data_size = strlen(message) + 1; //TODO cannot use strlen
-    sgx_rsa_result_t p_result;
-
-
-    sgx_status_t status = SGX_SUCCESS;
-    status = sgx_rsa3072_verify(
-        p_data,
-        data_size,
-        public_key,
-        signature,
-        &p_result
-    );
-    if (status != SGX_SUCCESS) {
-        ocall_print("Error in verifying signature!");
-    } else {
-        ocall_print("Able to make call to sgx verify signature!");
-    }
-    if (p_result == SGX_RSA_INVALID_SIGNATURE) {
-        return false;
-    } else {
-        return true;
-    }
-}
-
 bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* signature, sgx_rsa3072_public_key_t* public_key) {
 
     uint8_t* p_data = (uint8_t*) message;
@@ -611,29 +584,6 @@ bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* s
     } else {
         return true;
     }
-}
-
-//Responsibility of caller to free signature
-sgx_rsa3072_signature_t* signStringMessage(char* message, sgx_rsa3072_key_t *private_key) {
-
-    sgx_rsa3072_signature_t* signatureMessage = (sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));
-    uint8_t* p_data = (uint8_t*) message;
-    uint32_t data_size = strlen(message) + 1;
-
-
-    sgx_status_t status = SGX_SUCCESS;
-    status = sgx_rsa3072_sign(
-        p_data,
-        data_size,
-        private_key,
-        signatureMessage
-    );
-    if (status != SGX_SUCCESS) {
-        ocall_print("Error in signing string!");
-    } else {
-        ocall_print("Message signed successfully!");
-    }
-    return signatureMessage;
 }
 
 //Responsibility of caller to free signature
@@ -778,7 +728,7 @@ void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
 
     char* secureMessage = "Encrypted Hello!";
 
-    sgx_rsa3072_signature_t* signatureSecureMessage = signStringMessage(secureMessage, private_capabilityB_key);
+    sgx_rsa3072_signature_t* signatureSecureMessage = signStringMessage(secureMessage, strlen(secureMessage) + 1, private_capabilityB_key);
 
     char* sigPrefix = "SIG:";
 
@@ -793,7 +743,7 @@ void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
 
     free(temp);
 
-    if (verifySignature(secureMessage, signatureSecureMessage, public_capabilityB_key)) {
+    if (verifySignature(secureMessage, strlen(secureMessage) + 1, signatureSecureMessage, public_capabilityB_key)) {
         ocall_print("Verifying Signature works!!!!");
     } else {
         ocall_print("Verification Failed!");
@@ -883,7 +833,7 @@ void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
     secureMessage = "TrustedEventPayload!";
     int secureMessageSize = strlen(secureMessage);
 
-    /*sgx_rsa3072_signature_t* */ signatureSecureMessage = signStringMessage(secureMessage, private_capabilityB_key);
+    /*sgx_rsa3072_signature_t* */ signatureSecureMessage = signStringMessage(secureMessage, strlen(secureMessage) + 1, private_capabilityB_key);
     int sizeOfSignature = SGX_RSA3072_KEY_SIZE;
     char* concatString[] = {secureMessage, (char*)signatureSecureMessage};
     int concatLengths[] = {secureMessageSize, sizeOfSignature};
@@ -908,7 +858,7 @@ void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
     char* decryptedTrustedEvent = (char*) malloc(secureMessageSize); //extract size of decrypted message by string parsing into decyrpted message for the size
     memcpy(decryptedTrustedEvent, decryptedMessage, secureMessageSize);
     memcpy(decryptedSignature, decryptedMessage + secureMessageSize, SGX_RSA3072_KEY_SIZE);
-    if (verifySignature(decryptedTrustedEvent, decryptedSignature, public_capabilityB_key)) {
+    if (verifySignature(decryptedTrustedEvent, strlen(decryptedTrustedEvent) + 1, decryptedSignature, public_capabilityB_key)) {
         ocall_print("Verifying Signature works!!!!");
     } else {
         ocall_print("Verification Failed!");
