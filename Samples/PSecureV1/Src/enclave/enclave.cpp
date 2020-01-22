@@ -562,7 +562,34 @@ char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_
 bool verifySignature(char* message, sgx_rsa3072_signature_t* signature, sgx_rsa3072_public_key_t* public_key) {
 
     uint8_t* p_data = (uint8_t*) message;
-    uint32_t data_size = strlen(message) + 1;
+    uint32_t data_size = strlen(message) + 1; //TODO cannot use strlen
+    sgx_rsa_result_t p_result;
+
+
+    sgx_status_t status = SGX_SUCCESS;
+    status = sgx_rsa3072_verify(
+        p_data,
+        data_size,
+        public_key,
+        signature,
+        &p_result
+    );
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error in verifying signature!");
+    } else {
+        ocall_print("Able to make call to sgx verify signature!");
+    }
+    if (p_result == SGX_RSA_INVALID_SIGNATURE) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* signature, sgx_rsa3072_public_key_t* public_key) {
+
+    uint8_t* p_data = (uint8_t*) message;
+    uint32_t data_size = message_size;
     sgx_rsa_result_t p_result;
 
 
@@ -592,6 +619,29 @@ sgx_rsa3072_signature_t* signStringMessage(char* message, sgx_rsa3072_key_t *pri
     sgx_rsa3072_signature_t* signatureMessage = (sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));
     uint8_t* p_data = (uint8_t*) message;
     uint32_t data_size = strlen(message) + 1;
+
+
+    sgx_status_t status = SGX_SUCCESS;
+    status = sgx_rsa3072_sign(
+        p_data,
+        data_size,
+        private_key,
+        signatureMessage
+    );
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error in signing string!");
+    } else {
+        ocall_print("Message signed successfully!");
+    }
+    return signatureMessage;
+}
+
+//Responsibility of caller to free signature
+sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_key_t *private_key) {
+
+    sgx_rsa3072_signature_t* signatureMessage = (sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));
+    uint8_t* p_data = (uint8_t*) message;
+    uint32_t data_size = size;
 
 
     sgx_status_t status = SGX_SUCCESS;
@@ -964,7 +1014,7 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
     if (!NETWORK_DEBUG) {
         int machinePID = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
         string sendingToMachineCapabilityKeyPayload = MachinePIDtoCapabilityKeyDictionary[machinePID];
-        char* privateCapabilityKeySendingToMachine = retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+        char* publicCapabilityKeySendingToMachine = retrievePublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
 
         string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
 
@@ -983,6 +1033,24 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
             ocall_print("ERROR: Checking Public Identity Key inside Message FAILED in Secure Send");
             return 0;
         }
+
+        sgx_rsa3072_signature_t* decryptedSignature = (sgx_rsa3072_signature_t*) malloc(SGX_RSA3072_KEY_SIZE);
+        // char* message = (char*) malloc(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1); 
+        // memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+        char* messageSignedOver = (char*) malloc(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+        memcpy(messageSignedOver, decryptedMessage, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+        memcpy(decryptedSignature, decryptedMessage + atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
+        // ocall_print("Lenght of encrypted message is ");
+        // ocall_print(encryptedMessageSize);
+        ocall_print("Received Signature:");
+        printRSAKey((char*)decryptedSignature);
+        if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
+            ocall_print("Verifying Signature works!!!!");
+        } else {
+            ocall_print("Error: Secure Send Signature Verification Failed!");
+            return 0;
+        }
+
         safe_free(checkMyPublicIdentity);
         char* message = (char*) malloc(atoi(encryptedMessageSize)); 
         memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, atoi(encryptedMessageSize));
@@ -1197,15 +1265,25 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 string sendingToMachineCapabilityKeyPayload = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
                 char* privateCapabilityKeySendingToMachine = retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
 
-                // sgx_rsa3072_signature_t* signatureM = signStringMessage(M, (sgx_rsa3072_key_t*) privateCapabilityKeySendingToMachine);
-                // int sizeOfSignature = SGX_RSA3072_KEY_SIZE;
-                // char* concatString[] = {M, (char*)signatureM};
-                // int concatLengths[] = {MSize, sizeOfSignature};
-                // char* trustedPayload = concatMutipleStringsWithLength(concatString, concatLengths, 2);
-                // int trustedPayloadLength = returnTotalSizeofLengthArray(concatLengths, 2);
+                sgx_rsa3072_signature_t* signatureM = signStringMessage(M, MSize, (sgx_rsa3072_key_t*) privateCapabilityKeySendingToMachine);
+                int sizeOfSignature = SGX_RSA3072_KEY_SIZE;
+                char* sigString[] = {M, colon, (char*)signatureM};
+                int sigLengths[] = {MSize, strlen(colon), sizeOfSignature};
+                char* trustedPayload = concatMutipleStringsWithLength(sigString, sigLengths, 3);
+                int trustedPayloadLength = returnTotalSizeofLengthArray(sigLengths, 3);
+                ocall_print("Printing Trusted Payload after public key");
+                ocall_print(trustedPayload + SGX_RSA3072_KEY_SIZE);
+                ocall_print("Printing Generated Signature");
+                printRSAKey((char*)signatureM);
 
-                char* trustedPayload = M;
-                int trustedPayloadLength = MSize;
+                // char* trustedPayload = M;
+                // int trustedPayloadLength = MSize;
+
+                ocall_print("Printing Generated Signature again");
+                printRSAKey(trustedPayload + MSize + strlen(colon));
+                // ocall_print("Printing length of encrypted message");
+                // ocall_print(trustedPayloadLength);
+
 
                 sgx_aes_ctr_128bit_key_t g_region_key;
                 sgx_aes_gcm_128bit_tag_t g_mac;
@@ -1223,6 +1301,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 memcpy(mac, (char*)g_mac, SIZE_OF_MAC);
 
                 safe_free(M);
+                safe_free(trustedPayload);
                 
             } else {
                 encryptedMessage = messageToEncrypt;
@@ -1236,6 +1315,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
             requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
 
+            
             safe_free(encryptedMessage);
             safe_free(encryptedMessageSizeString);
 
