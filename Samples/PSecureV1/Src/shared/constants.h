@@ -10,6 +10,8 @@ const int SIZE_OF_REAL_SESSION_KEY = 16;
 const int SIZE_OF_IV = 12;
 const int SIZE_OF_MAC = 16;
 
+const int SIZE_OF_MAX_STR = 500;
+
 
 
 const int SIZE_OF_MAX_SERIALIZED_TUPLE = 2000;
