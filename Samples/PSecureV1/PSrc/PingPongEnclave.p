@@ -23,8 +23,8 @@ event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
 trusted event MapEvent: map[int, int];
 event AuthenticateRequest : (StringType, StringType);
-event AuthSuccess : int;
-event AuthFailure : int;
+event AuthSuccess;
+event AuthFailure;
 
 machine UntrustedInitializer {
     var handler: machine_handle;
@@ -73,7 +73,7 @@ secure_machine BankEnclave {
 
     state Verify { 
         entry (payload : (StringType, StringType)) {
-            untrusted_send clientUSM, AuthSuccess, 1;
+            untrusted_send clientUSM, AuthSuccess;
             goto AuthCheck;
         }
 
@@ -155,10 +155,10 @@ machine ClientWebBrowser {
         entry {
             untrusted_send bankSSM, AuthenticateRequest, (usernamePassword, OTPCode);
             receive {
-                case AuthSuccess : (payload : int) {
+                case AuthSuccess : {
                     goto Done;
                 }
-                case AuthFailure : (payload : int) {
+                case AuthFailure : {
                     goto ValidateOTPCode;
                 }
             }

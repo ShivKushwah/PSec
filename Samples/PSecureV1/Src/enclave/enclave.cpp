@@ -1124,23 +1124,35 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
     char* eventMessagePayload = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
 
-    PRT_VALUE** P_EventMessage_Payload = argRefs[3];
-    int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
-    char* eventPayloadTypeString = (char*) malloc(10);
-    itoa(eventPayloadType, eventPayloadTypeString, 10);
-    int eventMessagePayloadSize = 0;
-    char* temp = serializePrtValueToString(*P_EventMessage_Payload, eventMessagePayloadSize);
-    memcpy(eventMessagePayload, temp, eventMessagePayloadSize + 1);
-    eventMessagePayload[eventMessagePayloadSize] = '\0';
-    ocall_print("EVENT MESSAGE PAYLOAD IS");
-    printRSAKey(eventMessagePayload);
-    ocall_print("Length is");
-    ocall_print_int(eventMessagePayloadSize);
-    // memcpy(eventMessagePayload, temp, strlen(temp) + 1); //TODO shividentity
-    safe_free(temp);
 
-    char* eventMessagePayloadSizeString = (char*) malloc(10);
-    itoa(eventMessagePayloadSize, eventMessagePayloadSizeString, 10);
+    PRT_VALUE** P_EventMessage_Payload;
+    int eventPayloadType;
+    char* eventPayloadTypeString = NULL;
+    int eventMessagePayloadSize;
+    char* eventMessagePayloadSizeString = NULL;
+
+    if (numArgs > 0) {
+        P_EventMessage_Payload = argRefs[3];
+        eventPayloadType = (*P_EventMessage_Payload)->discriminator;
+        eventPayloadTypeString = (char*) malloc(10);
+        itoa(eventPayloadType, eventPayloadTypeString, 10);
+        eventMessagePayloadSize = 0;
+        char* temp = serializePrtValueToString(*P_EventMessage_Payload, eventMessagePayloadSize);
+        memcpy(eventMessagePayload, temp, eventMessagePayloadSize + 1);
+        eventMessagePayload[eventMessagePayloadSize] = '\0';
+        ocall_print("EVENT MESSAGE PAYLOAD IS");
+        printRSAKey(eventMessagePayload);
+        ocall_print("Length is");
+        ocall_print_int(eventMessagePayloadSize);
+        // memcpy(eventMessagePayload, temp, strlen(temp) + 1); //TODO shividentity
+        safe_free(temp);
+
+        eventMessagePayloadSizeString = (char*) malloc(10);
+        itoa(eventMessagePayloadSize, eventMessagePayloadSizeString, 10);
+
+    }
+
+    
 
     // for (int i = 0; i < numArgs; i++) {
     //     PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];

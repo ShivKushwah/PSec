@@ -182,14 +182,25 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     // char* numArgsPayload = (char*) malloc(size_of_max_num_args);
     // itoa(numArgs, numArgsPayload, SIZE_OF_MAX_EVENT_PAYLOAD);
 
+    PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
+    int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
+    char* numArgsPayload = (char*) malloc(size_of_max_num_args);
+    itoa(numArgs, numArgsPayload, 10);
+
     char* eventMessagePayload = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
 
     // for (int i = 0; i < numArgs; i++) {
-        PRT_VALUE** P_EventMessage_Payload = argRefs[3];
-        int eventPayloadType = (*P_EventMessage_Payload)->discriminator;
-        char* eventPayloadTypeString = (char*) malloc(10);
+    PRT_VALUE** P_EventMessage_Payload;
+    int eventPayloadType;
+    char* eventPayloadTypeString = NULL;
+    int eventMessagePayloadSize;
+    char* eventMessagePayloadSizeString = NULL;
+    if (numArgs > 0) {
+        P_EventMessage_Payload = argRefs[3];
+        eventPayloadType = (*P_EventMessage_Payload)->discriminator;
+        eventPayloadTypeString = (char*) malloc(10);
         itoa(eventPayloadType, eventPayloadTypeString, 10);
-        int eventMessagePayloadSize = 0;
+        eventMessagePayloadSize = 0;
         char* temp = serializePrtValueToString(*P_EventMessage_Payload, eventMessagePayloadSize);
         memcpy(eventMessagePayload, temp, eventMessagePayloadSize + 1);
         eventMessagePayload[eventMessagePayloadSize] = '\0';
@@ -199,8 +210,11 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
         ocall_print_int(eventMessagePayloadSize);
         safe_free(temp);
 
-        char* eventMessagePayloadSizeString = (char*) malloc(10);
+        eventMessagePayloadSizeString = (char*) malloc(10);
         itoa(eventMessagePayloadSize, eventMessagePayloadSizeString, 10);
+
+    }
+        
     //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
     //     //TODO I assumed only 1 payload for the below
     //     // if (i == 0) {
@@ -216,10 +230,7 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     // printf("Sending event : %s\n", event);
     // printf("Sending payload : %s\n", eventMessagePayload);
 
-    PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
-    int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
-    char* numArgsPayload = (char*) malloc(size_of_max_num_args);
-    itoa(numArgs, numArgsPayload, 10);
+    
 
     int requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* unsecureSendRequest = (char*) malloc(requestSize);
