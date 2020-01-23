@@ -16,11 +16,15 @@ fun PrintKey(input : machine_handle);
 fun GetStringFromUser() : StringType;
 fun GenerateRandomMasterSecret() : StringType;
 
+event BankPublicIDEvent : machine_handle;
 event PublicIDEvent : machine_handle;
 trusted event MasterSecretEvent: StringType;
 event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
 trusted event MapEvent: map[int, int];
+event AuthenticateRequest : (StringType, StringType);
+event AuthSuccess : int;
+event AuthFailure : int;
 
 machine UntrustedInitializer {
     var handler: machine_handle;
@@ -39,6 +43,7 @@ secure_machine TrustedInitializer {
         entry {
             clientUSM = new ClientWebBrowser();
             bankSSM = new BankEnclave(clientUSM);
+            untrusted_send clientUSM, BankPublicIDEvent, bankSSM;
         }
     }
 }
@@ -58,7 +63,20 @@ secure_machine BankEnclave {
             // print "Bank Enclave about to print clientSSM";
             // PrintKey(clientSSM);
             untrusted_send clientUSM, PublicIDEvent, clientSSM;
+            goto AuthCheck;
         } 
+    }
+
+    state AuthCheck {
+       on AuthenticateRequest goto Verify;
+    }
+
+    state Verify { 
+        entry (payload : (StringType, StringType)) {
+            untrusted_send clientUSM, AuthSuccess, 1;
+            goto AuthCheck;
+        }
+
     }
 }
 
@@ -93,8 +111,18 @@ secure_machine ClientEnclave {
 
 machine ClientWebBrowser {
     var clientSSM: machine_handle;
+    var bankSSM: machine_handle;
     var usernamePassword: StringType;
+    var OTPCode: StringType;
     start state Initial {
+        defer PublicIDEvent;
+        on BankPublicIDEvent goto SaveBankSSM;
+    }
+
+    state SaveBankSSM {
+        entry (payload: machine_handle) {
+            bankSSM = payload;
+        }
         on PublicIDEvent goto Authenticate;
     }
     
@@ -117,12 +145,32 @@ machine ClientWebBrowser {
             //print "OTP Code Received: {0}\n", payload;
             print "OTP Code Received:\n";
             PrintString(payload);
-            goto Done;
+            OTPCode = payload;
+            goto ValidateOTPCode;
         }
 
     }
 
-    state Done { }
+    state ValidateOTPCode {
+        entry {
+            untrusted_send bankSSM, AuthenticateRequest, (usernamePassword, OTPCode);
+            receive {
+                case AuthSuccess : (payload : int) {
+                    goto Done;
+                }
+                case AuthFailure : (payload : int) {
+                    goto ValidateOTPCode;
+                }
+            }
+        }
+        
+    }
+
+    state Done {
+        entry {
+            print "Client Web Browswer Authenticated Successfully!";
+        }
+     }
 
 }
 
