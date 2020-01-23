@@ -454,7 +454,7 @@ void startPrtProcessIfNotStarted() {
             PRT_VALUE *payload = PrtMkNullValue();
             PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
             // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
-            PRT_BOOLEAN foundMachine = PrtLookupMachineByName("GodUntrusted", &mainMachine);
+            PRT_BOOLEAN foundMachine = PrtLookupMachineByName("UntrustedInitializer", &mainMachine);
             PrtAssert(foundMachine, "No 'GodUntrusted' machine found!");
             PRT_MACHINEINST* newMachine = PrtMkMachine(process, mainMachine, 1, &payload);  
 

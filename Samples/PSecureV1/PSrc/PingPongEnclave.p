@@ -6,6 +6,7 @@ fun PrintString(inputString : StringType);
 fun SecureSend(sendingToMachine : machine_handle, eventToSend : event, numArgs : int, arg : int);
 fun GetThis() : machine_handle;
 fun Concat(input1:StringType, input2:StringType) : StringType;
+fun Hash(input1:StringType, input2:StringType) : StringType;
 fun UntrustedCreateCoordinator();
 fun UntrustedSend(publicID: machine_handle, even : event, payload: int);
 fun InitializeUntrustedMachine();
@@ -13,6 +14,7 @@ fun CreateSecureMachineRequest(): machine_handle;
 fun CreateUSMMachineRequest(): machine_handle;
 fun PrintKey(input : machine_handle);
 fun GetStringFromUser() : StringType;
+fun GenerateRandomMasterSecret() : StringType;
 
 event PublicIDEvent : machine_handle;
 trusted event MasterSecretEvent: StringType;
@@ -20,16 +22,16 @@ event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
 trusted event MapEvent: map[int, int];
 
-machine GodUntrusted {
+machine UntrustedInitializer {
     var handler: machine_handle;
     start state Initial {
         entry {
-            handler = new GodMachine();
+            handler = new TrustedInitializer();
         }
     }
 }
 
-secure_machine GodMachine {
+secure_machine TrustedInitializer {
     
     var clientUSM: machine_handle; //TODO make a differentition between secure_machine and machine
     var bankSSM: machine_handle;
@@ -44,22 +46,17 @@ secure_machine GodMachine {
 secure_machine BankEnclave {
     var clientSSM: StringType;//TODO why is type checking disabled for StringType vs machine_handle
     var clientUSM: machine_handle;
-    var temp: seq[StringType];
     var masterSecret : StringType;
     start state Initial {
         entry (payload: machine_handle) { 
             clientUSM = payload;
             clientSSM = new ClientEnclave(clientUSM);
             
-            masterSecret = GetStringFromUser();
-            // PrintStr(testString);
-
-            // PrintString(clientSSM);
+            masterSecret = GenerateRandomMasterSecret();
 
             secure_send clientSSM, MasterSecretEvent, masterSecret;
-            // PrintString(clientSSM);
-            print "Bank Enclave about to print clientSSM";
-            PrintKey(clientSSM);
+            // print "Bank Enclave about to print clientSSM";
+            // PrintKey(clientSSM);
             untrusted_send clientUSM, PublicIDEvent, clientSSM;
         } 
     }
@@ -85,22 +82,10 @@ secure_machine ClientEnclave {
     }
 
     state WaitForGenerateOTP {
-        entry {
-            print "HARHARHAR";
-        }
         on GenerateOTPCodeEvent do (usernamePassword: StringType) {
             //untrusted_send clientUSM, OTPCodeEvent, usernamePassword + masterSecret;
-            
-            if (usernamePassword == masterSecret) {
 
-            } else {
-                print "ERROR";
-                PrintString(usernamePassword);
-                PrintString(masterSecret);
-            }
-            PrintString(Concat(usernamePassword, masterSecret));
-
-            untrusted_send clientUSM, OTPCodeEvent, masterSecret;
+            untrusted_send clientUSM, OTPCodeEvent, Hash(masterSecret, usernamePassword);
         }
     }
 
@@ -117,9 +102,7 @@ machine ClientWebBrowser {
         entry (payload: machine_handle) {
             clientSSM = payload;
             usernamePassword = GetStringFromUser();
-            // PrintString(clientSSM);
-            print "YEE AUTHENTICATE\n";
-            PrintKey(clientSSM);
+
             untrusted_send clientSSM, GenerateOTPCodeEvent, usernamePassword;
             receive {
                 case OTPCodeEvent : (payload : StringType) {

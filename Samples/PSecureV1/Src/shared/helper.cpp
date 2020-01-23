@@ -1347,7 +1347,7 @@ string createString(char* str) {
     return string(strCopy);
 }
 
-extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE** P_VAR_payload = argRefs[0];
     PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
@@ -1356,6 +1356,23 @@ extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRe
     PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
 
     // strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
+    memcpy((char*)val, "HashedOutput", strlen("HashedOutput") + 1);
+
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    memcpy(str, (char*)val, SIZE_OF_PRT_STRING_SERIALIZED);
+	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (char*)val);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+}
+
+extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+
+    PRT_VALUE** P_VAR_payload2 = argRefs[1];
+    PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
+
+    strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
     memcpy(str, (char*)val, SIZE_OF_PRT_STRING_SERIALIZED);
@@ -1376,6 +1393,41 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey); //TODO shividentity
     safe_free(currentMachineIDPublicKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
+}
+
+extern "C" void P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    ocall_print("String P value is:");
+    ocall_print((char*) val);
+    
+}
+
+extern "C" void P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    ocall_print("FOREIGN PRINT KEY IS:");
+    printRSAKey((char*) val);
+    
+}
+
+
+extern "C" PRT_VALUE* P_GetStringFromUser_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "teststring");
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    
+}
+
+extern "C" PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "MasterSecret");
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    
 }
 
 //StringType Class
@@ -1421,7 +1473,8 @@ extern "C" PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64 frgnVal)
 	return (PRT_UINT64)str;
 }
 
-//secure_machine class
+//machine_handle class
+
 extern "C" void P_FREE_machine_handle_IMPL(PRT_UINT64 frgnVal)
 {
 	PrtFree((PRT_STRING)frgnVal);
@@ -1461,81 +1514,4 @@ extern "C" PRT_UINT64 P_CLONE_machine_handle_IMPL(PRT_UINT64 frgnVal)
     // }
 	
 	return (PRT_UINT64)str;
-}
-
-extern "C" void P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-    ocall_print("String P value is:");
-    ocall_print((char*) val);
-    
-}
-
-extern "C" void P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-    ocall_print("FOREIGN PRINT KEY IS:");
-    printRSAKey((char*) val);
-    
-}
-
-//Str Class
-extern "C" void P_FREE_Str_IMPL(PRT_UINT64 frgnVal)
-{
-	PrtFree((PRT_STRING)frgnVal);
-}
-
-extern "C" PRT_BOOLEAN P_ISEQUAL_Str_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
-{
-	return strcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2) == 0 ? PRT_TRUE : PRT_FALSE;
-}
-
-extern "C" PRT_STRING P_TOSTRING_Str_IMPL(PRT_UINT64 frgnVal)
-{
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MAX_STR));
-	sprintf_s(str, SIZE_OF_MAX_STR, "String : %lld", frgnVal);
-	return str;
-}
-
-extern "C" PRT_UINT32 P_GETHASHCODE_Str_IMPL(PRT_UINT64 frgnVal)
-{
-	return (PRT_UINT32)frgnVal;
-}
-
-extern "C" PRT_UINT64 P_MKDEF_Str_IMPL(void)
-{
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MAX_STR));
-	sprintf_s(str, SIZE_OF_MAX_STR, "xyx$12");
-	return (PRT_UINT64)str;
-}
-
-extern "C" PRT_UINT64 P_CLONE_Str_IMPL(PRT_UINT64 frgnVal)
-{
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MAX_STR));
-    // if (NETWORK_DEBUG) {
-    //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
-    // } else {
-        memcpy(str, (void*)frgnVal, SIZE_OF_MAX_STR);
-    // }
-	
-	return (PRT_UINT64)str;
-}
-
-
-extern "C" PRT_VALUE* P_GetStringFromUser_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "teststring");
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-    
-}
-
-extern "C" void P_PrintStr_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-	PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-    ocall_print("Str P value is:");
-    ocall_print((char*) val);
 }

@@ -12,13 +12,13 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_GenerateOTPCodeEvent;
     extern PRT_EVENTDECL P_EVENT_OTPCodeEvent;
     extern PRT_EVENTDECL P_EVENT_MapEvent;
-    extern PRT_INTERFACEDECL P_I_GodUntrusted;
-    extern PRT_INTERFACEDECL P_I_GodMachine;
+    extern PRT_INTERFACEDECL P_I_UntrustedInitializer;
+    extern PRT_INTERFACEDECL P_I_TrustedInitializer;
     extern PRT_INTERFACEDECL P_I_BankEnclave;
     extern PRT_INTERFACEDECL P_I_ClientEnclave;
     extern PRT_INTERFACEDECL P_I_ClientWebBrowser;
-    extern PRT_MACHINEDECL P_MACHINE_GodUntrusted;
-    extern PRT_MACHINEDECL P_MACHINE_GodMachine;
+    extern PRT_MACHINEDECL P_MACHINE_UntrustedInitializer;
+    extern PRT_MACHINEDECL P_MACHINE_TrustedInitializer;
     extern PRT_MACHINEDECL P_MACHINE_BankEnclave;
     extern PRT_MACHINEDECL P_MACHINE_ClientEnclave;
     extern PRT_MACHINEDECL P_MACHINE_ClientWebBrowser;
