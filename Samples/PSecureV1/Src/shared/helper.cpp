@@ -1415,10 +1415,8 @@ extern "C" void P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
 }
 
-
-extern "C" PRT_VALUE* P_GetCredentialsFromUser_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    ocall_print("Client Web Browser: Enter Credentials to login to bank!");
     char user_input[100];
     ocall_request_user_input(user_input, 100);
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
@@ -1431,17 +1429,6 @@ extern "C" PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context
 {
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
 	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "MasterSecret");
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-    
-}
-
-extern "C" PRT_VALUE* P_CreateBankAccount_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    ocall_print("Bank: Creating New Bank Account. Enter Credentials below!");
-    char user_input[100];
-    ocall_request_user_input(user_input, 100);
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, user_input);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
     
 }

@@ -68,11 +68,9 @@ PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE***
 
 PRT_VALUE* P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_GetCredentialsFromUser_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_CreateBankAccount_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
@@ -279,14 +277,6 @@ PRT_FUNDECL P_FUNCTION_PrintKey =
 };
 
 
-PRT_FUNDECL P_FUNCTION_GetCredentialsFromUser =
-{
-    "GetCredentialsFromUser",
-    &P_GetCredentialsFromUser_IMPL,
-    NULL
-};
-
-
 PRT_FUNDECL P_FUNCTION_GenerateRandomMasterSecret =
 {
     "GenerateRandomMasterSecret",
@@ -295,10 +285,10 @@ PRT_FUNDECL P_FUNCTION_GenerateRandomMasterSecret =
 };
 
 
-PRT_FUNDECL P_FUNCTION_CreateBankAccount =
+PRT_FUNDECL P_FUNCTION_GetUserInput =
 {
-    "CreateBankAccount",
-    &P_CreateBankAccount_IMPL,
+    "GetUserInput",
+    &P_GetUserInput_IMPL,
     NULL
 };
 
@@ -876,9 +866,11 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         PTMP_tmp1_1 = NULL;
     }
     
+    PrtPrintf("Bank: Creating New Bank Account. Enter Credentials below!");
+    
     PRT_VALUE** P_LVALUE_14 = &(PTMP_tmp2_1);
     PrtFreeValue(*P_LVALUE_14);
-    *P_LVALUE_14 = ((_P_GEN_funval = P_CreateBankAccount_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE_14 = ((_P_GEN_funval = P_GetUserInput_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_2;
     }
@@ -1764,9 +1756,11 @@ PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PrtFreeValue(*P_LVALUE_45);
     *P_LVALUE_45 = PrtCloneValue(*P_VAR_payload_5);
     
+    PrtPrintf("Client Web Browser: Enter Credentials to login to bank!\n");
+    
     PRT_VALUE** P_LVALUE_46 = &(PTMP_tmp0_5);
     PrtFreeValue(*P_LVALUE_46);
-    *P_LVALUE_46 = ((_P_GEN_funval = P_GetCredentialsFromUser_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE_46 = ((_P_GEN_funval = P_GetUserInput_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_8;
     }
@@ -1975,9 +1969,11 @@ PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         case 4: {
                         PrtPrintf("Authentication Failed!");
             
+            PrtPrintf("Client Web Browser: Reenter Credentials to login!");
+            
             PRT_VALUE** P_LVALUE_59 = &(PTMP_tmp5_3);
             PrtFreeValue(*P_LVALUE_59);
-            *P_LVALUE_59 = ((_P_GEN_funval = P_GetCredentialsFromUser_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+            *P_LVALUE_59 = ((_P_GEN_funval = P_GetUserInput_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
             if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
                 goto p_return_11;
             }

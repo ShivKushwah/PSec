@@ -13,9 +13,8 @@ fun InitializeUntrustedMachine();
 fun CreateSecureMachineRequest(): machine_handle;
 fun CreateUSMMachineRequest(): machine_handle;
 fun PrintKey(input : machine_handle);
-fun GetCredentialsFromUser() : StringType;
 fun GenerateRandomMasterSecret() : StringType;
-fun CreateBankAccount() : StringType;
+fun GetUserInput() : StringType;
 
 event BankPublicIDEvent : machine_handle;
 event PublicIDEvent : machine_handle;
@@ -59,7 +58,8 @@ secure_machine BankEnclave {
             clientUSM = payload;
             clientSSM = new ClientEnclave(clientUSM);
 
-            userCredential = CreateBankAccount();
+            print "Bank: Creating New Bank Account. Enter Credentials below!";
+            userCredential = GetUserInput();
             
             masterSecret = GenerateRandomMasterSecret();
 
@@ -136,7 +136,8 @@ machine ClientWebBrowser {
     state Authenticate {
         entry (payload: machine_handle) {
             clientSSM = payload;
-            usernamePassword = GetCredentialsFromUser();
+            print "Client Web Browser: Enter Credentials to login to bank!\n";
+            usernamePassword = GetUserInput();
 
             untrusted_send clientSSM, GenerateOTPCodeEvent, usernamePassword;
             receive {
@@ -167,7 +168,8 @@ machine ClientWebBrowser {
                 }
                 case AuthFailure : {
                     print "Authentication Failed!";
-                    usernamePassword = GetCredentialsFromUser();
+                    print "Client Web Browser: Reenter Credentials to login!";
+                    usernamePassword = GetUserInput();
                     goto ValidateOTPCode;
                 }
             }
