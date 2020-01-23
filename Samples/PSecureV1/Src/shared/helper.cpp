@@ -191,7 +191,7 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
         return integer;
     } else if (value->discriminator == PRT_VALUE_KIND_FOREIGN) {
         if (value->valueUnion.frgn->typeTag == 0 || value->valueUnion.frgn->typeTag == 1) { //if StringType
-            char* string = (char*) malloc(10 + 1 + SIZE_OF_PRT_STRING_SERIALIZED);
+            char* string = (char*) malloc(10 + 1 + SIZE_OF_PRT_STRING_SERIALIZED); //TODO Note SIZE_OF_PRT_STRING_SERIALIZED is hardcoded for all types
             char* foreignTypeTagString = (char*) malloc(10);
             itoa(value->valueUnion.frgn->typeTag, foreignTypeTagString, 10);
             memcpy(string, foreignTypeTagString, strlen(foreignTypeTagString));
@@ -1249,7 +1249,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     // }
 	
     safe_free(newMachinePublicIDKey);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
 }
 
 int getNextPID() {
@@ -1375,7 +1375,7 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     memcpy(str, currentMachineIDPublicKey, SIZE_OF_PRT_STRING_SERIALIZED);
 	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey); //TODO shividentity
     safe_free(currentMachineIDPublicKey);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
 }
 
 //StringType Class

@@ -1,31 +1,27 @@
 type StringType;
 type secure_machine_handle;
 
-event Ping assert 2;
-event Pong assert 2 : int;
-event UntrustedEventFromPing : int;
-fun CreateMachineSecureChild(): StringType;
+fun CreateMachineSecureChild(): secure_machine_handle;
 fun PrintString(inputString : StringType);
-fun SecureSend(sendingToMachine : StringType, eventToSend : event, numArgs : int, arg : int);
-fun GetThis() : StringType;
+fun SecureSend(sendingToMachine : secure_machine_handle, eventToSend : event, numArgs : int, arg : int);
+fun GetThis() : secure_machine_handle;
 fun Concat(input1:StringType, input2:StringType) : StringType;
-event Success;
 fun UntrustedCreateCoordinator();
-fun UntrustedSend(publicID: StringType, even : event, payload: int);
+fun UntrustedSend(publicID: secure_machine_handle, even : event, payload: int);
 fun InitializeUntrustedMachine();
-fun CreateSecureMachineRequest(): StringType;
-fun CreateUSMMachineRequest(): StringType;
-fun PrintKey(input : StringType);
+fun CreateSecureMachineRequest(): secure_machine_handle;
+fun CreateUSMMachineRequest(): secure_machine_handle;
+fun PrintKey(input : secure_machine_handle);
 fun GetStringFromUser() : StringType;
 
-event PublicIDEvent : StringType;
+event PublicIDEvent : secure_machine_handle;
 trusted event MasterSecretEvent: StringType;
 event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
 trusted event MapEvent: map[int, int];
 
 machine GodUntrusted {
-    var handler: StringType;
+    var handler: secure_machine_handle;
     start state Initial {
         entry {
             handler = new GodMachine();
@@ -34,8 +30,9 @@ machine GodUntrusted {
 }
 
 secure_machine GodMachine {
-    var clientUSM: StringType;
-    var bankSSM: StringType;
+    
+    var clientUSM: secure_machine_handle; //TODO make a differentition between secure_machine and machine
+    var bankSSM: secure_machine_handle;
     start state Initial {
         entry {
             clientUSM = new ClientWebBrowser();
@@ -45,12 +42,12 @@ secure_machine GodMachine {
 }
 
 secure_machine BankEnclave {
-    var clientSSM: StringType;
-    var clientUSM: StringType;
+    var clientSSM: StringType;//TODO why is type checking disabled for StringType vs secure_machine_handle
+    var clientUSM: secure_machine_handle;
     var temp: seq[StringType];
     var masterSecret : StringType;
     start state Initial {
-        entry (payload: StringType) { 
+        entry (payload: secure_machine_handle) { 
             clientUSM = payload;
             clientSSM = new ClientEnclave(clientUSM);
             
@@ -70,11 +67,11 @@ secure_machine BankEnclave {
 
 secure_machine ClientEnclave {
     var masterSecret: StringType;
-    var clientUSM : StringType;
+    var clientUSM : secure_machine_handle;
     var result: map[int, int];
     start state Initial {
         defer GenerateOTPCodeEvent;
-        entry (payload: StringType) {
+        entry (payload: secure_machine_handle) {
             clientUSM = payload;
         }
         on MasterSecretEvent goto ProvisionEnclaveWithSecret;
@@ -110,14 +107,14 @@ secure_machine ClientEnclave {
 }
 
 machine ClientWebBrowser {
-    var clientSSM: StringType;
+    var clientSSM: secure_machine_handle;
     var usernamePassword: StringType;
     start state Initial {
         on PublicIDEvent goto Authenticate;
     }
     
     state Authenticate {
-        entry (payload: StringType) {
+        entry (payload: secure_machine_handle) {
             clientSSM = payload;
             usernamePassword = GetStringFromUser();
             // PrintString(clientSSM);

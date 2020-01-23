@@ -334,13 +334,13 @@ void ocall_print_int(int intPrint) {
 
 
 int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
-    PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
-    PRT_MACHINEID pingId;
-    pingId.machineId = 1;
+    // PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));
+    // PRT_MACHINEID pingId;
+    // pingId.machineId = 1;
 
-    PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
-    PrtSend(NULL, pingMachine, pongEvent, 0);
-    return 0;
+    // PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
+    // PrtSend(NULL, pingMachine, pongEvent, 0);
+    // return 0;
 }
 
 char* registerMachineWithNetwork(char* newMachineID) {
