@@ -1417,7 +1417,7 @@ extern "C" void P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 extern "C" PRT_VALUE* P_GetStringFromUser_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "teststring");
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "user-password");
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
     
 }
@@ -1427,6 +1427,21 @@ extern "C" PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
 	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "MasterSecret");
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    
+}
+
+extern "C" PRT_VALUE* P_CreateBankAccount_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "user-password");
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    
+}
+
+extern "C" PRT_VALUE* P_VerifyBankCredentials_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    return PrtMkBoolValue(PRT_TRUE);
+    // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
     
 }
 

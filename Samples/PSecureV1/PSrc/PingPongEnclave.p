@@ -15,6 +15,8 @@ fun CreateUSMMachineRequest(): machine_handle;
 fun PrintKey(input : machine_handle);
 fun GetStringFromUser() : StringType;
 fun GenerateRandomMasterSecret() : StringType;
+fun CreateBankAccount() : StringType;
+fun VerifyBankCredentials(expected_credential : StringType, given_credential : StringType, master_secret: StringType, given_otpcode: StringType) : bool;
 
 event BankPublicIDEvent : machine_handle;
 event PublicIDEvent : machine_handle;
@@ -52,10 +54,13 @@ secure_machine BankEnclave {
     var clientSSM: StringType;//TODO why is type checking disabled for StringType vs machine_handle
     var clientUSM: machine_handle;
     var masterSecret : StringType;
+    var userCredential : StringType;
     start state Initial {
         entry (payload: machine_handle) { 
             clientUSM = payload;
             clientSSM = new ClientEnclave(clientUSM);
+
+            userCredential = CreateBankAccount();
             
             masterSecret = GenerateRandomMasterSecret();
 
@@ -73,7 +78,12 @@ secure_machine BankEnclave {
 
     state Verify { 
         entry (payload : (StringType, StringType)) {
-            untrusted_send clientUSM, AuthSuccess;
+            if (userCredential == payload.0 && Hash(userCredential, masterSecret) == payload.1) {
+                untrusted_send clientUSM, AuthSuccess;
+            } else {
+                untrusted_send clientUSM, AuthFailure;
+            }
+            
             goto AuthCheck;
         }
 
