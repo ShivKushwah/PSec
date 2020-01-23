@@ -138,7 +138,12 @@ machine ClientWebBrowser {
             clientSSM = payload;
             print "Client Web Browser: Enter Credentials to login to bank!\n";
             usernamePassword = GetUserInput();
+            goto RequestOTPCodeGeneration;
+        }
+    }
 
+    state RequestOTPCodeGeneration {
+        entry {
             untrusted_send clientSSM, GenerateOTPCodeEvent, usernamePassword;
             receive {
                 case OTPCodeEvent : (payload : StringType) {
@@ -170,7 +175,7 @@ machine ClientWebBrowser {
                     print "Authentication Failed!";
                     print "Client Web Browser: Reenter Credentials to login!";
                     usernamePassword = GetUserInput();
-                    goto ValidateOTPCode;
+                    goto RequestOTPCodeGeneration;
                 }
             }
         }
