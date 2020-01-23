@@ -3,7 +3,7 @@ project(pingpong)
 
 set(projectName enclave)
 # FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/PingPongEnclave.p) #used to be ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*
-FILE(GLOB_RECURSE psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/OTPSampleCode.p) #used to be ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*
+FILE(GLOB_RECURSE psources ${P_CODE_LOCATION}) #used to be ${CMAKE_CURRENT_SOURCE_DIR}/../../PSrc/*
 PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/)
 
 
@@ -11,7 +11,7 @@ PBUILD(dep_${projectName} psources ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/
 # Generic setup for each project
 ##################################
 
-FILE(GLOB_RECURSE ${projectName}_psources ${CMAKE_CURRENT_SOURCE_DIR}../../PSrc/*)
+FILE(GLOB_RECURSE ${projectName}_psources ${P_CODE_LOCATION})
 FILE(GLOB_RECURSE ${projectName}_csources ./*)
 FILE(GLOB_RECURSE ${projectName}_gsources ${CMAKE_CURRENT_SOURCE_DIR}../../PGenerated/*.c)
 
@@ -36,7 +36,7 @@ set(ENCLAVE_SOURCE_FILES
         enclave_t.c
         temp.c
         # ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/PingPongEnclave.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../PGenerated/OTPSampleCode.c
+        ${P_SOURCE_C_CODE_LOCATION}
         ${CMAKE_CURRENT_SOURCE_DIR}/../../Src/shared/helper.cpp
         #/home/shiv/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c
         #~/Research/temp-del/ProgrammingEnclaves/Samples/PingPongEnclave/PGenerated/PingPong.c
