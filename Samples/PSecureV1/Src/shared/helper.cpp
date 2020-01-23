@@ -1356,8 +1356,9 @@ extern "C" PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     PRT_VALUE** P_VAR_payload2 = argRefs[1];
     PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
 
-    // strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
-    memcpy((char*)val, "HashedOutput", strlen("HashedOutput") + 1);
+    strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
+    strncat((char*) val, "hash", strlen("hash") + 1);
+    // memcpy((char*)val, "HashedOutput", strlen("HashedOutput") + 1);
 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
     memcpy(str, (char*)val, SIZE_OF_PRT_STRING_SERIALIZED);
@@ -1454,6 +1455,9 @@ extern "C" void P_FREE_StringType_IMPL(PRT_UINT64 frgnVal)
 
 extern "C" PRT_BOOLEAN P_ISEQUAL_StringType_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
 {
+    // ocall_print("Checking the following strings");
+    // ocall_print((char*) frgnVal1);
+    // ocall_print((char*) frgnVal2);
 	return strcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2) == 0 ? PRT_TRUE : PRT_FALSE;
 }
 

@@ -1030,11 +1030,11 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     {
         PRT_VALUE** P_LVALUE_27 = &(PTMP_tmp2_2);
         PrtFreeValue(*P_LVALUE_27);
-        *P_LVALUE_27 = PrtCloneValue(p_this->varValues[3]);
+        *P_LVALUE_27 = PrtCloneValue(p_this->varValues[2]);
         
         PRT_VALUE** P_LVALUE_28 = &(PTMP_tmp3_2);
         PrtFreeValue(*P_LVALUE_28);
-        *P_LVALUE_28 = PrtCloneValue(p_this->varValues[2]);
+        *P_LVALUE_28 = PrtCloneValue(p_this->varValues[3]);
         
         PRT_VALUE** P_LVALUE_29 = &(PTMP_tmp4_2);
         PrtFreeValue(*P_LVALUE_29);

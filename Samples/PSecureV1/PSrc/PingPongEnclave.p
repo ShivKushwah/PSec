@@ -77,7 +77,7 @@ secure_machine BankEnclave {
 
     state Verify { 
         entry (payload : (StringType, StringType)) {
-            if (userCredential == payload.0 && Hash(userCredential, masterSecret) == payload.1) {
+            if (userCredential == payload.0 && Hash(masterSecret, userCredential) == payload.1) {
                 untrusted_send clientUSM, AuthSuccess;
             } else {
                 untrusted_send clientUSM, AuthFailure;
