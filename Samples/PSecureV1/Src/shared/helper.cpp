@@ -190,13 +190,17 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
         final_size += strlen(integer);
         return integer;
     } else if (value->discriminator == PRT_VALUE_KIND_FOREIGN) {
-        if (value->valueUnion.frgn->typeTag == 0) { //if StringType
-            char* string = (char*) malloc(SIZE_OF_PRT_STRING_SERIALIZED);
-            memcpy(string, (char*) value->valueUnion.frgn->value, SIZE_OF_PRT_STRING_SERIALIZED);
+        if (value->valueUnion.frgn->typeTag == 0 || value->valueUnion.frgn->typeTag == 1) { //if StringType
+            char* string = (char*) malloc(10 + 1 + SIZE_OF_PRT_STRING_SERIALIZED);
+            char* foreignTypeTagString = (char*) malloc(10);
+            itoa(value->valueUnion.frgn->typeTag, foreignTypeTagString, 10);
+            memcpy(string, foreignTypeTagString, strlen(foreignTypeTagString));
+            memcpy(string + strlen(foreignTypeTagString), ":", 1);
+            memcpy(string + strlen(foreignTypeTagString) + 1, (char*) value->valueUnion.frgn->value, SIZE_OF_PRT_STRING_SERIALIZED);
             ocall_print("the actual PRT value is");
             ocall_print((char*)value->valueUnion.frgn->value);
             //string[SIZE_OF_PRT_STRING_SERIALIZED] = '\0';
-            final_size += SIZE_OF_PRT_STRING_SERIALIZED;
+            final_size += strlen(foreignTypeTagString) + 1 + SIZE_OF_PRT_STRING_SERIALIZED;
             return string;
         } else {
             return createStringLiteralMalloced("UNSUPPORTED_TYPE");
@@ -359,14 +363,17 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
         // ocall_print(str);
         
         newPrtValue->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
-        newPrtValue->valueUnion.frgn->typeTag = 0; //TODO hardcoded for StringType
+       //  = 0; //TODO hardcoded for StringType
         PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
         // sprintf_s(prtStr, SIZE_OF_PRT_STRING_SERIALIZED, str);
-        str = payloadOriginal + strlen(payloadTypeString) + 1;
+        
+        char* typeTagString = str;
+        newPrtValue->valueUnion.frgn->typeTag = atoi(typeTagString);
+        str = payloadOriginal + strlen(payloadTypeString) + 1 + strlen(typeTagString) + 1;
         printRSAKey(str);
         memcpy(prtStr, str, SIZE_OF_PRT_STRING_SERIALIZED);
         newPrtValue->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
-        *numCharactersProcessed = strlen(payloadTypeString) + 1 + SIZE_OF_PRT_STRING_SERIALIZED;
+        *numCharactersProcessed = strlen(payloadTypeString) + 1 + strlen(typeTagString) + 1 + SIZE_OF_PRT_STRING_SERIALIZED;
     } else if (payloadType == PRT_VALUE_KIND_BOOL) {
         if (strcmp(str, "true") == 0) {
             newPrtValue->valueUnion.bl = PRT_TRUE;
@@ -1074,7 +1081,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         ocall_print(payloadString);
         ocall_print("Length is");
         ocall_print_int(payloadStringSize);
-        safe_free(temp);
+        safe_free(temp);        
 
     }
 
