@@ -1,23 +1,23 @@
 #include "PingPongEnclave.h"
 
 // Type universe for program:
-extern PRT_UINT64 P_MKDEF_secure_machine_handle_IMPL(void);
-extern PRT_UINT64 P_CLONE_secure_machine_handle_IMPL(PRT_UINT64);
-extern void P_FREE_secure_machine_handle_IMPL(PRT_UINT64);
-extern PRT_UINT32 P_GETHASHCODE_secure_machine_handle_IMPL(PRT_UINT64);
-extern PRT_BOOLEAN P_ISEQUAL_secure_machine_handle_IMPL(PRT_UINT64, PRT_UINT64);
-extern PRT_STRING P_TOSTRING_secure_machine_handle_IMPL(PRT_UINT64);
-static PRT_FOREIGNTYPEDECL P_secure_machine_handle = {
+extern PRT_UINT64 P_MKDEF_machine_handle_IMPL(void);
+extern PRT_UINT64 P_CLONE_machine_handle_IMPL(PRT_UINT64);
+extern void P_FREE_machine_handle_IMPL(PRT_UINT64);
+extern PRT_UINT32 P_GETHASHCODE_machine_handle_IMPL(PRT_UINT64);
+extern PRT_BOOLEAN P_ISEQUAL_machine_handle_IMPL(PRT_UINT64, PRT_UINT64);
+extern PRT_STRING P_TOSTRING_machine_handle_IMPL(PRT_UINT64);
+static PRT_FOREIGNTYPEDECL P_machine_handle = {
     0U,
-    "secure_machine_handle",
-    P_MKDEF_secure_machine_handle_IMPL,
-    P_CLONE_secure_machine_handle_IMPL,
-    P_FREE_secure_machine_handle_IMPL,
-    P_GETHASHCODE_secure_machine_handle_IMPL,
-    P_ISEQUAL_secure_machine_handle_IMPL,
-    P_TOSTRING_secure_machine_handle_IMPL,
+    "machine_handle",
+    P_MKDEF_machine_handle_IMPL,
+    P_CLONE_machine_handle_IMPL,
+    P_FREE_machine_handle_IMPL,
+    P_GETHASHCODE_machine_handle_IMPL,
+    P_ISEQUAL_machine_handle_IMPL,
+    P_TOSTRING_machine_handle_IMPL,
 };
-PRT_TYPE P_GEND_TYPE_secure_machine_handle = { PRT_KIND_FOREIGN, { .foreignType = &P_secure_machine_handle } };
+PRT_TYPE P_GEND_TYPE_machine_handle = { PRT_KIND_FOREIGN, { .foreignType = &P_machine_handle } };
 extern PRT_UINT64 P_MKDEF_StringType_IMPL(void);
 extern PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64);
 extern void P_FREE_StringType_IMPL(PRT_UINT64);
@@ -100,7 +100,7 @@ PRT_EVENTDECL P_EVENT_PublicIDEvent =
     { PRT_VALUE_KIND_EVENT, 0U },
     "PublicIDEvent",
     4294967295U,
-    &P_GEND_TYPE_secure_machine_handle
+    &P_GEND_TYPE_machine_handle
 };
 
 PRT_EVENTDECL P_EVENT_MasterSecretEvent = 
@@ -275,7 +275,7 @@ PRT_INTERFACEDECL P_I_BankEnclave =
 {
     2U,
     "BankEnclave",
-    &P_GEND_TYPE_secure_machine_handle,
+    &P_GEND_TYPE_machine_handle,
     &P_EVENTSET_BankEnclave_RECV
 };
 
@@ -291,7 +291,7 @@ PRT_INTERFACEDECL P_I_ClientEnclave =
 {
     3U,
     "ClientEnclave",
-    &P_GEND_TYPE_secure_machine_handle,
+    &P_GEND_TYPE_machine_handle,
     &P_EVENTSET_ClientEnclave_RECV
 };
 
@@ -312,7 +312,7 @@ PRT_INTERFACEDECL P_I_ClientWebBrowser =
 };
 
 PRT_VARDECL P_GodUntrusted_VARS[] = {
-    { "handler", &P_GEND_TYPE_secure_machine_handle }
+    { "handler", &P_GEND_TYPE_machine_handle }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER[] = { NULL };
@@ -437,8 +437,8 @@ PRT_MACHINEDECL P_MACHINE_GodUntrusted =
 };
 
 PRT_VARDECL P_GodMachine_VARS[] = {
-    { "clientUSM", &P_GEND_TYPE_secure_machine_handle },
-    { "bankSSM", &P_GEND_TYPE_secure_machine_handle }
+    { "clientUSM", &P_GEND_TYPE_machine_handle },
+    { "bankSSM", &P_GEND_TYPE_machine_handle }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER_1[] = { NULL };
@@ -594,7 +594,7 @@ PRT_MACHINEDECL P_MACHINE_GodMachine =
 
 PRT_VARDECL P_BankEnclave_VARS[] = {
     { "clientSSM", &P_GEND_TYPE_StringType },
-    { "clientUSM", &P_GEND_TYPE_secure_machine_handle },
+    { "clientUSM", &P_GEND_TYPE_machine_handle },
     { "temp", &P_GEND_TYPE_SStringType },
     { "masterSecret", &P_GEND_TYPE_StringType }
 };
@@ -799,7 +799,7 @@ PRT_FUNDECL P_FUNCTION_Anon_2 =
 {
     NULL,
     &P_Anon_IMPL_2,
-    &P_GEND_TYPE_secure_machine_handle
+    &P_GEND_TYPE_machine_handle
 };
 
 
@@ -843,7 +843,7 @@ PRT_MACHINEDECL P_MACHINE_BankEnclave =
 
 PRT_VARDECL P_ClientEnclave_VARS[] = {
     { "masterSecret", &P_GEND_TYPE_StringType },
-    { "clientUSM", &P_GEND_TYPE_secure_machine_handle },
+    { "clientUSM", &P_GEND_TYPE_machine_handle },
     { "result", &P_GEND_TYPE_MKiVi }
 };
 
@@ -993,7 +993,7 @@ PRT_FUNDECL P_FUNCTION_Anon_3 =
 {
     NULL,
     &P_Anon_IMPL_3,
-    &P_GEND_TYPE_secure_machine_handle
+    &P_GEND_TYPE_machine_handle
 };
 
 
@@ -1230,7 +1230,7 @@ PRT_MACHINEDECL P_MACHINE_ClientEnclave =
 };
 
 PRT_VARDECL P_ClientWebBrowser_VARS[] = {
-    { "clientSSM", &P_GEND_TYPE_secure_machine_handle },
+    { "clientSSM", &P_GEND_TYPE_machine_handle },
     { "usernamePassword", &P_GEND_TYPE_StringType }
 };
 
@@ -1522,7 +1522,7 @@ PRT_FUNDECL P_FUNCTION_Anon_7 =
 {
     NULL,
     &P_Anon_IMPL_7,
-    &P_GEND_TYPE_secure_machine_handle
+    &P_GEND_TYPE_machine_handle
 };
 
 
@@ -1607,12 +1607,12 @@ PRT_MACHINEDECL P_MACHINE_ClientWebBrowser =
 };
 
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
-PRT_TYPE* P_TYPEDEF_secure_machine_handle = &P_GEND_TYPE_secure_machine_handle;
+PRT_TYPE* P_TYPEDEF_machine_handle = &P_GEND_TYPE_machine_handle;
 PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_GodUntrusted, &P_MACHINE_GodMachine, &P_MACHINE_BankEnclave, &P_MACHINE_ClientEnclave, &P_MACHINE_ClientWebBrowser };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_GodUntrusted, &P_I_GodMachine, &P_I_BankEnclave, &P_I_ClientEnclave, &P_I_ClientWebBrowser };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
-PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_secure_machine_handle, &P_StringType };
+PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_machine_handle, &P_StringType };
 int P_DefaultImpl_LME_0[] = { -1,1,-1,-1,-1 };
 int P_DefaultImpl_LME_1[] = { -1,-1,2,-1,4 };
 int P_DefaultImpl_LME_2[] = { -1,-1,-1,3,-1 };

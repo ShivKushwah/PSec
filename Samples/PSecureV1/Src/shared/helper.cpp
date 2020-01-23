@@ -1249,7 +1249,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     // }
 	
     safe_free(newMachinePublicIDKey);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
 }
 
 int getNextPID() {
@@ -1375,7 +1375,7 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     memcpy(str, currentMachineIDPublicKey, SIZE_OF_PRT_STRING_SERIALIZED);
 	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey); //TODO shividentity
     safe_free(currentMachineIDPublicKey);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
 }
 
 //StringType Class
@@ -1422,36 +1422,36 @@ extern "C" PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64 frgnVal)
 }
 
 //secure_machine class
-extern "C" void P_FREE_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
+extern "C" void P_FREE_machine_handle_IMPL(PRT_UINT64 frgnVal)
 {
 	PrtFree((PRT_STRING)frgnVal);
 }
 
-extern "C" PRT_BOOLEAN P_ISEQUAL_secure_machine_handle_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
+extern "C" PRT_BOOLEAN P_ISEQUAL_machine_handle_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
 {
 	return strcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2) == 0 ? PRT_TRUE : PRT_FALSE;
 }
 
-extern "C" PRT_STRING P_TOSTRING_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
+extern "C" PRT_STRING P_TOSTRING_machine_handle_IMPL(PRT_UINT64 frgnVal)
 {
 	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
 	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "String : %lld", frgnVal);
 	return str;
 }
 
-extern "C" PRT_UINT32 P_GETHASHCODE_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
+extern "C" PRT_UINT32 P_GETHASHCODE_machine_handle_IMPL(PRT_UINT64 frgnVal)
 {
 	return (PRT_UINT32)frgnVal;
 }
 
-extern "C" PRT_UINT64 P_MKDEF_secure_machine_handle_IMPL(void)
+extern "C" PRT_UINT64 P_MKDEF_machine_handle_IMPL(void)
 {
 	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
 	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "xyx$12");
 	return (PRT_UINT64)str;
 }
 
-extern "C" PRT_UINT64 P_CLONE_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
+extern "C" PRT_UINT64 P_CLONE_machine_handle_IMPL(PRT_UINT64 frgnVal)
 {
 	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
     // if (NETWORK_DEBUG) {

@@ -23,7 +23,7 @@ extern "C" {
     extern PRT_MACHINEDECL P_MACHINE_ClientEnclave;
     extern PRT_MACHINEDECL P_MACHINE_ClientWebBrowser;
     extern PRT_TYPE* P_TYPEDEF_StringType;
-    extern PRT_TYPE* P_TYPEDEF_secure_machine_handle;
+    extern PRT_TYPE* P_TYPEDEF_machine_handle;
     extern PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl;
     
 #ifdef __cplusplus
