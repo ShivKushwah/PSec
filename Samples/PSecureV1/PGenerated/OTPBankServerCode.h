@@ -1,6 +1,6 @@
 #pragma once
-#ifndef P_OTPSAMPLECODE_H_
-#define P_OTPSAMPLECODE_H_
+#ifndef P_OTPBANKSERVERCODE_H_
+#define P_OTPBANKSERVERCODE_H_
 #include "Prt.h"
 
 #ifdef __cplusplus
@@ -34,4 +34,4 @@ extern "C" {
 }
 #endif
 
-#endif // P_OTPSAMPLECODE_H_
+#endif // P_OTPBANKSERVERCODE_H_

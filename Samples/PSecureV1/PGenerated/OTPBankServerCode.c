@@ -1,4 +1,4 @@
-#include "OTPSampleCode.h"
+#include "OTPBankServerCode.h"
 
 // Type universe for program:
 extern PRT_UINT64 P_MKDEF_machine_handle_IMPL(void);
