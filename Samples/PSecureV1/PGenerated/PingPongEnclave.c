@@ -68,13 +68,11 @@ PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE***
 
 PRT_VALUE* P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_GetStringFromUser_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+PRT_VALUE* P_GetCredentialsFromUser_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateBankAccount_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_VerifyBankCredentials_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
@@ -281,10 +279,10 @@ PRT_FUNDECL P_FUNCTION_PrintKey =
 };
 
 
-PRT_FUNDECL P_FUNCTION_GetStringFromUser =
+PRT_FUNDECL P_FUNCTION_GetCredentialsFromUser =
 {
-    "GetStringFromUser",
-    &P_GetStringFromUser_IMPL,
+    "GetCredentialsFromUser",
+    &P_GetCredentialsFromUser_IMPL,
     NULL
 };
 
@@ -301,14 +299,6 @@ PRT_FUNDECL P_FUNCTION_CreateBankAccount =
 {
     "CreateBankAccount",
     &P_CreateBankAccount_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_VerifyBankCredentials =
-{
-    "VerifyBankCredentials",
-    &P_VerifyBankCredentials_IMPL,
     NULL
 };
 
@@ -1776,7 +1766,7 @@ PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_46 = &(PTMP_tmp0_5);
     PrtFreeValue(*P_LVALUE_46);
-    *P_LVALUE_46 = ((_P_GEN_funval = P_GetStringFromUser_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE_46 = ((_P_GEN_funval = P_GetCredentialsFromUser_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_8;
     }
@@ -1925,6 +1915,7 @@ PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp2_5 = NULL;
     PRT_VALUE* PTMP_tmp3_5 = NULL;
     PRT_VALUE* PTMP_tmp4_5 = NULL;
+    PRT_VALUE* PTMP_tmp5_3 = NULL;
     PRT_VALUE* P_VAR_P_payload_1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
@@ -1982,7 +1973,28 @@ PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
             p_return_12: ;
 } break;
         case 4: {
-                        PrtGoto(p_this, 4U, 0);
+                        PrtPrintf("Authentication Failed!");
+            
+            PRT_VALUE** P_LVALUE_59 = &(PTMP_tmp5_3);
+            PrtFreeValue(*P_LVALUE_59);
+            *P_LVALUE_59 = ((_P_GEN_funval = P_GetCredentialsFromUser_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+            if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+                goto p_return_11;
+            }
+            if (p_this->isHalted == PRT_TRUE) {
+                PrtFreeValue(_P_GEN_retval);
+                _P_GEN_retval = NULL;
+                goto p_return_11;
+            }
+            
+            {
+                PRT_VALUE** P_LVALUE_60 = &(p_this->varValues[2]);
+                PrtFreeValue(*P_LVALUE_60);
+                *P_LVALUE_60 = PTMP_tmp5_3;
+                PTMP_tmp5_3 = NULL;
+            }
+            
+            PrtGoto(p_this, 4U, 0);
             
             p_return_13: ;
 } break;
@@ -1998,6 +2010,7 @@ p_return_11: ;
     PrtFreeValue(PTMP_tmp2_5); PTMP_tmp2_5 = NULL;
     PrtFreeValue(PTMP_tmp3_5); PTMP_tmp3_5 = NULL;
     PrtFreeValue(PTMP_tmp4_5); PTMP_tmp4_5 = NULL;
+    PrtFreeValue(PTMP_tmp5_3); PTMP_tmp5_3 = NULL;
     PrtFreeValue(P_VAR_P_payload_1); P_VAR_P_payload_1 = NULL;
     return _P_GEN_retval;
 }

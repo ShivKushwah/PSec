@@ -343,6 +343,11 @@ void ocall_print_int(int intPrint) {
     fflush(stdout);
 }
 
+void ocall_request_user_input(char* user_input, uint32_t max_input_len) {
+    fgets(user_input, max_input_len, stdin);
+    strtok(user_input, "\n"); //To remove trailing new line in fgets
+}
+
 
 int handle_incoming_events_ping_machine(PRT_UINT32 eventIdentifier) {
     // PRT_VALUE* pongEvent = PrtMkEventValue(PrtPrimGetEvent(&P_EVENT_Pong.value));

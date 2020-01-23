@@ -144,6 +144,11 @@ typedef struct ms_ocall_print_int_t {
 	int ms_intPrint;
 } ms_ocall_print_int_t;
 
+typedef struct ms_ocall_request_user_input_t {
+	char* ms_user_input;
+	uint32_t ms_INPUT_SIZE;
+} ms_ocall_request_user_input_t;
+
 typedef struct ms_ocall_pong_enclave_attestation_in_thread_t {
 	int ms_retval;
 	sgx_enclave_id_t ms_currentEid;
@@ -248,6 +253,14 @@ static sgx_status_t SGX_CDECL enclave_ocall_print_int(void* pms)
 {
 	ms_ocall_print_int_t* ms = SGX_CAST(ms_ocall_print_int_t*, pms);
 	ocall_print_int(ms->ms_intPrint);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL enclave_ocall_request_user_input(void* pms)
+{
+	ms_ocall_request_user_input_t* ms = SGX_CAST(ms_ocall_request_user_input_t*, pms);
+	ocall_request_user_input(ms->ms_user_input, ms->ms_INPUT_SIZE);
 
 	return SGX_SUCCESS;
 }
@@ -358,12 +371,13 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[15];
+	void * table[16];
 } ocall_table_enclave = {
-	15,
+	16,
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_print_int,
+		(void*)enclave_ocall_request_user_input,
 		(void*)enclave_ocall_pong_enclave_attestation_in_thread,
 		(void*)enclave_ocall_ping_machine_receive_encrypted_message,
 		(void*)enclave_ocall_network_request,
