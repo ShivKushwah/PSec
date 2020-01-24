@@ -1012,26 +1012,9 @@ int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,
 
         uint32_t i;
         bool secret_match = true;
-        handle_incoming_events_ping_machine(atoi((char*) g_secret));
+        // handle_incoming_events_ping_machine(atoi((char*) g_secret));
         return 0;
 }
-
-// void printRSAKey(char* key) {
-//     //NOTE if modifying this method, modify it in kps.cpp also
-//     char* keyCopy = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-//     memcpy(keyCopy, key, SGX_RSA3072_KEY_SIZE);
-//     ocall_print("key:");
-//     char* temp = keyCopy;
-//     for (int i = 0; i < SGX_RSA3072_KEY_SIZE; i++) {
-//         if (temp[i] == '\0') {
-//             temp[i] = 'D';
-//         }
-//     }
-//     keyCopy[SGX_RSA3072_KEY_SIZE - 1] = '\0';
-    
-//     ocall_print(keyCopy);
-//     safe_free(keyCopy);
-// }
 
 void initKPS() {
     kps_enclave_eid = 0;
