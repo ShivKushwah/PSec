@@ -17,7 +17,15 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_AuthSuccess;
     extern PRT_EVENTDECL P_EVENT_AuthFailure;
     extern PRT_INTERFACEDECL P_I_InitializerMachine;
+    extern PRT_INTERFACEDECL P_I_SecureSupervisorMachine;
+    extern PRT_INTERFACEDECL P_I_VotingUSM;
+    extern PRT_INTERFACEDECL P_I_SecureBulletinBoardMachine;
+    extern PRT_INTERFACEDECL P_I_SecureBallotBoxMachine;
     extern PRT_MACHINEDECL P_MACHINE_InitializerMachine;
+    extern PRT_MACHINEDECL P_MACHINE_SecureSupervisorMachine;
+    extern PRT_MACHINEDECL P_MACHINE_VotingUSM;
+    extern PRT_MACHINEDECL P_MACHINE_SecureBulletinBoardMachine;
+    extern PRT_MACHINEDECL P_MACHINE_SecureBallotBoxMachine;
     extern PRT_TYPE* P_TYPEDEF_StringType;
     extern PRT_TYPE* P_TYPEDEF_machine_handle;
     extern PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl;

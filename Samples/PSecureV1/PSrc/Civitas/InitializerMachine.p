@@ -7,8 +7,8 @@ machine InitializerMachine {
 
 	start state Init {
 		entry {
-			// supervisor = new SecureSupervisor();
-			// votingMachine = new VotingUSM(supervisor);
+			supervisor = new SecureSupervisorMachine();
+			votingMachine = new VotingUSM(supervisor);
 			// votingMachine2 = new VotingUSM(supervisor);
 		}
 	}
