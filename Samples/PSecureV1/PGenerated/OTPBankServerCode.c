@@ -2089,7 +2089,7 @@ PRT_VALUE* P_Anon_IMPL_12(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PrtPrintf("Client Web Browswer Authenticated Successfully!");
+    PrtPrintf("Client Web Browser Authenticated Successfully!");
     
 p_return_15: ;
     return _P_GEN_retval;

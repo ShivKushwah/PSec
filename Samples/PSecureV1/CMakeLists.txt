@@ -9,6 +9,8 @@ set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/OTPBankServ
 # set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/PingPongEnclave.p)
 # set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/PingPongEnclave.c)
 
+# NOTE if uncommenting/ changing files above, change the #include "OTPBankServerCode.h" statement in constants.h
+
 
 
 
