@@ -3,8 +3,11 @@ cmake_minimum_required(VERSION 3.0)
 project(ExampleEnclave)
 set(CMAKE_BUILD_TYPE Debug)
 
-set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPBankServerCode.p  ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPClientCode.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPHeaderDeclarations.p)
-set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/OTPBankServerCode.c) #only need OTPBankServerCode.c because P compiler writes all p code from multiple files into first p file with c extension
+set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas/CivitasHeaders.p  ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas/InitializerMachine.p)
+set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/CivitasHeaders.c) #only need OTPBankServerCode.c because P compiler writes all p code from multiple files into first p file with c extension
+
+# set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPBankServerCode.p  ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPClientCode.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPHeaderDeclarations.p)
+# set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/OTPBankServerCode.c) #only need OTPBankServerCode.c because P compiler writes all p code from multiple files into first p file with c extension
 
 # set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/PingPongEnclave.p)
 # set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/PingPongEnclave.c)
