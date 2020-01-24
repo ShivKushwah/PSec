@@ -13,8 +13,8 @@ secure_machine SecureBallotBoxMachine
     start state Init {
         entry (bBoard: machine_handle){
             bulletinBoard = bBoard;
-            // appendOnlyLog = new TamperEvidentLogMachine(this); //essentially the db of votes for this ballotbox
-            // tabulationTeller = new TabulationTellerMachine(bulletinBoard); //counts the votes
+            appendOnlyLog = new SecureTamperEvidentLogMachine(GetThis()); //essentially the db of votes for this ballotbox
+            tabulationTeller = new SecureTabulationTellerMachine(bulletinBoard); //counts the votes
         }
         // on TRUSTEDeStartElection goto WaitForVotes;
         // on TRUSTEDeVote do {

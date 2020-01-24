@@ -91,6 +91,12 @@ extern PRT_FUNDECL P_FUNCTION_Anon_2;
 PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon_3;
 
+PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_FUNCTION_Anon_4;
+
+PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_FUNCTION_Anon_5;
+
 
 PRT_EVENTDECL P_EVENT_BankPublicIDEvent = 
 {
@@ -354,6 +360,38 @@ PRT_INTERFACEDECL P_I_SecureBallotBoxMachine =
     "SecureBallotBoxMachine",
     &P_GEND_TYPE_machine_handle,
     &P_EVENTSET_SecureBallotBoxMachine_RECV
+};
+
+PRT_EVENTDECL* P_SecureTamperEvidentLogMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_SecureTamperEvidentLogMachine_RECV =
+{
+    10U,
+    P_SecureTamperEvidentLogMachine_RECV_INNER,
+    NULL
+};
+
+PRT_INTERFACEDECL P_I_SecureTamperEvidentLogMachine =
+{
+    5U,
+    "SecureTamperEvidentLogMachine",
+    &P_GEND_TYPE_machine_handle,
+    &P_EVENTSET_SecureTamperEvidentLogMachine_RECV
+};
+
+PRT_EVENTDECL* P_SecureTabulationTellerMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_SecureTabulationTellerMachine_RECV =
+{
+    10U,
+    P_SecureTabulationTellerMachine_RECV_INNER,
+    NULL
+};
+
+PRT_INTERFACEDECL P_I_SecureTabulationTellerMachine =
+{
+    6U,
+    "SecureTabulationTellerMachine",
+    &P_GEND_TYPE_machine_handle,
+    &P_EVENTSET_SecureTabulationTellerMachine_RECV
 };
 
 PRT_VARDECL P_InitializerMachine_VARS[] = {
@@ -987,12 +1025,81 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE** P_VAR_bBoard = argRefs[0];
+    PRT_VALUE* PTMP_tmp0_2 = NULL;
+    PRT_VALUE* PTMP_tmp1_2 = NULL;
+    PRT_VALUE* PTMP_tmp2_2 = NULL;
+    PRT_VALUE* PTMP_tmp3 = NULL;
+    
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE** P_LVALUE_11 = &(p_this->varValues[0]);
     PrtFreeValue(*P_LVALUE_11);
     *P_LVALUE_11 = PrtCloneValue(*P_VAR_bBoard);
     
+    PRT_VALUE** P_LVALUE_12 = &(PTMP_tmp0_2);
+    PrtFreeValue(*P_LVALUE_12);
+    *P_LVALUE_12 = ((_P_GEN_funval = P_GetThis_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_3;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_3;
+    }
+    
+    _P_GEN_funargs[0] = "SecureTamperEvidentLogMachine";
+    _P_GEN_funargs[1] = "1";
+    _P_GEN_funargs[2] = &(PTMP_tmp0_2);
+    PRT_VALUE** P_LVALUE_13 = &(PTMP_tmp1_2);
+    PrtFreeValue(*P_LVALUE_13);
+    *P_LVALUE_13 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_3;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_3;
+    }
+    
+    {
+        PRT_VALUE** P_LVALUE_14 = &(p_this->varValues[2]);
+        PrtFreeValue(*P_LVALUE_14);
+        *P_LVALUE_14 = PTMP_tmp1_2;
+        PTMP_tmp1_2 = NULL;
+    }
+    
+    PRT_VALUE** P_LVALUE_15 = &(PTMP_tmp2_2);
+    PrtFreeValue(*P_LVALUE_15);
+    *P_LVALUE_15 = PrtCloneValue(p_this->varValues[0]);
+    
+    _P_GEN_funargs[0] = "SecureTabulationTellerMachine";
+    _P_GEN_funargs[1] = "1";
+    _P_GEN_funargs[2] = &(PTMP_tmp2_2);
+    PRT_VALUE** P_LVALUE_16 = &(PTMP_tmp3);
+    PrtFreeValue(*P_LVALUE_16);
+    *P_LVALUE_16 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_3;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_3;
+    }
+    
+    {
+        PRT_VALUE** P_LVALUE_17 = &(p_this->varValues[1]);
+        PrtFreeValue(*P_LVALUE_17);
+        *P_LVALUE_17 = PTMP_tmp3;
+        PTMP_tmp3 = NULL;
+    }
+    
 p_return_3: ;
+    PrtFreeValue(PTMP_tmp0_2); PTMP_tmp0_2 = NULL;
+    PrtFreeValue(PTMP_tmp1_2); PTMP_tmp1_2 = NULL;
+    PrtFreeValue(PTMP_tmp2_2); PTMP_tmp2_2 = NULL;
+    PrtFreeValue(PTMP_tmp3); PTMP_tmp3 = NULL;
     return _P_GEN_retval;
 }
 
@@ -1022,13 +1129,15 @@ PRT_EVENTSETDECL P_EVENTSET_SecureBallotBoxMachine_SEND =
     NULL
 };
 
+PRT_UINT32 P_SecureBallotBoxMachine_CREATES_ARR[] = { 6, 5 };
+PRT_INTERFACESETDECL P_SecureBallotBoxMachine_CREATES = { 2, P_SecureBallotBoxMachine_CREATES_ARR };
 PRT_MACHINEDECL P_MACHINE_SecureBallotBoxMachine = 
 {
     4U,
     "SecureBallotBoxMachine",
     &P_EVENTSET_SecureBallotBoxMachine_RECV_1,
     &P_EVENTSET_SecureBallotBoxMachine_SEND,
-    NULL,
+    &P_SecureBallotBoxMachine_CREATES,
     3U,
     1U,
     1U,
@@ -1040,24 +1149,312 @@ PRT_MACHINEDECL P_MACHINE_SecureBallotBoxMachine =
     PRT_TRUE
 };
 
+PRT_VARDECL P_SecureTamperEvidentLogMachine_VARS[] = {
+    { "parent", &P_GEND_TYPE_machine_handle }
+};
+
+PRT_EVENTDECL* P_Init_DEFERS_INNER_5[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Init_DEFERS_5 =
+{
+    0U,
+    P_Init_DEFERS_INNER_5,
+    NULL
+};
+
+PRT_EVENTDECL* P_Init_TRANS_INNER_5[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Init_TRANS_5 =
+{
+    0U,
+    P_Init_TRANS_INNER_5,
+    NULL
+};
+
+PRT_EVENTDECL* P_Init_DOS_INNER_5[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Init_DOS_5 =
+{
+    0U,
+    P_Init_DOS_INNER_5,
+    NULL
+};
+
+#define P_STATE_SecureTamperEvidentLogMachine_Init \
+{ \
+    "SecureTamperEvidentLogMachine.Init", \
+    0U, \
+    0U, \
+    &P_EVENTSET_Init_DEFERS_5, \
+    &P_EVENTSET_Init_TRANS_5, \
+    &P_EVENTSET_Init_DOS_5, \
+    NULL, \
+    NULL, \
+    &P_FUNCTION_Anon_4, \
+    &_P_NO_OP, \
+}
+
+PRT_EVENTDECL* P_WaitForRequests_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_WaitForRequests_DEFERS =
+{
+    0U,
+    P_WaitForRequests_DEFERS_INNER,
+    NULL
+};
+
+PRT_EVENTDECL* P_WaitForRequests_TRANS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_WaitForRequests_TRANS =
+{
+    0U,
+    P_WaitForRequests_TRANS_INNER,
+    NULL
+};
+
+PRT_EVENTDECL* P_WaitForRequests_DOS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_WaitForRequests_DOS =
+{
+    0U,
+    P_WaitForRequests_DOS_INNER,
+    NULL
+};
+
+#define P_STATE_SecureTamperEvidentLogMachine_WaitForRequests \
+{ \
+    "SecureTamperEvidentLogMachine.WaitForRequests", \
+    0U, \
+    0U, \
+    &P_EVENTSET_WaitForRequests_DEFERS, \
+    &P_EVENTSET_WaitForRequests_TRANS, \
+    &P_EVENTSET_WaitForRequests_DOS, \
+    NULL, \
+    NULL, \
+    &_P_NO_OP, \
+    &_P_NO_OP, \
+}
+
+PRT_STATEDECL P_SecureTamperEvidentLogMachine_STATES[] = { P_STATE_SecureTamperEvidentLogMachine_Init, P_STATE_SecureTamperEvidentLogMachine_WaitForRequests };
+
+PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    PRT_VALUE** P_VAR_payload_1 = argRefs[0];
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PRT_VALUE** P_LVALUE_18 = &(p_this->varValues[0]);
+    PrtFreeValue(*P_LVALUE_18);
+    *P_LVALUE_18 = PrtCloneValue(*P_VAR_payload_1);
+    
+    PrtGoto(p_this, 1U, 0);
+    
+p_return_4: ;
+    return _P_GEN_retval;
+}
+
+PRT_FUNDECL P_FUNCTION_Anon_4 =
+{
+    NULL,
+    &P_Anon_IMPL_4,
+    &P_GEND_TYPE_machine_handle
+};
+
+
+PRT_FUNDECL* P_SecureTamperEvidentLogMachine_METHODS[] = { &P_FUNCTION_Anon_4 };
+
+PRT_EVENTDECL* P_SecureTamperEvidentLogMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_SecureTamperEvidentLogMachine_RECV_1 =
+{
+    10U,
+    P_SecureTamperEvidentLogMachine_RECV_INNER_1,
+    NULL
+};
+
+PRT_EVENTDECL* P_SecureTamperEvidentLogMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_SecureTamperEvidentLogMachine_SEND =
+{
+    10U,
+    P_SecureTamperEvidentLogMachine_SEND_INNER,
+    NULL
+};
+
+PRT_MACHINEDECL P_MACHINE_SecureTamperEvidentLogMachine = 
+{
+    5U,
+    "SecureTamperEvidentLogMachine",
+    &P_EVENTSET_SecureTamperEvidentLogMachine_RECV_1,
+    &P_EVENTSET_SecureTamperEvidentLogMachine_SEND,
+    NULL,
+    1U,
+    2U,
+    1U,
+    4294967295U,
+    0U,
+    P_SecureTamperEvidentLogMachine_VARS,
+    P_SecureTamperEvidentLogMachine_STATES,
+    P_SecureTamperEvidentLogMachine_METHODS,
+    PRT_TRUE
+};
+
+PRT_VARDECL P_SecureTabulationTellerMachine_VARS[] = {
+    { "bulletinBoard", &P_GEND_TYPE_machine_handle }
+};
+
+PRT_EVENTDECL* P_Init_DEFERS_INNER_6[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Init_DEFERS_6 =
+{
+    0U,
+    P_Init_DEFERS_INNER_6,
+    NULL
+};
+
+PRT_EVENTDECL* P_Init_TRANS_INNER_6[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Init_TRANS_6 =
+{
+    0U,
+    P_Init_TRANS_INNER_6,
+    NULL
+};
+
+PRT_EVENTDECL* P_Init_DOS_INNER_6[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Init_DOS_6 =
+{
+    0U,
+    P_Init_DOS_INNER_6,
+    NULL
+};
+
+#define P_STATE_SecureTabulationTellerMachine_Init \
+{ \
+    "SecureTabulationTellerMachine.Init", \
+    0U, \
+    0U, \
+    &P_EVENTSET_Init_DEFERS_6, \
+    &P_EVENTSET_Init_TRANS_6, \
+    &P_EVENTSET_Init_DOS_6, \
+    NULL, \
+    NULL, \
+    &P_FUNCTION_Anon_5, \
+    &_P_NO_OP, \
+}
+
+PRT_EVENTDECL* P_DoTally_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_DoTally_DEFERS =
+{
+    0U,
+    P_DoTally_DEFERS_INNER,
+    NULL
+};
+
+PRT_EVENTDECL* P_DoTally_TRANS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_DoTally_TRANS =
+{
+    0U,
+    P_DoTally_TRANS_INNER,
+    NULL
+};
+
+PRT_EVENTDECL* P_DoTally_DOS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_DoTally_DOS =
+{
+    0U,
+    P_DoTally_DOS_INNER,
+    NULL
+};
+
+#define P_STATE_SecureTabulationTellerMachine_DoTally \
+{ \
+    "SecureTabulationTellerMachine.DoTally", \
+    0U, \
+    0U, \
+    &P_EVENTSET_DoTally_DEFERS, \
+    &P_EVENTSET_DoTally_TRANS, \
+    &P_EVENTSET_DoTally_DOS, \
+    NULL, \
+    NULL, \
+    &_P_NO_OP, \
+    &_P_NO_OP, \
+}
+
+PRT_STATEDECL P_SecureTabulationTellerMachine_STATES[] = { P_STATE_SecureTabulationTellerMachine_Init, P_STATE_SecureTabulationTellerMachine_DoTally };
+
+PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    PRT_VALUE** P_VAR_bBoard_1 = argRefs[0];
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PRT_VALUE** P_LVALUE_19 = &(p_this->varValues[0]);
+    PrtFreeValue(*P_LVALUE_19);
+    *P_LVALUE_19 = PrtCloneValue(*P_VAR_bBoard_1);
+    
+p_return_5: ;
+    return _P_GEN_retval;
+}
+
+PRT_FUNDECL P_FUNCTION_Anon_5 =
+{
+    NULL,
+    &P_Anon_IMPL_5,
+    &P_GEND_TYPE_machine_handle
+};
+
+
+PRT_FUNDECL* P_SecureTabulationTellerMachine_METHODS[] = { &P_FUNCTION_Anon_5 };
+
+PRT_EVENTDECL* P_SecureTabulationTellerMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_SecureTabulationTellerMachine_RECV_1 =
+{
+    10U,
+    P_SecureTabulationTellerMachine_RECV_INNER_1,
+    NULL
+};
+
+PRT_EVENTDECL* P_SecureTabulationTellerMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_SecureTabulationTellerMachine_SEND =
+{
+    10U,
+    P_SecureTabulationTellerMachine_SEND_INNER,
+    NULL
+};
+
+PRT_MACHINEDECL P_MACHINE_SecureTabulationTellerMachine = 
+{
+    6U,
+    "SecureTabulationTellerMachine",
+    &P_EVENTSET_SecureTabulationTellerMachine_RECV_1,
+    &P_EVENTSET_SecureTabulationTellerMachine_SEND,
+    NULL,
+    1U,
+    2U,
+    1U,
+    4294967295U,
+    0U,
+    P_SecureTabulationTellerMachine_VARS,
+    P_SecureTabulationTellerMachine_STATES,
+    P_SecureTabulationTellerMachine_METHODS,
+    PRT_TRUE
+};
+
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
 PRT_TYPE* P_TYPEDEF_machine_handle = &P_GEND_TYPE_machine_handle;
 PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_BankPublicIDEvent, &P_EVENT_PublicIDEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_AuthenticateRequest, &P_EVENT_AuthSuccess, &P_EVENT_AuthFailure };
-PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_InitializerMachine, &P_MACHINE_SecureSupervisorMachine, &P_MACHINE_VotingUSM, &P_MACHINE_SecureBulletinBoardMachine, &P_MACHINE_SecureBallotBoxMachine };
-PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_InitializerMachine, &P_I_SecureSupervisorMachine, &P_I_VotingUSM, &P_I_SecureBulletinBoardMachine, &P_I_SecureBallotBoxMachine };
+PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_InitializerMachine, &P_MACHINE_SecureSupervisorMachine, &P_MACHINE_VotingUSM, &P_MACHINE_SecureBulletinBoardMachine, &P_MACHINE_SecureBallotBoxMachine, &P_MACHINE_SecureTamperEvidentLogMachine, &P_MACHINE_SecureTabulationTellerMachine };
+PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_InitializerMachine, &P_I_SecureSupervisorMachine, &P_I_VotingUSM, &P_I_SecureBulletinBoardMachine, &P_I_SecureBallotBoxMachine, &P_I_SecureTamperEvidentLogMachine, &P_I_SecureTabulationTellerMachine };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
 PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_machine_handle, &P_StringType };
-int P_DefaultImpl_LME_0[] = { -1,1,2,-1,-1 };
-int P_DefaultImpl_LME_1[] = { -1,-1,-1,3,4 };
-int P_DefaultImpl_LME_2[] = { -1,-1,-1,-1,-1 };
-int P_DefaultImpl_LME_3[] = { -1,-1,-1,-1,-1 };
-int P_DefaultImpl_LME_4[] = { -1,-1,-1,-1,-1 };
-int* P_DefaultImpl_LINKMAP[] = { P_DefaultImpl_LME_0, P_DefaultImpl_LME_1, P_DefaultImpl_LME_2, P_DefaultImpl_LME_3, P_DefaultImpl_LME_4 };
-int P_DefaultImpl_DEFMAP[] = { 0,1,2,3,4 };
+int P_DefaultImpl_LME_0[] = { -1,1,2,-1,-1,-1,-1 };
+int P_DefaultImpl_LME_1[] = { -1,-1,-1,3,4,-1,-1 };
+int P_DefaultImpl_LME_2[] = { -1,-1,-1,-1,-1,-1,-1 };
+int P_DefaultImpl_LME_3[] = { -1,-1,-1,-1,-1,-1,-1 };
+int P_DefaultImpl_LME_4[] = { -1,-1,-1,-1,-1,5,6 };
+int P_DefaultImpl_LME_5[] = { -1,-1,-1,-1,-1,-1,-1 };
+int P_DefaultImpl_LME_6[] = { -1,-1,-1,-1,-1,-1,-1 };
+int* P_DefaultImpl_LINKMAP[] = { P_DefaultImpl_LME_0, P_DefaultImpl_LME_1, P_DefaultImpl_LME_2, P_DefaultImpl_LME_3, P_DefaultImpl_LME_4, P_DefaultImpl_LME_5, P_DefaultImpl_LME_6 };
+int P_DefaultImpl_DEFMAP[] = { 0,1,2,3,4,5,6 };
 PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl = {
     11U,
-    5U,
-    5U,
+    7U,
+    7U,
     0U,
     2U,
     P_ALL_EVENTS,
