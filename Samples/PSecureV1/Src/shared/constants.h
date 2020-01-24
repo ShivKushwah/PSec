@@ -1,3 +1,5 @@
+#include "PingPongEnclave.h"
+
 const int SIZE_OF_IDENTITY_STRING = 385; //TODO figure out why i cant make this 384
 const int SIZE_OF_CAPABILITYKEY = 384 + 4 +  1  + 384 + 384 + 4;//384 + 1 + 384;
 const int SIZE_OF_MESSAGE = SIZE_OF_CAPABILITYKEY;

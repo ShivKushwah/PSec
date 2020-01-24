@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <assert.h>
-#include "PingPongEnclave.h"
 #include <unordered_map> 
 #include <map>
 

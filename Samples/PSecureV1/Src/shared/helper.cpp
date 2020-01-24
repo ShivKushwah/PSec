@@ -1,4 +1,3 @@
-#include "PingPongEnclave.h"
 #include "string.h"
 #include <string>
 #include "constants.h"
