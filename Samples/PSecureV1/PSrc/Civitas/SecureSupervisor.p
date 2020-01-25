@@ -14,21 +14,31 @@ secure_machine SecureSupervisorMachine
     var username_passwords : seq[(int, int)];
     var votingClients : seq[machine_handle]; //seq[VotingClientMachine];
     var numRequestsFulfilled : int;
+    var temp : int;
+    var i : int;
+    var tempMachineHandle : machine_handle;
     //Assume there is a setup phase where each voter registers a username and password with the Government
     // and the number of available credentials are = # of eligible voters
     start state Init {
         entry {
             bBoard = new SecureBulletinBoardMachine();
             bBox = new SecureBallotBoxMachine(bBoard);
+
+            //TODO setup username_passwords using some GetStringFromUser
+            username_passwords += (0, (1,1));
+            // username_passwords += (0, (2,2));
             
-            // var i : int;
-            // i = 0;
-            // while (i < sizeof(username_passwords)){
-            //     //NOTE: another design is to have each VotingUSM create a Voting Client machine, and pass in Supervisor as parameter to VotingClient. 
-            //     //Problem with this approach is that VotingClient doesn't have capability of Supervisor, and there is no trust.
-            //     votingClients[i] = new VotingClientMachine((bBox = bBox, bBoard = bBoard, username_passwords[i].0, username_passwords[i].1));
-            //     i = i + 1;
-            // }
+            
+            i = 0;
+            while (i < sizeof(username_passwords)){
+                //NOTE: another design is to have each VotingUSM create a Voting Client machine, and pass in Supervisor as parameter to VotingClient. 
+                //Problem with this approach is that VotingClient doesn't have capability of Supervisor, and there is no trust.
+
+                temp = username_passwords[i].0;
+                tempMachineHandle = new SecureVotingClientMachine((bBox, bBoard, username_passwords[i].0, username_passwords[i].1));
+                votingClients += (0, tempMachineHandle);
+                i = i + 1;
+            }
 
             // numRequestsFulfilled = 0;
             

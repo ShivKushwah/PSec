@@ -23,6 +23,7 @@ extern "C" {
     extern PRT_INTERFACEDECL P_I_SecureBallotBoxMachine;
     extern PRT_INTERFACEDECL P_I_SecureTamperEvidentLogMachine;
     extern PRT_INTERFACEDECL P_I_SecureTabulationTellerMachine;
+    extern PRT_INTERFACEDECL P_I_SecureVotingClientMachine;
     extern PRT_MACHINEDECL P_MACHINE_InitializerMachine;
     extern PRT_MACHINEDECL P_MACHINE_SecureSupervisorMachine;
     extern PRT_MACHINEDECL P_MACHINE_VotingUSM;
@@ -30,6 +31,7 @@ extern "C" {
     extern PRT_MACHINEDECL P_MACHINE_SecureBallotBoxMachine;
     extern PRT_MACHINEDECL P_MACHINE_SecureTamperEvidentLogMachine;
     extern PRT_MACHINEDECL P_MACHINE_SecureTabulationTellerMachine;
+    extern PRT_MACHINEDECL P_MACHINE_SecureVotingClientMachine;
     extern PRT_TYPE* P_TYPEDEF_StringType;
     extern PRT_TYPE* P_TYPEDEF_machine_handle;
     extern PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl;
