@@ -52,7 +52,7 @@ secure_machine SecureVotingClientMachine
 
     state SubmitVote {
         entry (vote : int) {
-            secure_send ballotBox, TRUSTEDeVote, ((credentials = credentials, vote = vote), GetThis());
+            secure_send ballotBox, TRUSTEDeVote, (credentials = credentials, vote = vote, requestingMachine = GetThis());
     //         //Highlight NOTE: "this" is public ID of this machine, so it can receive a confirmation
         }
     //     on TRUSTEDeRespConfirmVote goto ValidateResults with {

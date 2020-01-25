@@ -23,7 +23,7 @@ secure_machine SecureBallotBoxMachine
     }
 
     state WaitForVotes {
-        on TRUSTEDeVote do (payload: ((credentials : int, vote : int), machine_handle))
+        on TRUSTEDeVote do (payload: (credentials : int, vote : int, requestingMachine : machine_handle))
         {
     //         secure_send appendOnlyLog, TRUSTEDeAddItem, payload.0;
     //         receive {
