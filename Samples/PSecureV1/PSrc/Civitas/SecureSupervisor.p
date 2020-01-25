@@ -17,8 +17,8 @@ secure_machine SecureSupervisorMachine
     var temp : int;
     var i : int;
     var tempMachineHandle : machine_handle;
-    var requestingMachineHandle : machine_handle;
-    var username: int;
+    // var requestingMachineHandle : machine_handle;
+    // var username: int;
     //Assume there is a setup phase where each voter registers a username and password with the Government
     // and the number of available credentials are = # of eligible voters
     start state Init {
@@ -37,7 +37,7 @@ secure_machine SecureSupervisorMachine
                 //Problem with this approach is that VotingClient doesn't have capability of Supervisor, and there is no trust.
 
                 temp = username_passwords[i].0;
-                tempMachineHandle = new SecureVotingClientMachine((bBox, bBoard, username_passwords[i].0, username_passwords[i].1));
+                tempMachineHandle = new SecureVotingClientMachine((ballotBox = bBox, bulletinBoard = bBoard, username = username_passwords[i].0, password = username_passwords[i].1));
                 votingClients += (0, tempMachineHandle);
                 i = i + 1;
             }
@@ -53,13 +53,13 @@ secure_machine SecureSupervisorMachine
     }
 
     state SendVotingSSM {
-        entry (payload: (machine_handle, int)) {
-            requestingMachineHandle = payload.0;
-            username = payload.1;
+        entry (payload: (requestingMachine: machine_handle, username: int)) {
+            // requestingMachineHandle = payload.0;
+            // username = payload.1;
             i = 0;
             while (i < sizeof(username_passwords)) {
-                if (username_passwords[i].0 == username) {
-                    untrusted_send requestingMachineHandle, UNTRUSTEDReceiveVotingSSM, votingClients[i];
+                if (username_passwords[i].0 == payload.username) {
+                    untrusted_send payload.requestingMachine, UNTRUSTEDReceiveVotingSSM, votingClients[i];
                     numRequestsFulfilled = numRequestsFulfilled + 1;
                 }
                 i = i + 1;

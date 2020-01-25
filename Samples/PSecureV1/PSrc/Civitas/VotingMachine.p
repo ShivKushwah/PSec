@@ -16,7 +16,7 @@ machine VotingUSM {
             // 	username = payload.1;
 		    // 	password = payload.2;
 
-			untrusted_send supervisor, UNTRUSTEDGetVotingSSM, (GetThis(), username); //TODO Ask about this
+			untrusted_send supervisor, UNTRUSTEDGetVotingSSM, (requestingMachine = GetThis(), username = username); //TODO Ask about this
 			
 		}
 		on UNTRUSTEDReceiveVotingSSM goto Vote;
@@ -25,7 +25,7 @@ machine VotingUSM {
 	state Vote {
 		entry (payload: machine_handle) {
 			votingSecureMachine = payload;
-			untrusted_send votingSecureMachine, UNTRUSTEDVoteRequest, (username, password, 1);
+			untrusted_send votingSecureMachine, UNTRUSTEDVoteRequest, (username_attempt = username, password_attempt = password, vote = 1);
 			goto Done;
 		}
 	}

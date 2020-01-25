@@ -15,13 +15,13 @@ secure_machine SecureVotingClientMachine
     var password: secure_int;
 
     start state Init {
-        entry (payload: (machine_handle, machine_handle, int, int)) {
+        entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, username:int, password:int)) {
             credentials = 1;//ReadCredentials(); //This function contacts RegistrationTellers to get
             // an anonymous credential so that no one knows how this machine voted
-            username = payload.2;
-            password = payload.3;
-            ballotBox = payload.0;
-            bulletinBoard = payload.1;
+            username = payload.username;
+            password = payload.password;
+            ballotBox = payload.ballotBox;
+            bulletinBoard = payload.bulletinBoard;
             goto WaitForVote;
         }
     }
@@ -41,13 +41,13 @@ secure_machine SecureVotingClientMachine
     }
 
     state AcceptVote {
-        // entry (payload: (username_attempt: int, password_attempt: int, vote: int)) {
+        entry (payload: (username_attempt: int, password_attempt: int, vote: int)) {
     //         if (payload.0 == username && payload.1 == password) {
     //             goto SubmitVote, payload.2;
     //         } else {
     //             goto WaitForVote;
     //         }
-        // }
+        }
     }
 
     // state SubmitVote {
