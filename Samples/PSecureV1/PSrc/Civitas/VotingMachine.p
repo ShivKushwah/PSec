@@ -23,11 +23,11 @@ machine VotingUSM {
 	}
 
 	state Vote {
-		// entry (payload: secure_machine) {
-		// 	votingSecureMachine = payload;
-		// 	untrusted_send votingSecureMachine, UNTRUSTEDVoteRequest, (username, pw, 1);
-		// 	goto Done;
-		// }
+		entry (payload: machine_handle) {
+			votingSecureMachine = payload;
+			untrusted_send votingSecureMachine, UNTRUSTEDVoteRequest, (username, password, 1);
+			goto Done;
+		}
 	}
 
 	state Done {

@@ -27,4 +27,5 @@ event AuthSuccess;
 event AuthFailure;
 event UNTRUSTEDGetVotingSSM : (machine_handle, int);
 event UNTRUSTEDReceiveVotingSSM : machine_handle;
+event UNTRUSTEDVoteRequest : (int, int, int);
 trusted event TRUSTEDeStartElection;
