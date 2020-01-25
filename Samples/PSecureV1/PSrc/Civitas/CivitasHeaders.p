@@ -29,4 +29,4 @@ event UNTRUSTEDGetVotingSSM : (requestingMachine:machine_handle, username:int);
 event UNTRUSTEDReceiveVotingSSM : machine_handle;
 event UNTRUSTEDVoteRequest : (username_attempt : int, password_attempt : int, vote : int);
 trusted event TRUSTEDeStartElection;
-trusted event TRUSTEDeVote : (credentials : int, vote : int, requestingMachine: machine_handle);
+event TRUSTEDeVote : (credentials : int, vote : int, requestingMachine: machine_handle);
