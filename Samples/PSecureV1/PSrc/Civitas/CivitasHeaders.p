@@ -25,3 +25,4 @@ trusted event MapEvent: map[int, int];
 event AuthenticateRequest : (StringType, StringType);
 event AuthSuccess;
 event AuthFailure;
+event UNTRUSTEDGetVotingSSM : (machine_handle, int);

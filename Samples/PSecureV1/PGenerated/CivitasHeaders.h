@@ -16,6 +16,7 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_AuthenticateRequest;
     extern PRT_EVENTDECL P_EVENT_AuthSuccess;
     extern PRT_EVENTDECL P_EVENT_AuthFailure;
+    extern PRT_EVENTDECL P_EVENT_UNTRUSTEDGetVotingSSM;
     extern PRT_INTERFACEDECL P_I_InitializerMachine;
     extern PRT_INTERFACEDECL P_I_SecureSupervisorMachine;
     extern PRT_INTERFACEDECL P_I_VotingUSM;

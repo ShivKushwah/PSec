@@ -17,6 +17,8 @@ secure_machine SecureSupervisorMachine
     var temp : int;
     var i : int;
     var tempMachineHandle : machine_handle;
+    var requestingMachineHandle : machine_handle;
+    var username: int;
     //Assume there is a setup phase where each voter registers a username and password with the Government
     // and the number of available credentials are = # of eligible voters
     start state Init {
@@ -26,7 +28,7 @@ secure_machine SecureSupervisorMachine
 
             //TODO setup username_passwords using some GetStringFromUser
             username_passwords += (0, (1,1));
-            // username_passwords += (0, (2,2));
+            username_passwords += (0, (2,2));
             
             
             i = 0;
@@ -40,37 +42,39 @@ secure_machine SecureSupervisorMachine
                 i = i + 1;
             }
 
-            // numRequestsFulfilled = 0;
+            numRequestsFulfilled = 0;
             
-            // goto WaitToSendVotingClientMachines;
+            goto WaitToSendVotingClientMachines;
         }
     }
 
-    // state WaitToSendVotingClientMachines {
-    //     on UNTRUSTEDGetVotingSSM goto SendVotingSSM;
-    // }
+    state WaitToSendVotingClientMachines {
+        on UNTRUSTEDGetVotingSSM goto SendVotingSSM;
+    }
 
-    // state SendVotingSSM {
-    //     entry (payload: (requestingMachine: machine, username: int)) {
-    //         int i = 0;
-    //         while (i < sizeof(username_passwords)) {
-    //             if (username_passwords[i].0 == username) {
-    //                 send requestingMachine, UNTRUSTEDReceiveVotingSSM, votingClients[i];
-    //                 numRequestsFulfilled = numRequestsFulfilled + 1;
-    //             }
-    //             i = i + 1;
+    state SendVotingSSM {
+        entry (payload: (machine_handle, int)) {
+            requestingMachineHandle = payload.0;
+            username = payload.1;
+            // int i = 0;
+            // while (i < sizeof(username_passwords)) {
+            //     if (username_passwords[i].0 == username) {
+            //         send requestingMachine, UNTRUSTEDReceiveVotingSSM, votingClients[i];
+            //         numRequestsFulfilled = numRequestsFulfilled + 1;
+            //     }
+            //     i = i + 1;
                 
-    //         }
-    //         if (numRequestsFulfilled < 2) { //TODO what if 2 malcious people know the usernames, and 
-    //             // claim the votingClients (even tho they can't do anything with them) and numRequestFulfilled = 2
-    //             // and voting begins. Maybe we should have the votingClient tell the SecureSupervisor that they have
-    //             // been authenticated so that the secureSupervisor begins the voting
-    //             goto WaitToSendVotingClientMachines;
-    //         } else {
-    //             goto StartElection;
-    //         }
-    //     }
-    // }
+            // }
+            // if (numRequestsFulfilled < 2) { //TODO what if 2 malcious people know the usernames, and 
+            //     // claim the votingClients (even tho they can't do anything with them) and numRequestFulfilled = 2
+            //     // and voting begins. Maybe we should have the votingClient tell the SecureSupervisor that they have
+            //     // been authenticated so that the secureSupervisor begins the voting
+            //     goto WaitToSendVotingClientMachines;
+            // } else {
+            //     goto StartElection;
+            // }
+        }
+    }
 
     // fun DoCloseElection() : bool;/*
     // {

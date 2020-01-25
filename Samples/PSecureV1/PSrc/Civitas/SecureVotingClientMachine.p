@@ -15,7 +15,7 @@ secure_machine SecureVotingClientMachine
     var password: secure_int;
 
     start state Init {
-        entry (payload:(machine_handle, machine_handle, int, int)){
+        entry (payload: (machine_handle, machine_handle, int, int)) {
             // credentials = ReadCredentials(); //This function contacts RegistrationTellers to get
             // // an anonymous credential so that no one knows how this machine voted
             // username = usrName;

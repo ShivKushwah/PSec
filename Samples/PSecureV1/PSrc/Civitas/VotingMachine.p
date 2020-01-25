@@ -10,22 +10,15 @@ machine VotingUSM {
 	start state Init {
         entry (payload: machine_handle) {
 			supervisor = payload;
+			username = 2;
+			password = 2;
 
             // 	username = payload.1;
 		    // 	password = payload.2;
 
-			// untrusted_send supervisor, UNTRUSTEDGetVotingSSM, (this, username); //TODO Ask about this
+			untrusted_send supervisor, UNTRUSTEDGetVotingSSM, (GetThis(), username); //TODO Ask about this
 			
 		}
-		// entry (payload: (supervisor: secure_machine, username: int, password: int)) {
-		// 	supervisor = payload.0;
-
-		// 	username = payload.1;
-		// 	password = payload.2;
-
-		// 	untrusted_send supervisor, UNTRUSTEDGetVotingSSM, (this, username); //TODO Ask about this
-			
-		// }
 		// on UNTRUSTEDReceiveVotingSSM goto Vote;
 	}
 
