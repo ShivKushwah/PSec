@@ -8,11 +8,11 @@ Voting Client Machine
 //Enclave for each client that enables them to vote anonymously as well as change votes
 secure_machine SecureVotingClientMachine
 {
-    var credentials: secure_int;
+    var credentials: int;
     var ballotBox: machine_handle;
     var bulletinBoard: machine_handle;
-    var username: secure_int;
-    var password: secure_int;
+    var username: int;
+    var password: int;
 
     start state Init {
         entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, username:int, password:int)) {
@@ -42,24 +42,24 @@ secure_machine SecureVotingClientMachine
 
     state AcceptVote {
         entry (payload: (username_attempt: int, password_attempt: int, vote: int)) {
-    //         if (payload.0 == username && payload.1 == password) {
-    //             goto SubmitVote, payload.2;
-    //         } else {
-    //             goto WaitForVote;
-    //         }
+            if (payload.username_attempt == username && payload.password_attempt == password) {
+                goto SubmitVote, payload.vote;
+            } else {
+                goto WaitForVote;
+            }
         }
     }
 
-    // state SubmitVote {
-    //     entry (vote : int) {
-    //         secure_send ballotBox, TRUSTEDeVote, ((credentials = credentials, vote = vote), this);
+    state SubmitVote {
+        entry (vote : int) {
+            secure_send ballotBox, TRUSTEDeVote, ((credentials = credentials, vote = vote), GetThis());
     //         //Highlight NOTE: "this" is public ID of this machine, so it can receive a confirmation
-    //     }
+        }
     //     on TRUSTEDeRespConfirmVote goto ValidateResults with {
     //         print "Vote successfully submitted to the ballot box";
     //         goto ValidateResults;
     //     }
-    // }
+    }
 
     // state ValidateResults {
     //     entry {

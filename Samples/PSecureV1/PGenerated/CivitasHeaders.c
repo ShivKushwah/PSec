@@ -50,18 +50,24 @@ static PRT_STRING P_NMDTUP_N_1[] = { "username_attempt", "password_attempt", "vo
 static PRT_TYPE* P_NMDTUP_T_1[] = { &P_GEND_TYPE_i, &P_GEND_TYPE_i, &P_GEND_TYPE_i };
 static PRT_NMDTUPTYPE P_NMDTUP_1 = { 3U, P_NMDTUP_N_1, P_NMDTUP_T_1 };
 static PRT_TYPE P_GEND_TYPE_T3iii = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_1 } };
-static PRT_STRING P_NMDTUP_N_2[] = { "ballotBox", "bulletinBoard", "username", "password" };
-static PRT_TYPE* P_NMDTUP_T_2[] = { &P_GEND_TYPE_machine_handle, &P_GEND_TYPE_machine_handle, &P_GEND_TYPE_i, &P_GEND_TYPE_i };
-static PRT_NMDTUPTYPE P_NMDTUP_2 = { 4U, P_NMDTUP_N_2, P_NMDTUP_T_2 };
-static PRT_TYPE P_GEND_TYPE_T4machine_handlemachine_handleii = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_2 } };
-static PRT_TYPE* P_TUP_T_1[] = { &P_GEND_TYPE_i, &P_GEND_TYPE_i };
+static PRT_STRING P_NMDTUP_N_2[] = { "credentials", "vote" };
+static PRT_TYPE* P_NMDTUP_T_2[] = { &P_GEND_TYPE_i, &P_GEND_TYPE_i };
+static PRT_NMDTUPTYPE P_NMDTUP_2 = { 2U, P_NMDTUP_N_2, P_NMDTUP_T_2 };
+static PRT_TYPE P_GEND_TYPE_T2ii_1 = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_2 } };
+static PRT_TYPE* P_TUP_T_1[] = { &P_GEND_TYPE_T2ii_1, &P_GEND_TYPE_machine_handle };
 static PRT_TUPTYPE P_TUP_1 = { 2U, P_TUP_T_1 };
-static PRT_TYPE P_GEND_TYPE_T2ii = { PRT_KIND_TUPLE, { .tuple = &P_TUP_1 } };
+static PRT_TYPE P_GEND_TYPE_T2T2iimachine_handle = { PRT_KIND_TUPLE, { .tuple = &P_TUP_1 } };
+static PRT_STRING P_NMDTUP_N_3[] = { "ballotBox", "bulletinBoard", "username", "password" };
+static PRT_TYPE* P_NMDTUP_T_3[] = { &P_GEND_TYPE_machine_handle, &P_GEND_TYPE_machine_handle, &P_GEND_TYPE_i, &P_GEND_TYPE_i };
+static PRT_NMDTUPTYPE P_NMDTUP_3 = { 4U, P_NMDTUP_N_3, P_NMDTUP_T_3 };
+static PRT_TYPE P_GEND_TYPE_T4machine_handlemachine_handleii = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_3 } };
+static PRT_TYPE* P_TUP_T_2[] = { &P_GEND_TYPE_i, &P_GEND_TYPE_i };
+static PRT_TUPTYPE P_TUP_2 = { 2U, P_TUP_T_2 };
+static PRT_TYPE P_GEND_TYPE_T2ii = { PRT_KIND_TUPLE, { .tuple = &P_TUP_2 } };
 static PRT_SEQTYPE P_SEQTYPE = { &P_GEND_TYPE_T2ii };
 static PRT_TYPE P_GEND_TYPE_ST2ii = { PRT_KIND_SEQ, { .seq = &P_SEQTYPE } };
 static PRT_SEQTYPE P_SEQTYPE_1 = { &P_GEND_TYPE_machine_handle };
 static PRT_TYPE P_GEND_TYPE_Smachine_handle = { PRT_KIND_SEQ, { .seq = &P_SEQTYPE_1 } };
-static PRT_TYPE P_GEND_TYPE_i_1 = { PRT_KIND_INT, { NULL } };
 
 // Function implementation prototypes:
 PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -124,6 +130,15 @@ extern PRT_FUNDECL P_FUNCTION_Anon_9;
 
 PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon_10;
+
+PRT_VALUE* P_Anon_IMPL_11(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_FUNCTION_Anon_11;
+
+PRT_VALUE* P_Anon_IMPL_12(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_FUNCTION_Anon_12;
+
+PRT_VALUE* P_Anon_IMPL_13(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_FUNCTION_Anon_13;
 
 
 PRT_EVENTDECL P_EVENT_BankPublicIDEvent = 
@@ -228,6 +243,14 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeStartElection =
     "TRUSTEDeStartElection",
     4294967295U,
     &P_GEND_TYPE_n
+};
+
+PRT_EVENTDECL P_EVENT_TRUSTEDeVote = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
+    "TRUSTEDeVote",
+    4294967295U,
+    &P_GEND_TYPE_T2T2iimachine_handle
 };
 
 PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild =
@@ -342,10 +365,10 @@ PRT_FUNDECL P_FUNCTION_GetUserInput =
 };
 
 
-PRT_EVENTDECL* P_InitializerMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_InitializerMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_InitializerMachine_RECV =
 {
-    14U,
+    15U,
     P_InitializerMachine_RECV_INNER,
     NULL
 };
@@ -358,10 +381,10 @@ PRT_INTERFACEDECL P_I_InitializerMachine =
     &P_EVENTSET_InitializerMachine_RECV
 };
 
-PRT_EVENTDECL* P_SecureSupervisorMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureSupervisorMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureSupervisorMachine_RECV =
 {
-    14U,
+    15U,
     P_SecureSupervisorMachine_RECV_INNER,
     NULL
 };
@@ -374,10 +397,10 @@ PRT_INTERFACEDECL P_I_SecureSupervisorMachine =
     &P_EVENTSET_SecureSupervisorMachine_RECV
 };
 
-PRT_EVENTDECL* P_VotingUSM_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_VotingUSM_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_VotingUSM_RECV =
 {
-    14U,
+    15U,
     P_VotingUSM_RECV_INNER,
     NULL
 };
@@ -390,10 +413,10 @@ PRT_INTERFACEDECL P_I_VotingUSM =
     &P_EVENTSET_VotingUSM_RECV
 };
 
-PRT_EVENTDECL* P_SecureBulletinBoardMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureBulletinBoardMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureBulletinBoardMachine_RECV =
 {
-    14U,
+    15U,
     P_SecureBulletinBoardMachine_RECV_INNER,
     NULL
 };
@@ -406,10 +429,10 @@ PRT_INTERFACEDECL P_I_SecureBulletinBoardMachine =
     &P_EVENTSET_SecureBulletinBoardMachine_RECV
 };
 
-PRT_EVENTDECL* P_SecureBallotBoxMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureBallotBoxMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureBallotBoxMachine_RECV =
 {
-    14U,
+    15U,
     P_SecureBallotBoxMachine_RECV_INNER,
     NULL
 };
@@ -422,10 +445,10 @@ PRT_INTERFACEDECL P_I_SecureBallotBoxMachine =
     &P_EVENTSET_SecureBallotBoxMachine_RECV
 };
 
-PRT_EVENTDECL* P_SecureTamperEvidentLogMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureTamperEvidentLogMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureTamperEvidentLogMachine_RECV =
 {
-    14U,
+    15U,
     P_SecureTamperEvidentLogMachine_RECV_INNER,
     NULL
 };
@@ -438,10 +461,10 @@ PRT_INTERFACEDECL P_I_SecureTamperEvidentLogMachine =
     &P_EVENTSET_SecureTamperEvidentLogMachine_RECV
 };
 
-PRT_EVENTDECL* P_SecureTabulationTellerMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureTabulationTellerMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureTabulationTellerMachine_RECV =
 {
-    14U,
+    15U,
     P_SecureTabulationTellerMachine_RECV_INNER,
     NULL
 };
@@ -454,10 +477,10 @@ PRT_INTERFACEDECL P_I_SecureTabulationTellerMachine =
     &P_EVENTSET_SecureTabulationTellerMachine_RECV
 };
 
-PRT_EVENTDECL* P_SecureVotingClientMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureVotingClientMachine_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureVotingClientMachine_RECV =
 {
-    14U,
+    15U,
     P_SecureVotingClientMachine_RECV_INNER,
     NULL
 };
@@ -591,18 +614,18 @@ PRT_FUNDECL P_FUNCTION_Anon =
 
 PRT_FUNDECL* P_InitializerMachine_METHODS[] = { &P_FUNCTION_Anon };
 
-PRT_EVENTDECL* P_InitializerMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_InitializerMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_InitializerMachine_RECV_1 =
 {
-    14U,
+    15U,
     P_InitializerMachine_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_InitializerMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_InitializerMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_InitializerMachine_SEND =
 {
-    14U,
+    15U,
     P_InitializerMachine_SEND_INNER,
     NULL
 };
@@ -1297,18 +1320,18 @@ PRT_FUNDECL P_FUNCTION_Anon_3 =
 
 PRT_FUNDECL* P_SecureSupervisorMachine_METHODS[] = { &P_FUNCTION_Anon_1, &P_FUNCTION_Anon_2, &P_FUNCTION_Anon_3 };
 
-PRT_EVENTDECL* P_SecureSupervisorMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureSupervisorMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureSupervisorMachine_RECV_1 =
 {
-    14U,
+    15U,
     P_SecureSupervisorMachine_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_SecureSupervisorMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureSupervisorMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureSupervisorMachine_SEND =
 {
-    14U,
+    15U,
     P_SecureSupervisorMachine_SEND_INNER,
     NULL
 };
@@ -1630,18 +1653,18 @@ PRT_FUNDECL P_FUNCTION_Anon_5 =
 
 PRT_FUNDECL* P_VotingUSM_METHODS[] = { &P_FUNCTION_Anon_4, &P_FUNCTION_Anon_5 };
 
-PRT_EVENTDECL* P_VotingUSM_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_VotingUSM_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_VotingUSM_RECV_1 =
 {
-    14U,
+    15U,
     P_VotingUSM_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_VotingUSM_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_VotingUSM_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_VotingUSM_SEND =
 {
-    14U,
+    15U,
     P_VotingUSM_SEND_INNER,
     NULL
 };
@@ -1708,18 +1731,18 @@ PRT_EVENTSETDECL P_EVENTSET_Init_DOS_3 =
 
 PRT_STATEDECL P_SecureBulletinBoardMachine_STATES[] = { P_STATE_SecureBulletinBoardMachine_Init };
 
-PRT_EVENTDECL* P_SecureBulletinBoardMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureBulletinBoardMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureBulletinBoardMachine_RECV_1 =
 {
-    14U,
+    15U,
     P_SecureBulletinBoardMachine_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_SecureBulletinBoardMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureBulletinBoardMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureBulletinBoardMachine_SEND =
 {
-    14U,
+    15U,
     P_SecureBulletinBoardMachine_SEND_INNER,
     NULL
 };
@@ -1764,10 +1787,10 @@ PRT_EVENTSETDECL P_EVENTSET_Init_TRANS_4 =
     NULL
 };
 
-PRT_EVENTDECL* P_Init_DOS_INNER_4[] = { NULL };
+PRT_EVENTDECL* P_Init_DOS_INNER_4[] = { &P_EVENT_TRUSTEDeVote };
 PRT_EVENTSETDECL P_EVENTSET_Init_DOS_4 =
 {
-    0U,
+    1U,
     P_Init_DOS_INNER_4,
     NULL
 };
@@ -1777,16 +1800,21 @@ PRT_TRANSDECL P_TRANS_2[] =
     { 0, &P_EVENT_TRUSTEDeStartElection, 1, &_P_NO_OP }
 };
 
+PRT_DODECL P_DOS[] =
+{
+    { 0, &P_EVENT_TRUSTEDeVote, &P_FUNCTION_Anon_7 }
+};
+
 #define P_STATE_SecureBallotBoxMachine_Init \
 { \
     "SecureBallotBoxMachine.Init", \
     1U, \
-    0U, \
+    1U, \
     &P_EVENTSET_Init_DEFERS_4, \
     &P_EVENTSET_Init_TRANS_4, \
     &P_EVENTSET_Init_DOS_4, \
     P_TRANS_2, \
-    NULL, \
+    P_DOS, \
     &P_FUNCTION_Anon_6, \
     &_P_NO_OP, \
 }
@@ -1807,24 +1835,29 @@ PRT_EVENTSETDECL P_EVENTSET_WaitForVotes_TRANS =
     NULL
 };
 
-PRT_EVENTDECL* P_WaitForVotes_DOS_INNER[] = { NULL };
+PRT_EVENTDECL* P_WaitForVotes_DOS_INNER[] = { &P_EVENT_TRUSTEDeVote };
 PRT_EVENTSETDECL P_EVENTSET_WaitForVotes_DOS =
 {
-    0U,
+    1U,
     P_WaitForVotes_DOS_INNER,
     NULL
+};
+
+PRT_DODECL P_DOS_1[] =
+{
+    { 1, &P_EVENT_TRUSTEDeVote, &P_FUNCTION_Anon_8 }
 };
 
 #define P_STATE_SecureBallotBoxMachine_WaitForVotes \
 { \
     "SecureBallotBoxMachine.WaitForVotes", \
     0U, \
-    0U, \
+    1U, \
     &P_EVENTSET_WaitForVotes_DEFERS, \
     &P_EVENTSET_WaitForVotes_TRANS, \
     &P_EVENTSET_WaitForVotes_DOS, \
     NULL, \
-    NULL, \
+    P_DOS_1, \
     &_P_NO_OP, \
     &_P_NO_OP, \
 }
@@ -1924,20 +1957,61 @@ PRT_FUNDECL P_FUNCTION_Anon_6 =
 };
 
 
-PRT_FUNDECL* P_SecureBallotBoxMachine_METHODS[] = { &P_FUNCTION_Anon_6 };
+PRT_VALUE* P_Anon_IMPL_7(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PrtPrintf("Vote ignored, voting has not started yet !!");
+    
+p_return_7: ;
+    return _P_GEN_retval;
+}
 
-PRT_EVENTDECL* P_SecureBallotBoxMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_FUNDECL P_FUNCTION_Anon_7 =
+{
+    NULL,
+    &P_Anon_IMPL_7,
+    NULL
+};
+
+
+PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    PRT_VALUE** P_VAR_payload_3 = argRefs[0];
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+p_return_8: ;
+    return _P_GEN_retval;
+}
+
+PRT_FUNDECL P_FUNCTION_Anon_8 =
+{
+    NULL,
+    &P_Anon_IMPL_8,
+    &P_GEND_TYPE_T2T2iimachine_handle
+};
+
+
+PRT_FUNDECL* P_SecureBallotBoxMachine_METHODS[] = { &P_FUNCTION_Anon_6, &P_FUNCTION_Anon_7, &P_FUNCTION_Anon_8 };
+
+PRT_EVENTDECL* P_SecureBallotBoxMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureBallotBoxMachine_RECV_1 =
 {
-    14U,
+    15U,
     P_SecureBallotBoxMachine_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_SecureBallotBoxMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureBallotBoxMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureBallotBoxMachine_SEND =
 {
-    14U,
+    15U,
     P_SecureBallotBoxMachine_SEND_INNER,
     NULL
 };
@@ -1953,7 +2027,7 @@ PRT_MACHINEDECL P_MACHINE_SecureBallotBoxMachine =
     &P_SecureBallotBoxMachine_CREATES,
     3U,
     2U,
-    1U,
+    3U,
     4294967295U,
     0U,
     P_SecureBallotBoxMachine_VARS,
@@ -2000,7 +2074,7 @@ PRT_EVENTSETDECL P_EVENTSET_Init_DOS_5 =
     &P_EVENTSET_Init_DOS_5, \
     NULL, \
     NULL, \
-    &P_FUNCTION_Anon_7, \
+    &P_FUNCTION_Anon_9, \
     &_P_NO_OP, \
 }
 
@@ -2044,46 +2118,46 @@ PRT_EVENTSETDECL P_EVENTSET_WaitForRequests_DOS =
 
 PRT_STATEDECL P_SecureTamperEvidentLogMachine_STATES[] = { P_STATE_SecureTamperEvidentLogMachine_Init, P_STATE_SecureTamperEvidentLogMachine_WaitForRequests };
 
-PRT_VALUE* P_Anon_IMPL_7(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
-    PRT_VALUE** P_VAR_payload_3 = argRefs[0];
+    PRT_VALUE** P_VAR_payload_4 = argRefs[0];
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE** P_LVALUE_77 = &(p_this->varValues[0]);
     PrtFreeValue(*P_LVALUE_77);
-    *P_LVALUE_77 = PrtCloneValue(*P_VAR_payload_3);
+    *P_LVALUE_77 = PrtCloneValue(*P_VAR_payload_4);
     
     PrtGoto(p_this, 1U, 0);
     
-p_return_7: ;
+p_return_9: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_7 =
+PRT_FUNDECL P_FUNCTION_Anon_9 =
 {
     NULL,
-    &P_Anon_IMPL_7,
+    &P_Anon_IMPL_9,
     &P_GEND_TYPE_machine_handle
 };
 
 
-PRT_FUNDECL* P_SecureTamperEvidentLogMachine_METHODS[] = { &P_FUNCTION_Anon_7 };
+PRT_FUNDECL* P_SecureTamperEvidentLogMachine_METHODS[] = { &P_FUNCTION_Anon_9 };
 
-PRT_EVENTDECL* P_SecureTamperEvidentLogMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureTamperEvidentLogMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureTamperEvidentLogMachine_RECV_1 =
 {
-    14U,
+    15U,
     P_SecureTamperEvidentLogMachine_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_SecureTamperEvidentLogMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureTamperEvidentLogMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureTamperEvidentLogMachine_SEND =
 {
-    14U,
+    15U,
     P_SecureTamperEvidentLogMachine_SEND_INNER,
     NULL
 };
@@ -2144,7 +2218,7 @@ PRT_EVENTSETDECL P_EVENTSET_Init_DOS_6 =
     &P_EVENTSET_Init_DOS_6, \
     NULL, \
     NULL, \
-    &P_FUNCTION_Anon_8, \
+    &P_FUNCTION_Anon_10, \
     &_P_NO_OP, \
 }
 
@@ -2188,7 +2262,7 @@ PRT_EVENTSETDECL P_EVENTSET_DoTally_DOS =
 
 PRT_STATEDECL P_SecureTabulationTellerMachine_STATES[] = { P_STATE_SecureTabulationTellerMachine_Init, P_STATE_SecureTabulationTellerMachine_DoTally };
 
-PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -2200,32 +2274,32 @@ PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PrtFreeValue(*P_LVALUE_78);
     *P_LVALUE_78 = PrtCloneValue(*P_VAR_bBoard_1);
     
-p_return_8: ;
+p_return_10: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_8 =
+PRT_FUNDECL P_FUNCTION_Anon_10 =
 {
     NULL,
-    &P_Anon_IMPL_8,
+    &P_Anon_IMPL_10,
     &P_GEND_TYPE_machine_handle
 };
 
 
-PRT_FUNDECL* P_SecureTabulationTellerMachine_METHODS[] = { &P_FUNCTION_Anon_8 };
+PRT_FUNDECL* P_SecureTabulationTellerMachine_METHODS[] = { &P_FUNCTION_Anon_10 };
 
-PRT_EVENTDECL* P_SecureTabulationTellerMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureTabulationTellerMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureTabulationTellerMachine_RECV_1 =
 {
-    14U,
+    15U,
     P_SecureTabulationTellerMachine_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_SecureTabulationTellerMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureTabulationTellerMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureTabulationTellerMachine_SEND =
 {
-    14U,
+    15U,
     P_SecureTabulationTellerMachine_SEND_INNER,
     NULL
 };
@@ -2249,11 +2323,11 @@ PRT_MACHINEDECL P_MACHINE_SecureTabulationTellerMachine =
 };
 
 PRT_VARDECL P_SecureVotingClientMachine_VARS[] = {
-    { "credentials", &P_GEND_TYPE_i_1 },
+    { "credentials", &P_GEND_TYPE_i },
     { "ballotBox", &P_GEND_TYPE_machine_handle },
     { "bulletinBoard", &P_GEND_TYPE_machine_handle },
-    { "username", &P_GEND_TYPE_i_1 },
-    { "password", &P_GEND_TYPE_i_1 }
+    { "username", &P_GEND_TYPE_i },
+    { "password", &P_GEND_TYPE_i }
 };
 
 PRT_EVENTDECL* P_Init_DEFERS_INNER_7[] = { NULL };
@@ -2290,7 +2364,7 @@ PRT_EVENTSETDECL P_EVENTSET_Init_DOS_7 =
     &P_EVENTSET_Init_DOS_7, \
     NULL, \
     NULL, \
-    &P_FUNCTION_Anon_9, \
+    &P_FUNCTION_Anon_11, \
     &_P_NO_OP, \
 }
 
@@ -2371,19 +2445,57 @@ PRT_EVENTSETDECL P_EVENTSET_AcceptVote_DOS =
     &P_EVENTSET_AcceptVote_DOS, \
     NULL, \
     NULL, \
-    &P_FUNCTION_Anon_10, \
+    &P_FUNCTION_Anon_12, \
     &_P_NO_OP, \
 }
 
-PRT_STATEDECL P_SecureVotingClientMachine_STATES[] = { P_STATE_SecureVotingClientMachine_Init, P_STATE_SecureVotingClientMachine_WaitForVote, P_STATE_SecureVotingClientMachine_AcceptVote };
+PRT_EVENTDECL* P_SubmitVote_DEFERS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_SubmitVote_DEFERS =
+{
+    0U,
+    P_SubmitVote_DEFERS_INNER,
+    NULL
+};
 
-PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_EVENTDECL* P_SubmitVote_TRANS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_SubmitVote_TRANS =
+{
+    0U,
+    P_SubmitVote_TRANS_INNER,
+    NULL
+};
+
+PRT_EVENTDECL* P_SubmitVote_DOS_INNER[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_SubmitVote_DOS =
+{
+    0U,
+    P_SubmitVote_DOS_INNER,
+    NULL
+};
+
+#define P_STATE_SecureVotingClientMachine_SubmitVote \
+{ \
+    "SecureVotingClientMachine.SubmitVote", \
+    0U, \
+    0U, \
+    &P_EVENTSET_SubmitVote_DEFERS, \
+    &P_EVENTSET_SubmitVote_TRANS, \
+    &P_EVENTSET_SubmitVote_DOS, \
+    NULL, \
+    NULL, \
+    &P_FUNCTION_Anon_13, \
+    &_P_NO_OP, \
+}
+
+PRT_STATEDECL P_SecureVotingClientMachine_STATES[] = { P_STATE_SecureVotingClientMachine_Init, P_STATE_SecureVotingClientMachine_WaitForVote, P_STATE_SecureVotingClientMachine_AcceptVote, P_STATE_SecureVotingClientMachine_SubmitVote };
+
+PRT_VALUE* P_Anon_IMPL_11(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
-    PRT_VALUE** P_VAR_payload_4 = argRefs[0];
+    PRT_VALUE** P_VAR_payload_5 = argRefs[0];
     PRT_VALUE* PTMP_tmp0_7 = NULL;
     PRT_VALUE* PTMP_tmp1_7 = NULL;
     PRT_VALUE* PTMP_tmp2_6 = NULL;
@@ -2397,7 +2509,7 @@ PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_80 = &(PTMP_tmp0_7);
     PrtFreeValue(*P_LVALUE_80);
-    *P_LVALUE_80 = PrtTupleGet(*P_VAR_payload_4, 2);
+    *P_LVALUE_80 = PrtTupleGet(*P_VAR_payload_5, 2);
     
     {
         PRT_VALUE** P_LVALUE_81 = &(p_this->varValues[3]);
@@ -2408,7 +2520,7 @@ PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_82 = &(PTMP_tmp1_7);
     PrtFreeValue(*P_LVALUE_82);
-    *P_LVALUE_82 = PrtTupleGet(*P_VAR_payload_4, 3);
+    *P_LVALUE_82 = PrtTupleGet(*P_VAR_payload_5, 3);
     
     {
         PRT_VALUE** P_LVALUE_83 = &(p_this->varValues[4]);
@@ -2419,7 +2531,7 @@ PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_84 = &(PTMP_tmp2_6);
     PrtFreeValue(*P_LVALUE_84);
-    *P_LVALUE_84 = PrtTupleGet(*P_VAR_payload_4, 0);
+    *P_LVALUE_84 = PrtTupleGet(*P_VAR_payload_5, 0);
     
     {
         PRT_VALUE** P_LVALUE_85 = &(p_this->varValues[1]);
@@ -2430,7 +2542,7 @@ PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_86 = &(PTMP_tmp3_5);
     PrtFreeValue(*P_LVALUE_86);
-    *P_LVALUE_86 = PrtTupleGet(*P_VAR_payload_4, 1);
+    *P_LVALUE_86 = PrtTupleGet(*P_VAR_payload_5, 1);
     
     {
         PRT_VALUE** P_LVALUE_87 = &(p_this->varValues[2]);
@@ -2441,7 +2553,7 @@ PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PrtGoto(p_this, 1U, 0);
     
-p_return_9: ;
+p_return_11: ;
     PrtFreeValue(PTMP_tmp0_7); PTMP_tmp0_7 = NULL;
     PrtFreeValue(PTMP_tmp1_7); PTMP_tmp1_7 = NULL;
     PrtFreeValue(PTMP_tmp2_6); PTMP_tmp2_6 = NULL;
@@ -2449,48 +2561,200 @@ p_return_9: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_9 =
+PRT_FUNDECL P_FUNCTION_Anon_11 =
 {
     NULL,
-    &P_Anon_IMPL_9,
+    &P_Anon_IMPL_11,
     &P_GEND_TYPE_T4machine_handlemachine_handleii
 };
 
 
-PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_12(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
-    PRT_VALUE** P_VAR_payload_5 = argRefs[0];
+    PRT_VALUE** P_VAR_payload_6 = argRefs[0];
+    PRT_VALUE* PTMP_tmp0_8 = NULL;
+    PRT_VALUE* PTMP_tmp1_8 = NULL;
+    PRT_VALUE* PTMP_tmp2_7 = NULL;
+    PRT_VALUE* PTMP_tmp3_6 = NULL;
+    PRT_VALUE* PTMP_tmp4_4 = NULL;
+    PRT_VALUE* PTMP_tmp5_3 = NULL;
+    PRT_VALUE* PTMP_tmp6_2 = NULL;
+    
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-p_return_10: ;
+    PRT_VALUE** P_LVALUE_88 = &(PTMP_tmp0_8);
+    PrtFreeValue(*P_LVALUE_88);
+    *P_LVALUE_88 = PrtTupleGet(*P_VAR_payload_6, 0);
+    
+    PRT_VALUE** P_LVALUE_89 = &(PTMP_tmp1_8);
+    PrtFreeValue(*P_LVALUE_89);
+    *P_LVALUE_89 = PrtMkBoolValue(PrtIsEqualValue(PTMP_tmp0_8, p_this->varValues[3]));
+    
+    PRT_VALUE** P_LVALUE_90 = &(PTMP_tmp4_4);
+    PrtFreeValue(*P_LVALUE_90);
+    *P_LVALUE_90 = PrtCloneValue(PTMP_tmp1_8);
+    
+    if (PrtPrimGetBool(PTMP_tmp4_4))
+    {
+        PRT_VALUE** P_LVALUE_91 = &(PTMP_tmp2_7);
+        PrtFreeValue(*P_LVALUE_91);
+        *P_LVALUE_91 = PrtTupleGet(*P_VAR_payload_6, 1);
+        
+        PRT_VALUE** P_LVALUE_92 = &(PTMP_tmp3_6);
+        PrtFreeValue(*P_LVALUE_92);
+        *P_LVALUE_92 = PrtMkBoolValue(PrtIsEqualValue(PTMP_tmp2_7, p_this->varValues[4]));
+        
+        PRT_VALUE** P_LVALUE_93 = &(PTMP_tmp4_4);
+        PrtFreeValue(*P_LVALUE_93);
+        *P_LVALUE_93 = PrtCloneValue(PTMP_tmp3_6);
+        
+    }
+    
+    
+    if (PrtPrimGetBool(PTMP_tmp4_4))
+    {
+        PRT_VALUE** P_LVALUE_94 = &(PTMP_tmp5_3);
+        PrtFreeValue(*P_LVALUE_94);
+        *P_LVALUE_94 = PrtTupleGet(*P_VAR_payload_6, 2);
+        
+        PRT_VALUE** P_LVALUE_95 = &(PTMP_tmp6_2);
+        PrtFreeValue(*P_LVALUE_95);
+        *P_LVALUE_95 = PrtCloneValue(PTMP_tmp5_3);
+        
+        PrtGoto(p_this, 3U, 1, &(PTMP_tmp6_2));
+        
+    }
+    
+    else
+    {
+        PrtGoto(p_this, 1U, 0);
+        
+    }
+    
+    
+p_return_12: ;
+    PrtFreeValue(PTMP_tmp0_8); PTMP_tmp0_8 = NULL;
+    PrtFreeValue(PTMP_tmp1_8); PTMP_tmp1_8 = NULL;
+    PrtFreeValue(PTMP_tmp2_7); PTMP_tmp2_7 = NULL;
+    PrtFreeValue(PTMP_tmp3_6); PTMP_tmp3_6 = NULL;
+    PrtFreeValue(PTMP_tmp4_4); PTMP_tmp4_4 = NULL;
+    PrtFreeValue(PTMP_tmp5_3); PTMP_tmp5_3 = NULL;
+    PrtFreeValue(PTMP_tmp6_2); PTMP_tmp6_2 = NULL;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_10 =
+PRT_FUNDECL P_FUNCTION_Anon_12 =
 {
     NULL,
-    &P_Anon_IMPL_10,
+    &P_Anon_IMPL_12,
     &P_GEND_TYPE_T3iii
 };
 
 
-PRT_FUNDECL* P_SecureVotingClientMachine_METHODS[] = { &P_FUNCTION_Anon_9, &P_FUNCTION_Anon_10 };
+PRT_VALUE* P_Anon_IMPL_13(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    PRT_VALUE** P_VAR_vote = argRefs[0];
+    PRT_VALUE* PTMP_tmp0_9 = NULL;
+    PRT_VALUE* PTMP_tmp1_9 = NULL;
+    PRT_VALUE* PTMP_tmp2_8 = NULL;
+    PRT_VALUE* PTMP_tmp3_7 = NULL;
+    PRT_VALUE* PTMP_tmp4_5 = NULL;
+    PRT_VALUE* PTMP_tmp5_4 = NULL;
+    PRT_VALUE* PTMP_tmp6_3 = NULL;
+    
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PRT_VALUE P_LIT_INT32_11 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
+    PRT_VALUE** P_LVALUE_96 = &(PTMP_tmp0_9);
+    PrtFreeValue(*P_LVALUE_96);
+    *P_LVALUE_96 = PrtCloneValue(p_this->varValues[1]);
+    
+    PRT_VALUE** P_LVALUE_97 = &(PTMP_tmp1_9);
+    PrtFreeValue(*P_LVALUE_97);
+    *P_LVALUE_97 = PrtCloneValue((&P_EVENT_TRUSTEDeVote.value));
+    
+    PRT_VALUE** P_LVALUE_98 = &(PTMP_tmp2_8);
+    PrtFreeValue(*P_LVALUE_98);
+    *P_LVALUE_98 = PrtCloneValue(p_this->varValues[0]);
+    
+    PRT_VALUE** P_LVALUE_99 = &(PTMP_tmp3_7);
+    PrtFreeValue(*P_LVALUE_99);
+    *P_LVALUE_99 = PrtCloneValue(*P_VAR_vote);
+    
+    PRT_VALUE** P_LVALUE_100 = &(PTMP_tmp4_5);
+    PrtFreeValue(*P_LVALUE_100);
+    *P_LVALUE_100 = (PrtMkTuple(&P_GEND_TYPE_T2ii_1, &(PTMP_tmp2_8), &(PTMP_tmp3_7)));
+    
+    PRT_VALUE** P_LVALUE_101 = &(PTMP_tmp5_4);
+    PrtFreeValue(*P_LVALUE_101);
+    *P_LVALUE_101 = ((_P_GEN_funval = P_GetThis_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_13;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_13;
+    }
+    
+    PRT_VALUE** P_LVALUE_102 = &(PTMP_tmp6_3);
+    PrtFreeValue(*P_LVALUE_102);
+    *P_LVALUE_102 = (PrtMkTuple(&P_GEND_TYPE_T2T2iimachine_handle, &(PTMP_tmp4_5), &(PTMP_tmp5_4)));
+    
+    PRT_VALUE* P_PTMP_tmp_4 = PrtCloneValue(&(P_LIT_INT32_11));
+    _P_GEN_funargs[0] = &(PTMP_tmp0_9);
+    _P_GEN_funargs[1] = &(PTMP_tmp1_9);
+    _P_GEN_funargs[2] = &(P_PTMP_tmp_4);
+    _P_GEN_funargs[3] = &(PTMP_tmp6_3);
+    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_13;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_13;
+    }
+    
+p_return_13: ;
+    PrtFreeValue(PTMP_tmp0_9); PTMP_tmp0_9 = NULL;
+    PrtFreeValue(PTMP_tmp1_9); PTMP_tmp1_9 = NULL;
+    PrtFreeValue(PTMP_tmp2_8); PTMP_tmp2_8 = NULL;
+    PrtFreeValue(PTMP_tmp3_7); PTMP_tmp3_7 = NULL;
+    PrtFreeValue(PTMP_tmp4_5); PTMP_tmp4_5 = NULL;
+    PrtFreeValue(PTMP_tmp5_4); PTMP_tmp5_4 = NULL;
+    PrtFreeValue(PTMP_tmp6_3); PTMP_tmp6_3 = NULL;
+    return _P_GEN_retval;
+}
 
-PRT_EVENTDECL* P_SecureVotingClientMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_FUNDECL P_FUNCTION_Anon_13 =
+{
+    NULL,
+    &P_Anon_IMPL_13,
+    &P_GEND_TYPE_i
+};
+
+
+PRT_FUNDECL* P_SecureVotingClientMachine_METHODS[] = { &P_FUNCTION_Anon_11, &P_FUNCTION_Anon_12, &P_FUNCTION_Anon_13 };
+
+PRT_EVENTDECL* P_SecureVotingClientMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureVotingClientMachine_RECV_1 =
 {
-    14U,
+    15U,
     P_SecureVotingClientMachine_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_SecureVotingClientMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTDECL* P_SecureVotingClientMachine_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureVotingClientMachine_SEND =
 {
-    14U,
+    15U,
     P_SecureVotingClientMachine_SEND_INNER,
     NULL
 };
@@ -2503,8 +2767,8 @@ PRT_MACHINEDECL P_MACHINE_SecureVotingClientMachine =
     &P_EVENTSET_SecureVotingClientMachine_SEND,
     NULL,
     5U,
+    4U,
     3U,
-    2U,
     4294967295U,
     0U,
     P_SecureVotingClientMachine_VARS,
@@ -2515,7 +2779,7 @@ PRT_MACHINEDECL P_MACHINE_SecureVotingClientMachine =
 
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
 PRT_TYPE* P_TYPEDEF_machine_handle = &P_GEND_TYPE_machine_handle;
-PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_BankPublicIDEvent, &P_EVENT_PublicIDEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_AuthenticateRequest, &P_EVENT_AuthSuccess, &P_EVENT_AuthFailure, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_TRUSTEDeStartElection };
+PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_BankPublicIDEvent, &P_EVENT_PublicIDEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_AuthenticateRequest, &P_EVENT_AuthSuccess, &P_EVENT_AuthFailure, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_InitializerMachine, &P_MACHINE_SecureSupervisorMachine, &P_MACHINE_VotingUSM, &P_MACHINE_SecureBulletinBoardMachine, &P_MACHINE_SecureBallotBoxMachine, &P_MACHINE_SecureTamperEvidentLogMachine, &P_MACHINE_SecureTabulationTellerMachine, &P_MACHINE_SecureVotingClientMachine };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_InitializerMachine, &P_I_SecureSupervisorMachine, &P_I_VotingUSM, &P_I_SecureBulletinBoardMachine, &P_I_SecureBallotBoxMachine, &P_I_SecureTamperEvidentLogMachine, &P_I_SecureTabulationTellerMachine, &P_I_SecureVotingClientMachine };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
@@ -2531,7 +2795,7 @@ int P_DefaultImpl_LME_7[] = { -1,-1,-1,-1,-1,-1,-1,-1 };
 int* P_DefaultImpl_LINKMAP[] = { P_DefaultImpl_LME_0, P_DefaultImpl_LME_1, P_DefaultImpl_LME_2, P_DefaultImpl_LME_3, P_DefaultImpl_LME_4, P_DefaultImpl_LME_5, P_DefaultImpl_LME_6, P_DefaultImpl_LME_7 };
 int P_DefaultImpl_DEFMAP[] = { 0,1,2,3,4,5,6,7 };
 PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl = {
-    15U,
+    16U,
     8U,
     8U,
     0U,

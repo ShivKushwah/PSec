@@ -20,6 +20,7 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveVotingSSM;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDVoteRequest;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeStartElection;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDeVote;
     extern PRT_INTERFACEDECL P_I_InitializerMachine;
     extern PRT_INTERFACEDECL P_I_SecureSupervisorMachine;
     extern PRT_INTERFACEDECL P_I_VotingUSM;

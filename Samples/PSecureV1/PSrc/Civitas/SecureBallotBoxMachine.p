@@ -17,14 +17,14 @@ secure_machine SecureBallotBoxMachine
             tabulationTeller = new SecureTabulationTellerMachine(bulletinBoard); //counts the votes
         }
         on TRUSTEDeStartElection goto WaitForVotes;
-        // on TRUSTEDeVote do {
-        //     print "Vote ignored, voting has not started yet !!";
-        // }
+        on TRUSTEDeVote do {
+            print "Vote ignored, voting has not started yet !!";
+        }
     }
 
     state WaitForVotes {
-    //     on TRUSTEDeVote do (payload: (Vote, secure_machine))
-    //     {
+        on TRUSTEDeVote do (payload: ((credentials : int, vote : int), machine_handle))
+        {
     //         secure_send appendOnlyLog, TRUSTEDeAddItem, payload.0;
     //         receive {
     //             case TRUSTEDeRespAddItem : (result: bool) {
@@ -34,7 +34,7 @@ secure_machine SecureBallotBoxMachine
     //                 }
     //             }
     //         }
-    //     }
+        }
     //     on eCloseElection goto VoteCounting;
     }
 
