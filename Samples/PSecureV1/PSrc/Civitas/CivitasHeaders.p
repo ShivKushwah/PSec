@@ -26,3 +26,5 @@ event AuthenticateRequest : (StringType, StringType);
 event AuthSuccess;
 event AuthFailure;
 event UNTRUSTEDGetVotingSSM : (machine_handle, int);
+event UNTRUSTEDReceiveVotingSSM : machine_handle;
+trusted event TRUSTEDeStartElection;

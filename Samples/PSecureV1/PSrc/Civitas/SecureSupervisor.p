@@ -56,23 +56,23 @@ secure_machine SecureSupervisorMachine
         entry (payload: (machine_handle, int)) {
             requestingMachineHandle = payload.0;
             username = payload.1;
-            // int i = 0;
-            // while (i < sizeof(username_passwords)) {
-            //     if (username_passwords[i].0 == username) {
-            //         send requestingMachine, UNTRUSTEDReceiveVotingSSM, votingClients[i];
-            //         numRequestsFulfilled = numRequestsFulfilled + 1;
-            //     }
-            //     i = i + 1;
+            i = 0;
+            while (i < sizeof(username_passwords)) {
+                if (username_passwords[i].0 == username) {
+                    untrusted_send requestingMachineHandle, UNTRUSTEDReceiveVotingSSM, votingClients[i];
+                    numRequestsFulfilled = numRequestsFulfilled + 1;
+                }
+                i = i + 1;
                 
-            // }
-            // if (numRequestsFulfilled < 2) { //TODO what if 2 malcious people know the usernames, and 
-            //     // claim the votingClients (even tho they can't do anything with them) and numRequestFulfilled = 2
-            //     // and voting begins. Maybe we should have the votingClient tell the SecureSupervisor that they have
-            //     // been authenticated so that the secureSupervisor begins the voting
-            //     goto WaitToSendVotingClientMachines;
-            // } else {
-            //     goto StartElection;
-            // }
+            }
+            if (numRequestsFulfilled < 2) { //TODO what if 2 malcious people know the usernames, and 
+                // claim the votingClients (even tho they can't do anything with them) and numRequestFulfilled = 2
+                // and voting begins. Maybe we should have the votingClient tell the SecureSupervisor that they have
+                // been authenticated so that the secureSupervisor begins the voting
+                goto WaitToSendVotingClientMachines;
+            } else {
+                goto StartElection;
+            }
         }
     }
 
@@ -81,20 +81,19 @@ secure_machine SecureSupervisorMachine
     //     return $;
     // }*/
 
-    // state StartElection {
-    //     entry {
-            
-    //         send bBox, TRUSTEDeStartElection;
-    //     }
-    //     on null do {
-    //         var res: bool;
-    //         res = DoCloseElection(); //TODO call this when both machines have finished voting
-    //         if(res)
-    //         {
-    //             goto CloseElection;
-    //         }
-    //     }
-    // }
+    state StartElection {
+        entry {     
+            secure_send bBox, TRUSTEDeStartElection;
+        }
+        // on null do {
+        //     var res: bool;
+        //     res = DoCloseElection(); //TODO call this when both machines have finished voting
+        //     if(res)
+        //     {
+        //         goto CloseElection;
+        //     }
+        // }
+    }
 
     // state CloseElection {
     //     entry {

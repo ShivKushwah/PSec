@@ -16,13 +16,13 @@ secure_machine SecureBallotBoxMachine
             appendOnlyLog = new SecureTamperEvidentLogMachine(GetThis()); //essentially the db of votes for this ballotbox
             tabulationTeller = new SecureTabulationTellerMachine(bulletinBoard); //counts the votes
         }
-        // on TRUSTEDeStartElection goto WaitForVotes;
+        on TRUSTEDeStartElection goto WaitForVotes;
         // on TRUSTEDeVote do {
         //     print "Vote ignored, voting has not started yet !!";
         // }
     }
 
-    // state WaitForVotes {
+    state WaitForVotes {
     //     on TRUSTEDeVote do (payload: (Vote, secure_machine))
     //     {
     //         secure_send appendOnlyLog, TRUSTEDeAddItem, payload.0;
@@ -36,7 +36,7 @@ secure_machine SecureBallotBoxMachine
     //         }
     //     }
     //     on eCloseElection goto VoteCounting;
-    // }
+    }
 
     // state VoteCounting {
     //     entry {

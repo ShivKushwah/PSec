@@ -19,7 +19,7 @@ machine VotingUSM {
 			untrusted_send supervisor, UNTRUSTEDGetVotingSSM, (GetThis(), username); //TODO Ask about this
 			
 		}
-		// on UNTRUSTEDReceiveVotingSSM goto Vote;
+		on UNTRUSTEDReceiveVotingSSM goto Vote;
 	}
 
 	state Vote {
