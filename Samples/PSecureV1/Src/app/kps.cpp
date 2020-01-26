@@ -920,7 +920,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
                 safe_free(currentMachineID);
 
                 // strcpy((char*)g_secret, secure_message);
-                memcpy(g_secret, secure_message, SIZE_OF_MESSAGE);
+                memcpy(g_secret, capabilityKey, SIZE_OF_MESSAGE);
                 p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE;
             // }
 

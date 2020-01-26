@@ -69,7 +69,8 @@ secure_machine SecureSupervisorMachine
                 // claim the votingClients (even tho they can't do anything with them) and numRequestFulfilled = 2
                 // and voting begins. Maybe we should have the votingClient tell the SecureSupervisor that they have
                 // been authenticated so that the secureSupervisor begins the voting
-                goto WaitToSendVotingClientMachines;
+                goto StartElection;
+                //goto WaitToSendVotingClientMachines; TODO uncomment
             } else {
                 goto StartElection;
             }
@@ -83,7 +84,7 @@ secure_machine SecureSupervisorMachine
 
     state StartElection {
         entry {     
-            secure_send bBox, TRUSTEDeStartElection;
+            secure_send bBox, TRUSTEDeStartElection, 4;
         }
         // on null do {
         //     var res: bool;

@@ -52,8 +52,23 @@ void safe_free(void* ptr) {
     }
 }
 
+// void printCapabilityKey(char* cap_key) {
+//     char* keyCopy = (char*) malloc(SIZE_OF_CAPABILITYKEY);
+//     memcpy(keyCopy, key, SGX_RSA3072_KEY_SIZE);
+//     ocall_print("key:");
+//     char* temp = keyCopy;
+//     for (int i = 0; i < SGX_RSA3072_KEY_SIZE; i++) {
+//         if (temp[i] == '\0') {
+//             temp[i] = 'D';
+//         }
+//     }
+//     keyCopy[SGX_RSA3072_KEY_SIZE - 1] = '\0';
+    
+//     ocall_print(keyCopy);
+//     safe_free(keyCopy);
+// }
+
 void printRSAKey(char* key) {
-    //NOTE if modifying this method, modify it in kps.cpp also
     char* keyCopy = (char*) malloc(SGX_RSA3072_KEY_SIZE);
     memcpy(keyCopy, key, SGX_RSA3072_KEY_SIZE);
     ocall_print("key:");
@@ -1231,7 +1246,12 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         // printRSAKey(privateCapabilityKey);
 
         PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))] = string(capabilityKeyPayload, SIZE_OF_CAPABILITYKEY); //TODO shiv identity
-
+        ocall_print("Saving capability as");
+        ocall_print("currentMachinePID");
+        ocall_print_int(currentMachinePID);
+        printRSAKey(newMachinePublicIDKey);
+        ocall_print("capabilityKey");
+        ocall_print(capabilityKeyPayload);
         safe_free(publicCapabilityKey);
         safe_free(privateCapabilityKey);
         safe_free(capabilityKeyPayload);

@@ -54,19 +54,20 @@ secure_machine SecureVotingClientMachine
         entry (vote : int) {
 			//NOTE we don't have capabiltiy of ballotbox, so what can we do?
 			//TODO make below
+			print "Harbinder";
             untrusted_send ballotBox, TRUSTEDeVote, (credentials = credentials, vote = vote, requestingMachine = GetThis());
     //         //Highlight NOTE: "this" is public ID of this machine, so it can receive a confirmation
         }
-    //     on TRUSTEDeRespConfirmVote goto ValidateResults with {
-    //         print "Vote successfully submitted to the ballot box";
-    //         goto ValidateResults;
-    //     }
+        on TRUSTEDeRespConfirmVote goto ValidateResults with {
+            print "Vote successfully submitted to the ballot box";
+            // goto ValidateResults;
+        }
     }
 
-    // state ValidateResults {
-    //     entry {
-    //         secure_send bulletinBoard, TRUSTEDeGetElectionResults, this;
-    //     }
+    state ValidateResults {
+        entry {
+            // secure_send bulletinBoard, TRUSTEDeGetElectionResults, this;
+        }
     //     on TRUSTEDeRespElectionResults do (results: ElectionResults){
     //         var vote: int;
     //         if(!(credentials in results.allVotes))
@@ -81,7 +82,7 @@ secure_machine SecureVotingClientMachine
     //         print "{0} won the election", results.whoWon;
     //         goto Done;
     //     }
-    // }
+    }
     // state Done {
     //     entry {
     //         print "Operation successfully performed, closing client safely";

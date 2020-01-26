@@ -11,29 +11,33 @@ secure_machine SecureBallotBoxMachine
     var appendOnlyLog: machine_handle;
 
     start state Init {
+        defer TRUSTEDeVote;
         entry (bBoard: machine_handle){
             bulletinBoard = bBoard;
             appendOnlyLog = new SecureTamperEvidentLogMachine(GetThis()); //essentially the db of votes for this ballotbox
             tabulationTeller = new SecureTabulationTellerMachine(bulletinBoard); //counts the votes
         }
         on TRUSTEDeStartElection goto WaitForVotes;
-        on TRUSTEDeVote do {
-            print "Vote ignored, voting has not started yet !!";
-        }
+        // on TRUSTEDeVote do {
+        //     print "Vote ignored, voting has not started yet !!";
+        // }
     }
 
     state WaitForVotes {
+        entry (payload: int) {
+
+        }
         on TRUSTEDeVote do (payload: (credentials : int, vote : int, requestingMachine : machine_handle))
         {
-    //         secure_send appendOnlyLog, TRUSTEDeAddItem, payload.0;
-    //         receive {
-    //             case TRUSTEDeRespAddItem : (result: bool) {
-    //                 if(result)
-    //                 {
-    //                     secure_send payload.1, TRUSTEDeRespConfirmVote;
-    //                 }
-    //             }
-    //         }
+            secure_send appendOnlyLog, TRUSTEDeAddItem, payload.vote;
+            receive {
+                case TRUSTEDeRespAddItem : (result: bool) {
+                    if(result)
+                    {
+                        untrusted_send payload.requestingMachine, TRUSTEDeRespConfirmVote;
+                    }
+                }
+            }
         }
     //     on eCloseElection goto VoteCounting;
     }
