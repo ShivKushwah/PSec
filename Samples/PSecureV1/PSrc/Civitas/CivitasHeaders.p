@@ -38,3 +38,5 @@ trusted event TRUSTEDeGetLog;
 event TRUSTEDeRespGetLog : seq[int];
 trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[int]);
 event TRUSTEDeElectionResults : map[int, int];
+event TRUSTEDeRespElectionResults: (allVotes : map[int, int], whoWon : int);
+event TRUSTEDeGetElectionResults : machine_handle;

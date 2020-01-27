@@ -13,15 +13,16 @@ secure_machine SecureBulletinBoardMachine
         // on TRUSTEDeGetElectionResults do {
         //     print "Election Results not Available";
         // }
+        defer TRUSTEDeGetElectionResults;
         on TRUSTEDeElectionResults do (payload: map[int, int]) {
             electionResults = payload;
             // goto SendResults;
         }
     }
 
-    // state SendResults { 
-    //     on TRUSTEDeGetElectionResults do (payload: machine){
-    //         secure_send payload, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = 0); //TODO why = 0?
-    //     }
-    // }
+    state SendResults { 
+        on TRUSTEDeGetElectionResults do (payload: machine_handle){
+            untrusted_send payload, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = 0); //TODO why = 0?
+        }
+    }
 }

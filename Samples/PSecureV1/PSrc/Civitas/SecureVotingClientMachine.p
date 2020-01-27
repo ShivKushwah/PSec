@@ -59,28 +59,27 @@ secure_machine SecureVotingClientMachine
         }
         on TRUSTEDeRespConfirmVote goto ValidateResults with {
             print "Vote successfully submitted to the ballot box";
-            // goto ValidateResults;
         }
     }
 
     state ValidateResults {
         entry {
-            // secure_send bulletinBoard, TRUSTEDeGetElectionResults, this;
+            untrusted_send bulletinBoard, TRUSTEDeGetElectionResults, GetThis();
         }
-    //     on TRUSTEDeRespElectionResults do (results: ElectionResults){
-    //         var vote: int;
-    //         if(!(credentials in results.allVotes))
-    //         {
-    //             print "My vote not found!!";
-    //             raise halt;
-    //         }
-    //         else
-    //         {
-    //             print "Your vote for {0} was counted", results.allVotes[credentials];
-    //         }
-    //         print "{0} won the election", results.whoWon;
-    //         goto Done;
-    //     }
+        on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, int], whoWon : int)) {
+            // var vote: int;
+            // if(!(credentials in results.allVotes))
+            // {
+            //     print "My vote not found!!";
+            //     raise halt;
+            // }
+            // else
+            // {
+            //     print "Your vote for {0} was counted", results.allVotes[credentials];
+            // }
+            // print "{0} won the election", results.whoWon;
+            // goto Done;
+        }
     }
     // state Done {
     //     entry {
