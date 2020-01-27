@@ -15,9 +15,9 @@ secure_machine SecureTamperEvidentLogMachine
             log += (sizeof(log), item);
             untrusted_send parent, TRUSTEDeRespAddItem, true;
         }
-        // on TRUSTEDeGetLog do
-        // {
-        //     secure_send parent, TRUSTEDeRespGetLog, log;
-        // }
+        on TRUSTEDeGetLog do
+        {
+            untrusted_send parent, TRUSTEDeRespGetLog, log;
+        }
     }
 }

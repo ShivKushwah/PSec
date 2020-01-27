@@ -13,10 +13,10 @@ secure_machine SecureBulletinBoardMachine
         // on TRUSTEDeGetElectionResults do {
         //     print "Election Results not Available";
         // }
-        // on TRUSTEDeElectionResults do (payload: ElectionResult) {
-        //     electionResults = payload.result;
-        //     goto SendResults;
-        // }
+        on TRUSTEDeElectionResults do (payload: map[int, int]) {
+            electionResults = payload;
+            // goto SendResults;
+        }
     }
 
     // state SendResults { 

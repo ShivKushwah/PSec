@@ -41,28 +41,28 @@ secure_machine SecureBallotBoxMachine
                 }
             }
         }
-    //     on eCloseElection goto VoteCounting;
+        on eCloseElection goto VoteCounting;
     }
 
-    // state VoteCounting {
-    //     entry {
-    //         secure_send appendOnlyLog, TRUSTEDeGetLog;
-    //         receive{
-    //             case TRUSTEDeRespGetLog: (p: seq[any]) //p is all the votes returned by the appendOnlyLog
-    //             {
-    //                 secure_send tabulationTeller, TRUSTEDeAllVotes, (ballotId = 0, votes = p as seq[Vote]);
-    //             }
-    //         }
+    state VoteCounting {
+        entry {
+            secure_send appendOnlyLog, TRUSTEDeGetLog;
+            receive{
+                case TRUSTEDeRespGetLog: (payload: seq[int]) //p is all the votes returned by the appendOnlyLog
+                {
+                    secure_send tabulationTeller, TRUSTEDeAllVotes, (ballotID = 0, votes = payload);
+                }
+            }
 
-    //         goto WaitForGetResultsQuery;
-    //     }
+            goto WaitForGetResultsQuery;
+        }
 
 
-    // }
+    }
 
-    // state WaitForGetResultsQuery {
-    //         on eVote do {
-    //         print "Vote ignored, voting phase is over";
-    //     }
-    // }
+    state WaitForGetResultsQuery {
+        //     on eVote do {
+        //     print "Vote ignored, voting phase is over";
+        // }
+    }
 }

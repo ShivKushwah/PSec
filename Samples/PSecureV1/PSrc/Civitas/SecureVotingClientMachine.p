@@ -54,7 +54,6 @@ secure_machine SecureVotingClientMachine
         entry (vote : int) {
 			//NOTE we don't have capabiltiy of ballotbox, so what can we do?
 			//TODO make below
-			print "Harbinder";
             untrusted_send ballotBox, TRUSTEDeVote, (credentials = credentials, vote = vote, requestingMachine = GetThis());
     //         //Highlight NOTE: "this" is public ID of this machine, so it can receive a confirmation
         }

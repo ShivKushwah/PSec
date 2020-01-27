@@ -24,6 +24,11 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeAddItem;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeRespAddItem;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeRespConfirmVote;
+    extern PRT_EVENTDECL P_EVENT_eCloseElection;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDeGetLog;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDeRespGetLog;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDeAllVotes;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDeElectionResults;
     extern PRT_INTERFACEDECL P_I_InitializerMachine;
     extern PRT_INTERFACEDECL P_I_SecureSupervisorMachine;
     extern PRT_INTERFACEDECL P_I_VotingUSM;

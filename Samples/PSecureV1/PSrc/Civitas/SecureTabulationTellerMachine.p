@@ -7,7 +7,7 @@
 secure_machine SecureTabulationTellerMachine 
 {
     var bulletinBoard: machine_handle;
-    // var allVotes: seq[Vote];
+    var allVotes: seq[int];
 
     start state Init {
         // defer eDoTally; //TODO remove?
@@ -15,28 +15,29 @@ secure_machine SecureTabulationTellerMachine
         entry (bBoard: machine_handle){
             bulletinBoard = bBoard;
         }
-        // on TRUSTEDeAllVotes do (payload: seq[Vote]){
-        //     allVotes = payload;
-        //     goto DoTally;
-        // }
+        on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[int])){
+            allVotes = payload.votes;
+            goto DoTally;
+        }
     }
     
     state DoTally {
-        // entry {
-        //     var result: map[int, int];
-        //     var i: int;
-        //     i = 0;
-        //     while(i < sizeof(allVotes))
-        //     {
-        //         //TODO validate the credentials
+        entry {
+            var result: map[int, int];
+            var i: int;
+            i = 0;
+            while(i < sizeof(allVotes))
+            {
+                //TODO validate the credentials
 
-        //         //consider the latest vote
+                //consider the latest vote
 
-        //         result[allVotes[i].credentials] = allVotes[i].vote;
-        //         i = i + 1;
-        //     }
+                // result[allVotes[i].credentials] = allVotes[i].vote;
+                // i = i + 1;
+            }
 
-        //     secure_send bulletinBoard, TRUSTEDeElectionResults, result;
-        // }
+            // secure_send bulletinBoard, TRUSTEDeElectionResults, result; //TODO make trusted
+            untrusted_send bulletinBoard, TRUSTEDeElectionResults, result;
+        }
     }
 }

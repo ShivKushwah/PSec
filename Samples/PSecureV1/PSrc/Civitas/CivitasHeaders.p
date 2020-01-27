@@ -33,3 +33,8 @@ event TRUSTEDeVote : (credentials : int, vote : int, requestingMachine: machine_
 trusted event TRUSTEDeAddItem : int;
 event TRUSTEDeRespAddItem : bool;
 event TRUSTEDeRespConfirmVote;
+event eCloseElection;
+trusted event TRUSTEDeGetLog;
+event TRUSTEDeRespGetLog : seq[int];
+trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[int]);
+event TRUSTEDeElectionResults : map[int, int];
