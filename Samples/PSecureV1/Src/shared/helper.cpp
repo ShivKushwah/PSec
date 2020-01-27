@@ -1407,7 +1407,7 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     char* currentMachineIDPublicKey;
  
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()); //TODO shivIdentity
+    memcpy(currentMachineIDPublicKey,(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str(), SIZE_OF_IDENTITY_STRING);
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
     memcpy(str, currentMachineIDPublicKey, SIZE_OF_PRT_STRING_SERIALIZED);

@@ -14,6 +14,8 @@ secure_machine SecureBallotBoxMachine
         defer TRUSTEDeVote;
         entry (bBoard: machine_handle){
             bulletinBoard = bBoard;
+            // print "Kirat Debug";
+            // PrintKey(GetThis());
             appendOnlyLog = new SecureTamperEvidentLogMachine(GetThis()); //essentially the db of votes for this ballotbox
             tabulationTeller = new SecureTabulationTellerMachine(bulletinBoard); //counts the votes
         }
