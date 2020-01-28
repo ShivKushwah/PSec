@@ -40,7 +40,7 @@ secure_machine SecureSupervisorMachine
                 i = i + 1;
             }
 
-            secure_send bBox, TRUSTEDeStartElection, 1; //We send 1 because this is how many voting machines are in the system
+            secure_send bBox, TRUSTEDeStartElection, 2; //We send 2 because this is how many voting machines are in the system
             
             goto WaitToSendVotingClientMachines;
         }

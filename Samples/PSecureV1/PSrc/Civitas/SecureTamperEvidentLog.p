@@ -17,6 +17,8 @@ secure_machine SecureTamperEvidentLogMachine
         }
         on TRUSTEDeGetLog do
         {
+            print "Is issue here?";
+            // print log;
             untrusted_send parent, TRUSTEDeRespGetLog, log;
         }
     }

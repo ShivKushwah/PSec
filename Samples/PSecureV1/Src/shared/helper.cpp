@@ -317,9 +317,11 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
 
         int size = PrtSeqSizeOf(value);
 
+        PrtPrintValue(value);
+
         for (int i = 0; i < size; i++) {
 
-            PRT_VALUE* seqValue = PrtSeqGet(value, PrtMkIntValue(currIndex));
+            PRT_VALUE* seqValue = PrtSeqGet(value, PrtMkIntValue(i));
             int currValueType = seqValue->discriminator;
             char* typeString = (char*) malloc(10);
             itoa(currValueType, typeString, 10);
