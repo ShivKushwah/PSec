@@ -67,16 +67,16 @@ secure_machine SecureVotingClientMachine
             untrusted_send bulletinBoard, TRUSTEDeGetElectionResults, GetThis();
         }
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, int], whoWon : int)) {
-            // var vote: int;
-            // if(!(credentials in results.allVotes))
-            // {
-            //     print "My vote not found!!";
-            //     raise halt;
-            // }
-            // else
-            // {
-            //     print "Your vote for {0} was counted", results.allVotes[credentials];
-            // }
+            if(!(credentials in payload.allVotes))
+            {
+                print "ERROR";
+                print "My vote not found!!";
+                // raise halt;
+            }
+            else
+            {
+                print "Your vote for {0} was counted", payload.allVotes[credentials];
+            }
             print "{0} won the election", payload.whoWon;
             goto Done;
         }
