@@ -32,7 +32,7 @@ secure_machine SecureBallotBoxMachine
         }
         on TRUSTEDeVote do (payload: (credentials : int, vote : int, requestingMachine : machine_handle))
         {
-            secure_send appendOnlyLog, TRUSTEDeAddItem, payload.vote;
+            secure_send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credentials, vote = payload.vote);
             receive {
                 case TRUSTEDeRespAddItem : (result: bool) {
                     if(result)
@@ -54,7 +54,7 @@ secure_machine SecureBallotBoxMachine
         entry {
             secure_send appendOnlyLog, TRUSTEDeGetLog;
             receive{
-                case TRUSTEDeRespGetLog: (payload: seq[int]) //p is all the votes returned by the appendOnlyLog
+                case TRUSTEDeRespGetLog: (payload: seq[(credential : int, vote : int)]) //p is all the votes returned by the appendOnlyLog
                 {
                     print "Sending votes to Secure Tabulation teller";
                     secure_send tabulationTeller, TRUSTEDeAllVotes, (ballotID = 0, votes = payload);
