@@ -33,8 +33,9 @@ secure_machine SecureTabulationTellerMachine
                 //consider the latest vote
 
                 // result[allVotes[i].credentials] = allVotes[i].vote;
-                // i = i + 1;
+                i = i + 1;
             }
+            result[0] = 1;
 
             // secure_send bulletinBoard, TRUSTEDeElectionResults, result; //TODO make trusted
             untrusted_send bulletinBoard, TRUSTEDeElectionResults, result;

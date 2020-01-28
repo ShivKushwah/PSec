@@ -16,7 +16,7 @@ secure_machine SecureBulletinBoardMachine
         defer TRUSTEDeGetElectionResults;
         on TRUSTEDeElectionResults do (payload: map[int, int]) {
             electionResults = payload;
-            // goto SendResults;
+            goto SendResults;
         }
     }
 

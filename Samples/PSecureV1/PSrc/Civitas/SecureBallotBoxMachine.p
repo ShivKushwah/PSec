@@ -40,6 +40,9 @@ secure_machine SecureBallotBoxMachine
                     }
                 }
             }
+            //Add logic here if a certain number of votes are received
+            //if num votes = 2
+            goto VoteCounting;
         }
         on eCloseElection goto VoteCounting;
     }
@@ -51,6 +54,7 @@ secure_machine SecureBallotBoxMachine
                 case TRUSTEDeRespGetLog: (payload: seq[int]) //p is all the votes returned by the appendOnlyLog
                 {
                     secure_send tabulationTeller, TRUSTEDeAllVotes, (ballotID = 0, votes = payload);
+                    print "Sent all votes to Tabulation teller";
                 }
             }
 
