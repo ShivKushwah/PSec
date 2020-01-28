@@ -77,16 +77,16 @@ secure_machine SecureVotingClientMachine
             // {
             //     print "Your vote for {0} was counted", results.allVotes[credentials];
             // }
-            // print "{0} won the election", results.whoWon;
-            // goto Done;
+            print "{0} won the election", payload.whoWon;
+            goto Done;
         }
     }
-    // state Done {
-    //     entry {
-    //         print "Operation successfully performed, closing client safely";
-    //         //this should close the enclave
-    //         raise halt;
-    //     }
-    // }
+    state Done {
+        entry {
+            print "Operation successfully performed, closing client safely";
+            //this should close the enclave
+            raise halt;
+        }
+    }
 
 }

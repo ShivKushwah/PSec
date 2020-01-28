@@ -178,6 +178,9 @@ extern PRT_FUNDECL P_FUNCTION_Anon_22;
 PRT_VALUE* P_Anon_IMPL_23(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon_23;
 
+PRT_VALUE* P_Anon_IMPL_24(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_FUNCTION_Anon_24;
+
 
 PRT_EVENTDECL P_EVENT_BankPublicIDEvent = 
 {
@@ -3355,7 +3358,45 @@ PRT_DODECL P_DOS_5[] =
     &_P_NO_OP, \
 }
 
-PRT_STATEDECL P_SecureVotingClientMachine_STATES[] = { P_STATE_SecureVotingClientMachine_Init, P_STATE_SecureVotingClientMachine_WaitForVote, P_STATE_SecureVotingClientMachine_AcceptVote, P_STATE_SecureVotingClientMachine_SubmitVote, P_STATE_SecureVotingClientMachine_ValidateResults };
+PRT_EVENTDECL* P_Done_DEFERS_INNER_1[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Done_DEFERS_1 =
+{
+    0U,
+    P_Done_DEFERS_INNER_1,
+    NULL
+};
+
+PRT_EVENTDECL* P_Done_TRANS_INNER_1[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Done_TRANS_1 =
+{
+    0U,
+    P_Done_TRANS_INNER_1,
+    NULL
+};
+
+PRT_EVENTDECL* P_Done_DOS_INNER_1[] = { NULL };
+PRT_EVENTSETDECL P_EVENTSET_Done_DOS_1 =
+{
+    0U,
+    P_Done_DOS_INNER_1,
+    NULL
+};
+
+#define P_STATE_SecureVotingClientMachine_Done \
+{ \
+    "SecureVotingClientMachine.Done", \
+    0U, \
+    0U, \
+    &P_EVENTSET_Done_DEFERS_1, \
+    &P_EVENTSET_Done_TRANS_1, \
+    &P_EVENTSET_Done_DOS_1, \
+    NULL, \
+    NULL, \
+    &P_FUNCTION_Anon_24, \
+    &_P_NO_OP, \
+}
+
+PRT_STATEDECL P_SecureVotingClientMachine_STATES[] = { P_STATE_SecureVotingClientMachine_Init, P_STATE_SecureVotingClientMachine_WaitForVote, P_STATE_SecureVotingClientMachine_AcceptVote, P_STATE_SecureVotingClientMachine_SubmitVote, P_STATE_SecureVotingClientMachine_ValidateResults, P_STATE_SecureVotingClientMachine_Done };
 
 PRT_VALUE* P_Anon_IMPL_18(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
@@ -3693,8 +3734,19 @@ PRT_VALUE* P_Anon_IMPL_23(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE** P_VAR_payload_12 = argRefs[0];
+    PRT_VALUE* PTMP_tmp0_18 = NULL;
+    
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PRT_VALUE** P_LVALUE_139 = &(PTMP_tmp0_18);
+    PrtFreeValue(*P_LVALUE_139);
+    *P_LVALUE_139 = PrtTupleGet(*P_VAR_payload_12, 1);
+    
+    PrtFormatPrintf("", 1, PTMP_tmp0_18, 1, 0, " won the election");
+    
+    PrtGoto(p_this, 5U, 0);
+    
 p_return_25: ;
+    PrtFreeValue(PTMP_tmp0_18); PTMP_tmp0_18 = NULL;
     return _P_GEN_retval;
 }
 
@@ -3706,7 +3758,39 @@ PRT_FUNDECL P_FUNCTION_Anon_23 =
 };
 
 
-PRT_FUNDECL* P_SecureVotingClientMachine_METHODS[] = { &P_FUNCTION_Anon_18, &P_FUNCTION_Anon_19, &P_FUNCTION_Anon_20, &P_FUNCTION_Anon_21, &P_FUNCTION_Anon_22, &P_FUNCTION_Anon_23 };
+PRT_VALUE* P_Anon_IMPL_24(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    PRT_VALUE* PTMP_tmp0_19 = NULL;
+    
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PrtPrintf("Operation successfully performed, closing client safely");
+    
+    PRT_VALUE** P_LVALUE_140 = &(PTMP_tmp0_19);
+    PrtFreeValue(*P_LVALUE_140);
+    *P_LVALUE_140 = PrtCloneValue((&_P_EVENT_HALT_STRUCT.value));
+    
+    PrtRaise(p_this, PTMP_tmp0_19, 0);
+    *(&(PTMP_tmp0_19)) = NULL;
+    goto p_return_26;
+    
+p_return_26: ;
+    PrtFreeValue(PTMP_tmp0_19); PTMP_tmp0_19 = NULL;
+    return _P_GEN_retval;
+}
+
+PRT_FUNDECL P_FUNCTION_Anon_24 =
+{
+    NULL,
+    &P_Anon_IMPL_24,
+    NULL
+};
+
+
+PRT_FUNDECL* P_SecureVotingClientMachine_METHODS[] = { &P_FUNCTION_Anon_18, &P_FUNCTION_Anon_19, &P_FUNCTION_Anon_20, &P_FUNCTION_Anon_21, &P_FUNCTION_Anon_22, &P_FUNCTION_Anon_23, &P_FUNCTION_Anon_24 };
 
 PRT_EVENTDECL* P_SecureVotingClientMachine_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeGetElectionResults, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_eCloseElection, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureVotingClientMachine_RECV_1 =
@@ -3732,8 +3816,8 @@ PRT_MACHINEDECL P_MACHINE_SecureVotingClientMachine =
     &P_EVENTSET_SecureVotingClientMachine_SEND,
     NULL,
     5U,
-    5U,
     6U,
+    7U,
     4294967295U,
     0U,
     P_SecureVotingClientMachine_VARS,
