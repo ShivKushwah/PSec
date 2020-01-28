@@ -26,7 +26,9 @@ secure_machine SecureSupervisorMachine
             //TODO setup username_passwords using some GetStringFromUser
             // username_passwords += (0, (1,1));
             // username_passwords += (1, (2,2));
-            username_passwords += (0, (2,2));
+            username_passwords += (sizeof(username_passwords), (2,2));
+            username_passwords += (sizeof(username_passwords), (1,1));
+
             
             
             i = 0;

@@ -9,10 +9,10 @@ machine VotingUSM {
 
 
 	start state Init {
-        entry (payload: machine_handle) {
-			supervisor = payload;
-			username = 2; //TODO get string input
-			password = 2;
+        entry (payload: (parent: machine_handle, username: int, password: int)) {
+			supervisor = payload.parent;
+			username = payload.username; //TODO get string input
+			password = payload.password;
 
 			untrusted_send supervisor, UNTRUSTEDGetVotingSSM, (requestingMachine = GetThis(), username = username); //TODO Ask about this
 			
