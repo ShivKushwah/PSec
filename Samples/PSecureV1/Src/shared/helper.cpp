@@ -1436,6 +1436,48 @@ extern "C" void P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
 }
 
+extern "C" void P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    ocall_print("Capability of machine:");
+    printRSAKey((char*) val);
+    char* capabilityPayload = ((char*) val) + SGX_RSA3072_KEY_SIZE + 1;
+    ocall_print("Public Capability:");
+    printRSAKey(retrievePublicCapabilityKey(capabilityPayload));
+    ocall_print("Private Capability:");
+    printRSAKey(retrievePrivateCapabilityKey(capabilityPayload));
+    
+}
+
+extern "C" PRT_VALUE* P_GetCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    #ifdef ENCLAVE_STD_ALT
+
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    // ocall_print("Machine handle in get capability is:");
+    // printRSAKey((char*) val);
+    //TODO put check here before obtaining the value
+    string capabilityKeyPayload = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string((char*) val, SGX_RSA3072_KEY_SIZE))];
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_P_CAPABILITY_FOREIGN_TYPE));
+	char* finalString;
+    int finalStringSize;
+    char* concatStrings[] = {(char*) val, ":", (char*)capabilityKeyPayload.c_str()};
+    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_CAPABILITYKEY};
+    finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+    finalStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+
+    memcpy(str, finalString, finalStringSize);
+    safe_free(finalString);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_capability);
+
+    #endif
+    
+}
+
+
 extern "C" PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     char user_input[100];
@@ -1509,7 +1551,7 @@ extern "C" void P_FREE_machine_handle_IMPL(PRT_UINT64 frgnVal)
 
 extern "C" PRT_BOOLEAN P_ISEQUAL_machine_handle_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
 {
-	return strcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2) == 0 ? PRT_TRUE : PRT_FALSE;
+	return memcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2, SIZE_OF_PRT_STRING_SERIALIZED) == 0 ? PRT_TRUE : PRT_FALSE;
 }
 
 extern "C" PRT_STRING P_TOSTRING_machine_handle_IMPL(PRT_UINT64 frgnVal)
@@ -1538,6 +1580,49 @@ extern "C" PRT_UINT64 P_CLONE_machine_handle_IMPL(PRT_UINT64 frgnVal)
     //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
     // } else {
         memcpy(str, (void*)frgnVal, SIZE_OF_PRT_STRING_SERIALIZED);
+    // }
+	
+	return (PRT_UINT64)str;
+}
+
+//capability class
+
+extern "C" void P_FREE_capability_IMPL(PRT_UINT64 frgnVal)
+{
+	PrtFree((PRT_STRING)frgnVal);
+}
+
+extern "C" PRT_BOOLEAN P_ISEQUAL_capability_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
+{
+	return memcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2, SIZE_OF_P_CAPABILITY_FOREIGN_TYPE) == 0 ? PRT_TRUE : PRT_FALSE;
+}
+
+extern "C" PRT_STRING P_TOSTRING_capability_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_P_CAPABILITY_FOREIGN_TYPE));
+	sprintf_s(str, SIZE_OF_P_CAPABILITY_FOREIGN_TYPE, "String : %s", frgnVal);
+	return str;
+}
+
+extern "C" PRT_UINT32 P_GETHASHCODE_capability_IMPL(PRT_UINT64 frgnVal)
+{
+	return (PRT_UINT32)frgnVal;
+}
+
+extern "C" PRT_UINT64 P_MKDEF_capability_IMPL(void)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_P_CAPABILITY_FOREIGN_TYPE));
+	sprintf_s(str, SIZE_OF_P_CAPABILITY_FOREIGN_TYPE, "xyx$12");
+	return (PRT_UINT64)str;
+}
+
+extern "C" PRT_UINT64 P_CLONE_capability_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_P_CAPABILITY_FOREIGN_TYPE));
+    // if (NETWORK_DEBUG) {
+    //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
+    // } else {
+        memcpy(str, (void*)frgnVal, SIZE_OF_P_CAPABILITY_FOREIGN_TYPE);
     // }
 	
 	return (PRT_UINT64)str;

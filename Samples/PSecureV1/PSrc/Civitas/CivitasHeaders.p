@@ -1,5 +1,6 @@
 type StringType;
 type machine_handle;
+type capability;
 
 fun CreateMachineSecureChild(): machine_handle;
 fun PrintString(inputString : StringType);
@@ -13,6 +14,8 @@ fun InitializeUntrustedMachine();
 fun CreateSecureMachineRequest(): machine_handle;
 fun CreateUSMMachineRequest(): machine_handle;
 fun PrintKey(input : machine_handle);
+fun PrintPCapability(input : capability);
+fun GetCapability(input: machine_handle) : capability;
 fun GenerateRandomMasterSecret() : StringType;
 fun GetUserInput() : StringType;
 

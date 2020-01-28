@@ -86,6 +86,23 @@ static PRT_SEQTYPE P_SEQTYPE_2 = { &P_GEND_TYPE_machine_handle };
 static PRT_TYPE P_GEND_TYPE_Smachine_handle = { PRT_KIND_SEQ, { .seq = &P_SEQTYPE_2 } };
 static PRT_SEQTYPE P_SEQTYPE_3 = { &P_GEND_TYPE_i };
 static PRT_TYPE P_GEND_TYPE_Si = { PRT_KIND_SEQ, { .seq = &P_SEQTYPE_3 } };
+extern PRT_UINT64 P_MKDEF_capability_IMPL(void);
+extern PRT_UINT64 P_CLONE_capability_IMPL(PRT_UINT64);
+extern void P_FREE_capability_IMPL(PRT_UINT64);
+extern PRT_UINT32 P_GETHASHCODE_capability_IMPL(PRT_UINT64);
+extern PRT_BOOLEAN P_ISEQUAL_capability_IMPL(PRT_UINT64, PRT_UINT64);
+extern PRT_STRING P_TOSTRING_capability_IMPL(PRT_UINT64);
+static PRT_FOREIGNTYPEDECL P_capability = {
+    0U,
+    "capability",
+    P_MKDEF_capability_IMPL,
+    P_CLONE_capability_IMPL,
+    P_FREE_capability_IMPL,
+    P_GETHASHCODE_capability_IMPL,
+    P_ISEQUAL_capability_IMPL,
+    P_TOSTRING_capability_IMPL,
+};
+PRT_TYPE P_GEND_TYPE_capability = { PRT_KIND_FOREIGN, { .foreignType = &P_capability } };
 
 // Function implementation prototypes:
 PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -111,6 +128,10 @@ PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE
 PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_GetCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
@@ -473,6 +494,22 @@ PRT_FUNDECL P_FUNCTION_PrintKey =
 {
     "PrintKey",
     &P_PrintKey_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_PrintPCapability =
+{
+    "PrintPCapability",
+    &P_PrintPCapability_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_GetCapability =
+{
+    "GetCapability",
+    &P_GetCapability_IMPL,
     NULL
 };
 
@@ -4170,11 +4207,12 @@ PRT_MACHINEDECL P_MACHINE_SecureVotingClientMachine =
 
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
 PRT_TYPE* P_TYPEDEF_machine_handle = &P_GEND_TYPE_machine_handle;
+PRT_TYPE* P_TYPEDEF_capability = &P_GEND_TYPE_capability;
 PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_BankPublicIDEvent, &P_EVENT_PublicIDEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_AuthenticateRequest, &P_EVENT_AuthSuccess, &P_EVENT_AuthFailure, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_eCloseElection, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeGetElectionResults };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_InitializerMachine, &P_MACHINE_SecureSupervisorMachine, &P_MACHINE_VotingUSM, &P_MACHINE_SecureBulletinBoardMachine, &P_MACHINE_SecureBallotBoxMachine, &P_MACHINE_SecureTamperEvidentLogMachine, &P_MACHINE_SecureTabulationTellerMachine, &P_MACHINE_SecureVotingClientMachine };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_InitializerMachine, &P_I_SecureSupervisorMachine, &P_I_VotingUSM, &P_I_SecureBulletinBoardMachine, &P_I_SecureBallotBoxMachine, &P_I_SecureTamperEvidentLogMachine, &P_I_SecureTabulationTellerMachine, &P_I_SecureVotingClientMachine };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
-PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_machine_handle, &P_StringType };
+PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_machine_handle, &P_StringType, &P_capability };
 int P_DefaultImpl_LME_0[] = { -1,1,2,-1,-1,-1,-1,-1 };
 int P_DefaultImpl_LME_1[] = { -1,-1,-1,3,4,-1,-1,7 };
 int P_DefaultImpl_LME_2[] = { -1,-1,-1,-1,-1,-1,-1,-1 };
@@ -4190,7 +4228,7 @@ PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl = {
     8U,
     8U,
     0U,
-    2U,
+    3U,
     P_ALL_EVENTS,
     P_ALL_MACHINES,
     P_ALL_INTERFACES,
