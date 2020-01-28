@@ -84,7 +84,7 @@ secure_machine SecureSupervisorMachine
 
     state StartElection {
         entry {     
-            secure_send bBox, TRUSTEDeStartElection, 4;
+            secure_send bBox, TRUSTEDeStartElection, 1;
         }
         // on null do {
         //     var res: bool;

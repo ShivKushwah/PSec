@@ -5,16 +5,14 @@ machine VotingUSM {
 	var votingSecureMachine: machine_handle;
 	var username: int;
 	var password: int;
+	var vote: int;
 
 
 	start state Init {
         entry (payload: machine_handle) {
 			supervisor = payload;
-			username = 2;
+			username = 2; //TODO get string input
 			password = 2;
-
-            // 	username = payload.1;
-		    // 	password = payload.2;
 
 			untrusted_send supervisor, UNTRUSTEDGetVotingSSM, (requestingMachine = GetThis(), username = username); //TODO Ask about this
 			
@@ -25,7 +23,8 @@ machine VotingUSM {
 	state Vote {
 		entry (payload: machine_handle) {
 			votingSecureMachine = payload;
-			untrusted_send votingSecureMachine, UNTRUSTEDVoteRequest, (username_attempt = username, password_attempt = password, vote = 1);
+			vote = 1; //TODO get int input
+			untrusted_send votingSecureMachine, UNTRUSTEDVoteRequest, (username_attempt = username, password_attempt = password, vote = vote);
 			goto Done;
 		}
 	}
