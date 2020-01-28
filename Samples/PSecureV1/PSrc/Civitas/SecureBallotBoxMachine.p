@@ -30,9 +30,9 @@ secure_machine SecureBallotBoxMachine
             numberOfTotalVotes = payload;
             currentNumberOfVotes = 0;
         }
-        on TRUSTEDeVote do (payload: (credentials : int, vote : int, requestingMachine : machine_handle))
+        on TRUSTEDeVote do (payload: (credential : int, vote : int, requestingMachine : machine_handle))
         {
-            secure_send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credentials, vote = payload.vote);
+            secure_send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote);
             receive {
                 case TRUSTEDeRespAddItem : (result: bool) {
                     if(result)

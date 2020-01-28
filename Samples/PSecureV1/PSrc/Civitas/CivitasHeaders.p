@@ -29,7 +29,7 @@ event UNTRUSTEDGetVotingSSM : (requestingMachine:machine_handle, username:int);
 event UNTRUSTEDReceiveVotingSSM : machine_handle;
 event UNTRUSTEDVoteRequest : (username_attempt : int, password_attempt : int, vote : int);
 trusted event TRUSTEDeStartElection : int;
-event TRUSTEDeVote : (credentials : int, vote : int, requestingMachine: machine_handle);
+event TRUSTEDeVote : (credential : int, vote : int, requestingMachine: machine_handle);
 trusted event TRUSTEDeAddItem : (credential: int, vote: int);
 event TRUSTEDeRespAddItem : bool;
 event TRUSTEDeRespConfirmVote;

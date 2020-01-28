@@ -50,7 +50,7 @@ static PRT_STRING P_NMDTUP_N_1[] = { "username_attempt", "password_attempt", "vo
 static PRT_TYPE* P_NMDTUP_T_1[] = { &P_GEND_TYPE_i, &P_GEND_TYPE_i, &P_GEND_TYPE_i };
 static PRT_NMDTUPTYPE P_NMDTUP_1 = { 3U, P_NMDTUP_N_1, P_NMDTUP_T_1 };
 static PRT_TYPE P_GEND_TYPE_T3iii = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_1 } };
-static PRT_STRING P_NMDTUP_N_2[] = { "credentials", "vote", "requestingMachine" };
+static PRT_STRING P_NMDTUP_N_2[] = { "credential", "vote", "requestingMachine" };
 static PRT_TYPE* P_NMDTUP_T_2[] = { &P_GEND_TYPE_i, &P_GEND_TYPE_i, &P_GEND_TYPE_machine_handle };
 static PRT_NMDTUPTYPE P_NMDTUP_2 = { 3U, P_NMDTUP_N_2, P_NMDTUP_T_2 };
 static PRT_TYPE P_GEND_TYPE_T3iimachine_handle = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_2 } };
@@ -3200,7 +3200,7 @@ PRT_MACHINEDECL P_MACHINE_SecureTabulationTellerMachine =
 };
 
 PRT_VARDECL P_SecureVotingClientMachine_VARS[] = {
-    { "credentials", &P_GEND_TYPE_i },
+    { "credential", &P_GEND_TYPE_i },
     { "ballotBox", &P_GEND_TYPE_machine_handle },
     { "bulletinBoard", &P_GEND_TYPE_machine_handle },
     { "username", &P_GEND_TYPE_i },

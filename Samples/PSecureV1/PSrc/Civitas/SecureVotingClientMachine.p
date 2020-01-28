@@ -8,7 +8,7 @@ Voting Client Machine
 //Enclave for each client that enables them to vote anonymously as well as change votes
 secure_machine SecureVotingClientMachine
 {
-    var credentials: int;
+    var credential: int;
     var ballotBox: machine_handle;
     var bulletinBoard: machine_handle;
     var username: int;
@@ -16,7 +16,7 @@ secure_machine SecureVotingClientMachine
 
     start state Init {
         entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, username:int, password:int)) {
-            credentials = 17;//ReadCredentials(); //This function contacts RegistrationTellers to get
+            credential = 17;//ReadCredentials(); //This function contacts RegistrationTellers to get
             // an anonymous credential so that no one knows how this machine voted
             username = payload.username;
             password = payload.password;
@@ -54,7 +54,7 @@ secure_machine SecureVotingClientMachine
         entry (vote : int) {
 			//NOTE we don't have capabiltiy of ballotbox, so what can we do?
 			//TODO make below
-            untrusted_send ballotBox, TRUSTEDeVote, (credentials = credentials, vote = vote, requestingMachine = GetThis());
+            untrusted_send ballotBox, TRUSTEDeVote, (credential = credential, vote = vote, requestingMachine = GetThis());
     //         //Highlight NOTE: "this" is public ID of this machine, so it can receive a confirmation
         }
         on TRUSTEDeRespConfirmVote goto ValidateResults with {
@@ -67,7 +67,7 @@ secure_machine SecureVotingClientMachine
             untrusted_send bulletinBoard, TRUSTEDeGetElectionResults, GetThis();
         }
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, int], whoWon : int)) {
-            if(!(credentials in payload.allVotes))
+            if(!(credential in payload.allVotes))
             {
                 print "ERROR";
                 print "My vote not found!!";
@@ -75,7 +75,7 @@ secure_machine SecureVotingClientMachine
             }
             else
             {
-                print "Your vote for {0} was counted", payload.allVotes[credentials];
+                print "Your vote for {0} was counted", payload.allVotes[credential];
             }
             print "{0} won the election", payload.whoWon;
             goto Done;
