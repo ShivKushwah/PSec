@@ -30,9 +30,7 @@ secure_machine SecureTabulationTellerMachine
             {
                 //TODO validate the credentials
 
-                //consider the latest vote
-
-                result[allVotes[i].credential] = allVotes[i].vote;
+                result[allVotes[i].credential] = allVotes[i].vote; //map enables us to consider the latest vote
                 i = i + 1;
             }
 

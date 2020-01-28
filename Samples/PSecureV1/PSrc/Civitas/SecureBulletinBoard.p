@@ -22,8 +22,9 @@ secure_machine SecureBulletinBoardMachine
 
     state SendResults { 
         on TRUSTEDeGetElectionResults do (payload: machine_handle){
-            //Calculate who won the election
-            untrusted_send payload, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = 0); //TODO why = 0?
+            //TODO Calculate who won the election
+            
+            untrusted_send payload, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = 0); 
         }
     }
 }
