@@ -228,6 +228,16 @@ PRT_TYPE_KIND convertKindToType(int kind) {
     }
 }
 
+int returnSizeOfForeignType(int type_tag) {
+    if (type_tag == 0 || type_tag == 1) {
+        return SIZE_OF_PRT_STRING_SERIALIZED;
+    } else if (type_tag == 2) {
+        return SIZE_OF_P_CAPABILITY_FOREIGN_TYPE;
+    } else {
+        return -1;
+    }
+}
+
 //Responsibility of Caller to free return
 char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
     //TODO code the rest of the types
@@ -237,21 +247,18 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
         final_size += strlen(integer);
         return integer;
     } else if (value->discriminator == PRT_VALUE_KIND_FOREIGN) {
-        if (value->valueUnion.frgn->typeTag == 0 || value->valueUnion.frgn->typeTag == 1) { //if StringType
-            char* string = (char*) malloc(10 + 1 + SIZE_OF_PRT_STRING_SERIALIZED); //TODO Note SIZE_OF_PRT_STRING_SERIALIZED is hardcoded for all types
-            char* foreignTypeTagString = (char*) malloc(10);
-            itoa(value->valueUnion.frgn->typeTag, foreignTypeTagString, 10);
-            memcpy(string, foreignTypeTagString, strlen(foreignTypeTagString));
-            memcpy(string + strlen(foreignTypeTagString), ":", 1);
-            memcpy(string + strlen(foreignTypeTagString) + 1, (char*) value->valueUnion.frgn->value, SIZE_OF_PRT_STRING_SERIALIZED);
-            ocall_print("the actual PRT value is");
-            ocall_print((char*)value->valueUnion.frgn->value);
-            //string[SIZE_OF_PRT_STRING_SERIALIZED] = '\0';
-            final_size += strlen(foreignTypeTagString) + 1 + SIZE_OF_PRT_STRING_SERIALIZED;
-            return string;
-        } else {
-            return createStringLiteralMalloced("UNSUPPORTED_TYPE");
-        }
+        int size_of_type_tag_foreign_type = returnSizeOfForeignType(value->valueUnion.frgn->typeTag);
+        char* string = (char*) malloc(10 + 1 + size_of_type_tag_foreign_type); //TODO Note SIZE_OF_PRT_STRING_SERIALIZED is hardcoded for all types
+        char* foreignTypeTagString = (char*) malloc(10);
+        itoa(value->valueUnion.frgn->typeTag, foreignTypeTagString, 10);
+        memcpy(string, foreignTypeTagString, strlen(foreignTypeTagString));
+        memcpy(string + strlen(foreignTypeTagString), ":", 1);
+        memcpy(string + strlen(foreignTypeTagString) + 1, (char*) value->valueUnion.frgn->value, size_of_type_tag_foreign_type);
+        ocall_print("the actual PRT value is");
+        ocall_print((char*)value->valueUnion.frgn->value);
+        //string[SIZE_OF_PRT_STRING_SERIALIZED] = '\0';
+        final_size += strlen(foreignTypeTagString) + 1 + size_of_type_tag_foreign_type;
+        return string;
     } else if (value->discriminator == PRT_VALUE_KIND_BOOL) {
         if (value->valueUnion.bl == PRT_TRUE) {
             final_size += 4;
@@ -410,19 +417,19 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
     } else if (payloadType == PRT_VALUE_KIND_FOREIGN) {
         ocall_print("Make Prt String with Value:");
         // ocall_print(str);
-        
+        char* typeTagString = str;
+        int size_of_foreign_type = returnSizeOfForeignType(atoi(typeTagString));
         newPrtValue->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
        //  = 0; //TODO hardcoded for StringType
-        PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-        // sprintf_s(prtStr, SIZE_OF_PRT_STRING_SERIALIZED, str);
+        PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (size_of_foreign_type));
+        // sprintf_s(prtStr, size_of_foreign_type, str);
         
-        char* typeTagString = str;
         newPrtValue->valueUnion.frgn->typeTag = atoi(typeTagString);
         str = payloadOriginal + strlen(payloadTypeString) + 1 + strlen(typeTagString) + 1;
         printRSAKey(str);
-        memcpy(prtStr, str, SIZE_OF_PRT_STRING_SERIALIZED);
+        memcpy(prtStr, str, size_of_foreign_type);
         newPrtValue->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
-        *numCharactersProcessed = strlen(payloadTypeString) + 1 + strlen(typeTagString) + 1 + SIZE_OF_PRT_STRING_SERIALIZED;
+        *numCharactersProcessed = strlen(payloadTypeString) + 1 + strlen(typeTagString) + 1 + size_of_foreign_type;
     } else if (payloadType == PRT_VALUE_KIND_BOOL) {
         if (strcmp(str, "true") == 0) {
             newPrtValue->valueUnion.bl = PRT_TRUE;
