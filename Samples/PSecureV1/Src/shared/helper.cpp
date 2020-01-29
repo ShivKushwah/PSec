@@ -84,6 +84,38 @@ void printRSAKey(char* key) {
     safe_free(keyCopy);
 }
 
+void printPublicCapabilityKey(char* key) {
+    char* keyCopy = (char*) malloc(SIZE_OF_PUBLIC_CAPABILITY_KEY);
+    memcpy(keyCopy, key, SIZE_OF_PUBLIC_CAPABILITY_KEY);
+    ocall_print("public capability key:");
+    char* temp = keyCopy;
+    for (int i = 0; i < SIZE_OF_PUBLIC_CAPABILITY_KEY; i++) {
+        if (temp[i] == '\0') {
+            temp[i] = 'D';
+        }
+    }
+    keyCopy[SIZE_OF_PUBLIC_CAPABILITY_KEY - 1] = '\0';
+    
+    ocall_print(keyCopy);
+    safe_free(keyCopy);
+}
+
+void printPrivateCapabilityKey(char* key) {
+    char* keyCopy = (char*) malloc(SIZE_OF_PRIVATE_CAPABILITY_KEY);
+    memcpy(keyCopy, key, SIZE_OF_PRIVATE_CAPABILITY_KEY);
+    ocall_print("private capability key:");
+    char* temp = keyCopy;
+    for (int i = 0; i < SIZE_OF_PRIVATE_CAPABILITY_KEY; i++) {
+        if (temp[i] == '\0') {
+            temp[i] = 'D';
+        }
+    }
+    keyCopy[SIZE_OF_PRIVATE_CAPABILITY_KEY - 1] = '\0';
+    
+    ocall_print(keyCopy);
+    safe_free(keyCopy);
+}
+
 //Responsiblity of caller to free
 char* retrievePublicCapabilityKey(char* capabilityPayload) {
     char* publicKey = (char*) malloc(sizeof(sgx_rsa3072_public_key_t));
@@ -1444,9 +1476,9 @@ extern "C" void P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     printRSAKey((char*) val);
     char* capabilityPayload = ((char*) val) + SGX_RSA3072_KEY_SIZE + 1;
     ocall_print("Public Capability:");
-    printRSAKey(retrievePublicCapabilityKey(capabilityPayload));
+    printPublicCapabilityKey(retrievePublicCapabilityKey(capabilityPayload));
     ocall_print("Private Capability:");
-    printRSAKey(retrievePrivateCapabilityKey(capabilityPayload));
+    printPrivateCapabilityKey(retrievePrivateCapabilityKey(capabilityPayload));
     
 }
 

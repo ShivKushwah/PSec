@@ -40,6 +40,8 @@ secure_machine SecureSupervisorMachine
                 i = i + 1;
             }
 
+            PrintPCapability(GetCapability(bBox));
+
             secure_send bBox, TRUSTEDeStartElection, 2; //We send 2 because this is how many voting machines are in the system
             
             goto WaitToSendVotingClientMachines;

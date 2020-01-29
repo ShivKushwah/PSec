@@ -1000,7 +1000,8 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
         ocall_print("Key needed to verify signature is");
         ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
         ocall_print("actual key is");
-        printRSAKey(publicCapabilityKeySendingToMachine);
+        printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
+        // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
 
         if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
             ocall_print("Verifying Signature works!!!!");
