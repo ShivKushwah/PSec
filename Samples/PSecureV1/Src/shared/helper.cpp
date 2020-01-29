@@ -1509,6 +1509,24 @@ extern "C" PRT_VALUE* P_GetCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE**
     
 }
 
+extern "C" void P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    #ifdef ENCLAVE_STD_ALT
+
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    char* machine_handle = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    memcpy(machine_handle, (char*)val, SGX_RSA3072_KEY_SIZE);
+    char* capabilityToSave = (char*) malloc(SIZE_OF_CAPABILITYKEY);
+    memcpy(capabilityToSave, ((char*)val) + SGX_RSA3072_KEY_SIZE + 1, SIZE_OF_CAPABILITYKEY);
+    PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(machine_handle, SGX_RSA3072_KEY_SIZE))] = string(capabilityToSave, SIZE_OF_CAPABILITYKEY);
+    safe_free(machine_handle);
+    safe_free(capabilityToSave);
+    #endif
+    
+}
+
 
 extern "C" PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {

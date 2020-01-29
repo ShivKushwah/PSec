@@ -133,6 +133,8 @@ PRT_VALUE* P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRef
 
 PRT_VALUE* P_GetCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
+PRT_VALUE* P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -510,6 +512,14 @@ PRT_FUNDECL P_FUNCTION_GetCapability =
 {
     "GetCapability",
     &P_GetCapability_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_SaveCapability =
+{
+    "SaveCapability",
+    &P_SaveCapability_IMPL,
     NULL
 };
 

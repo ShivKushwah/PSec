@@ -16,6 +16,7 @@ fun CreateUSMMachineRequest(): machine_handle;
 fun PrintKey(input : machine_handle);
 fun PrintPCapability(input : capability);
 fun GetCapability(input: machine_handle) : capability;
+fun SaveCapability(input: capability);
 fun GenerateRandomMasterSecret() : StringType;
 fun GetUserInput() : StringType;
 
