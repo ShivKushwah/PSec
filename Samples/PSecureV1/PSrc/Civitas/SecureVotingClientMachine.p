@@ -15,7 +15,7 @@ secure_machine SecureVotingClientMachine
     var password: int;
 
     start state Init {
-        entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, username:int, password:int)) {
+        entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, username:int, password:int, ballotBoxCapbility:capability)) {
             credential = payload.username + payload.password;//ReadCredentials(); //This function contacts RegistrationTellers to get
             // an anonymous credential so that no one knows how this machine voted
             username = payload.username;

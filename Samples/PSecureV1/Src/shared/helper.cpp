@@ -1052,7 +1052,9 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             sgx_enclave_id_t enclave_eid;
             count = PublicIdentityKeyToEidDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
             enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)];
-            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_EVENT_PAYLOAD);
+            char* split = strtok(encryptedMessage, ":");
+            int encryptedMessageSize = atoi(split) + strlen(split) + 1;
+            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, SGX_RSA3072_KEY_SIZE, encryptedMessageSize);
             
 
             if (count == 0) {
@@ -1145,7 +1147,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     itoa(payloadStringSize, payloadStringSizeString, 10);
 
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
-    int requestSize = 5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1 + 10 + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
+    int requestSize = -1;//5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1 + 10 + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
     int requestLength;
     char* numArgsString = (char*) argRefs[1];
