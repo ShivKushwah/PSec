@@ -15,13 +15,14 @@ secure_machine SecureVotingClientMachine
     var password: int;
 
     start state Init {
-        entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, username:int, password:int, ballotBoxCapbility:capability)) {
+        entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, username:int, password:int, ballotBoxCapability:capability)) {
             credential = payload.username + payload.password;//ReadCredentials(); //This function contacts RegistrationTellers to get
             // an anonymous credential so that no one knows how this machine voted
             username = payload.username;
             password = payload.password;
             ballotBox = payload.ballotBox;
             bulletinBoard = payload.bulletinBoard;
+            SaveCapability(payload.ballotBoxCapability);
             goto WaitForVote;
         }
     }
@@ -54,7 +55,7 @@ secure_machine SecureVotingClientMachine
         entry (vote : int) {
 			//NOTE we don't have capabiltiy of ballotbox, so what can we do?
 			//TODO make below
-            untrusted_send ballotBox, TRUSTEDeVote, (credential = credential, vote = vote, requestingMachine = GetThis());
+            secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = vote, requestingMachine = GetThis());
     //         //Highlight NOTE: "this" is public ID of this machine, so it can receive a confirmation
         }
         on TRUSTEDeRespConfirmVote goto ValidateResults with {
