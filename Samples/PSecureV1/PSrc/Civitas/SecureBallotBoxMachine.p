@@ -30,14 +30,15 @@ secure_machine SecureBallotBoxMachine
             numberOfTotalVotes = payload;
             currentNumberOfVotes = 0;
         }
-        on TRUSTEDeVote do (payload: (credential : int, vote : int, requestingMachine : machine_handle))
+        on TRUSTEDeVote do (payload: (credential : int, vote : int, requestingMachine : machine_handle, requestingMachineCapability: capability))
         {
+            SaveCapability(payload.requestingMachineCapability);
             secure_send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote);
             receive {
                 case TRUSTEDeRespAddItem : (result: bool) {
                     if(result)
                     {
-                        untrusted_send payload.requestingMachine, TRUSTEDeRespConfirmVote;
+                        secure_send payload.requestingMachine, TRUSTEDeRespConfirmVote;
                         currentNumberOfVotes = currentNumberOfVotes + 1;
                     }
                 }
