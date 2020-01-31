@@ -64,7 +64,7 @@ secure_machine SecureVotingClientMachine
 
     state ValidateResults {
         entry {
-            secure_send bulletinBoard, TRUSTEDeGetElectionResults, GetThis();
+            secure_send bulletinBoard, TRUSTEDeGetElectionResults, (requestingMachine = GetThis(), requestingMachineCapability = GetCapability(GetThis()));
         }
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, int], whoWon : int)) {
             if(!(credential in payload.allVotes))

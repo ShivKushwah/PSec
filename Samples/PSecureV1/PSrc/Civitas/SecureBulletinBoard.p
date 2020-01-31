@@ -26,8 +26,8 @@ secure_machine SecureBulletinBoardMachine
     }
 
     state SendResults { 
-        on TRUSTEDeGetElectionResults do (payload: machine_handle){
-            //TODO Calculate who won the election
+        on TRUSTEDeGetElectionResults do (payload: (requestingMachine: machine_handle, requestingMachineCapability: capability)){
+            SaveCapability(payload.requestingMachineCapability);
             electionResultsKeys = keys(electionResults);
             i = 0;
             countCandidate0 = 0;
@@ -50,7 +50,7 @@ secure_machine SecureBulletinBoardMachine
             } else {
                 winner = 2; //Tie
             }
-            untrusted_send payload, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = winner); 
+            secure_send payload.requestingMachine, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = winner); 
         }
     }
 }

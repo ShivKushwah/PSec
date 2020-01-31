@@ -42,5 +42,5 @@ trusted event TRUSTEDeGetLog;
 trusted event TRUSTEDeRespGetLog : seq[(credential : int, vote : int)];
 trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[(credential : int, vote : int)]);
 trusted event TRUSTEDeElectionResults : map[int, int];
-event TRUSTEDeRespElectionResults: (allVotes : map[int, int], whoWon : int);
-trusted event TRUSTEDeGetElectionResults : machine_handle;
+trusted event TRUSTEDeRespElectionResults: (allVotes : map[int, int], whoWon : int);
+trusted event TRUSTEDeGetElectionResults : (requestingMachine: machine_handle, requestingMachineCapability: capability);
