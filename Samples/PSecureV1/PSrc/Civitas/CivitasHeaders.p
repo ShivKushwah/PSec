@@ -35,7 +35,7 @@ event UNTRUSTEDVoteRequest : (username_attempt : int, password_attempt : int, vo
 trusted event TRUSTEDeStartElection : int;
 trusted event TRUSTEDeVote : (credential : int, vote : int, requestingMachine: machine_handle);
 trusted event TRUSTEDeAddItem : (credential: int, vote: int);
-event TRUSTEDeRespAddItem : bool;
+trusted event TRUSTEDeRespAddItem : bool;
 event TRUSTEDeRespConfirmVote;
 event eCloseElection;
 trusted event TRUSTEDeGetLog;
