@@ -284,7 +284,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
         // printRSAKey(publicCapabilityKey);
         // printRSAKey(privateCapabilityKey);
         MachinePIDtoCapabilityKeyDictionary[newMachinePID] = string(capabilityKeyPayloadReceived, SIZE_OF_CAPABILITYKEY);
-        
+        PMachineToChildCapabilityKey[make_tuple(newMachinePID, string(secureChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE))] = string(capabilityKeyPayloadReceived, SIZE_OF_CAPABILITYKEY);
         safe_free(publicCapabilityKey);
         safe_free(privateCapabilityKey);
         safe_free(capabilityKeyPayloadReceived);

@@ -16,7 +16,7 @@ secure_machine SecureBallotBoxMachine
         defer TRUSTEDeVote;
         entry (bBoard: machine_handle){
             bulletinBoard = bBoard;
-            appendOnlyLog = new SecureTamperEvidentLogMachine(GetThis()); //essentially the db of votes for this ballotbox
+            appendOnlyLog = new SecureTamperEvidentLogMachine((parentMachine = GetThis(), parentCapability = GetCapability(GetThis()) )); //essentially the db of votes for this ballotbox
             tabulationTeller = new SecureTabulationTellerMachine(bulletinBoard); //counts the votes
         }
         on TRUSTEDeStartElection goto WaitForVotes;

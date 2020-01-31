@@ -3,9 +3,10 @@ secure_machine SecureTamperEvidentLogMachine
     var log: seq[(credential: int, vote: int)]; //seq[(credential, vote)]
     var parent: machine_handle;
     start state Init {
-        entry(payload: machine_handle)
+        entry(payload: (parentMachine: machine_handle, parentCapability:capability))
          {
-            parent = payload;
+            parent = payload.parentMachine;
+            SaveCapability(payload.parentCapability);
             goto WaitForRequests;
          }
     }
@@ -19,7 +20,7 @@ secure_machine SecureTamperEvidentLogMachine
         {
             print "Is issue here?";
             // print log;
-            untrusted_send parent, TRUSTEDeRespGetLog, log;
+            secure_send parent, TRUSTEDeRespGetLog, log;
         }
     }
 }

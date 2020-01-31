@@ -1501,6 +1501,9 @@ extern "C" PRT_VALUE* P_GetCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE**
     // ocall_print("Machine handle in get capability is:");
     // printRSAKey((char*) val);
     //TODO put check here before obtaining the value
+    if ( PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string((char*) val, SGX_RSA3072_KEY_SIZE))) == 0){
+        ocall_print("ERROR IN GETTING CAPABILITY FROM GETCAPABILITY P METHOD");
+    }
     string capabilityKeyPayload = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string((char*) val, SGX_RSA3072_KEY_SIZE))];
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_P_CAPABILITY_FOREIGN_TYPE));
 	char* finalString;

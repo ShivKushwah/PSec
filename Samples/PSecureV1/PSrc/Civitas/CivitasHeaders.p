@@ -39,7 +39,7 @@ event TRUSTEDeRespAddItem : bool;
 event TRUSTEDeRespConfirmVote;
 event eCloseElection;
 trusted event TRUSTEDeGetLog;
-event TRUSTEDeRespGetLog : seq[(credential : int, vote : int)];
+trusted event TRUSTEDeRespGetLog : seq[(credential : int, vote : int)];
 trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[(credential : int, vote : int)]);
 event TRUSTEDeElectionResults : map[int, int];
 event TRUSTEDeRespElectionResults: (allVotes : map[int, int], whoWon : int);
