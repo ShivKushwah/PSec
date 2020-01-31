@@ -14,10 +14,10 @@ secure_machine SecureBallotBoxMachine
 
     start state Init {
         defer TRUSTEDeVote;
-        entry (bBoard: machine_handle){
-            bulletinBoard = bBoard;
+        entry (payload: (bBoard: machine_handle, bBoardCapability: capability)){
+            bulletinBoard = payload.bBoard;
             appendOnlyLog = new SecureTamperEvidentLogMachine((parentMachine = GetThis(), parentCapability = GetCapability(GetThis()) )); //essentially the db of votes for this ballotbox
-            tabulationTeller = new SecureTabulationTellerMachine(bulletinBoard); //counts the votes
+            tabulationTeller = new SecureTabulationTellerMachine((bBoard = bulletinBoard, bBoardCapability = payload.bBoardCapability)); //counts the votes
         }
         on TRUSTEDeStartElection goto WaitForVotes;
         // on TRUSTEDeVote do {

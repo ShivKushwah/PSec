@@ -12,8 +12,9 @@ secure_machine SecureTabulationTellerMachine
     start state Init {
         // defer eDoTally; //TODO remove?
 
-        entry (bBoard: machine_handle){
-            bulletinBoard = bBoard;
+        entry (payload:(bBoard: machine_handle, bBoardCapability: capability)){
+            bulletinBoard = payload.bBoard;
+            SaveCapability(payload.bBoardCapability);
         }
         on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[(credential : int, vote : int)])){
             allVotes = payload.votes;
@@ -34,8 +35,8 @@ secure_machine SecureTabulationTellerMachine
                 i = i + 1;
             }
 
-            // secure_send bulletinBoard, TRUSTEDeElectionResults, result; //TODO make trusted
-            untrusted_send bulletinBoard, TRUSTEDeElectionResults, result;
+            secure_send bulletinBoard, TRUSTEDeElectionResults, result;
+            // untrusted_send bulletinBoard, TRUSTEDeElectionResults, result;
         }
     }
 }

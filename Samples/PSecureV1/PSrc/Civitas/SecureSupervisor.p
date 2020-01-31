@@ -19,7 +19,7 @@ secure_machine SecureSupervisorMachine
     start state Init {
         entry {
             bBoard = new SecureBulletinBoardMachine();
-            bBox = new SecureBallotBoxMachine(bBoard);
+            bBox = new SecureBallotBoxMachine( (bBoard = bBoard, bBoardCapability = GetCapability(bBoard)));
 
             //Assume there is a setup phase where each voter registers a username and password with the Government
             //and the number of available credentials are = # of eligible voters
