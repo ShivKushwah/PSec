@@ -18,9 +18,10 @@ fun CreateMachineSecureChild(): machine_handle;
 fun CreateSecureMachineRequest(): machine_handle;
 fun CreateUSMMachineRequest(): machine_handle;
 
+fun Debug();
+
 
 event UNTRUSTEDGetVotingSSM : (requestingMachine:machine_handle, username:int);
-event StrEvent : StringType;
 event UNTRUSTEDReceiveVotingSSM : machine_handle;
 event UNTRUSTEDVoteRequest : (username_attempt : int, password_attempt : int, vote : int);
 trusted event TRUSTEDeStartElection : int;

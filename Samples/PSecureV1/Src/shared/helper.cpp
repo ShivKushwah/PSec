@@ -67,6 +67,21 @@ void safe_free(void* ptr) {
 //     ocall_print(keyCopy);
 //     safe_free(keyCopy);
 // }
+void printPayload(char* payload, int size) {
+    char* keyCopy = (char*) malloc(size);
+    memcpy(keyCopy, payload, size);
+    ocall_print("payload:");
+    char* temp = keyCopy;
+    for (int i = 0; i < size; i++) {
+        if (temp[i] == '\0') {
+            temp[i] = 'D';
+        }
+    }
+    keyCopy[size - 1] = '\0';
+    
+    ocall_print(keyCopy);
+    safe_free(keyCopy);
+}
 
 void printRSAKey(char* key) {
     char* keyCopy = (char*) malloc(SGX_RSA3072_KEY_SIZE);
@@ -229,9 +244,9 @@ PRT_TYPE_KIND convertKindToType(int kind) {
 }
 
 int returnSizeOfForeignType(int type_tag) {
-    if (type_tag == 0 || type_tag == 1) {
+    if (type_tag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex || type_tag == P_TYPEDEF_machine_handle->typeUnion.foreignType->declIndex) {        
         return SIZE_OF_PRT_STRING_SERIALIZED;
-    } else if (type_tag == 2) {
+    } else if (type_tag == P_TYPEDEF_capability->typeUnion.foreignType->declIndex) {
         return SIZE_OF_P_CAPABILITY_FOREIGN_TYPE;
     } else {
         return -1;
@@ -257,6 +272,11 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
         ocall_print("the actual PRT value is");
         ocall_print((char*)value->valueUnion.frgn->value);
         //string[SIZE_OF_PRT_STRING_SERIALIZED] = '\0';
+        if (value->valueUnion.frgn->typeTag == 2) {
+            ocall_print("serializing capability");
+            ocall_print("length added is");
+            ocall_print_int(strlen(foreignTypeTagString) + 1 + size_of_type_tag_foreign_type);
+        }
         final_size += strlen(foreignTypeTagString) + 1 + size_of_type_tag_foreign_type;
         return string;
     } else if (value->discriminator == PRT_VALUE_KIND_BOOL) {
@@ -1136,7 +1156,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         memcpy(payloadString, temp, payloadStringSize + 1);
         payloadString[payloadStringSize] = '\0';
         ocall_print("EVENT MESSAGE PAYLOAD IS");
-        ocall_print(payloadString);
+        printPayload(payloadString, payloadStringSize);
         ocall_print("Length is");
         ocall_print_int(payloadStringSize);
         safe_free(temp);        
@@ -1556,6 +1576,30 @@ extern "C" PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context
 	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "MasterSecret");
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
     
+}
+
+extern "C" void P_Debug_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    
+    #ifdef ENCLAVE_STD_ALT
+    // ocall_print("P Debug!");
+    // uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+
+    // string sendingToMachineCapabilityKeyPayload = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+    // printPublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+    // printPrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+
+    // uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+    // PRT_VALUE** P_VAR_payload = argRefs[0];
+    // PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    // char* machine_handle = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    // memcpy(machine_handle, (char*)val, SGX_RSA3072_KEY_SIZE);
+    // char* capabilityToSave = (char*) malloc(SIZE_OF_CAPABILITYKEY);
+    // memcpy(capabilityToSave, ((char*)val) + SGX_RSA3072_KEY_SIZE + 1, SIZE_OF_CAPABILITYKEY);
+    // PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(machine_handle, SGX_RSA3072_KEY_SIZE))] = string(capabilityToSave, SIZE_OF_CAPABILITYKEY);
+    // safe_free(machine_handle);
+    // safe_free(capabilityToSave);
+    #endif
 }
 
 //StringType Class

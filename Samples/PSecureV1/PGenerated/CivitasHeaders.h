@@ -8,7 +8,6 @@ extern "C" {
 #endif
     
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDGetVotingSSM;
-    extern PRT_EVENTDECL P_EVENT_StrEvent;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveVotingSSM;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDVoteRequest;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeStartElection;

@@ -593,6 +593,10 @@ sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_
     uint8_t* p_data = (uint8_t*) message;
     uint32_t data_size = size;
 
+    ocall_print("Inside sign string message!");
+    ocall_print("Message size is");
+    ocall_print_int(size);
+
 
     sgx_status_t status = SGX_SUCCESS;
     status = sgx_rsa3072_sign(
@@ -1239,8 +1243,9 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 ocall_print("currentMachinePID");
                 ocall_print_int(currentMachinePID);
                 printRSAKey(sendingToMachinePublicID);
-                ocall_print("capabilityKey");
-                ocall_print(sendingToMachineCapabilityKeyPayload.c_str());
+                // ocall_print("capabilityKey");
+                printPublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+                printPrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
                 sgx_rsa3072_signature_t* signatureM = signStringMessage(M, MSize, (sgx_rsa3072_key_t*) privateCapabilityKeySendingToMachine);
                 int sizeOfSignature = SGX_RSA3072_KEY_SIZE;
                 char* sigString[] = {M, colon, (char*)signatureM};
