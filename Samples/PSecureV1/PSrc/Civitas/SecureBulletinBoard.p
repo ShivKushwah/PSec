@@ -1,3 +1,4 @@
+//d
 /****************************************
 * Bulletin Board Machine
 * BulletinBoard -> VotingClient = RespElectionResults.

@@ -8,7 +8,7 @@ machine InitializerMachine {
 	start state Init {
 		entry {
 			supervisor = new SecureSupervisorMachine();
-			votingMachine = new VotingUSM((parent = supervisor, username = 2, password = 2)); //TODO how did passing new VotingUSM(supervisor, 2, 2) pass in type checker? thats not even a tuple?
+			votingMachine = new VotingUSM((parent = supervisor, username = 2, password = 2)); 
 			votingMachine2 = new VotingUSM((parent = supervisor, username = 1, password = 1));
 			
 		}

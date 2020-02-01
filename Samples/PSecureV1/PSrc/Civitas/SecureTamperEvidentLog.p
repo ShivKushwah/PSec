@@ -1,3 +1,4 @@
+//d
 secure_machine SecureTamperEvidentLogMachine 
 {
     var log: seq[(credential: int, vote: int)]; //seq[(credential, vote)]

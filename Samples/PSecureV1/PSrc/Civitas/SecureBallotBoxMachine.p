@@ -1,3 +1,4 @@
+//d
 /*****************************
 BallotBox Machine
 * BallotBox -> BulletinBoard -> AllVotesFor.
@@ -20,9 +21,6 @@ secure_machine SecureBallotBoxMachine
             tabulationTeller = new SecureTabulationTellerMachine((bBoard = bulletinBoard, bBoardCapability = payload.bBoardCapability)); //counts the votes
         }
         on TRUSTEDeStartElection goto WaitForVotes;
-        // on TRUSTEDeVote do {
-        //     print "Vote ignored, voting has not started yet !!";
-        // }
     }
 
     state WaitForVotes {

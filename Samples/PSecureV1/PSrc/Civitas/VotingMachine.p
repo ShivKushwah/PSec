@@ -1,3 +1,4 @@
+//d
 //Represents the untrusted user inputting their vote. Sends voting request to VotingClient to vote securely.
 machine VotingUSM {
 

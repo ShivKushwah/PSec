@@ -1,3 +1,4 @@
+//d
 /****************************************
 * Tabulation Teller Machine
 * TabulationTeller -> BulletinBoard -> ElectionResults.
