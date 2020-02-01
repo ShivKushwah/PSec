@@ -7,16 +7,8 @@
 extern "C" {
 #endif
     
-    extern PRT_EVENTDECL P_EVENT_BankPublicIDEvent;
-    extern PRT_EVENTDECL P_EVENT_PublicIDEvent;
-    extern PRT_EVENTDECL P_EVENT_MasterSecretEvent;
-    extern PRT_EVENTDECL P_EVENT_GenerateOTPCodeEvent;
-    extern PRT_EVENTDECL P_EVENT_OTPCodeEvent;
-    extern PRT_EVENTDECL P_EVENT_MapEvent;
-    extern PRT_EVENTDECL P_EVENT_AuthenticateRequest;
-    extern PRT_EVENTDECL P_EVENT_AuthSuccess;
-    extern PRT_EVENTDECL P_EVENT_AuthFailure;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDGetVotingSSM;
+    extern PRT_EVENTDECL P_EVENT_StrEvent;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveVotingSSM;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDVoteRequest;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeStartElection;

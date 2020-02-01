@@ -1,5 +1,6 @@
 type StringType;
 type machine_handle;
+type capability;
 
 fun CreateMachineSecureChild(): machine_handle;
 fun PrintString(inputString : StringType);

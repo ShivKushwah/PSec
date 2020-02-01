@@ -20,16 +20,8 @@ fun SaveCapability(input: capability);
 fun GenerateRandomMasterSecret() : StringType;
 fun GetUserInput() : StringType;
 
-event BankPublicIDEvent : machine_handle;
-event PublicIDEvent : machine_handle;
-trusted event MasterSecretEvent: StringType;
-event GenerateOTPCodeEvent : StringType;
-event OTPCodeEvent : StringType;
-trusted event MapEvent: map[int, int];
-event AuthenticateRequest : (StringType, StringType);
-event AuthSuccess;
-event AuthFailure;
 event UNTRUSTEDGetVotingSSM : (requestingMachine:machine_handle, username:int);
+event StrEvent : StringType;
 event UNTRUSTEDReceiveVotingSSM : machine_handle;
 event UNTRUSTEDVoteRequest : (username_attempt : int, password_attempt : int, vote : int);
 trusted event TRUSTEDeStartElection : int;
