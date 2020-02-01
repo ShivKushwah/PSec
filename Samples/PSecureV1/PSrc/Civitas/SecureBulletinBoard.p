@@ -1,24 +1,15 @@
-//d
 /****************************************
-* Bulletin Board Machine
-* BulletinBoard -> VotingClient = RespElectionResults.
-* BulletinBoard -> BallotBox = Confrimation.
-* BulletinBoard -> TabulationTeller -> AllVotes.
+Secure Bulletin Board machine
+* Publicly display election results
+* Votes are stored per credential, so they are anonymized
+* Enable SecureVotingClients to verify their vote was included
 *****************************************/
 
-//Stores the election results and VotingClients can verify their vote was included
 secure_machine SecureBulletinBoardMachine
 {
     var electionResults: map[int, int];
-    var electionResultsKeys : seq[int];
-    var i : int;
-    var countCandidate0 : int;
-    var countCandidate1 : int;
-    var winner : int;
+    
     start state Init {
-        // on TRUSTEDeGetElectionResults do {
-        //     print "Election Results not Available";
-        // }
         defer TRUSTEDeGetElectionResults;
         on TRUSTEDeElectionResults do (payload: map[int, int]) {
             electionResults = payload;
@@ -28,6 +19,12 @@ secure_machine SecureBulletinBoardMachine
 
     state SendResults { 
         on TRUSTEDeGetElectionResults do (payload: (requestingMachine: machine_handle, requestingMachineCapability: capability)){
+            var electionResultsKeys : seq[int];
+            var i : int;
+            var countCandidate0 : int;
+            var countCandidate1 : int;
+            var winner : int;
+
             SaveCapability(payload.requestingMachineCapability);
             electionResultsKeys = keys(electionResults);
             i = 0;
@@ -35,11 +32,12 @@ secure_machine SecureBulletinBoardMachine
             countCandidate1 = 0;
             while (i < sizeof(electionResultsKeys)) {
                 if (electionResults[electionResultsKeys[i]] == 0) {
+                    //Vote for Candidate0
                     countCandidate0 = countCandidate0 + 1;
                 } else {
+                    //Vote for Candidate1
                     countCandidate1 = countCandidate1 + 1;
                 }
-                print "Incrementing candidate!";
                 i = i + 1;
             }
             print "Count 0 - {0}", countCandidate0;

@@ -1,5 +1,5 @@
 /**************************************
-SecureSupervisorMachine
+Secure Supervisor machine
 * Root of trust of election.
 * Creates SecureBulletinBoard and SecureBallotBox 
 * Sends out SecureVotingClients to VotingUSMs
