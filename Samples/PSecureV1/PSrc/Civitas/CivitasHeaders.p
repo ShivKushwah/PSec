@@ -7,14 +7,17 @@ fun PrintKey(input : machine_handle);
 fun PrintPCapability(input : capability);
 fun PrintString(inputString : StringType);
 
-fun GetThis() : machine_handle;
+//TODO Make below functions P commands rather than Foreign functions user needs to call
+fun GetCapability(input: machine_handle) : capability; //Should be "get_capability"
+fun SaveCapability(input: capability); //Should be "save_capability"
+fun GetThis() : machine_handle; //Should be "this"
+
+//Functions necessary for .h file, should not be called by user
+//TODO Add to PrtCodeGenerator
 fun CreateMachineSecureChild(): machine_handle;
 fun CreateSecureMachineRequest(): machine_handle;
 fun CreateUSMMachineRequest(): machine_handle;
 
-fun GetCapability(input: machine_handle) : capability;
-fun SaveCapability(input: capability);
-fun GetUserInput() : StringType;
 
 event UNTRUSTEDGetVotingSSM : (requestingMachine:machine_handle, username:int);
 event StrEvent : StringType;

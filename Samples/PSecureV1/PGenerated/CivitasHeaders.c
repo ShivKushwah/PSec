@@ -120,6 +120,10 @@ PRT_VALUE* P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRef
 
 PRT_VALUE* P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
+PRT_VALUE* P_GetCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -127,12 +131,6 @@ PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE**
 PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_GetCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
@@ -359,6 +357,22 @@ PRT_FUNDECL P_FUNCTION_PrintString =
 };
 
 
+PRT_FUNDECL P_FUNCTION_GetCapability =
+{
+    "GetCapability",
+    &P_GetCapability_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_SaveCapability =
+{
+    "SaveCapability",
+    &P_SaveCapability_IMPL,
+    NULL
+};
+
+
 PRT_FUNDECL P_FUNCTION_GetThis =
 {
     "GetThis",
@@ -387,30 +401,6 @@ PRT_FUNDECL P_FUNCTION_CreateUSMMachineRequest =
 {
     "CreateUSMMachineRequest",
     &P_CreateUSMMachineRequest_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_GetCapability =
-{
-    "GetCapability",
-    &P_GetCapability_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_SaveCapability =
-{
-    "SaveCapability",
-    &P_SaveCapability_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_GetUserInput =
-{
-    "GetUserInput",
-    &P_GetUserInput_IMPL,
     NULL
 };
 
