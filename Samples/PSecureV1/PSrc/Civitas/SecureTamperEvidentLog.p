@@ -1,7 +1,10 @@
-//d
+/**************************************
+Secure TamperEvidentLog Machine
+* Stores votes in sequential order as received from SecureBallotBoxMachine
+***************************************/
 secure_machine SecureTamperEvidentLogMachine 
 {
-    var log: seq[(credential: int, vote: int)]; //seq[(credential, vote)]
+    var log: seq[(credential: int, vote: int)];
     var parent: machine_handle;
     start state Init {
         entry(payload: (parentMachine: machine_handle, parentCapability:capability))
@@ -19,8 +22,6 @@ secure_machine SecureTamperEvidentLogMachine
         }
         on TRUSTEDeGetLog do
         {
-            print "Is issue here?";
-            // print log;
             secure_send parent, TRUSTEDeRespGetLog, log;
         }
     }

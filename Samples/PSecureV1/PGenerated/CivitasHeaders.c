@@ -3050,8 +3050,6 @@ PRT_VALUE* P_Anon_IMPL_13(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32_19 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
-    PrtPrintf("Is issue here?");
-    
     PRT_VALUE** P_LVALUE_153 = &(PTMP_tmp0_11);
     PrtFreeValue(*P_LVALUE_153);
     *P_LVALUE_153 = PrtCloneValue(p_this->varValues[1]);
