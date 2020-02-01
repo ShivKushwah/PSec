@@ -1,16 +1,16 @@
-//d
 /*****************************
 BallotBox Machine
-* BallotBox -> BulletinBoard -> AllVotesFor.
+* Receive direct votes from SecureVotingClients and save them in SecureTamperEvidentLogMachine
+* After predetemined number of votes are received, votes are
+forwarded to SecureTabulationTellerMachine to be counted
 ******************************/
 
-//Receives direct votes from VotingClients and upon voting completion, requests the TabulationTeller to count the votes
 secure_machine SecureBallotBoxMachine
 {
     var bulletinBoard: machine_handle;
     var tabulationTeller: machine_handle;
     var appendOnlyLog: machine_handle;
-    var numberOfTotalVotes: int;
+    var numberOfTotalVotesAllowed: int;
     var currentNumberOfVotes: int;
 
     start state Init {
@@ -25,7 +25,7 @@ secure_machine SecureBallotBoxMachine
 
     state WaitForVotes {
         entry (payload: int) {
-            numberOfTotalVotes = payload;
+            numberOfTotalVotesAllowed = payload;
             currentNumberOfVotes = 0;
         }
         on TRUSTEDeVote do (payload: (credential : int, vote : int, requestingMachine : machine_handle, requestingMachineCapability: capability))
@@ -41,34 +41,26 @@ secure_machine SecureBallotBoxMachine
                     }
                 }
             }
-            if (currentNumberOfVotes >= numberOfTotalVotes) {
+            if (currentNumberOfVotes >= numberOfTotalVotesAllowed) {
                 goto VoteCounting;
             }
             
         }
-        // on eCloseElection goto VoteCounting;
     }
 
     state VoteCounting {
         entry {
             secure_send appendOnlyLog, TRUSTEDeGetLog;
             receive{
-                case TRUSTEDeRespGetLog: (payload: seq[(credential : int, vote : int)]) //p is all the votes returned by the appendOnlyLog
+                case TRUSTEDeRespGetLog: (payload: seq[(credential : int, vote : int)])
                 {
-                    print "Sending votes to Secure Tabulation teller";
+                    print "Sending votes to Secure Tabulation Teller";
                     secure_send tabulationTeller, TRUSTEDeAllVotes, (ballotID = 0, votes = payload);
                 }
             }
 
-            // goto WaitForGetResultsQuery;
         }
-
 
     }
 
-    // state WaitForGetResultsQuery {
-    //     //     on eVote do {
-    //     //     print "Vote ignored, voting phase is over";
-    //     // }
-    // }
 }
