@@ -114,37 +114,23 @@ static PRT_SEQTYPE P_SEQTYPE_3 = { &P_GEND_TYPE_i };
 static PRT_TYPE P_GEND_TYPE_Si = { PRT_KIND_SEQ, { .seq = &P_SEQTYPE_3 } };
 
 // Function implementation prototypes:
-PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+PRT_VALUE* P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_GetCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
@@ -349,10 +335,18 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeGetElectionResults =
     &P_GEND_TYPE_T2machine_handlecapability
 };
 
-PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild =
+PRT_FUNDECL P_FUNCTION_PrintKey =
 {
-    "CreateMachineSecureChild",
-    &P_CreateMachineSecureChild_IMPL,
+    "PrintKey",
+    &P_PrintKey_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_PrintPCapability =
+{
+    "PrintPCapability",
+    &P_PrintPCapability_IMPL,
     NULL
 };
 
@@ -365,14 +359,6 @@ PRT_FUNDECL P_FUNCTION_PrintString =
 };
 
 
-PRT_FUNDECL P_FUNCTION_SecureSend =
-{
-    "SecureSend",
-    &P_SecureSend_IMPL,
-    NULL
-};
-
-
 PRT_FUNDECL P_FUNCTION_GetThis =
 {
     "GetThis",
@@ -381,42 +367,10 @@ PRT_FUNDECL P_FUNCTION_GetThis =
 };
 
 
-PRT_FUNDECL P_FUNCTION_Concat =
+PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild =
 {
-    "Concat",
-    &P_Concat_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_Hash =
-{
-    "Hash",
-    &P_Hash_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_UntrustedCreateCoordinator =
-{
-    "UntrustedCreateCoordinator",
-    &P_UntrustedCreateCoordinator_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_UntrustedSend =
-{
-    "UntrustedSend",
-    &P_UntrustedSend_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_InitializeUntrustedMachine =
-{
-    "InitializeUntrustedMachine",
-    &P_InitializeUntrustedMachine_IMPL,
+    "CreateMachineSecureChild",
+    &P_CreateMachineSecureChild_IMPL,
     NULL
 };
 
@@ -437,22 +391,6 @@ PRT_FUNDECL P_FUNCTION_CreateUSMMachineRequest =
 };
 
 
-PRT_FUNDECL P_FUNCTION_PrintKey =
-{
-    "PrintKey",
-    &P_PrintKey_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_PrintPCapability =
-{
-    "PrintPCapability",
-    &P_PrintPCapability_IMPL,
-    NULL
-};
-
-
 PRT_FUNDECL P_FUNCTION_GetCapability =
 {
     "GetCapability",
@@ -465,14 +403,6 @@ PRT_FUNDECL P_FUNCTION_SaveCapability =
 {
     "SaveCapability",
     &P_SaveCapability_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_GenerateRandomMasterSecret =
-{
-    "GenerateRandomMasterSecret",
-    &P_GenerateRandomMasterSecret_IMPL,
     NULL
 };
 

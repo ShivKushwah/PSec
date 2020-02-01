@@ -2,22 +2,18 @@ type StringType;
 type machine_handle;
 type capability;
 
-fun CreateMachineSecureChild(): machine_handle;
-fun PrintString(inputString : StringType);
-fun SecureSend(sendingToMachine : machine_handle, eventToSend : event, numArgs : int, arg : int);
-fun GetThis() : machine_handle;
-fun Concat(input1:StringType, input2:StringType) : StringType;
-fun Hash(input1:StringType, input2:StringType) : StringType;
-fun UntrustedCreateCoordinator();
-fun UntrustedSend(publicID: machine_handle, even : event, payload: int);
-fun InitializeUntrustedMachine();
-fun CreateSecureMachineRequest(): machine_handle;
-fun CreateUSMMachineRequest(): machine_handle;
+//Foreign Functions callable from P Code
 fun PrintKey(input : machine_handle);
 fun PrintPCapability(input : capability);
+fun PrintString(inputString : StringType);
+
+fun GetThis() : machine_handle;
+fun CreateMachineSecureChild(): machine_handle;
+fun CreateSecureMachineRequest(): machine_handle;
+fun CreateUSMMachineRequest(): machine_handle;
+
 fun GetCapability(input: machine_handle) : capability;
 fun SaveCapability(input: capability);
-fun GenerateRandomMasterSecret() : StringType;
 fun GetUserInput() : StringType;
 
 event UNTRUSTEDGetVotingSSM : (requestingMachine:machine_handle, username:int);
