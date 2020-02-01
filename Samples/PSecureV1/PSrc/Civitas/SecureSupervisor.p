@@ -35,14 +35,10 @@ secure_machine SecureSupervisorMachine
             while (i < sizeof(username_passwords)){
                 //NOTE: another design is to have each VotingUSM create a Voting Client machine, and pass in Supervisor as parameter to VotingClient. 
                 //Problem with this approach is that VotingClient doesn't have capability of Supervisor, and there is no trust.
-                print "3Debug P here!";
-                PrintPCapability(GetCapability(bBoard));
                 tempMachineHandle = new SecureVotingClientMachine((ballotBox = bBox, bulletinBoard = bBoard, username = username_passwords[i].0, password = username_passwords[i].1, ballotBoxCapability = GetCapability(bBox), bulletinBoardCapability = GetCapability(bBoard)));
                 votingClients += (sizeof(votingClients), tempMachineHandle);
                 i = i + 1;
             }
-
-            PrintPCapability(GetCapability(bBox));
 
             secure_send bBox, TRUSTEDeStartElection, 2; //We send 2 because this is how many voting machines are in the system
             

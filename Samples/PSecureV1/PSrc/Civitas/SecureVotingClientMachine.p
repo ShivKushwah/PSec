@@ -18,15 +18,11 @@ secure_machine SecureVotingClientMachine
         entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, username:int, password:int, ballotBoxCapability:capability, bulletinBoardCapability:capability)) {
             credential = payload.username + payload.password;//ReadCredentials(); //This function contacts RegistrationTellers to get
             // an anonymous credential so that no one knows how this machine voted
-            print "2Debug P here!";
-            PrintPCapability(payload.ballotBoxCapability);
             username = payload.username;
             password = payload.password;
             ballotBox = payload.ballotBox;
             bulletinBoard = payload.bulletinBoard;
             SaveCapability(payload.ballotBoxCapability);
-            print "Debug P here!";
-            PrintPCapability(GetCapability(ballotBox));
             SaveCapability(payload.bulletinBoardCapability);
             goto WaitForVote;
         }
@@ -58,7 +54,6 @@ secure_machine SecureVotingClientMachine
 
     state SubmitVote {
         entry (vote : int) {
-            Debug();
             secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = vote, requestingMachine = GetThis(), requestingMachineCapability = GetCapability(GetThis()));
     //         //Highlight NOTE: "this" is public ID of this machine, so it can receive a confirmation
         }
