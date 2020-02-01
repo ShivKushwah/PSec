@@ -2163,7 +2163,7 @@ PRT_VARDECL P_SecureBallotBoxMachine_VARS[] = {
     { "bulletinBoard", &P_GEND_TYPE_machine_handle },
     { "tabulationTeller", &P_GEND_TYPE_machine_handle },
     { "appendOnlyLog", &P_GEND_TYPE_machine_handle },
-    { "numberOfTotalVotes", &P_GEND_TYPE_i },
+    { "numberOfTotalVotesAllowed", &P_GEND_TYPE_i },
     { "currentNumberOfVotes", &P_GEND_TYPE_i }
 };
 
@@ -2708,7 +2708,7 @@ PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
             PRT_VALUE** P_VAR_payload_8 = &P_VAR_P_payload_1;
             PRT_VALUE P_LIT_INT32_16 = { PRT_VALUE_KIND_INT, { .nt = 0 } };
             PRT_VALUE P_LIT_INT32_17 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
-                        PrtPrintf("Sending votes to Secure Tabulation teller");
+                        PrtPrintf("Sending votes to Secure Tabulation Teller");
             
             PRT_VALUE** P_LVALUE_138 = &(PTMP_tmp2_8);
             PrtFreeValue(*P_LVALUE_138);

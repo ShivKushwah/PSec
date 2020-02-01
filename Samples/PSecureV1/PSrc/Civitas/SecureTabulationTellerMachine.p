@@ -1,18 +1,15 @@
-//d
 /****************************************
-* Tabulation Teller Machine
-* TabulationTeller -> BulletinBoard -> ElectionResults.
+Tabulation Teller Machine
+* Eliminates duplicate votes (keeps only most recent vote per vote credential)
+* Sends final votes to Secure Bulletin Board
 ****************************************/
 
-//Receives a request to count votes, and after counting votes, sends them to the public BulletinBoard
 secure_machine SecureTabulationTellerMachine 
 {
     var bulletinBoard: machine_handle;
     var allVotes: seq[(credential : int, vote : int)];
 
     start state Init {
-        // defer eDoTally; //TODO remove?
-
         entry (payload:(bBoard: machine_handle, bBoardCapability: capability)){
             bulletinBoard = payload.bBoard;
             SaveCapability(payload.bBoardCapability);
@@ -31,13 +28,11 @@ secure_machine SecureTabulationTellerMachine
             while(i < sizeof(allVotes))
             {
                 //TODO validate the credentials
-
                 result[allVotes[i].credential] = allVotes[i].vote; //map enables us to consider the latest vote
                 i = i + 1;
             }
 
             secure_send bulletinBoard, TRUSTEDeElectionResults, result;
-            // untrusted_send bulletinBoard, TRUSTEDeElectionResults, result;
         }
     }
 }

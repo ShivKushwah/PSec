@@ -1,5 +1,5 @@
 /*****************************
-BallotBox Machine
+Secure BallotBox Machine
 * Receive direct votes from SecureVotingClients and save them in SecureTamperEvidentLogMachine
 * After predetemined number of votes are received, votes are
 forwarded to SecureTabulationTellerMachine to be counted
