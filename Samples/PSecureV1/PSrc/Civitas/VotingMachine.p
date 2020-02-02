@@ -4,18 +4,16 @@ machine VotingUSM {
 
 	var supervisor: machine_handle;
 	var votingSecureMachine: machine_handle;
-	var username: int;
-	var password: int;
+	var credential: int;
 	var vote: int;
 
 
 	start state Init {
-        entry (payload: (parent: machine_handle, username: int, password: int)) {
-			supervisor = payload.parent;
-			username = payload.username; //TODO get string input
-			password = payload.password;
+        entry (payload: (supervisor: machine_handle, credential: int)) {
+			supervisor = payload.supervisor;
+			credential = payload.credential; //TODO get string input
 
-			untrusted_send supervisor, UNTRUSTEDGetVotingSSM, (requestingMachine = GetThis(), username = username); //TODO Ask about this
+			untrusted_send supervisor, UNTRUSTEDGetVotingSSM, GetThis();
 			
 		}
 		on UNTRUSTEDReceiveVotingSSM goto Vote;
@@ -25,7 +23,7 @@ machine VotingUSM {
 		entry (payload: machine_handle) {
 			votingSecureMachine = payload;
 			vote = 1; //TODO get int input
-			untrusted_send votingSecureMachine, UNTRUSTEDVoteRequest, (username_attempt = username, password_attempt = password, vote = vote);
+			untrusted_send votingSecureMachine, UNTRUSTEDVoteRequest, (credential = credential, vote = vote);
 			goto Done;
 		}
 	}

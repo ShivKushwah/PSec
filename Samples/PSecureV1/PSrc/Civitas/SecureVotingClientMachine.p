@@ -1,9 +1,7 @@
-//d
 /***************************
-Voting Client Machine
-* VotingClient -> BallotBox = eVote.
-* VotingClient -> BulletinBoard = ConfirmVote.
-* VotingClient -> BulletinBoard = GetElectionResults.
+Secure VotingClient Machine
+* Secure machine that VotingUSMs interact with 
+that enables them to vote anonymously and securely
 ***************************/
 
 //Enclave for each client that enables them to vote anonymously as well as change votes
@@ -12,15 +10,9 @@ secure_machine SecureVotingClientMachine
     var credential: int;
     var ballotBox: machine_handle;
     var bulletinBoard: machine_handle;
-    var username: int;
-    var password: int;
 
     start state Init {
-        entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, username:int, password:int, ballotBoxCapability:capability, bulletinBoardCapability:capability)) {
-            credential = payload.username + payload.password;//ReadCredentials(); //This function contacts RegistrationTellers to get
-            // an anonymous credential so that no one knows how this machine voted
-            username = payload.username;
-            password = payload.password;
+        entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, ballotBoxCapability:capability, bulletinBoardCapability:capability)) {
             ballotBox = payload.ballotBox;
             bulletinBoard = payload.bulletinBoard;
             SaveCapability(payload.ballotBoxCapability);
@@ -40,23 +32,13 @@ secure_machine SecureVotingClientMachine
     // }*/
 
     state WaitForVote {
-        on UNTRUSTEDVoteRequest goto AcceptVote;
-    }
-
-    state AcceptVote {
-        entry (payload: (username_attempt: int, password_attempt: int, vote: int)) {
-            if (payload.username_attempt == username && payload.password_attempt == password) {
-                goto SubmitVote, payload.vote;
-            } else {
-                goto WaitForVote;
-            }
-        }
+        on UNTRUSTEDVoteRequest goto SubmitVote;
     }
 
     state SubmitVote {
-        entry (vote : int) {
-            secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = vote, requestingMachine = GetThis(), requestingMachineCapability = GetCapability(GetThis()));
-    //         //Highlight NOTE: "this" is public ID of this machine, so it can receive a confirmation
+        entry (payload: (credential : int, vote : int)) {
+            credential = payload.credential;
+            secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = GetThis(), requestingMachineCapability = GetCapability(GetThis()));
         }
         on TRUSTEDeRespConfirmVote goto ValidateResults with {
             print "Vote successfully submitted to the ballot box";

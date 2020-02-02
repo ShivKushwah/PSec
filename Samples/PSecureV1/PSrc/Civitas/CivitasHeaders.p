@@ -18,9 +18,9 @@ fun CreateMachineSecureChild(): machine_handle;
 fun CreateSecureMachineRequest(): machine_handle;
 fun CreateUSMMachineRequest(): machine_handle;
 
-event UNTRUSTEDGetVotingSSM : (requestingMachine:machine_handle, username:int);
+event UNTRUSTEDGetVotingSSM : machine_handle;
 event UNTRUSTEDReceiveVotingSSM : machine_handle;
-event UNTRUSTEDVoteRequest : (username_attempt : int, password_attempt : int, vote : int);
+event UNTRUSTEDVoteRequest : (credential : int, vote : int);
 trusted event TRUSTEDeStartElection : int;
 trusted event TRUSTEDeVote : (credential : int, vote : int, requestingMachine: machine_handle, requestingMachineCapability: capability);
 trusted event TRUSTEDeAddItem : (credential: int, vote: int);

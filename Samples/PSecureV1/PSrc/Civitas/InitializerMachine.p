@@ -8,8 +8,8 @@ machine InitializerMachine {
 	start state Init {
 		entry {
 			supervisor = new SecureSupervisorMachine();
-			votingMachine = new VotingUSM((parent = supervisor, username = 2, password = 2)); 
-			votingMachine2 = new VotingUSM((parent = supervisor, username = 1, password = 1));
+			votingMachine = new VotingUSM((supervisor = supervisor, credential = 17)); 
+			votingMachine2 = new VotingUSM((supervisor = supervisor, credential = 7));
 			
 		}
 	}

@@ -11,6 +11,11 @@ secure_machine SecureSupervisorMachine
     var bBox : machine_handle;
     var tTeller: machine_handle;
     var username_passwords : seq[(int, int)];
+    var valid_credentials : seq[int];
+
+    fun generateRandomCredential() : int {
+        return 3;
+    }
     
     start state Init {
         entry {
@@ -24,6 +29,11 @@ secure_machine SecureSupervisorMachine
             username_passwords += (sizeof(username_passwords), (2,2)); //TODO setup username_passwords using user input
             username_passwords += (sizeof(username_passwords), (1,1));
 
+            valid_credentials += (sizeof(valid_credentials), 17);
+
+            //TODO print credential (random int) in registration phase and save credential -> username;
+            //Since we don't
+
             //We send 2 because this is how many votes we need to be submitted
             //before the election is considered finished
             secure_send bBox, TRUSTEDeStartElection, 2;
@@ -32,25 +42,27 @@ secure_machine SecureSupervisorMachine
         }
     }
 
+    
     state WaitToSendVotingClientMachines {
         on UNTRUSTEDGetVotingSSM goto SendVotingSSM;
     }
 
     state SendVotingSSM {
-        entry (payload: (requestingMachine: machine_handle, username: int)) {
-            var i : int;
+        entry (requestingMachine: machine_handle) {
+            // var i : int;
             var secureVotingClientMachine : machine_handle;
+            var newCredential : int;
 
-            i = 0;
-            while (i < sizeof(username_passwords)) {
-                if (username_passwords[i].0 == payload.username) {
-                    print "Provisioning a secure voting client!";
-                    secureVotingClientMachine = new SecureVotingClientMachine((ballotBox = bBox, bulletinBoard = bBoard, username = username_passwords[i].0, password = username_passwords[i].1, ballotBoxCapability = GetCapability(bBox), bulletinBoardCapability = GetCapability(bBoard)));
-                    untrusted_send payload.requestingMachine, UNTRUSTEDReceiveVotingSSM, secureVotingClientMachine;
-                }
-                i = i + 1;
-                
-            }
+            // i = 0;
+            // while (i < sizeof(username_passwords)) {
+            //     if (username_passwords[i].0 == payload.username) {
+            //         print "Provisioning a secure voting client!";
+                    secureVotingClientMachine = new SecureVotingClientMachine((ballotBox = bBox, bulletinBoard = bBoard, ballotBoxCapability = GetCapability(bBox), bulletinBoardCapability = GetCapability(bBoard)));
+                    untrusted_send requestingMachine, UNTRUSTEDReceiveVotingSSM, secureVotingClientMachine;
+            //     }
+            //     i = i + 1;
+            // 
+            // }
             goto WaitToSendVotingClientMachines;
         }
     }
