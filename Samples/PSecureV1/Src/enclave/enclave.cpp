@@ -275,9 +275,14 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
     PublicIdentityKeyToMachinePIDDictionary[secureChildPublicIDKey] = newMachinePID;
 
-    if (isSecureCreate) {
+    // if (isSecureCreate) {
         //Contacting KPS for capability key
-        char* capabilityKeyPayloadReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str());
+        char* capabilityKeyPayloadReceived;
+        if (isSecureCreate) {
+           capabilityKeyPayloadReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str());
+        } else {
+            capabilityKeyPayloadReceived = receiveNewCapabilityKeyFromKPS((char*)secureChildPublicIDKey.c_str() ,(char*)secureChildPublicIDKey.c_str());
+        } 
         ocall_print("Enclave received new capability Key from KPS: ");
         char* publicCapabilityKey = retrievePublicCapabilityKey(capabilityKeyPayloadReceived);
         char* privateCapabilityKey = retrievePrivateCapabilityKey(capabilityKeyPayloadReceived);
@@ -288,7 +293,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
         safe_free(publicCapabilityKey);
         safe_free(privateCapabilityKey);
         safe_free(capabilityKeyPayloadReceived);
-    }
+    // }
 
     char* secureChildPublicIDKeyCopy = (char*) malloc(secureChildPublicIDKey.size() + 1);
     memcpy(secureChildPublicIDKeyCopy, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length());

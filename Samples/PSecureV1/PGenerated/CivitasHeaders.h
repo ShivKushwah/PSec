@@ -19,6 +19,9 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeGetLog;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeRespGetLog;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeAllVotes;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDValidateCredential;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDValidCredential;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDInvalidCredential;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeElectionResults;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeRespElectionResults;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeGetElectionResults;
