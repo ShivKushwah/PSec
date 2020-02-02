@@ -18,6 +18,7 @@ secure_machine SecureTabulationTellerMachine
             SaveCapability(payload.supervisorCapability);
         }
         on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[(credential : int, vote : int)])){
+            //allVotes are ordered by time
             allVotes = payload.votes;
             goto DoTally;
         }
@@ -33,7 +34,8 @@ secure_machine SecureTabulationTellerMachine
                 secure_send supervisor, TRUSTEDValidateCredential, (tabulationTellerMachine = GetThis(), tabulationTellerCapability = GetCapability(GetThis()), credentialToCheck = allVotes[i].credential);
                 receive {
                     case TRUSTEDValidCredential : {
-                        result[allVotes[i].credential] = allVotes[i].vote; //map enables us to consider the latest vote
+                        //map enables us to consider the latest vote
+                        result[allVotes[i].credential] = allVotes[i].vote; 
                         
                     }
                     case TRUSTEDInvalidCredential : {

@@ -44,7 +44,6 @@ secure_machine SecureSupervisorMachine
             secureVotingClientMachine = new SecureVotingClientMachine((ballotBox = bBox, bulletinBoard = bBoard, ballotBoxCapability = GetCapability(bBox), bulletinBoardCapability = GetCapability(bBoard)));
             untrusted_send requestingMachine, UNTRUSTEDReceiveVotingSSM, secureVotingClientMachine;
         }
-        //TODO add validate credential event here
         on TRUSTEDValidateCredential do (payload: (tabulationTellerMachine : machine_handle, tabulationTellerCapability : capability, credentialToCheck : int)) {
             var i : int;
             var found : bool;
