@@ -9,7 +9,7 @@ machine InitializerMachine {
 		entry {
 			supervisor = new SecureSupervisorMachine();
 			votingMachine = new VotingUSM((supervisor = supervisor, credential = 17)); 
-			votingMachine2 = new VotingUSM((supervisor = supervisor, credential = 7));
+			votingMachine2 = new VotingUSM((supervisor = supervisor, credential = 98));
 			
 		}
 	}

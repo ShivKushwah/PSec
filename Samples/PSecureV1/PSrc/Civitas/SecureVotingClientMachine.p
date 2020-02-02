@@ -3,8 +3,6 @@ Secure VotingClient Machine
 * Secure machine that VotingUSMs interact with 
 that enables them to vote anonymously and securely
 ***************************/
-
-//Enclave for each client that enables them to vote anonymously as well as change votes
 secure_machine SecureVotingClientMachine
 {
     var credential: int;
@@ -20,16 +18,6 @@ secure_machine SecureVotingClientMachine
             goto WaitForVote;
         }
     }
-
-    // fun ReadCredentials() : int; 
-    // /* {
-    //     return 1;
-    // }*/
-
-    // fun ReadVote(): int;
-    // /*{
-    //     return 10;
-    // }*/
 
     state WaitForVote {
         on UNTRUSTEDVoteRequest goto SubmitVote;
@@ -52,9 +40,8 @@ secure_machine SecureVotingClientMachine
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, int], whoWon : int)) {
             if(!(credential in payload.allVotes))
             {
-                print "ERROR";
-                print "My vote not found!!";
-                // raise halt;
+                print "ERROR: Vote not found!";
+                raise halt;
             }
             else
             {
@@ -67,7 +54,6 @@ secure_machine SecureVotingClientMachine
     state Done {
         entry {
             print "Operation successfully performed, closing client safely";
-            //this should close the enclave
             raise halt;
         }
     }
