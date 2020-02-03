@@ -204,23 +204,40 @@ char* receiveNetworkRequest(char* request, size_t requestSize) {
 }
 
 //Responsibility of Caller to free return 
-char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey) { //TODO shividentity
-    printf("USM Initialize Communication API Called!\n");
-    //TODO need to verify signature over requestingMachineIDKey
-    if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))) == 0) {
-        //TODO this logic needs to be diffie hellman authenticated encryption
-        string newSessionKey;
-        generateSessionKey(newSessionKey);
-        PublicIdentityKeyToChildSessionKey[make_tuple(receivingMachineIDKey, requestingMachineIDKey)] = newSessionKey;
-        printf("Returning correct session key!\n");
-        char* returnSessionkey = (char*) malloc(newSessionKey.length() + 1);
-        memcpy(returnSessionkey, newSessionKey.c_str(), newSessionKey.length() + 1);
-        return returnSessionkey;
+char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey) { //TODO shividentity
+    ocall_print("USM Initialize Communication API Called!");
+
+    int count;
+    count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)));
+    
+    if (count == 0) {
+        PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = string(newSessionKey, SIZE_OF_REAL_SESSION_KEY);
+        char* successMessage = createStringLiteralMalloced("Success: Session Key Received");
+        printf("Received correct session key!\n");
+        return successMessage;
     } else {
         char* errorMsg = createStringLiteralMalloced("Already created!");
         printf("ERROR:Session has already been initalized in the past!\n");
         return errorMsg;
     }
+    
+    
+    // printf("USM Initialize Communication API Called!\n");
+    // //TODO need to verify signature over requestingMachineIDKey
+    // if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))) == 0) {
+    //     //TODO this logic needs to be diffie hellman authenticated encryption
+    //     string newSessionKey;
+    //     generateSessionKey(newSessionKey);
+    //     PublicIdentityKeyToChildSessionKey[make_tuple(receivingMachineIDKey, requestingMachineIDKey)] = newSessionKey;
+    //     printf("Returning correct session key!\n");
+    //     char* returnSessionkey = (char*) malloc(newSessionKey.length() + 1);
+    //     memcpy(returnSessionkey, newSessionKey.c_str(), newSessionKey.length() + 1);
+    //     return returnSessionkey;
+    // } else {
+    //     char* errorMsg = createStringLiteralMalloced("Already created!");
+    //     printf("ERROR:Session has already been initalized in the past!\n");
+    //     return errorMsg;
+    // }
     
 }
 

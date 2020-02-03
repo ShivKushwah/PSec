@@ -38,7 +38,7 @@ extern int initialize_enclave(sgx_enclave_id_t* eid, const std::string& launch_t
 
 extern char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize);
 extern char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, int payloadSize);
-extern char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey);
+extern char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey);
 
 
 extern char* untrusted_enclave1_receiveNetworkRequest(char* request, size_t requestSize);
@@ -926,8 +926,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         } else {
             //TODO shivIdentity
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)) > 0) {
-                
-                char* ret = USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm);
+                char* ret = USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm, newSessionKey);
                 safe_free(requestCopy);
                 return ret;
             
@@ -1423,14 +1422,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     printRSAKey(sendingToMachinePublicID);
     
 
-    if (isSecureSend) {
-        if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
-            ocall_print("ERROR: No Capability Key found!");
-        }
-        string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
-        ocall_print((char*)capabilityKey.c_str());
-        
-    
+    // if (isSecureSend) {
         //Check if we don't have a pre-existing session key with the other machine, if so 
         //we need to intialize communications and establish a session key
        
@@ -1450,7 +1442,9 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             char* returnMessage = (char*) malloc(100);
             int ret_value;
             #ifdef ENCLAVE_STD_ALT
-            ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY); //TOdo shividentity dont use strlen
+            ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY);
+            #else
+            ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY); 
             #endif
             safe_free(initComRequest);
             char* machineNameWrapper2[] = {currentMachineIDPublicKey};
@@ -1462,11 +1456,8 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             // safe_free(newSessionKey);
             safe_free(returnMessage);
 
-            //TODO use sessionKey to encrypt message
-        }
-        string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
-        
-    }
+        }        
+    // }
     PRT_VALUE** P_Event_Payload = argRefs[1];
     char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
     itoa((*P_Event_Payload)->valueUnion.ev , event, 10);
@@ -1507,48 +1498,10 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         itoa(eventMessagePayloadSize, eventMessagePayloadSizeString, 10);
 
     }
-    
-
-    // for (int i = 0; i < numArgs; i++) {
-    //     PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];
-    //     char* payload = serializePrtValueToString(*P_EventMessage_Payload);
-    //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
-    //     if (i == 0) {
-    //         char* parameters[] = {payload};
-    //         eventMessagePayload = generateCStringFromFormat("%s", parameters, 1);
-    //     } else {
-    //         char* parameters[] = {eventMessagePayload, payload};
-    //         eventMessagePayload = generateCStringFromFormat("%s:%s", parameters, 2);
-    //     }
-    // }
 
     int requestSize = -1;// 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + size_of_max_num_args + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
     char* sendRequest;
 
-    // int eventMessageSize = 9; //TODO shivIdentity
-    // char* eventMessageSizeStr = (char*) malloc(10);
-
-    // if (NETWORK_DEBUG) {
-    //     sendRequest = (char*) malloc(requestSize);
-    //     if (isSecureSend) {
-    //         if (numArgs > 0) {
-    //             snprintf(sendRequest, requestSize, "%s:%s:%s:%s:%d:%d:", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType/*, eventMessageSize*/);
-    //             memcpy(sendRequest + strlen(sendRequest), eventMessagePayload, final_size_seralized);
-    //         } else  {
-    //             snprintf(sendRequest, requestSize, "%s:%s:%s:%s:0", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event);
-    //         }
-    //     } else {
-    //         if (numArgs > 0) {
-    //             snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType/*, eventMessageSize*/);
-    //             memcpy(sendRequest + strlen(sendRequest), eventMessagePayload, final_size_seralized);
-
-    //         } else {
-    //             snprintf(sendRequest, requestSize, "%s:%s:%s:0", sendTypeCommand, sendingToMachinePublicID, event);
-    //         }
-
-    //     }
-    // } else {
-        // sendRequest = (char*) malloc(requestSize);
         char* colon = ":";
         char* zero = "0";
         if (isSecureSend) {
@@ -1654,7 +1607,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 safe_free(mac);    
             }
 
-        } else { //!SecureSend
+        } else { //!SecureSend 
             requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
             sendRequest = (char*) malloc(requestSize);
             if (numArgs > 0) {
@@ -1673,24 +1626,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 requestSize = returnTotalSizeofLengthArray(concatLenghts, 7) + 1;
                 // snprintf(sendRequest, requestSize, "%s:%s:%s:0", sendTypeCommand, sendingToMachinePublicID, event);
             }
-
-            // safe_free(event);
-            // safe_free(eventMessagePayload);
-            // ocall_print("Untrusted machine is sending out following network request:\n"); 
-            // ocall_print(sendRequest);  
-            // char* newMachinePublicIDKey = NULL;
-            // size_t requestSz = requestSize;
-            // #ifndef ENCLAVE_STD_ALT
-            // newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-            // ocall_network_request(sendRequest, newMachinePublicIDKey, requestSz, SIZE_OF_IDENTITY_STRING); //TOdo shividentity dont use strlen
-            // #endif
-            // safe_free(sendRequest);
-            // ocall_print("printing pidk");
-            // ocall_print(newMachinePublicIDKey);
-            // safe_free(newMachinePublicIDKey);
-            // return;
         }
-    // }
 
     safe_free(eventPayloadTypeString);
     // safe_free(eventMessageSizeStr);
@@ -1705,15 +1641,12 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     // ocall_print("KUUUURUT");
     char* empty = (char*) malloc(10);
     int ret_value;
-    // if (NETWORK_DEBUG) {
-    //     sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, strlen(sendRequest) + 1, 0);
-    // } else {
+
     #ifdef ENCLAVE_STD_ALT
         sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, requestSize, 0);
     #else
         ocall_network_request(sendRequest, empty, requestSize, 0); 
     #endif
-    // }
     safe_free(sendRequest);
 
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};

@@ -40,7 +40,7 @@ char* registerMachineWithNetwork(char* newMachineID);
 
 char* generateCStringFromFormat(char* format_string, char* strings_to_print[], int num_strings);
 
-char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey);
+char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey);
 
 void generateSessionKey(string& newSessionKey);
 
