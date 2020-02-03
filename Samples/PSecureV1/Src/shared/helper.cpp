@@ -1670,40 +1670,42 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             }
 
         } else { //!SecureSend && !isEnclave
-            int requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
+            requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
             sendRequest = (char*) malloc(requestSize);
             if (numArgs > 0) {
                 char* colon = ":";
-                char* concatStrings[] = {"UntrustedSend", colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
-                int concatLenghts[] = {strlen("UntrustedSend"), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayloadSizeString), strlen(colon), eventMessagePayloadSize};
+                char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
+                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayloadSizeString), strlen(colon), eventMessagePayloadSize};
                 sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
                 requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
+                ocall_print("KRE");
+                ocall_print_int(requestSize);
                 // snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:%s", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
             } else {
                 char* colon = ":";
                 char* zero = "0";
-                char* concatStrings[] = {"UntrustedSend", colon, sendingToMachinePublicID, colon, event, colon, zero};
-                int concatLenghts[] = {strlen("UntrustedSend"), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(zero)};
+                char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, zero};
+                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(zero)};
                 sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 7);
                 requestSize = returnTotalSizeofLengthArray(concatLenghts, 7) + 1;
                 // snprintf(sendRequest, requestSize, "%s:%s:%s:0", sendTypeCommand, sendingToMachinePublicID, event);
             }
 
-            safe_free(event);
-            safe_free(eventMessagePayload);
-            ocall_print("Untrusted machine is sending out following network request:\n"); 
-            ocall_print(sendRequest);  
-            char* newMachinePublicIDKey = NULL;
-            size_t requestSz = requestSize;
-            #ifndef ENCLAVE_STD_ALT
-            newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-            ocall_network_request(sendRequest, newMachinePublicIDKey, requestSz, SIZE_OF_IDENTITY_STRING); //TOdo shividentity dont use strlen
-            #endif
-            safe_free(sendRequest);
-            ocall_print("printing pidk");
-            ocall_print(newMachinePublicIDKey);
-            safe_free(newMachinePublicIDKey);
-            return;
+            // safe_free(event);
+            // safe_free(eventMessagePayload);
+            // ocall_print("Untrusted machine is sending out following network request:\n"); 
+            // ocall_print(sendRequest);  
+            // char* newMachinePublicIDKey = NULL;
+            // size_t requestSz = requestSize;
+            // #ifndef ENCLAVE_STD_ALT
+            // newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+            // ocall_network_request(sendRequest, newMachinePublicIDKey, requestSz, SIZE_OF_IDENTITY_STRING); //TOdo shividentity dont use strlen
+            // #endif
+            // safe_free(sendRequest);
+            // ocall_print("printing pidk");
+            // ocall_print(newMachinePublicIDKey);
+            // safe_free(newMachinePublicIDKey);
+            // return;
         }
     // }
 
@@ -1725,6 +1727,12 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     // } else {
     #ifdef ENCLAVE_STD_ALT
         sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, requestSize, 0);
+    #else
+        ocall_print("KRE2");
+                ocall_print_int(requestSize);
+        // char* networkResponse = NULL;
+        // networkResponse = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+        ocall_network_request(sendRequest, empty, requestSize, 0); //TOdo shividentity dont use strlen
     #endif
     // }
     safe_free(sendRequest);
