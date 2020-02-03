@@ -142,7 +142,7 @@ extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, P
 
 extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    sendSendNetworkRequest(context, argRefs, "Send", true);
+    sendSendNetworkRequest(context, argRefs, "Send", true, true);
 }
 
 //Responsibility of caller to free return
@@ -1019,7 +1019,7 @@ extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context
 extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
 
-    sendSendNetworkRequest(context, argRefs, "UntrustedSend", false);
+    sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, true);
    
 }
 
