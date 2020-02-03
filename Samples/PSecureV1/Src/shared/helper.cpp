@@ -923,7 +923,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
         } else {
             //TODO shivIdentity
-            if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm)) > 0) {
+            if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)) > 0) {
                 
                 char* ret = USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm);
                 safe_free(requestCopy);

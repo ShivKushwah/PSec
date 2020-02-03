@@ -19,6 +19,8 @@ using namespace std;
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
 
+sgx_enclave_id_t global_app_eid = 0;
+
 static PRT_BOOLEAN cooperative = PRT_FALSE;
 static int threads = 1;
 
@@ -125,15 +127,32 @@ static void RunToIdle(void* process)
 
 
 void generateIdentity(string& publicID, string& privateID, string prefix) {
-    uint32_t randNum = rand() % 100;
-    randNum = (randNum + 10) % 100;
-    if (randNum < 10) {
-        randNum = 39;
+    if (!NETWORK_DEBUG) {
+        char* private_capability_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        char* public_capability_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        char* private_capability_key = (char*) malloc(sizeof(sgx_rsa3072_key_t));
+        char* public_capability_key = (char*) malloc(sizeof(sgx_rsa3072_public_key_t));
+        sgx_status_t status = enclave_createRsaKeyPairEcall(global_app_eid, public_capability_key_raw, private_capability_key_raw, public_capability_key, private_capability_key, SGX_RSA3072_KEY_SIZE); 
+        if (status != SGX_SUCCESS) {
+            ocall_print("APP Error in generating capability keys!");
+        // } else  {
+        //     ocall_print("KPS able to generate capability keys!");
+        }
+        publicID = string(public_capability_key_raw, SGX_RSA3072_KEY_SIZE);
+        privateID = string(private_capability_key_raw, SGX_RSA3072_KEY_SIZE);
+
+    } else {
+        uint32_t randNum = rand() % 100;
+        randNum = (randNum + 10) % 100;
+        if (randNum < 10) {
+            randNum = 39;
+        }
+        // publicID = prefix + "UPub" + to_string(randNum);
+        // privateID = prefix + "UPriv" + to_string(randNum);
+        publicID = prefix.substr(0, 1) + "UPub" + to_string(randNum) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
+        privateID = prefix.substr(0, 1) + "UPri" + to_string(randNum) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
+
     }
-    // publicID = prefix + "UPub" + to_string(randNum);
-    // privateID = prefix + "UPriv" + to_string(randNum);
-    publicID = prefix.substr(0, 1) + "UPub" + to_string(randNum) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
-    privateID = prefix.substr(0, 1) + "UPri" + to_string(randNum) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
 } 
 
 extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -149,9 +168,9 @@ extern "C" PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context
     generateIdentity(publicID, privateID, string("Initial"));
     //TODO store the privateID
     //TODO register this machine over network
+    MachinePIDToIdentityDictionary[currentMachinePID] = make_tuple(string(publicID.c_str(), SGX_RSA3072_KEY_SIZE), string(privateID.c_str(), SGX_RSA3072_KEY_SIZE));
+    USMPublicIdentityKeyToMachinePIDDictionary[string(publicID.c_str(), SGX_RSA3072_KEY_SIZE)] = currentMachinePID;
 
-    MachinePIDToIdentityDictionary[currentMachinePID] = make_tuple(publicID, privateID);
-    USMPublicIdentityKeyToMachinePIDDictionary[publicID] = currentMachinePID;
 }
 
 
@@ -403,8 +422,12 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     string usmChildPublicIDKey;
     string usmChildPrivateIDKey;
     generateIdentity(usmChildPublicIDKey, usmChildPrivateIDKey, machineType);
-    MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(usmChildPublicIDKey, usmChildPrivateIDKey);
-    USMPublicIdentityKeyToMachinePIDDictionary[usmChildPublicIDKey] = newMachinePID;
+    
+    MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE), string(usmChildPrivateIDKey.c_str(), SGX_RSA3072_KEY_SIZE));
+    USMPublicIdentityKeyToMachinePIDDictionary[string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE)] = newMachinePID;
+  
+    // MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(usmChildPublicIDKey, usmChildPrivateIDKey);
+    // USMPublicIdentityKeyToMachinePIDDictionary[usmChildPublicIDKey] = newMachinePID;
     // printf("Added %s to USM dictionary!\n", usmChildPublicIDKey.c_str());
 
     char* usmChildPublicIDKeyCopy = (char*) malloc(usmChildPublicIDKey.size() + 1);
@@ -489,9 +512,19 @@ void startPrtProcessIfNotStarted() {
 
 }
 
+void initApp() {
+    global_app_eid = 0;
+    string token = "enclaveapp.token";
+
+    if (initialize_enclave(&global_app_eid, token, "enclave.signed.so") < 0) {
+        ocall_print("Fail to initialize enclave.");
+    }    
+}
+
 int main(int argc, char const *argv[]) {
     initNetwork();
     initKPS();
+    initApp();
     //char* kirat = (char*) malloc(220);
  
     // Place the measurement of the enclave into metadata_info.txt
