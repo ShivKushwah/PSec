@@ -128,18 +128,18 @@ static void RunToIdle(void* process)
 
 void generateIdentity(string& publicID, string& privateID, string prefix) {
     if (!NETWORK_DEBUG) {
-        char* private_capability_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        char* public_capability_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        char* private_capability_key = (char*) malloc(sizeof(sgx_rsa3072_key_t));
-        char* public_capability_key = (char*) malloc(sizeof(sgx_rsa3072_public_key_t));
-        sgx_status_t status = enclave_createRsaKeyPairEcall(global_app_eid, public_capability_key_raw, private_capability_key_raw, public_capability_key, private_capability_key, SGX_RSA3072_KEY_SIZE); 
+        char* private_identity_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        char* public_identity_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        char* private_identity_key = (char*) malloc(sizeof(sgx_rsa3072_key_t));
+        char* public_identity_key = (char*) malloc(sizeof(sgx_rsa3072_public_key_t));
+        sgx_status_t status = enclave_createRsaKeyPairEcall(global_app_eid, public_identity_key_raw, private_identity_key_raw, public_identity_key, private_identity_key, SGX_RSA3072_KEY_SIZE); 
         if (status != SGX_SUCCESS) {
-            ocall_print("APP Error in generating capability keys!");
+            ocall_print("APP Error in generating identity keys!");
         // } else  {
-        //     ocall_print("KPS able to generate capability keys!");
+        //     ocall_print("KPS able to generate identity keys!");
         }
-        publicID = string(public_capability_key_raw, SGX_RSA3072_KEY_SIZE);
-        privateID = string(private_capability_key_raw, SGX_RSA3072_KEY_SIZE);
+        publicID = string(public_identity_key_raw, SGX_RSA3072_KEY_SIZE);
+        privateID = string(private_identity_key_raw, SGX_RSA3072_KEY_SIZE);
 
     } else {
         uint32_t randNum = rand() % 100;

@@ -959,6 +959,8 @@ int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey,
 
 int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE) {
     ocall_print("entered decrypt fn");
+    ocall_print_int(MAX_ENCRYPTED_MESSAGE);
+    printPayload(encryptedMessage, 9);
     char* split = strtok(encryptedMessage, ":");
     char* encryptedMessageSize = split;
     char* eventNum;
@@ -1029,6 +1031,8 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
     split = strtok(next, ":");
     eventNum = split;
     split = strtok(NULL, ":");
+    ocall_print("num args is");
+    ocall_print(split);
     numArgs = atoi(split);
     payloadType = -1;
     // ocall_print("MAC IS");

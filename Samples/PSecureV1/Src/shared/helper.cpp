@@ -1074,6 +1074,8 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)];
             char* split = strtok(encryptedMessage, ":");
             int encryptedMessageSize = atoi(split) + strlen(split) + 1;
+            printPayload(encryptedMessage, 9);
+            encryptedMessage[strlen(split)] = ':'; //undoing effect of strtok
             sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, SGX_RSA3072_KEY_SIZE, encryptedMessageSize);
             
 

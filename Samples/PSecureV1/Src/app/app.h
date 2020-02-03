@@ -61,3 +61,4 @@ int returnTotalSizeofLengthArray(int lengths[], int size);
 void printRSAKey(char* key);
 
 extern void initKPS();
+void printPayload(char* payload, int size);

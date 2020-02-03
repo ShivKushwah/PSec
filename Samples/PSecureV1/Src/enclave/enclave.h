@@ -73,3 +73,4 @@ void printPrivateCapabilityKey(char* key);
 void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *private_key, void** public_key_raw, void** private_key_raw);
 char* retrievePublicCapabilityKey(char* capabilityPayload);
 char* retrievePrivateCapabilityKey(char* capabilityPayload);
+void printPayload(char* payload, int size);
