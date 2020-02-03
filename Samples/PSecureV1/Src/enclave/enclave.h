@@ -74,3 +74,4 @@ void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *p
 char* retrievePublicCapabilityKey(char* capabilityPayload);
 char* retrievePrivateCapabilityKey(char* capabilityPayload);
 void printPayload(char* payload, int size);
+void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend);

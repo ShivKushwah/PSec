@@ -13,6 +13,8 @@ void reverse(char str[], int length);
 //NOTE all typedefs are also defined in enclave.cpp and constants.cpp
 typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPublicKey
 typedef tuple <string,string> identityKeyPair; //public, private
+typedef tuple <uint32_t,string> PMachineChildPair; //parentMachineID, childPublicKey
+
 
 
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize);

@@ -27,6 +27,8 @@ typedef tuple <uint32_t,string> PMachineChildPair; //parentMachineID, childPubli
 extern map<PMachineChildPair, string> PMachineToChildCapabilityKey;
 extern unordered_map<string, sgx_enclave_id_t> PublicIdentityKeyToEidDictionary;
 extern unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
+typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPublicKey
+extern map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 
 extern unordered_set<string> USMAuthorizedTypes;
 
@@ -1335,6 +1337,375 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 	
     safe_free(newMachinePublicIDKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
+}
+
+//Responsibilty of caller to free return
+char* generateIV() {
+    char* ivKey = (char*) malloc(SIZE_OF_IV);
+    #ifdef ENCLAVE_STD_ALT
+    sgx_read_rand((unsigned char*)ivKey, SIZE_OF_IV);
+    #endif
+    // sessionKey[98] = '!';
+    // sessionKey[99] = '\0';
+    // for (int i = 0; i < 99; i ++) {
+    //     if (sessionKey[i] == '\0') {
+    //         sessionKey[i] ='0';
+    //     }
+    // }
+    return ivKey;
+}
+
+void generateSessionKey(string& newSessionKey) {
+    //TODO Make this generate a random key
+    if (NETWORK_DEBUG) {
+        uint32_t val; 
+        #ifdef ENCLAVE_STD_ALT
+        sgx_read_rand((unsigned char *) &val, 4);
+        #endif
+        newSessionKey = string("GenSessionKeyREA", SIZE_OF_REAL_SESSION_KEY);
+    } else {
+        char* sessionKey = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
+        #ifdef ENCLAVE_STD_ALT
+        sgx_read_rand((unsigned char*)sessionKey, SIZE_OF_REAL_SESSION_KEY);
+        #endif
+        newSessionKey = string(sessionKey, SIZE_OF_REAL_SESSION_KEY);
+    }
+    
+} 
+
+//Responsibility of caller to free signature
+sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_key_t *private_key) {
+
+    sgx_rsa3072_signature_t* signatureMessage = (sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));
+    uint8_t* p_data = (uint8_t*) message;
+    uint32_t data_size = size;
+
+    ocall_print("Inside sign string message!");
+    ocall_print("Message size is");
+    ocall_print_int(size);
+
+
+    sgx_status_t status = SGX_ERROR_UNRECOGNIZED_PLATFORM;
+    #ifdef ENCLAVE_STD_ALT
+    status = sgx_rsa3072_sign(
+        p_data,
+        data_size,
+        private_key,
+        signatureMessage
+    );
+    #endif
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error in signing string!");
+    } else {
+        ocall_print("Message signed successfully!");
+    }
+    return signatureMessage;
+}
+
+void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend) {
+    //TODO if making changes in this protocol, make changes in app.cpp
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+ 
+    ocall_print("Entered Secure Send");
+
+    char* currentMachineIDPublicKey;
+    currentMachineIDPublicKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    memcpy(currentMachineIDPublicKey, (char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()), SGX_RSA3072_KEY_SIZE);
+
+    ocall_print("Inside machine");
+    ocall_print(currentMachineIDPublicKey);
+
+    PRT_VALUE** P_ToMachine_Payload = argRefs[0];
+    PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
+    char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
+
+    ocall_print("Need to send to machine (received via P argument)");
+    printRSAKey(sendingToMachinePublicID);
+    
+
+    if (isSecureSend) {
+        if (PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
+            ocall_print("ERROR: No Capability Key found!");
+        }
+        string capabilityKey = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+        ocall_print((char*)capabilityKey.c_str());
+        
+    
+        //Check if we don't have a pre-existing session key with the other machine, if so 
+        //we need to intialize communications and establish a session key
+       
+        if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
+            string newSessionKey;
+            generateSessionKey(newSessionKey);
+            char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", sendingToMachinePublicID, ":", (char*)newSessionKey.c_str()};
+            int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_REAL_SESSION_KEY};
+            char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 6);
+            int requestSize = returnTotalSizeofLengthArray(concatLenghts, 6) + 1;
+            
+            char* machineNameWrapper[] = {currentMachineIDPublicKey};
+            char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+            ocall_print(printStr);
+            safe_free(printStr);
+            ocall_print(initComRequest);
+            char* returnMessage = (char*) malloc(100);
+            int ret_value;
+            #ifdef ENCLAVE_STD_ALT
+            ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY); //TOdo shividentity dont use strlen
+            #endif
+            safe_free(initComRequest);
+            char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+            printStr = generateCStringFromFormat("%s machine has received session key request message:", machineNameWrapper2, 1);
+            ocall_print(printStr);
+            safe_free(printStr);       
+            ocall_print(returnMessage);
+            PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
+            // safe_free(newSessionKey);
+            safe_free(returnMessage);
+
+            //TODO use sessionKey to encrypt message
+        }
+        string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+        
+    }
+    PRT_VALUE** P_Event_Payload = argRefs[1];
+    char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
+    itoa((*P_Event_Payload)->valueUnion.ev , event, 10);
+
+    const int size_of_max_num_args = 10; //TODO if modififying this, modify it in app.cpp
+
+    PRT_VALUE** P_NumEventArgs_Payload = argRefs[2];
+    int numArgs = (*P_NumEventArgs_Payload)->valueUnion.nt;
+    char* numArgsPayload = (char*) malloc(size_of_max_num_args);
+    itoa(numArgs, numArgsPayload, 10);
+
+    char* eventMessagePayload = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
+
+
+    PRT_VALUE** P_EventMessage_Payload;
+    int eventPayloadType;
+    char* eventPayloadTypeString = NULL;
+    int eventMessagePayloadSize;
+    char* eventMessagePayloadSizeString = NULL;
+
+    if (numArgs > 0) {
+        P_EventMessage_Payload = argRefs[3];
+        eventPayloadType = (*P_EventMessage_Payload)->discriminator;
+        eventPayloadTypeString = (char*) malloc(10);
+        itoa(eventPayloadType, eventPayloadTypeString, 10);
+        eventMessagePayloadSize = 0;
+        char* temp = serializePrtValueToString(*P_EventMessage_Payload, eventMessagePayloadSize);
+        memcpy(eventMessagePayload, temp, eventMessagePayloadSize + 1);
+        eventMessagePayload[eventMessagePayloadSize] = '\0';
+        ocall_print("EVENT MESSAGE PAYLOAD IS");
+        printRSAKey(eventMessagePayload);
+        ocall_print("Length is");
+        ocall_print_int(eventMessagePayloadSize);
+        // memcpy(eventMessagePayload, temp, strlen(temp) + 1); //TODO shividentity
+        safe_free(temp);
+
+        eventMessagePayloadSizeString = (char*) malloc(10);
+        itoa(eventMessagePayloadSize, eventMessagePayloadSizeString, 10);
+
+    }
+
+    
+
+    // for (int i = 0; i < numArgs; i++) {
+    //     PRT_VALUE** P_EventMessage_Payload = argRefs[i + 3];
+    //     char* payload = serializePrtValueToString(*P_EventMessage_Payload);
+    //     //TODO we need to encode the type of each payload element. Like the following "PRT_KIND_VALUE_INT:72:PRT_KIND_BOOL:true" etc
+    //     if (i == 0) {
+    //         char* parameters[] = {payload};
+    //         eventMessagePayload = generateCStringFromFormat("%s", parameters, 1);
+    //     } else {
+    //         char* parameters[] = {eventMessagePayload, payload};
+    //         eventMessagePayload = generateCStringFromFormat("%s:%s", parameters, 2);
+    //     }
+    // }
+
+    int requestSize = -1;// 4 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + size_of_max_num_args + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
+    char* sendRequest;
+
+    // int eventMessageSize = 9; //TODO shivIdentity
+    // char* eventMessageSizeStr = (char*) malloc(10);
+
+    // if (NETWORK_DEBUG) {
+    //     sendRequest = (char*) malloc(requestSize);
+    //     if (isSecureSend) {
+    //         if (numArgs > 0) {
+    //             snprintf(sendRequest, requestSize, "%s:%s:%s:%s:%d:%d:", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event, numArgs, eventPayloadType/*, eventMessageSize*/);
+    //             memcpy(sendRequest + strlen(sendRequest), eventMessagePayload, final_size_seralized);
+    //         } else  {
+    //             snprintf(sendRequest, requestSize, "%s:%s:%s:%s:0", sendTypeCommand, currentMachineIDPublicKey, sendingToMachinePublicID, event);
+    //         }
+    //     } else {
+    //         if (numArgs > 0) {
+    //             snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType/*, eventMessageSize*/);
+    //             memcpy(sendRequest + strlen(sendRequest), eventMessagePayload, final_size_seralized);
+
+    //         } else {
+    //             snprintf(sendRequest, requestSize, "%s:%s:%s:0", sendTypeCommand, sendingToMachinePublicID, event);
+    //         }
+
+    //     }
+    // } else {
+        // sendRequest = (char*) malloc(requestSize);
+        char* colon = ":";
+        char* zero = "0";
+        if (isSecureSend) {
+            char* iv = generateIV();
+            char* mac = "1234567891234567";
+            char* encryptedMessage;
+            char* messageToEncrypt;
+            int messageToEncryptSize;
+            int encryptedMessageSize;
+            char* encryptedMessageSizeString;
+
+            if (numArgs > 0) {
+                char* encryptStrings[] = {event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
+                int encryptLenghts[] = {strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayloadSizeString), strlen(colon), eventMessagePayloadSize};
+                messageToEncrypt = concatMutipleStringsWithLength(encryptStrings, encryptLenghts, 9);
+                messageToEncryptSize = returnTotalSizeofLengthArray(encryptLenghts, 9);              
+            } else  {
+                char* encryptStrings[] = {event, colon, zero};
+                int encryptLenghts[] = {strlen(event), strlen(colon), strlen(zero)};
+                messageToEncrypt = concatMutipleStringsWithLength(encryptStrings, encryptLenghts, 3);
+                messageToEncryptSize = returnTotalSizeofLengthArray(encryptLenghts, 3);
+            }
+
+            if (!NETWORK_DEBUG) {
+                //add encryption logic here
+                char* concatStrings[] = {sendingToMachinePublicID, colon, messageToEncrypt};
+                int concatLengths[] = {SGX_RSA3072_KEY_SIZE, strlen(colon), messageToEncryptSize};
+                char* M = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+                int MSize = returnTotalSizeofLengthArray(concatLengths, 3);
+
+                string sendingToMachineCapabilityKeyPayload = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+                char* privateCapabilityKeySendingToMachine = retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+                ocall_print("Retrieving capability as");
+                ocall_print("currentMachinePID");
+                ocall_print_int(currentMachinePID);
+                printRSAKey(sendingToMachinePublicID);
+                // ocall_print("capabilityKey");
+                printPublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+                printPrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+                sgx_rsa3072_signature_t* signatureM = signStringMessage(M, MSize, (sgx_rsa3072_key_t*) privateCapabilityKeySendingToMachine);
+                int sizeOfSignature = SGX_RSA3072_KEY_SIZE;
+                char* sigString[] = {M, colon, (char*)signatureM};
+                int sigLengths[] = {MSize, strlen(colon), sizeOfSignature};
+                char* trustedPayload = concatMutipleStringsWithLength(sigString, sigLengths, 3);
+                int trustedPayloadLength = returnTotalSizeofLengthArray(sigLengths, 3);
+                ocall_print("Printing Trusted Payload after public key");
+                ocall_print(trustedPayload + SGX_RSA3072_KEY_SIZE);
+                ocall_print("Printing Generated Signature");
+                printRSAKey((char*)signatureM);
+                ocall_print("Signature is over message");
+                printRSAKey(M);
+                ocall_print_int(MSize);
+                ocall_print("Key needed to verify signature is");
+                ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
+                ocall_print("actual key is");
+                printRSAKey(retrievePublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
+
+                // char* trustedPayload = M;
+                // int trustedPayloadLength = MSize;
+
+                ocall_print("Printing Generated Signature again");
+                printRSAKey(trustedPayload + MSize + strlen(colon));
+                // ocall_print("Printing length of encrypted message");
+                // ocall_print(trustedPayloadLength);
+
+
+                sgx_aes_ctr_128bit_key_t g_region_key;
+                sgx_aes_gcm_128bit_tag_t g_mac;
+                string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+
+                memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+
+                encryptedMessageSize = trustedPayloadLength;
+                encryptedMessage = (char*) malloc(encryptedMessageSize);
+                #ifdef ENCLAVE_STD_ALT
+                sgx_status_t status = sgx_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) trustedPayload, trustedPayloadLength, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+                #endif
+                // ocall_print("Encrypted Message is");
+                // ocall_print(encryptedMessage);
+                mac = (char*) malloc(SIZE_OF_MAC);
+                memcpy(mac, (char*)g_mac, SIZE_OF_MAC);
+
+                safe_free(M);
+                safe_free(trustedPayload);
+                
+            } else {
+                encryptedMessage = messageToEncrypt;
+                encryptedMessageSize = messageToEncryptSize;
+            }
+            encryptedMessageSizeString = (char*) malloc(10);
+            itoa(encryptedMessageSize, encryptedMessageSizeString, 10);
+
+            char* concatStrings[] = {sendTypeCommand, colon, currentMachineIDPublicKey, colon, sendingToMachinePublicID, colon, iv, colon, mac, colon, encryptedMessageSizeString, colon, encryptedMessage};
+            int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageSizeString), strlen(colon), encryptedMessageSize};
+            sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
+            requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
+
+            
+            safe_free(encryptedMessage);
+            safe_free(encryptedMessageSizeString);
+
+            if (!NETWORK_DEBUG) {
+                safe_free(mac);    
+            }
+
+        } else {
+            if (numArgs > 0) {
+                char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
+                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayloadSizeString), strlen(colon), eventMessagePayloadSize};
+                sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
+                requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
+                // snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:%s", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
+            } else {
+                char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, zero};
+                int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(zero)};
+                sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 7);
+                requestSize = returnTotalSizeofLengthArray(concatLenghts, 7) + 1;
+                // snprintf(sendRequest, requestSize, "%s:%s:%s:0", sendTypeCommand, sendingToMachinePublicID, event);
+            }
+
+        }
+    // }
+
+    safe_free(eventPayloadTypeString);
+    // safe_free(eventMessageSizeStr);
+    
+    
+    char* machineNameWrapper[] = {currentMachineIDPublicKey};
+    char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+    ocall_print(printStr);
+    safe_free(printStr);      
+    // ocall_print(sendRequest);
+    // ocall_print_int(strlen(sendRequest) + 1);
+    // ocall_print("KUUUURUT");
+    char* empty = (char*) malloc(10);
+    int ret_value;
+    // if (NETWORK_DEBUG) {
+    //     sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, strlen(sendRequest) + 1, 0);
+    // } else {
+    #ifdef ENCLAVE_STD_ALT
+        sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, requestSize, 0);
+    #endif
+    // }
+    safe_free(sendRequest);
+
+    char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+    printStr = generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1);
+    ocall_print(printStr);
+    safe_free(printStr);
+
+    safe_free(event);
+    safe_free(eventMessagePayload);
+    safe_free(numArgsPayload);
+
+    safe_free(currentMachineIDPublicKey);
+
 }
 
 int getNextPID() {

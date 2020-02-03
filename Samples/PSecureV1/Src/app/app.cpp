@@ -33,7 +33,9 @@ static const char* workspaceConfig;
 
 unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary; //USM Dictionary
 unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
-map<PublicMachineChildPair, string> USMPublicIdentityKeyToChildSessionKey;
+map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
+map<PMachineChildPair, string> PMachineToChildCapabilityKey; //should be empty
+
 
 
 unordered_set<string> USMAuthorizedTypes; //TODO unhardcode
@@ -305,11 +307,11 @@ char* receiveNetworkRequest(char* request, size_t requestSize) {
 char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey) { //TODO shividentity
     printf("USM Initialize Communication API Called!\n");
     //TODO need to verify signature over requestingMachineIDKey
-    if (USMPublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))) == 0) {
+    if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))) == 0) {
         //TODO this logic needs to be diffie hellman authenticated encryption
         string newSessionKey;
         generateSessionKey(newSessionKey);
-        USMPublicIdentityKeyToChildSessionKey[make_tuple(receivingMachineIDKey, requestingMachineIDKey)] = newSessionKey;
+        PublicIdentityKeyToChildSessionKey[make_tuple(receivingMachineIDKey, requestingMachineIDKey)] = newSessionKey;
         printf("Returning correct session key!\n");
         char* returnSessionkey = (char*) malloc(newSessionKey.length() + 1);
         memcpy(returnSessionkey, newSessionKey.c_str(), newSessionKey.length() + 1);
@@ -322,11 +324,11 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
     
 }
 
-void generateSessionKey(string& newSessionKey) {
-    //TODO Make this generate a random key
-    int randNum = rand() % 100;
-    newSessionKey = "GenSessionKe" + to_string(randNum);
-} 
+// void generateSessionKey(string& newSessionKey) {
+//     //TODO Make this generate a random key
+//     int randNum = rand() % 100;
+//     newSessionKey = "GenSessionKe" + to_string(randNum);
+// } 
 
 char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, int payloadSize) {
     //TODO if modifying this, modify sendUntrustedMessageAPI in enclave.cpp
