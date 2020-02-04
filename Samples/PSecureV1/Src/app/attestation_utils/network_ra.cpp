@@ -275,18 +275,28 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
     
     }  else if (strcmp(split, "UntrustedSend") == 0) {
 
+        char* machineSendingMessage;
         char* machineReceivingMessage;
-
-        // if (NETWORK_DEBUG) {
-        //     split = strtok(NULL, ":");
-        //     machineReceivingMessage = split;
-        //     ocall_print("machine Receiving message is :");
-        //     ocall_print(machineReceivingMessage);
-        // } else {
+        
+            machineSendingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(machineSendingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
             machineReceivingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(machineReceivingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+            memcpy(machineReceivingMessage, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
             ocall_print("machine Receiving message is :");
             printRSAKey(machineReceivingMessage);
+
+        // char* machineReceivingMessage;
+
+        // // if (NETWORK_DEBUG) {
+        // //     split = strtok(NULL, ":");
+        // //     machineReceivingMessage = split;
+        // //     ocall_print("machine Receiving message is :");
+        // //     ocall_print(machineReceivingMessage);
+        // // } else {
+        //     machineReceivingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        //     memcpy(machineReceivingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+        //     ocall_print("machine Receiving message is :");
+        //     printRSAKey(machineReceivingMessage);
         // }
 
         int count;
@@ -313,14 +323,6 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
         char* machineSendingMessage;
         char* machineReceivingMessage;
 
-        // if (NETWORK_DEBUG) {
-        //     split = strtok(NULL, ":");
-        //     machineSendingMessage = split;
-        //     split = strtok(NULL, ":");
-        //     machineReceivingMessage = split;
-        //     ocall_print("machine Receiving message is :");
-        //     ocall_print(machineReceivingMessage);
-        // } else {
             machineSendingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
             memcpy(machineSendingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
             machineReceivingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);

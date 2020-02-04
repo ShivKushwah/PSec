@@ -838,6 +838,87 @@ void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
 
 } 
 
+void decrypt_message_external(                 const sgx_aes_gcm_128bit_key_t *p_key,
+                                                const uint8_t *p_src,
+                                                uint32_t src_len,
+                                                uint8_t *p_dst,
+                                                const uint8_t *p_iv,
+                                                uint32_t iv_len,
+                                                
+                                                const sgx_aes_gcm_128bit_tag_t *p_in_mac ) {
+
+    sgx_rijndael128GCM_decrypt(p_key, p_src, src_len, p_dst, p_iv, iv_len, NULL, 0, p_in_mac);
+
+}
+
+void decryptMessageForUSM(char* requestingMachineIDKey, 
+                            char* receivingMachineIDKey, 
+                            char* iv, 
+                            char* mac, 
+                            char* encryptedMessage,
+                            int machinePid,
+                            char* sessionKeyy,
+                            char* returnDecryptedMessage,
+                            uint32_t IDENTITY_SIZE,
+                            uint32_t ENCRYPTED_MESSAGE_SIZE,
+                            uint32_t SESSION_KEY_SIZE) {
+    ocall_print("entered decrypt fn for USM");
+    printPayload(encryptedMessage, ENCRYPTED_MESSAGE_SIZE);
+    // ocall_print_int(MAX_ENCRYPTED_MESSAGE);
+
+        // int machinePID = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+        // string sendingToMachineCapabilityKeyPayload = MachinePIDtoCapabilityKeyDictionary[machinePID];
+        // char* publicCapabilityKeySendingToMachine = retrievePublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+
+        // string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
+        int machinePID = machinePid;
+        string sessionKey = string(sessionKeyy, SIZE_OF_SESSION_KEY);
+        sgx_aes_ctr_128bit_key_t g_region_key;
+        sgx_aes_gcm_128bit_tag_t g_mac;
+        memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+        memcpy(g_mac, mac, SIZE_OF_MAC);
+
+        char* actualEncryptedMessage = encryptedMessage;
+        sgx_status_t status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) actualEncryptedMessage, ENCRYPTED_MESSAGE_SIZE, (uint8_t*)returnDecryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+ 
+        char* checkMyPublicIdentity = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        memcpy(checkMyPublicIdentity, returnDecryptedMessage, SGX_RSA3072_KEY_SIZE);
+        if (string(checkMyPublicIdentity, SGX_RSA3072_KEY_SIZE) != string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) {
+            ocall_print("ERROR: Checking Public Identity Key inside Message FAILED in Untrusted Send");
+            // return 0;
+        }
+
+        sgx_rsa3072_signature_t* decryptedSignature = (sgx_rsa3072_signature_t*) malloc(SGX_RSA3072_KEY_SIZE);
+        // char* message = (char*) malloc(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1); 
+        // memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+        char* messageSignedOver = (char*) malloc(ENCRYPTED_MESSAGE_SIZE - SGX_RSA3072_KEY_SIZE - 1);
+        memcpy(messageSignedOver, returnDecryptedMessage, ENCRYPTED_MESSAGE_SIZE - SGX_RSA3072_KEY_SIZE - 1);
+        memcpy(decryptedSignature, returnDecryptedMessage + ENCRYPTED_MESSAGE_SIZE - SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
+        // // ocall_print("Lenght of encrypted message is ");
+        // // ocall_print(encryptedMessageSize);
+        // ocall_print("Received Signature:");
+        // printRSAKey((char*)decryptedSignature);
+        // ocall_print("Signature is over message");
+        // printRSAKey(messageSignedOver);
+        // ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+        // ocall_print("Key needed to verify signature is");
+        // ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
+        // ocall_print("actual key is");
+        // printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
+        // // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
+
+        // if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
+        //     ocall_print("Verifying Signature works!!!!");
+        // } else {
+        //     ocall_print("Error: Secure Send Signature Verification Failed!");
+        //     // return 0;
+        // }
+
+        safe_free(checkMyPublicIdentity);
+
+
+}
+
 void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *private_key, void** publicIdentity, void** privateIdentity) {
     // sgx_rsa3072_key_t *sk = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
     // sgx_rsa3072_public_key_t *pk = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
@@ -963,7 +1044,7 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
             ocall_print("Verifying Signature works!!!!");
         } else {
             ocall_print("Error: Secure Send Signature Verification Failed!");
-            return 0;
+            // return 0;
         }
 
         safe_free(checkMyPublicIdentity);

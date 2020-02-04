@@ -13,6 +13,7 @@
 #include <unordered_set> 
 #include <map>
 #include <tuple>
+#include "sample_libcrypto.h"
 
 using namespace std;
 
@@ -246,6 +247,161 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
 //     int randNum = rand() % 100;
 //     newSessionKey = "GenSessionKe" + to_string(randNum);
 // } 
+
+char* newUSMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage) {
+    char buf[4096];
+
+
+    ocall_print("entered usm decrypt fn");
+    ocall_print("Encrypted Message parameter is ");
+    printPayload(encryptedMessage, 1121);
+    char* encryptedMessageCopy = NULL;
+    encryptedMessageCopy = (char*) malloc(1300);
+    memcpy(encryptedMessageCopy, encryptedMessage, 1299);
+    encryptedMessageCopy[1299] = '\0';
+    printf("encryptedMessageCopy %d,%s",&encryptedMessageCopy, encryptedMessageCopy);
+    char* reentrant = NULL;
+    char* split = NULL;
+    char* encryptedMessageSize = NULL;
+    split = strtok(encryptedMessageCopy, ":");
+    ocall_print("debug time");
+    snprintf(buf, 100, "%s", encryptedMessageCopy);
+    buf[101] = '\0';
+    printf("buf %d,%s",&buf, buf);
+    printf("encryptedMessageCopy %d,%s",&encryptedMessageCopy, encryptedMessageCopy);
+    encryptedMessageSize = split;
+    ocall_print("encryptedMessageSize is");
+    ocall_print(encryptedMessageSize);
+
+    int encryptedMessageSizeInt = atoi(encryptedMessageSize);
+    int encryptedMessageSizeIntString = strlen(encryptedMessageSize);
+    // char* encryptedMessageCopy = (char*) malloc(encryptedMessageSizeInt);
+    // memcpy(encryptedMessageCopy, encryptedMessage, encryptedMessageSizeInt);
+    // encryptedMessageCopy[encryptedMessageSizeIntString] = ':';
+
+    ocall_print("encryptedMessageSizeIntString is");
+    ocall_print_int(encryptedMessageSizeIntString);
+    ocall_print_int(encryptedMessageSizeInt);
+    ocall_print_int(atoi(encryptedMessageSize));
+    ocall_print("encrypted Messsage is ddd");
+    printPayload(encryptedMessage, encryptedMessageSizeInt + 1 + encryptedMessageSizeIntString);
+    char* eventNum;
+    int numArgs;
+    int payloadType;
+    char* payload;
+    int payloadSize;
+    char* next = NULL;
+
+    char* decryptedMessage = NULL;
+
+    if (!NETWORK_DEBUG) {
+        int machinePID = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+        // string sendingToMachineCapabilityKeyPayload = MachinePIDtoCapabilityKeyDictionary[machinePID];
+        // char* publicCapabilityKeySendingToMachine = retrievePublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+
+        string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
+
+        sgx_aes_ctr_128bit_key_t g_region_key;
+        sgx_aes_gcm_128bit_tag_t g_mac;
+        memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+        memcpy(g_mac, mac, SIZE_OF_MAC);
+
+        char* actualEncryptedMessage = encryptedMessage + encryptedMessageSizeIntString + 1;
+        decryptedMessage = (char*) malloc(encryptedMessageSizeInt);
+        ocall_print("malloced");
+        ocall_print("session key is");
+        printPayload((char*)sessionKey.c_str(), 16);
+        ocall_print("iv is");
+        printPayload(iv, 12);
+        ocall_print("mac is");
+        printPayload(mac, 16);
+        ocall_print("actual encrypted message is");
+        printPayload(actualEncryptedMessage, encryptedMessageSizeInt);
+        
+        sample_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) actualEncryptedMessage, encryptedMessageSizeInt, (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+        ocall_print("USM decrypted");
+        
+        printPayload(decryptedMessage, encryptedMessageSizeInt);
+        char* checkMyPublicIdentity = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        memcpy(checkMyPublicIdentity, decryptedMessage, SGX_RSA3072_KEY_SIZE);
+        if (string(checkMyPublicIdentity, SGX_RSA3072_KEY_SIZE) != string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) {
+            ocall_print("ERROR: Checking Public Identity Key inside Message FAILED in Untrusted Send");
+            // return 0;
+        }
+
+        sgx_rsa3072_signature_t* decryptedSignature = (sgx_rsa3072_signature_t*) malloc(SGX_RSA3072_KEY_SIZE);
+        // char* message = (char*) malloc(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1); 
+        // memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+        char* messageSignedOver = (char*) malloc(encryptedMessageSizeInt - SGX_RSA3072_KEY_SIZE - 1);
+        memcpy(messageSignedOver, decryptedMessage, encryptedMessageSizeInt - SGX_RSA3072_KEY_SIZE - 1);
+        memcpy(decryptedSignature, decryptedMessage + encryptedMessageSizeInt - SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
+        // ocall_print("Lenght of encrypted message is ");
+        // ocall_print(encryptedMessageSize);
+        // ocall_print("Received Signature:");
+        // printRSAKey((char*)decryptedSignature);
+        // ocall_print("Signature is over message");
+        // printRSAKey(messageSignedOver);
+        // ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+        // ocall_print("Key needed to verify signature is");
+        // ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
+        // ocall_print("actual key is");
+        // printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
+        // // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
+
+        // if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
+        //     ocall_print("Verifying Signature works!!!!");
+        // } else {
+        //     ocall_print("Error: Secure Send Signature Verification Failed!");
+        //     // return 0;
+        // }
+
+        safe_free(checkMyPublicIdentity);
+        char* message = (char*) malloc(encryptedMessageSizeInt); 
+        memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, encryptedMessageSizeInt);
+        next = message;
+
+    }
+
+    split = strtok_r(next, ":", &reentrant);
+    eventNum = split;
+    split = strtok_r(NULL, ":", &reentrant);
+    ocall_print("num args is");
+    ocall_print(split);
+    numArgs = atoi(split);
+    payloadType = -1;
+    // ocall_print("MAC IS");
+    // ocall_print(mac);
+    payload = (char*) malloc(10);
+    payloadSize;
+    payload[0] = '\0';
+    if (numArgs > 0) {
+        split = strtok_r(NULL, ":", &reentrant);
+        payloadType = atoi(split);
+        split = strtok_r(NULL, ":", &reentrant);;
+        payloadSize = atoi(split);
+        safe_free(payload);
+        payload = split + strlen(split) + 1;
+
+    } else {
+        safe_free(payload);
+    }
+
+    PRT_MACHINEID receivingMachinePID;
+    char* temp = (char*) malloc(10);
+    snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
+    printf(temp);
+    safe_free(temp);
+    receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+
+
+
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize); //TODO shividentity
+
+    
+    // sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
+    safe_free(decryptedMessage);
+
+}
 
 char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, int payloadSize) {
     //TODO if modifying this, modify sendUntrustedMessageAPI in enclave.cpp
