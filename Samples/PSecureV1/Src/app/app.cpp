@@ -249,29 +249,29 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
 // } 
 
 char* newUSMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage) {
-    char buf[4096];
+    // char buf[4096];
 
 
     ocall_print("entered usm decrypt fn");
-    ocall_print("Encrypted Message parameter is ");
-    printPayload(encryptedMessage, 1121);
-    char* encryptedMessageCopy = NULL;
-    encryptedMessageCopy = (char*) malloc(1300);
-    memcpy(encryptedMessageCopy, encryptedMessage, 1299);
-    encryptedMessageCopy[1299] = '\0';
-    printf("encryptedMessageCopy %d,%s",&encryptedMessageCopy, encryptedMessageCopy);
-    char* reentrant = NULL;
+    // ocall_print("Encrypted Message parameter is ");
+    // printPayload(encryptedMessage, 1121);
+    // char* encryptedMessageCopy = NULL;
+    // encryptedMessageCopy = (char*) malloc(1300);
+    // memcpy(encryptedMessageCopy, encryptedMessage, 1299);
+    // encryptedMessageCopy[1299] = '\0';
+    // printf("encryptedMessageCopy %d,%s",&encryptedMessageCopy, encryptedMessageCopy);
+    // char* reentrant = NULL;
     char* split = NULL;
     char* encryptedMessageSize = NULL;
-    split = strtok(encryptedMessageCopy, ":");
-    ocall_print("debug time");
-    snprintf(buf, 100, "%s", encryptedMessageCopy);
-    buf[101] = '\0';
-    printf("buf %d,%s",&buf, buf);
-    printf("encryptedMessageCopy %d,%s",&encryptedMessageCopy, encryptedMessageCopy);
+    split = strtok(encryptedMessage, ":");
+    // ocall_print("debug time");
+    // snprintf(buf, 100, "%s", encryptedMessageCopy);
+    // buf[101] = '\0';
+    // printf("buf %d,%s",&buf, buf);
+    // printf("encryptedMessageCopy %d,%s",&encryptedMessageCopy, encryptedMessageCopy);
     encryptedMessageSize = split;
-    ocall_print("encryptedMessageSize is");
-    ocall_print(encryptedMessageSize);
+    // ocall_print("encryptedMessageSize is");
+    // ocall_print(encryptedMessageSize);
 
     int encryptedMessageSizeInt = atoi(encryptedMessageSize);
     int encryptedMessageSizeIntString = strlen(encryptedMessageSize);
@@ -279,12 +279,12 @@ char* newUSMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineI
     // memcpy(encryptedMessageCopy, encryptedMessage, encryptedMessageSizeInt);
     // encryptedMessageCopy[encryptedMessageSizeIntString] = ':';
 
-    ocall_print("encryptedMessageSizeIntString is");
-    ocall_print_int(encryptedMessageSizeIntString);
-    ocall_print_int(encryptedMessageSizeInt);
-    ocall_print_int(atoi(encryptedMessageSize));
-    ocall_print("encrypted Messsage is ddd");
-    printPayload(encryptedMessage, encryptedMessageSizeInt + 1 + encryptedMessageSizeIntString);
+    // ocall_print("encryptedMessageSizeIntString is");
+    // ocall_print_int(encryptedMessageSizeIntString);
+    // ocall_print_int(encryptedMessageSizeInt);
+    // ocall_print_int(atoi(encryptedMessageSize));
+    // ocall_print("encrypted Messsage is ddd");
+    // printPayload(encryptedMessage, encryptedMessageSizeInt + 1 + encryptedMessageSizeIntString);
     char* eventNum;
     int numArgs;
     int payloadType;
@@ -362,9 +362,9 @@ char* newUSMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineI
 
     }
 
-    split = strtok_r(next, ":", &reentrant);
+    split = strtok(next, ":");
     eventNum = split;
-    split = strtok_r(NULL, ":", &reentrant);
+    split = strtok(NULL, ":");
     ocall_print("num args is");
     ocall_print(split);
     numArgs = atoi(split);
@@ -375,9 +375,9 @@ char* newUSMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineI
     payloadSize;
     payload[0] = '\0';
     if (numArgs > 0) {
-        split = strtok_r(NULL, ":", &reentrant);
+        split = strtok(NULL, ":");
         payloadType = atoi(split);
-        split = strtok_r(NULL, ":", &reentrant);;
+        split = strtok(NULL, ":");;
         payloadSize = atoi(split);
         safe_free(payload);
         payload = split + strlen(split) + 1;
