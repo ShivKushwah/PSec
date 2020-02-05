@@ -89,6 +89,23 @@ void safe_free(void* ptr) {
 //     ocall_print(keyCopy);
 //     safe_free(keyCopy);
 // }
+
+void printSessionKey(char* key) {
+    //NOTE if modifying this method, modify it in kps.cpp also
+    char* keyCopy = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
+    memcpy(keyCopy, key, SIZE_OF_REAL_SESSION_KEY);
+    ocall_print("session key:");
+    char* temp = keyCopy;
+    for (int i = 0; i < SIZE_OF_REAL_SESSION_KEY; i++) {
+        if (temp[i] == '\0') {
+            temp[i] = 'D';
+        }
+    }
+    keyCopy[SIZE_OF_REAL_SESSION_KEY - 1] = '\0';
+    
+    ocall_print(keyCopy);
+    safe_free(keyCopy);
+}
 void printPayload(char* payload, int size) {
     char* keyCopy = (char*) malloc(size);
     memcpy(keyCopy, payload, size);
@@ -888,7 +905,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
     
     } else if (strcmp(split, "InitComm") == 0) {
 
-        char* newSessionKey;
+        char* encryptedSessionKey;
         //newSessionKey[0] = '\0';
 
         char* machineInitializingComm;
@@ -904,8 +921,8 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
             machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
             memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
-            newSessionKey = (char* ) malloc(SIZE_OF_REAL_SESSION_KEY);
-            memcpy(newSessionKey, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1, SIZE_OF_REAL_SESSION_KEY);
+            encryptedSessionKey = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
+            memcpy(encryptedSessionKey, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
             
         // }
         
@@ -933,7 +950,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
                 char* returnMessage = (char*) malloc(100);
                 int ptr;
                 //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-                sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, returnMessage, SGX_RSA3072_KEY_SIZE, SIZE_OF_REAL_SESSION_KEY);
+                sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, encryptedSessionKey, returnMessage, SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
                 if (status != SGX_SUCCESS) {
                     printf("Sgx Error Code: %x\n", status);
                 }
@@ -946,7 +963,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         } else {
             //TODO shivIdentity
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)) > 0) {
-                char* ret = USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm, newSessionKey);
+                char* ret = USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm, encryptedSessionKey);
                 safe_free(requestCopy);
                 return ret;
             
@@ -1483,6 +1500,76 @@ sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_
     return signatureMessage;
 }
 
+char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_null_byte, void* other_party_public_key_raw, int& output_encrypted_message_length) {
+    #ifdef ENCLAVE_STD_ALT
+    // ocall_print("Pub key received is");
+    // ocall_print((char*) other_party_public_key_raw);
+
+    size_t encrypted_data_length;
+    char* encrypted_data = (char*) malloc(SGX_RSA3072_KEY_SIZE); //TODO note if message is bigger than this size, then we can run into issues
+    
+    sgx_status_t status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, NULL, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
+
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error in encrypting using public key!");
+        // ocall_print((char*)**other_party_public_key_raw);
+        if (status == SGX_ERROR_UNEXPECTED) {
+            ocall_print("unexpected error :(");
+        } else if (status == SGX_ERROR_INVALID_PARAMETER) {
+            ocall_print("invalid parameters");
+        }
+    } else {
+        ocall_print("Encrypted data length will be");
+        ocall_print_int(encrypted_data_length);
+    }
+
+    // encrypted_data_length = 384*2;
+
+    status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, (unsigned char*) encrypted_data, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
+
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error in encrypting using public key!");
+        // ocall_print((char*)**other_party_public_key_raw);
+        if (status == SGX_ERROR_UNEXPECTED) {
+            ocall_print("unexpected error :(");
+        } else if (status == SGX_ERROR_INVALID_PARAMETER) {
+            ocall_print("invalid parameters");
+        }
+    } else {
+        ocall_print("Able to encrypt using public key!");
+    }
+    // ocall_print_int(strlen(message) + 1);
+    // ocall_print_int(encrypted_data_length);
+    // encrypted_data[encrypted_data_length] = '\0';
+    output_encrypted_message_length = encrypted_data_length;
+    return encrypted_data;
+    #endif
+}
+
+char* decryptMessageInteralPrivateKey(char* encryptedData, size_t encryptedDataSize, void* private_key) {
+    #ifdef ENCLAVE_STD_ALT
+    size_t decrypted_data_length;
+    char* decrypted_data = (char*) malloc(MAX_NETWORK_MESSAGE); //TODO note if message is bigger than this size, then we can run into issues
+
+    sgx_status_t status = sgx_rsa_priv_decrypt_sha256(private_key, NULL, &decrypted_data_length, (unsigned char*) encryptedData, encryptedDataSize);
+
+    status = sgx_rsa_priv_decrypt_sha256(private_key, (unsigned char*)decrypted_data, &decrypted_data_length, (unsigned char*) encryptedData, encryptedDataSize);
+
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error in decrypting using private key!");
+        // ocall_print((char*)**other_party_public_key_raw);
+    } else {
+        ocall_print("Able to decrytp using private key!");
+    }
+    // ocall_print_int(strlen(message) + 1);
+    // ocall_print_int(encrypted_data_length);
+    //decrypted_data[decrypted_data_length] = '\0';
+    // ocall_print("Decrypted data is");
+    // ocall_print(decrypted_data);
+    return decrypted_data;
+    #endif
+}
+
 void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend, bool isEnclave) {
     //TODO if making changes in this protocol, make changes in app.cpp
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
@@ -1509,34 +1596,86 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         //we need to intialize communications and establish a session key
        
         if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
-            string newSessionKey;
-            generateSessionKey(newSessionKey);
-            char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", sendingToMachinePublicID, ":", (char*)newSessionKey.c_str()};
-            int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_REAL_SESSION_KEY};
-            char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 6);
-            int requestSize = returnTotalSizeofLengthArray(concatLenghts, 6) + 1;
+            if (isSecureSend) {
+                #ifdef ENCLAVE_STD_ALT
+                string newSessionKey;
+                generateSessionKey(newSessionKey);
+
+                printSessionKey((char*)newSessionKey.c_str());
+
+                int encryptedMessageSize;
+                char* encryptedSessionKeyMessage = encryptMessageExternalPublicKey((char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedMessageSize);
+
+                // char* encryptedSessionKeyMessage = encryptMessageExternalPublicKey((char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, currentMachineIDPublicKey, encryptedMessageSize);
+                ocall_print("SS:Encrypted Message size is");
+                ocall_print_int(encryptedMessageSize);
+                printPayload(encryptedSessionKeyMessage, SGX_RSA3072_KEY_SIZE);
+
+                // char* receivingMachinePrivateID = (char*)get<1>(MachinePIDToIdentityDictionary[PublicIdentityKeyToMachinePIDDictionary[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
+                // char* decryptedMessage = decryptMessageInteralPrivateKey(encryptedSessionKeyMessage, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID);
+                // ocall_print("Decrypted message is");
+                // printSessionKey(decryptedMessage);
+
+                char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", sendingToMachinePublicID, ":", encryptedSessionKeyMessage};
+                int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
+                char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 6);
+                int requestSize = returnTotalSizeofLengthArray(concatLenghts, 6) + 1;
+                
+                char* machineNameWrapper[] = {currentMachineIDPublicKey};
+                char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+                ocall_print(printStr);
+                safe_free(printStr);
+                ocall_print(initComRequest);
+                char* returnMessage = (char*) malloc(100);
+                int ret_value;
+                #ifdef ENCLAVE_STD_ALT
+                ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY);
+                #else
+                ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY); 
+                #endif
+                safe_free(initComRequest);
+                char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+                printStr = generateCStringFromFormat("%s machine has received session key request message:", machineNameWrapper2, 1);
+                ocall_print(printStr);
+                safe_free(printStr);       
+                ocall_print(returnMessage);
+                PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
+                // safe_free(newSessionKey);
+                safe_free(returnMessage);
+                #endif
+
+            } else {
+                string newSessionKey;
+                generateSessionKey(newSessionKey);
+                char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", sendingToMachinePublicID, ":", (char*)newSessionKey.c_str()};
+                int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_REAL_SESSION_KEY};
+                char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 6);
+                int requestSize = returnTotalSizeofLengthArray(concatLenghts, 6) + 1;
+                
+                char* machineNameWrapper[] = {currentMachineIDPublicKey};
+                char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+                ocall_print(printStr);
+                safe_free(printStr);
+                ocall_print(initComRequest);
+                char* returnMessage = (char*) malloc(100);
+                int ret_value;
+                #ifdef ENCLAVE_STD_ALT
+                ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY);
+                #else
+                ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY); 
+                #endif
+                safe_free(initComRequest);
+                char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+                printStr = generateCStringFromFormat("%s machine has received session key request message:", machineNameWrapper2, 1);
+                ocall_print(printStr);
+                safe_free(printStr);       
+                ocall_print(returnMessage);
+                PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
+                // safe_free(newSessionKey);
+                safe_free(returnMessage);
+
+            }
             
-            char* machineNameWrapper[] = {currentMachineIDPublicKey};
-            char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
-            ocall_print(printStr);
-            safe_free(printStr);
-            ocall_print(initComRequest);
-            char* returnMessage = (char*) malloc(100);
-            int ret_value;
-            #ifdef ENCLAVE_STD_ALT
-            ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY);
-            #else
-            ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY); 
-            #endif
-            safe_free(initComRequest);
-            char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-            printStr = generateCStringFromFormat("%s machine has received session key request message:", machineNameWrapper2, 1);
-            ocall_print(printStr);
-            safe_free(printStr);       
-            ocall_print(returnMessage);
-            PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
-            // safe_free(newSessionKey);
-            safe_free(returnMessage);
 
         }  else {
             ocall_print("Already have session key!");

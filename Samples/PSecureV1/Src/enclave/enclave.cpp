@@ -496,74 +496,6 @@ bool receivePublicKeyPlainText() {
 
 }
 
-char* decryptMessageInteralPrivateKey(char* encryptedData, size_t encryptedDataSize, void* private_key) {
-
-    size_t decrypted_data_length;
-    char* decrypted_data = (char*) malloc(MAX_NETWORK_MESSAGE); //TODO note if message is bigger than this size, then we can run into issues
-
-    sgx_status_t status = sgx_rsa_priv_decrypt_sha256(private_key, NULL, &decrypted_data_length, (unsigned char*) encryptedData, encryptedDataSize);
-
-    status = sgx_rsa_priv_decrypt_sha256(private_key, (unsigned char*)decrypted_data, &decrypted_data_length, (unsigned char*) encryptedData, encryptedDataSize);
-
-    if (status != SGX_SUCCESS) {
-        ocall_print("Error in decrypting using private key!");
-        // ocall_print((char*)**other_party_public_key_raw);
-    } else {
-        ocall_print("Able to decrytp using private key!");
-    }
-    // ocall_print_int(strlen(message) + 1);
-    // ocall_print_int(encrypted_data_length);
-    //decrypted_data[decrypted_data_length] = '\0';
-    // ocall_print("Decrypted data is");
-    // ocall_print(decrypted_data);
-    return decrypted_data;
-}
-
-char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_null_byte, void* other_party_public_key_raw, int& output_encrypted_message_length) {
-
-    // ocall_print("Pub key received is");
-    // ocall_print((char*) other_party_public_key_raw);
-
-    size_t encrypted_data_length;
-    char* encrypted_data = (char*) malloc(SGX_RSA3072_KEY_SIZE); //TODO note if message is bigger than this size, then we can run into issues
-    
-    sgx_status_t status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, NULL, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
-
-    if (status != SGX_SUCCESS) {
-        ocall_print("Error in encrypting using public key!");
-        // ocall_print((char*)**other_party_public_key_raw);
-        if (status == SGX_ERROR_UNEXPECTED) {
-            ocall_print("unexpected error :(");
-        } else if (status == SGX_ERROR_INVALID_PARAMETER) {
-            ocall_print("invalid parameters");
-        }
-    } else {
-        ocall_print("Encrypted data length will be");
-        ocall_print_int(encrypted_data_length);
-    }
-
-    // encrypted_data_length = 384*2;
-
-    status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, (unsigned char*) encrypted_data, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
-
-    if (status != SGX_SUCCESS) {
-        ocall_print("Error in encrypting using public key!");
-        // ocall_print((char*)**other_party_public_key_raw);
-        if (status == SGX_ERROR_UNEXPECTED) {
-            ocall_print("unexpected error :(");
-        } else if (status == SGX_ERROR_INVALID_PARAMETER) {
-            ocall_print("invalid parameters");
-        }
-    } else {
-        ocall_print("Able to encrypt using public key!");
-    }
-    // ocall_print_int(strlen(message) + 1);
-    // ocall_print_int(encrypted_data_length);
-    // encrypted_data[encrypted_data_length] = '\0';
-    output_encrypted_message_length = encrypted_data_length;
-    return encrypted_data;
-}
-
 bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* signature, sgx_rsa3072_public_key_t* public_key) {
 
     uint8_t* p_data = (uint8_t*) message;
@@ -637,23 +569,6 @@ char* checkRawRSAKeySize(char* key) {
     // }
     // key[SGX_RSA3072_KEY_SIZE] = '/0';
     // return key;
-}
-
-void printSessionKey(char* key) {
-    //NOTE if modifying this method, modify it in kps.cpp also
-    char* keyCopy = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
-    memcpy(keyCopy, key, SIZE_OF_REAL_SESSION_KEY);
-    ocall_print("session key:");
-    char* temp = keyCopy;
-    for (int i = 0; i < SIZE_OF_REAL_SESSION_KEY; i++) {
-        if (temp[i] == '\0') {
-            temp[i] = 'D';
-        }
-    }
-    keyCopy[SIZE_OF_REAL_SESSION_KEY - 1] = '\0';
-    
-    ocall_print(keyCopy);
-    safe_free(keyCopy);
 }
 
 //publicID and privateID must be allocated by the caller
@@ -932,18 +847,21 @@ void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *p
 
 }
 
-
 int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey, char* returnMessage, uint32_t ID_SIZE, uint32_t SESSION_KEY_SIZE) {
     ocall_print("Initialize Communication API Called!");
 
+    char* receivingMachinePrivateID = (char*)get<1>(MachinePIDToIdentityDictionary[PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
+    char* decryptedMessage = decryptMessageInteralPrivateKey(newSessionKey, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID);
+    printPayload(newSessionKey, SGX_RSA3072_KEY_SIZE);
+    printSessionKey(decryptedMessage);
     int count;
     count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)));
     
     if (count == 0) {
-        PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = string(newSessionKey, SIZE_OF_REAL_SESSION_KEY);
+        PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY);
         char* successMessage = "Success: Session Key Received!";
         ocall_print(successMessage);
-        printSessionKey(newSessionKey);
+        printSessionKey(decryptedMessage);
         memcpy(returnMessage, successMessage, strlen(successMessage) + 1);
         ocall_print("Returning correct session key!");
         return 0;
