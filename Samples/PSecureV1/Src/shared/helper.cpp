@@ -20,6 +20,10 @@ extern sgx_enclave_id_t global_app_eid;
 
 using namespace std;
 
+#ifndef ENCLAVE_STD_ALT
+extern unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary; 
+#endif
+
 extern PRT_PROCESS *process;
 extern PRT_PROGRAMDECL* program;
 
@@ -29,7 +33,7 @@ extern unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
 typedef tuple <uint32_t,string> PMachineChildPair; //parentMachineID, childPublicKey
 extern map<PMachineChildPair, string> PMachineToChildCapabilityKey;
 extern unordered_map<string, sgx_enclave_id_t> PublicIdentityKeyToEidDictionary;
-extern unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
+
 typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPublicKey
 extern map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 // #ifdef ENCLAVE_STD_ALT
@@ -59,6 +63,8 @@ extern char* newUSMSendMessageAPI(char* requestingMachineIDKey, char* receivingM
 
 extern char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey);
 extern char* send_network_request_API(char* request);
+
+extern int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize);
 
 
 void safe_free(void* ptr) {
@@ -1845,12 +1851,13 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 }
 
 void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage) {
-    #ifdef ENCLAVE_STD_ALT
     ocall_print("entered decrypt fn");
     // ocall_print_int(MAX_ENCRYPTED_MESSAGE);
     printPayload(encryptedMessage, 9);
     char* split = strtok(encryptedMessage, ":");
     char* encryptedMessageSize = split;
+    int encryptedMessageSizeInt = atoi(encryptedMessageSize);
+    int encryptedMessageSizeIntString = strlen(encryptedMessageSize);
     char* eventNum;
     int numArgs;
     int payloadType;
@@ -1861,10 +1868,17 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
     char* decryptedMessage = NULL;
 
     if (!NETWORK_DEBUG) {
-        int machinePID = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
-        string sendingToMachineCapabilityKeyPayload = MachinePIDtoCapabilityKeyDictionary[machinePID];
-        char* publicCapabilityKeySendingToMachine = retrievePublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
-
+        int machinePID;
+        string sendingToMachineCapabilityKeyPayload;
+        char* publicCapabilityKeySendingToMachine = NULL;
+        #ifdef ENCLAVE_STD_ALT
+        machinePID = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+        sendingToMachineCapabilityKeyPayload = MachinePIDtoCapabilityKeyDictionary[machinePID];
+        publicCapabilityKeySendingToMachine = retrievePublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+        #else
+        machinePID = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+        #endif
+        
         string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
 
         sgx_aes_ctr_128bit_key_t g_region_key;
@@ -1874,8 +1888,11 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
 
         char* actualEncryptedMessage = encryptedMessage + strlen(encryptedMessageSize) + 1;
         decryptedMessage = (char*) malloc(atoi(encryptedMessageSize));
+        #ifdef ENCLAVE_STD_ALT
         sgx_status_t status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) actualEncryptedMessage, atoi(encryptedMessageSize), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
- 
+        #else
+        sample_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) actualEncryptedMessage, encryptedMessageSizeInt, (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+        #endif
         char* checkMyPublicIdentity = (char*) malloc(SGX_RSA3072_KEY_SIZE);
         memcpy(checkMyPublicIdentity, decryptedMessage, SGX_RSA3072_KEY_SIZE);
         if (string(checkMyPublicIdentity, SGX_RSA3072_KEY_SIZE) != string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) {
@@ -1891,6 +1908,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         memcpy(decryptedSignature, decryptedMessage + atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
         // ocall_print("Lenght of encrypted message is ");
         // ocall_print(encryptedMessageSize);
+        #ifdef ENCLAVE_STD_ALT
         ocall_print("Received Signature:");
         printRSAKey((char*)decryptedSignature);
         ocall_print("Signature is over message");
@@ -1909,6 +1927,8 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
             // return 0;
             // TODO re-add return 0 but add a flag in this method so that if untrusted, doesn't verify signature
         }
+
+        #endif
 
         safe_free(checkMyPublicIdentity);
         char* message = (char*) malloc(atoi(encryptedMessageSize)); 
@@ -1940,10 +1960,21 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
     } else {
         safe_free(payload);
     }
-    
+
+    #ifndef ENCLAVE_STD_ALT
+
+    PRT_MACHINEID receivingMachinePID;
+    char* temp = (char*) malloc(10);
+    snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
+    safe_free(temp);
+    receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize); //TODO shividentity
+
+    #else
     sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
-    safe_free(decryptedMessage);
     #endif
+    safe_free(decryptedMessage);
 
 }
 
