@@ -1596,16 +1596,19 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         //we need to intialize communications and establish a session key
        
         if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
-            if (isSecureSend) {
-                #ifdef ENCLAVE_STD_ALT
                 string newSessionKey;
                 generateSessionKey(newSessionKey);
 
                 printSessionKey((char*)newSessionKey.c_str());
 
                 int encryptedMessageSize;
-                char* encryptedSessionKeyMessage = encryptMessageExternalPublicKey((char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedMessageSize);
-
+                char* encryptedSessionKeyMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+                #ifdef ENCLAVE_STD_ALT
+                safe_free(encryptedSessionKeyMessage);
+                encryptedSessionKeyMessage = encryptMessageExternalPublicKey((char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedMessageSize);
+                #else
+                sgx_status_t sgx_st = enclave_encryptMessageExternalPublicKeyEcall(global_app_eid ,(char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedSessionKeyMessage, SGX_RSA3072_KEY_SIZE);
+                #endif
                 // char* encryptedSessionKeyMessage = encryptMessageExternalPublicKey((char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, currentMachineIDPublicKey, encryptedMessageSize);
                 ocall_print("SS:Encrypted Message size is");
                 ocall_print_int(encryptedMessageSize);
@@ -1642,39 +1645,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
                 // safe_free(newSessionKey);
                 safe_free(returnMessage);
-                #endif
-
-            } else {
-                string newSessionKey;
-                generateSessionKey(newSessionKey);
-                char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", sendingToMachinePublicID, ":", (char*)newSessionKey.c_str()};
-                int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_REAL_SESSION_KEY};
-                char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 6);
-                int requestSize = returnTotalSizeofLengthArray(concatLenghts, 6) + 1;
-                
-                char* machineNameWrapper[] = {currentMachineIDPublicKey};
-                char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
-                ocall_print(printStr);
-                safe_free(printStr);
-                ocall_print(initComRequest);
-                char* returnMessage = (char*) malloc(100);
-                int ret_value;
-                #ifdef ENCLAVE_STD_ALT
-                ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY);
-                #else
-                ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY); 
-                #endif
-                safe_free(initComRequest);
-                char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-                printStr = generateCStringFromFormat("%s machine has received session key request message:", machineNameWrapper2, 1);
-                ocall_print(printStr);
-                safe_free(printStr);       
-                ocall_print(returnMessage);
-                PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
-                // safe_free(newSessionKey);
-                safe_free(returnMessage);
-
-            }
             
 
         }  else {

@@ -847,6 +847,12 @@ void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *p
 
 }
 
+void encryptMessageExternalPublicKeyEcall(char* message, size_t message_length_with_null_byte, char* other_party_public_key_raw, char* output_encrypted_message, uint32_t SIZE_OF_KEY) {
+    int len;
+    char* encryptedMessage = encryptMessageExternalPublicKey(message, message_length_with_null_byte, (void*)other_party_public_key_raw, len);
+    memcpy(output_encrypted_message, encryptedMessage, SIZE_OF_KEY);
+}
+
 int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey, char* returnMessage, uint32_t ID_SIZE, uint32_t SESSION_KEY_SIZE) {
     ocall_print("Initialize Communication API Called!");
 

@@ -60,6 +60,12 @@ enclave {
                                                 int output_length, 
                                                 int payload_size,
                                                 sgx_enclave_id_t enclaveEid);
+        public void encryptMessageExternalPublicKeyEcall(
+                                                [in, size=message_length_with_null_byte] char* message, 
+                                                size_t message_length_with_null_byte, 
+                                                [in, size=SIZE_OF_KEY]char* other_party_public_key_raw, 
+                                                [out, size=SIZE_OF_KEY]char* output_encrypted_message, 
+                                                uint32_t SIZE_OF_KEY);
 
         public int sendUntrustedMessageAPI([in, size=ID_SIZE]char* receivingMachineIDKey, 
                                 [in, size=MESSAGE_SIZE]char* event,
