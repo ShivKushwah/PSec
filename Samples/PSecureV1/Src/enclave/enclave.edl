@@ -28,6 +28,7 @@ enclave {
                                             [in, size=12] char* iv,
                                             [in, size=16] char* mac,
                                             [in, size=MAX_ENCRYPTED_MESSAGE]char* encryptedMessage, 
+                                            int isSecureSend,
                                             uint32_t ID_SIZE, 
                                             uint32_t MAX_ENCRYPTED_MESSAGE);
 

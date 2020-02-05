@@ -989,7 +989,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             int encryptedMessageSize = atoi(split) + strlen(split) + 1;
             printPayload(encryptedMessage, 9);
             encryptedMessage[strlen(split)] = ':'; //undoing effect of strtok
-            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, SGX_RSA3072_KEY_SIZE, encryptedMessageSize);
+            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, 0, SGX_RSA3072_KEY_SIZE, encryptedMessageSize);
             
 
             if (count == 0) {
@@ -1159,7 +1159,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             int encryptedMessageSize = atoi(split) + strlen(split) + 1;
             printPayload(encryptedMessage, 9);
             encryptedMessage[strlen(split)] = ':'; //undoing effect of strtok
-            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, SGX_RSA3072_KEY_SIZE, encryptedMessageSize);
+            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, 1, SGX_RSA3072_KEY_SIZE, encryptedMessageSize);
             
 
             if (count == 0) {
@@ -1850,7 +1850,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
 }
 
-void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage) {
+void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, bool isSecureSend) {
     ocall_print("entered decrypt fn");
     // ocall_print_int(MAX_ENCRYPTED_MESSAGE);
     printPayload(encryptedMessage, 9);
@@ -1909,23 +1909,25 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         // ocall_print("Lenght of encrypted message is ");
         // ocall_print(encryptedMessageSize);
         #ifdef ENCLAVE_STD_ALT
-        ocall_print("Received Signature:");
-        printRSAKey((char*)decryptedSignature);
-        ocall_print("Signature is over message");
-        printRSAKey(messageSignedOver);
-        ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-        ocall_print("Key needed to verify signature is");
-        ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
-        ocall_print("actual key is");
-        printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
-        // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
+        if (isSecureSend) {
+            ocall_print("Received Signature:");
+            printRSAKey((char*)decryptedSignature);
+            ocall_print("Signature is over message");
+            printRSAKey(messageSignedOver);
+            ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+            ocall_print("Key needed to verify signature is");
+            ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
+            ocall_print("actual key is");
+            printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
+            // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
 
-        if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
-            ocall_print("Verifying Signature works!!!!");
-        } else {
-            ocall_print("Error: Secure Send Signature Verification Failed!");
-            // return 0;
-            // TODO re-add return 0 but add a flag in this method so that if untrusted, doesn't verify signature
+            if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
+                ocall_print("Verifying Signature works!!!!");
+            } else {
+                ocall_print("Error: Secure Send Signature Verification Failed!");
+                // return;
+                // TODO re-add return 0 but add a flag in this method so that if untrusted, doesn't verify signature
+            }
         }
 
         #endif

@@ -44,6 +44,7 @@ typedef struct ms_decryptAndSendMessageAPI_t {
 	char* ms_iv;
 	char* ms_mac;
 	char* ms_encryptedMessage;
+	int ms_isSecureSend;
 	uint32_t ms_ID_SIZE;
 	uint32_t ms_MAX_ENCRYPTED_MESSAGE;
 } ms_decryptAndSendMessageAPI_t;
@@ -478,7 +479,7 @@ sgx_status_t enclave_encrypt_secure_message(sgx_enclave_id_t eid, sgx_status_t* 
 	return status;
 }
 
-sgx_status_t enclave_decryptAndSendMessageAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE)
+sgx_status_t enclave_decryptAndSendMessageAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, int isSecureSend, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE)
 {
 	sgx_status_t status;
 	ms_decryptAndSendMessageAPI_t ms;
@@ -487,6 +488,7 @@ sgx_status_t enclave_decryptAndSendMessageAPI(sgx_enclave_id_t eid, int* retval,
 	ms.ms_iv = iv;
 	ms.ms_mac = mac;
 	ms.ms_encryptedMessage = encryptedMessage;
+	ms.ms_isSecureSend = isSecureSend;
 	ms.ms_ID_SIZE = ID_SIZE;
 	ms.ms_MAX_ENCRYPTED_MESSAGE = MAX_ENCRYPTED_MESSAGE;
 	status = sgx_ecall(eid, 5, &ocall_table_enclave, &ms);

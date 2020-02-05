@@ -250,7 +250,7 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
 
 char* newUSMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage) {
     // char buf[4096];
-    decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage);
+    decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, false);
 
 
 
