@@ -853,6 +853,12 @@ void encryptMessageExternalPublicKeyEcall(char* message, size_t message_length_w
     memcpy(output_encrypted_message, encryptedMessage, SIZE_OF_KEY);
 }
 
+void decryptMessageInteralPrivateKeyEcall(char* encryptedData, size_t encryptedDataSize, char* private_key, char* output_decrypted_message, uint32_t SIZE_OF_KEY) {
+    int len;
+    char* decryptedMessage = decryptMessageInteralPrivateKey(encryptedData, encryptedDataSize, (void*)private_key);
+    memcpy(output_decrypted_message, decryptedMessage, SIZE_OF_KEY);
+}
+
 int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey, char* returnMessage, uint32_t ID_SIZE, uint32_t SESSION_KEY_SIZE) {
     ocall_print("Initialize Communication API Called!");
 

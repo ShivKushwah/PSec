@@ -208,11 +208,17 @@ char* receiveNetworkRequest(char* request, size_t requestSize) {
 char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey) { //TODO shividentity
     ocall_print("USM Initialize Communication API Called!");
 
+    char* receivingMachinePrivateID = (char*)get<1>(MachinePIDToIdentityDictionary[USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
+    char* decryptedMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    enclave_decryptMessageInteralPrivateKeyEcall(global_app_eid ,newSessionKey, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID, decryptedMessage, SGX_RSA3072_KEY_SIZE);
+    printPayload(newSessionKey, SGX_RSA3072_KEY_SIZE);
+    // printSessionKey(decryptedMessage);
+
     int count;
     count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)));
     
     if (count == 0) {
-        PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = string(newSessionKey, SIZE_OF_REAL_SESSION_KEY);
+        PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY);
         char* successMessage = createStringLiteralMalloced("Success: Session Key Received");
         printf("Received correct session key!\n");
         return successMessage;
