@@ -2053,7 +2053,12 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
     split = strtok(NULL, ":");
     ocall_print("num args is");
     ocall_print(split);
-    numArgs = atoi(split);
+    if (split[0] == '0') {
+        numArgs = 0;
+    } else {
+        numArgs = atoi(split);
+    }
+    
     payloadType = -1;
     // ocall_print("MAC IS");
     // ocall_print(mac);
