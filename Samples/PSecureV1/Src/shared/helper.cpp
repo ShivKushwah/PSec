@@ -36,14 +36,11 @@ extern unordered_map<string, sgx_enclave_id_t> PublicIdentityKeyToEidDictionary;
 
 typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPublicKey
 extern map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
-// #ifdef ENCLAVE_STD_ALT
 extern unordered_map<string, int> PublicIdentityKeyToMachinePIDDictionary;
 extern unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
 
 extern bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* signature, sgx_rsa3072_public_key_t* public_key);
 extern int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize);
-
-// #endif
 
 
 extern unordered_set<string> USMAuthorizedTypes;
@@ -73,24 +70,7 @@ void safe_free(void* ptr) {
     }
 }
 
-// void printCapabilityKey(char* cap_key) {
-//     char* keyCopy = (char*) malloc(SIZE_OF_CAPABILITYKEY);
-//     memcpy(keyCopy, key, SGX_RSA3072_KEY_SIZE);
-//     ocall_print("key:");
-//     char* temp = keyCopy;
-//     for (int i = 0; i < SGX_RSA3072_KEY_SIZE; i++) {
-//         if (temp[i] == '\0') {
-//             temp[i] = 'D';
-//         }
-//     }
-//     keyCopy[SGX_RSA3072_KEY_SIZE - 1] = '\0';
-    
-//     ocall_print(keyCopy);
-//     safe_free(keyCopy);
-// }
-
 void printSessionKey(char* key) {
-    //NOTE if modifying this method, modify it in kps.cpp also
     char* keyCopy = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
     memcpy(keyCopy, key, SIZE_OF_REAL_SESSION_KEY);
     ocall_print("session key:");
@@ -182,8 +162,6 @@ char* retrievePrivateCapabilityKey(char* capabilityPayload) {
     memcpy(privateKey, capabilityPayload + sizeof(sgx_rsa3072_public_key_t) + 1, sizeof(sgx_rsa3072_key_t));
     return privateKey;
 }
-
-
 
 //Responsiblity of caller to free return
 char* createStringLiteralMalloced(char* stringLiteral) {
@@ -301,7 +279,7 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
         return integer;
     } else if (value->discriminator == PRT_VALUE_KIND_FOREIGN) {
         int size_of_type_tag_foreign_type = returnSizeOfForeignType(value->valueUnion.frgn->typeTag);
-        char* string = (char*) malloc(10 + 1 + size_of_type_tag_foreign_type); //TODO Note SIZE_OF_PRT_STRING_SERIALIZED is hardcoded for all types
+        char* string = (char*) malloc(10 + 1 + size_of_type_tag_foreign_type);
         char* foreignTypeTagString = (char*) malloc(10);
         itoa(value->valueUnion.frgn->typeTag, foreignTypeTagString, 10);
         memcpy(string, foreignTypeTagString, strlen(foreignTypeTagString));
@@ -652,8 +630,6 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
 }
 //Responsbility of caller to free return
 char* generateCStringFromFormat(char* format_string, char* strings_to_print[], int num_strings) {
-        //NOTE make changes in app.cpp as well
-
     if (num_strings > 5) {
         ocall_print("Too many strings passed to generateCStringFromFormat!");
         return "ERROR!";
@@ -726,66 +702,38 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         int payloadType;
         char* payload;
 
+        newMachineID = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
 
-        // if (NETWORK_DEBUG) {
-        //     newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
-        //     split = strtok(NULL, ":");
-        //     parentTrustedMachinePublicIDKey = split;
-        //     split = strtok(NULL, ":");
-        //     machineType = split;
-        //     split = strtok(NULL, ":");
-        //     numArgs = atoi(split);
-        //     payloadType = -1;
-        //     payload = (char*) malloc(10);
-        //     payload[0] = '\0';
-        //     if (numArgs > 0) {
-        //         split = strtok(NULL, ":");
-        //         payloadType = atoi(split);
-        //         split = strtok(NULL, "\0");
-        //         safe_free(payload);
-        //         payload = split;
+        parentTrustedMachinePublicIDKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+        char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1; //TODO using requestcopy here might be an issue
 
-        //     } else {
-        //         safe_free(payload);
-        //     }
-        // } else {
-            // char* requestCopyCopy = (char*) malloc(requestSize);
-            // memcpy(requestCopyCopy, request, requestSize);
+        // char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
+        // strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
+        char* newTokenizerString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
+        memcpy(newTokenizerString, nextIndex, SIZE_OF_MAX_EVENT_PAYLOAD);
+        ocall_print("New tokenizer is ");
+        ocall_print(newTokenizerString);
 
-            newMachineID = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
-
-            parentTrustedMachinePublicIDKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
-            char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1; //TODO using requestcopy here might be an issue
-
-            // char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
-            // strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
-            char* newTokenizerString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
-            memcpy(newTokenizerString, nextIndex, SIZE_OF_MAX_EVENT_PAYLOAD);
-            ocall_print("New tokenizer is ");
-            ocall_print(newTokenizerString);
-
-            split = strtok(newTokenizerString, ":");
-            machineType = split;
+        split = strtok(newTokenizerString, ":");
+        machineType = split;
+        split = strtok(NULL, ":");
+        numArgs = atoi(split);
+        payloadType = -1;
+        payload = (char*) malloc(10);
+        payload[0] = '\0';
+        int payloadSize;
+        if (numArgs > 0) {
             split = strtok(NULL, ":");
-            numArgs = atoi(split);
-            payloadType = -1;
-            payload = (char*) malloc(10);
-            payload[0] = '\0';
-            int payloadSize;
-            if (numArgs > 0) {
-                split = strtok(NULL, ":");
-                payloadType = atoi(split);
-                split = strtok(NULL, ":");
-                payloadSize = atoi(split);
-                safe_free(payload);
-                payload = split + strlen(split) + 1;
+            payloadType = atoi(split);
+            split = strtok(NULL, ":");
+            payloadSize = atoi(split);
+            safe_free(payload);
+            payload = split + strlen(split) + 1;
 
-            } else {
-                safe_free(payload);
-            }
-        // }
-        
+        } else {
+            safe_free(payload);
+        }        
 
         if (isEnclaveUntrustedHost) {
         
@@ -800,29 +748,14 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
             int ptr;
 
-            // printf("Enclave eid is : %d\n", new_enclave_eid);
-            // printf("machineType is : %s\n", machineType);
-            // printf("parentTrustedIdKey is : %s\n", parentTrustedMachinePublicIDKey);
-            // printf("payload is : %s\n", payload);
-            // printf("numArgs is : %d\n", numArgs);
-            // printf("PayloadType is : %d\n", payloadType);
-            // enclave_eprint(new_enclave_eid, "hello-ddd");
-
-            //TODO make it so that you know which enclave to call createMachineAPI on since there may be multiple enclaves
-            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-            // application of this enclave and have that make an ecall to createMachineAPi
-            // if (NETWORK_DEBUG) {
-            //     sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
-            // } else {
-                ocall_print("at helper.cpp level");
-                printRSAKey(parentTrustedMachinePublicIDKey);
-                sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, payloadSize, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
-            // }
+            ocall_print("at helper.cpp level");
+            printRSAKey(parentTrustedMachinePublicIDKey);
+            sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, payloadSize, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
+            
             safe_free(requestCopy);
             return newMachineID;
 
         } else {
-            //free(requestCopy);
             if (USMAuthorizedTypes.count(machineType) > 0) {
                 char* ret = createUSMMachineAPI(machineType, numArgs, payloadType, payload, payloadSize);
                 safe_free(requestCopy);
@@ -832,20 +765,6 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
                 return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
             }
         }
-
-    // }  else if (strcmp(split, "GetKey") == 0) {
-    //     //TODO move this segmant of code into other ra method because attestation needs to occur first and then call retrieveCapabilityKey
-    //     //TODO move this and use the messageFromMachine int
-    //     //TODO might need to verify the currentMachineIDs signagure before we call attestation, so we need to do that first?
-    //     split = strtok(NULL, ":");
-    //     char currentMachineID[SIZE_OF_IDENTITY_STRING];
-    //     //TODO add check that split is not too big
-    //     memcpy(currentMachineID, split, strlen(split) + 1);
-    //     split = strtok(NULL, ":");
-    //     char childMachineID[SIZE_OF_IDENTITY_STRING];
-    //     memcpy(childMachineID, split, strlen(split) + 1);
-    //     return retrieveCapabilityKey(currentMachineID, childMachineID);
-
     
     }  else if (strcmp(split, "UntrustedCreate") == 0) {
 
@@ -880,12 +799,9 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
                 ocall_print("Fail to initialize enclave.");
             }   
 
-            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-            // if (NETWORK_DEBUG) {
-            //     sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
-            // } else {
-                sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, payloadSize, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
-            // }
+            
+            sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, payloadSize, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
+            
             safe_free(requestCopy);
             return newMachineID;
 
@@ -910,57 +826,35 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         char* machineInitializingComm;
         char* machineReceivingComm;
 
-        // if (NETWORK_DEBUG) {
-        //     split = strtok(NULL, ":");
-        //     machineInitializingComm = split;
-        //     split = strtok(NULL, ":");
-        //     machineReceivingComm = split;
-        // } else {
-            machineInitializingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
-            machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
-            encryptedSessionKey = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(encryptedSessionKey, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+        machineInitializingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+        machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+        encryptedSessionKey = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
+        memcpy(encryptedSessionKey, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
             
-        // }
+        
         
         if (isEnclaveUntrustedHost) {
 
-            // if (NETWORK_DEBUG) {
-            //     if (PublicIdentityKeyToEidDictionary.count(string(machineReceivingComm)) == 0) {
-            //         ocall_print("\n No Enclave Eid Found!\n");
-            //     }
-                
-            //     sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingComm)]; //TODO add check here in case its not in dictionary
-
-            //     int ptr;
-            //     //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-            //     sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, newSessionKey, SIZE_OF_IDENTITY_STRING, SIZE_OF_SESSION_KEY);
-            //     if (status != SGX_SUCCESS) {
-            //         printf("Sgx Error Code: %x\n", status);
-            //     }
-            // } else {
-                if (PublicIdentityKeyToEidDictionary.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)) == 0) {
-                    ocall_print("\n No Enclave Eid Found!\n");
-                }
-                
-                sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)]; //TODO add check here in case its not in dictionary
-                char* returnMessage = (char*) malloc(100);
-                int ptr;
-                //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-                sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, encryptedSessionKey, returnMessage, SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
-                if (status != SGX_SUCCESS) {
-                    printf("Sgx Error Code: %x\n", status);
-                }
-            // }
+            if (PublicIdentityKeyToEidDictionary.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)) == 0) {
+                ocall_print("\n No Enclave Eid Found!\n");
+            }
+            
+            sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)]; //TODO add check here in case its not in dictionary
+            char* returnMessage = (char*) malloc(100);
+            int ptr;
+            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
+            sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, encryptedSessionKey, returnMessage, SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
+            if (status != SGX_SUCCESS) {
+                printf("Sgx Error Code: %x\n", status);
+            }
         
             
             safe_free(requestCopy);
             return returnMessage;
 
         } else {
-            //TODO shivIdentity
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)) > 0) {
                 char* ret = USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm, encryptedSessionKey);
                 safe_free(requestCopy);
@@ -1017,130 +911,19 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
         } else {
             int count;
-            // if (NETWORK_DEBUG) {
-            //     count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage));
-            // } else {
-                count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
-            // }
+           
+            count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
+            
             if (count > 0) {
-                // safe_free(requestCopy);
                 char* ret = USMSendMessageAPI(machineSendingMessage, machineReceivingMessage, iv, mac, encryptedMessage);
                 safe_free(requestCopy);
                 return ret;
-                //TODO need to implement
-                // ocall_print("GGGDDDIII");
-                // return createStringLiteralMalloced("TODO");
                 
             } else {
                 safe_free(requestCopy);
                 return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
             }
         }
-
-        // char* machineReceivingMessage;
-        // char* eventNum;
-        // char* temp;
-        // int numArgs;
-        // int payloadType;
-        // char* payload;
-
-        // // if (NETWORK_DEBUG) {
-        // //     split = strtok(NULL, ":");
-        // //     machineReceivingMessage = split;
-        // //     split = strtok(NULL, ":");
-        // //     eventNum = split;
-        // //     split = strtok(NULL, ":");
-        // //     numArgs = atoi(split);
-        // //     payloadType = -1;
-        // //     payload = (char*) malloc(10);
-        // //     payload[0] = '\0';
-        // //     if (numArgs > 0) {
-        // //         split = strtok(NULL, ":");
-        // //         payloadType = atoi(split);
-        // //         split = strtok(NULL, "\0");
-        // //         safe_free(payload);
-        // //         payload = split;
-
-        // //     } else {
-        // //         safe_free(payload);
-        // //     }
-        // // } else {
-        //     machineReceivingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        //     memcpy(machineReceivingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
-
-        //     char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1; //TODO using requestcopy here might be an issue
-
-        //     char* newTokenizerString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
-        //     memcpy(newTokenizerString, nextIndex, SIZE_OF_MAX_EVENT_PAYLOAD); // strncpy(newTokenizerString
-        //     ocall_print("New tokenizer is ");
-        //     ocall_print(newTokenizerString);
-
-        //     split = strtok(newTokenizerString, ":");
-        //     eventNum = split;
-        //     split = strtok(NULL, ":");
-        //     numArgs = atoi(split);
-        //     payloadType = -1;
-        //     payload = (char*) malloc(10);
-        //     payload[0] = '\0';
-        //     int payloadSize;
-        //     if (numArgs > 0) {
-        //         split = strtok(NULL, ":");
-        //         payloadType = atoi(split);
-        //         split = strtok(NULL, ":");
-        //         payloadSize = atoi(split);
-        //         safe_free(payload);
-        //         payload = split + strlen(split) + 1;
-
-        //     } else {
-        //         safe_free(payload);
-        //     }
-
-            
-        // // }
-
-        
-
-        // if (isEnclaveUntrustedHost) {
-
-        //     // if (NETWORK_DEBUG) {
-        //     //     sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage)]; //TODO add check here in case its not in dictionary
-        //     //     int ptr;
-        //     //     //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        //     //     sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, SIZE_OF_IDENTITY_STRING, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
-        //     // } else {
-        //         sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)]; //TODO add check here in case its not in dictionary
-        //         int ptr;
-        //         //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-        //         sgx_status_t status = enclave_sendUntrustedMessageAPI(enclave_eid, &ptr, machineReceivingMessage, eventNum, numArgs, payloadType, payload, payloadSize, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_EVENT_NAME, SIZE_OF_MAX_EVENT_PAYLOAD);
-        //     // }
-
-            
-        //     safe_free(requestCopy);
-        //     return createStringLiteralMalloced("Untrusted Message Succesfully sent!");
-
-        // } else {
-        //     string machineReceiveMsgString;
-        //     int count;
-        //     // if (NETWORK_DEBUG) {
-        //     //     machineReceiveMsgString = string(machineReceivingMessage);
-        //     //     count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage));
-        //     // } else {
-        //         machineReceiveMsgString = string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE);
-        //         count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
-        //     // }
-            
-        //     // printf("Untrusted Send -> machine checking in dictionary is %s\n", machineReceiveMsgString.c_str());
-        //     if (count > 0) {
-        //         // printf("Sending Message to USM in app.cpp\n");
-        //         char* ret = USMsendMessageAPI(machineReceivingMessage, eventNum, numArgs, payloadType, payload, payloadSize);
-        //         safe_free(requestCopy);
-        //         return ret;
-                
-        //     } else {
-        //         safe_free(requestCopy);
-        //         return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
-        //     }
-        // }
 
     } else if (strcmp(split, "Send") == 0) {
 
@@ -1187,11 +970,8 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
         } else {
             int count;
-            // if (NETWORK_DEBUG) {
-            //     count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage));
-            // } else {
-                count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
-            // }
+            count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
+
             if (count > 0) {
                 safe_free(requestCopy);
                 //TODO need to implement
@@ -1218,29 +998,10 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     char* currentMachineIDPublicKey;
 
-    // if (NETWORK_DEBUG) {
-    //     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    //     snprintf(currentMachineIDPublicKey, SIZE_OF_IDENTITY_STRING, "%s",(char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str())); 
-    // } else {
-        currentMachineIDPublicKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        memcpy(currentMachineIDPublicKey, (char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()), SGX_RSA3072_KEY_SIZE);
-    // }
-  
-
-    // if (!machineTypeIsSecure(requestedNewMachineTypeToCreate)) {
-    //     //TODO Add case here if we are creating untrusted machine (Do we need this because inside the enclave we dont
-    //     //have untrusted machines)
-    //     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * 100);
-    //     sprintf_s(str, 100, "Error: Tried to Create USM inside enclave!");
-    //     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-
-    // }
-
-    // ocall_print("KIRAT TEST");
-    // char* constructString2[] = {"kirat", ":", "sidhu"};
-    //             int constructStringLengths2[] = {strlen("kirat"), 1, strlen("sidhu")};
-    //             ocall_print(concatMutipleStringsWithLength(constructString2, constructStringLengths2, 3));
-
+   
+    currentMachineIDPublicKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    memcpy(currentMachineIDPublicKey, (char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()), SGX_RSA3072_KEY_SIZE);
+    
     int numArgs = atoi((char*) argRefs[1]);
 
     PRT_VALUE* payloadPrtValue;
@@ -1251,7 +1012,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     if (numArgs == 1) {
         payloadPrtValue = *(argRefs[2]);
         payloadType = payloadPrtValue->discriminator;
-        payloadStringSize = 0; //TODO shividentity
+        payloadStringSize = 0;
         payloadString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
         char* temp = serializePrtValueToString(payloadPrtValue, payloadStringSize);
         memcpy(payloadString, temp, payloadStringSize + 1);
@@ -1268,67 +1029,37 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     itoa(payloadStringSize, payloadStringSizeString, 10);
 
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
-    int requestSize = -1;//5 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_NEWMACHINETYPE + 1 + 10 + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
-    char* createMachineRequest = (char*) malloc(requestSize);//(char*)("Create:" + string(currentMachineIDPublicKey) + ":" + string(requestedNewMachineTypeToCreate)).c_str();
+    int requestSize = -1;
+    char* createMachineRequest = (char*) malloc(requestSize);
     int requestLength;
     char* numArgsString = (char*) argRefs[1];
     char* payloadTypeString = (char*) malloc(10);
     itoa(payloadType, payloadTypeString, 10);
          if (isSecureCreate) {
             if (numArgs == 0) {
+                char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":0"};
+                int constructStringLengths[] = {strlen(createTypeCommand), 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedNewMachineTypeToCreate), 2};
+                safe_free(createMachineRequest);
+                createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 6);
+                requestLength = returnTotalSizeofLengthArray(constructStringLengths, 6) + 1;
 
-                // if (NETWORK_DEBUG) {
-                //     // char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":0"};
-                //     // int constructStringLengths[] = {strlen(createTypeCommand), 1, strlen(currentMachineIDPublicKey), 1, strlen(requestedNewMachineTypeToCreate), 2};
-                //     // safe_free(createMachineRequest);
-                //     // createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 6);
-                //     snprintf(createMachineRequest, requestSize, "%s:%s:%s:0", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate);
-                //     requestLength = strlen(createMachineRequest) + 1;
-                // } else {
-                    char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":0"};
-                    int constructStringLengths[] = {strlen(createTypeCommand), 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedNewMachineTypeToCreate), 2};
-                    safe_free(createMachineRequest);
-                    createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 6);
-                    requestLength = returnTotalSizeofLengthArray(constructStringLengths, 6) + 1;
-
-                // }
             } else {
+                ocall_print("requested new type of machine to create is");
+                ocall_print(requestedNewMachineTypeToCreate);
+                ocall_print("current RSA key is");
+                printRSAKey(currentMachineIDPublicKey);
                 
-                // ocall_print("GURGY");
-                // if (NETWORK_DEBUG) {
-                //     // char* numArgsString = (char*) argRefs[1];
-                //     // char* payloadTypeString = (char*) malloc(10);
-                //     // itoa(payloadType, payloadTypeString, 10);
-                //     // char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":", numArgsString, ":", payloadTypeString, ":", payloadString};
-                //     // int constructStringLengths[] = {strlen(createTypeCommand), 1, strlen(currentMachineIDPublicKey), 1, strlen(requestedNewMachineTypeToCreate), 1, strlen(numArgsString), 1, strlen(payloadTypeString), 1, strlen(payloadString)};
-                //     // safe_free(createMachineRequest);
-                //     // createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 11);
-                //     snprintf(createMachineRequest, requestSize, "%s:%s:%s:%d:%d:", createTypeCommand, currentMachineIDPublicKey, requestedNewMachineTypeToCreate, numArgs, payloadType);
-                //     memcpy(createMachineRequest + strlen(createMachineRequest), payloadString, payloadStringSize);
+                char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":", numArgsString, ":", payloadTypeString, ":", payloadStringSizeString, ":", payloadString};
+                int constructStringLengths[] = {strlen(createTypeCommand), 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedNewMachineTypeToCreate), 1, strlen(numArgsString), 1, strlen(payloadTypeString), 1, strlen(payloadStringSizeString), 1, payloadStringSize};
+                safe_free(createMachineRequest);
+                createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 13);
+                requestLength = returnTotalSizeofLengthArray(constructStringLengths, 13) + 1;
+                safe_free(payloadTypeString);
 
-                //     requestLength = strlen(createMachineRequest) + 1;
-                // } else {
-                    ocall_print("requested new type of machine to create is");
-                    ocall_print(requestedNewMachineTypeToCreate);
-                    ocall_print("current RSA key is");
-                    printRSAKey(currentMachineIDPublicKey);
-                    
-                    char* constructString[] = {createTypeCommand, ":", currentMachineIDPublicKey, ":", requestedNewMachineTypeToCreate, ":", numArgsString, ":", payloadTypeString, ":", payloadStringSizeString, ":", payloadString};
-                    int constructStringLengths[] = {strlen(createTypeCommand), 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedNewMachineTypeToCreate), 1, strlen(numArgsString), 1, strlen(payloadTypeString), 1, strlen(payloadStringSizeString), 1, payloadStringSize};
-                    safe_free(createMachineRequest);
-                    createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 13);
-                    requestLength = returnTotalSizeofLengthArray(constructStringLengths, 13) + 1;
-                    safe_free(payloadTypeString);
-
-                    ocall_print("KURUT");
-                    ocall_print(createMachineRequest);
-                // }
-                // ocall_print(createMachineRequest);
+                ocall_print("KURUT");
+                ocall_print(createMachineRequest);
             }
         
-
-        // concatMutipleStringsWithLength
-
         } else {
             if (numArgs == 0) {
                 char* constructString[] = {createTypeCommand, ":", requestedNewMachineTypeToCreate, ":0"};

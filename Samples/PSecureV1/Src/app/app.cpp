@@ -138,8 +138,6 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
         sgx_status_t status = enclave_createRsaKeyPairEcall(global_app_eid, public_identity_key_raw, private_identity_key_raw, public_identity_key, private_identity_key, SGX_RSA3072_KEY_SIZE); 
         if (status != SGX_SUCCESS) {
             ocall_print("APP Error in generating identity keys!");
-        // } else  {
-        //     ocall_print("KPS able to generate identity keys!");
         }
         publicID = string(public_identity_key_raw, SGX_RSA3072_KEY_SIZE);
         privateID = string(private_identity_key_raw, SGX_RSA3072_KEY_SIZE);
@@ -150,8 +148,6 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
         if (randNum < 10) {
             randNum = 39;
         }
-        // publicID = prefix + "UPub" + to_string(randNum);
-        // privateID = prefix + "UPriv" + to_string(randNum);
         publicID = prefix.substr(0, 1) + "UPub" + to_string(randNum) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
         privateID = prefix.substr(0, 1) + "UPri" + to_string(randNum) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
 
@@ -228,31 +224,7 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
         return errorMsg;
     }
     
-    
-    // printf("USM Initialize Communication API Called!\n");
-    // //TODO need to verify signature over requestingMachineIDKey
-    // if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey), string(requestingMachineIDKey))) == 0) {
-    //     //TODO this logic needs to be diffie hellman authenticated encryption
-    //     string newSessionKey;
-    //     generateSessionKey(newSessionKey);
-    //     PublicIdentityKeyToChildSessionKey[make_tuple(receivingMachineIDKey, requestingMachineIDKey)] = newSessionKey;
-    //     printf("Returning correct session key!\n");
-    //     char* returnSessionkey = (char*) malloc(newSessionKey.length() + 1);
-    //     memcpy(returnSessionkey, newSessionKey.c_str(), newSessionKey.length() + 1);
-    //     return returnSessionkey;
-    // } else {
-    //     char* errorMsg = createStringLiteralMalloced("Already created!");
-    //     printf("ERROR:Session has already been initalized in the past!\n");
-    //     return errorMsg;
-    // }
-    
 }
-
-// void generateSessionKey(string& newSessionKey) {
-//     //TODO Make this generate a random key
-//     int randNum = rand() % 100;
-//     newSessionKey = "GenSessionKe" + to_string(randNum);
-// } 
 
 char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage) {
     decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, false);
@@ -280,45 +252,23 @@ char* registerMachineWithNetwork(char* newMachineID) {
     ocall_print("ChildPublicIDKey size is");
     ocall_print_int(strlen(newMachineID));
 
-    // char* machineKeyWrapper[] = {newMachineID};
-    // char* request = generateCStringFromFormat("RegisterMachine:%s:-1", machineKeyWrapper, 1);
-    // size_t requestSz = strlen(request) + 1;
-    // char* returnValue = send_network_request_API(request, requestSz);
-    // safe_free(request);
-    // safe_free(returnValue);
-    // return returnValue;
-
     int ret_value;
     char* num = "-1";
-    // char* machineKeyWrapper[] = {newMachineID, num};
-    
-    // char* networkResult = (char*) malloc(100);
-    // if (NETWORK_DEBUG) {
-    //     char* networkRequest = generateCStringFromFormat("RegisterMachine:%s:%s", machineKeyWrapper, 2);
-    //     ocall_network_request(&ret_value, networkRequest, networkResult, strlen(networkRequest) + 1, 100);
-    //     safe_free(networkRequest);
-    // } else {
-        //TODO need to test this request
-        char* requestType = "RegisterMachine:";
-        char* colon = ":";
-        char* concatStrings[] = {requestType, newMachineID, colon, num};
-        int concatLenghts[] = {strlen(requestType), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(num)};
-        char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
-        int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
-        char* returnValue = send_network_request_API(networkRequest, networkRequestSize);
-                safe_free(networkRequest);
 
-        return returnValue;
-        // ocall_network_request(&ret_value, networkRequest, networkResult, networkRequestSize, 100);
-    // }
-    // safe_free(num);
-    // safe_free(networkResult);
+    char* requestType = "RegisterMachine:";
+    char* colon = ":";
+    char* concatStrings[] = {requestType, newMachineID, colon, num};
+    int concatLenghts[] = {strlen(requestType), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(num)};
+    char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
+    int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
+    char* returnValue = send_network_request_API(networkRequest, networkRequestSize);
+    safe_free(networkRequest);
 
+    return returnValue;
 }
 
 //Responbility of caller to free return
 char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize) {
-    //TODO shividentity make compatibile
     startPrtProcessIfNotStarted();
     if (machineTypeIsSecure(machineType)) {
         return "Error: Tried to create SSM inside app!";
@@ -334,10 +284,6 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE), string(usmChildPrivateIDKey.c_str(), SGX_RSA3072_KEY_SIZE));
     USMPublicIdentityKeyToMachinePIDDictionary[string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE)] = newMachinePID;
-  
-    // MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(usmChildPublicIDKey, usmChildPrivateIDKey);
-    // USMPublicIdentityKeyToMachinePIDDictionary[usmChildPublicIDKey] = newMachinePID;
-    // printf("Added %s to USM dictionary!\n", usmChildPublicIDKey.c_str());
 
     char* usmChildPublicIDKeyCopy = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
@@ -434,7 +380,6 @@ int main(int argc, char const *argv[]) {
     initNetwork();
     initKPS();
     initApp();
-    //char* kirat = (char*) malloc(220);
  
     // Place the measurement of the enclave into metadata_info.txt
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
