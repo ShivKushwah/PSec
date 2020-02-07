@@ -147,7 +147,6 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 
 //Responsibility of caller to free return
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
-    // ocall_print("IF THIS WORKS THEN WOO BOY");
     int ret;
     char* other_machine_name = "KPS";
     char* requestString;
@@ -161,7 +160,6 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     safe_free(requestString);
     char* capabilityKeyPayload = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKeyPayload, g_secret, SIZE_OF_CAPABILITYKEY);
-    // ocall_print("WORKS");
     return capabilityKeyPayload;
 }
                                         
@@ -169,11 +167,7 @@ void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid, char* machineTypeToC
     current_eid = currentEid;
     char* newMachinePublicIDKey = createMachineHelper(machineTypeToCreate, "", numArgs, payloadType, payloadString, payloadSize, false, enclaveEid);
     //"Return" the publicIDKey of the new machine
-    // if (NETWORK_DEBUG) {
-    //     memcpy(returnNewMachinePublicID, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
-    // } else {
-        memcpy(returnNewMachinePublicID, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
-    // }
+    memcpy(returnNewMachinePublicID, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
     safe_free(newMachinePublicIDKey);
 }
 
@@ -234,17 +228,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     string machineTypeToCreateString = createString(machineType);
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
-    // if (NETWORK_DEBUG) {
-    //     generateIdentityDebug(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
-    // } else {
-        // sgx_rsa3072_key_t *private_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t)); //TODO shivfree need to free this and below
-        // sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
-        // void* publicIdentity = NULL;
-        // void* privateIdentity = NULL;
-        // generateIdentity(public_key, private_key, &publicIdentity, &privateIdentity);
-        // secureChildPublicIDKey = string((char*)publicIdentity, SGX_RSA3072_KEY_SIZE);
-        // secureChildPrivateIDKey = string((char*)privateIdentity, SGUntrustedCreateX_RSA3072_KEY_SIZE);
-        //TODO uncomment above
+  
     if (NETWORK_DEBUG) {
         generateIdentityDebug(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
     } else {
@@ -257,17 +241,11 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
         secureChildPrivateIDKey = string((char*)privateIdentity, SGX_RSA3072_KEY_SIZE);
     }
         
-
-    // }   
     char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
     memcpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length());
     publicIdKeyCopy[secureChildPublicIDKey.length()] = '\0';
     
-    // if (NETWORK_DEBUG) {
-    //     ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, SIZE_OF_IDENTITY_STRING, enclaveEid);
-    // } else {
-        ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, SGX_RSA3072_KEY_SIZE, enclaveEid);
-    // }
+    ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, SGX_RSA3072_KEY_SIZE, enclaveEid);
     
     safe_free(publicIdKeyCopy);
     int newMachinePID = getNextPID(); 
@@ -275,25 +253,23 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(secureChildPublicIDKey, secureChildPrivateIDKey);
     PublicIdentityKeyToMachinePIDDictionary[secureChildPublicIDKey] = newMachinePID;
 
-    // if (isSecureCreate) {
-        //Contacting KPS for capability key
-        char* capabilityKeyPayloadReceived;
-        if (isSecureCreate) {
-           capabilityKeyPayloadReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str());
-        } else {
-            capabilityKeyPayloadReceived = receiveNewCapabilityKeyFromKPS((char*)secureChildPublicIDKey.c_str() ,(char*)secureChildPublicIDKey.c_str());
-        } 
-        ocall_print("Enclave received new capability Key from KPS: ");
-        char* publicCapabilityKey = retrievePublicCapabilityKey(capabilityKeyPayloadReceived);
-        char* privateCapabilityKey = retrievePrivateCapabilityKey(capabilityKeyPayloadReceived);
-        // printRSAKey(publicCapabilityKey);
-        // printRSAKey(privateCapabilityKey);
-        MachinePIDtoCapabilityKeyDictionary[newMachinePID] = string(capabilityKeyPayloadReceived, SIZE_OF_CAPABILITYKEY);
-        PMachineToChildCapabilityKey[make_tuple(newMachinePID, string(secureChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE))] = string(capabilityKeyPayloadReceived, SIZE_OF_CAPABILITYKEY);
-        safe_free(publicCapabilityKey);
-        safe_free(privateCapabilityKey);
-        safe_free(capabilityKeyPayloadReceived);
-    // }
+    //Contacting KPS for capability key
+    char* capabilityKeyPayloadReceived;
+    if (isSecureCreate) {
+        capabilityKeyPayloadReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str());
+    } else {
+        capabilityKeyPayloadReceived = receiveNewCapabilityKeyFromKPS((char*)secureChildPublicIDKey.c_str() ,(char*)secureChildPublicIDKey.c_str());
+    } 
+    ocall_print("Enclave received new capability Key from KPS: ");
+    char* publicCapabilityKey = retrievePublicCapabilityKey(capabilityKeyPayloadReceived);
+    char* privateCapabilityKey = retrievePrivateCapabilityKey(capabilityKeyPayloadReceived);
+    // printRSAKey(publicCapabilityKey);
+    // printRSAKey(privateCapabilityKey);
+    MachinePIDtoCapabilityKeyDictionary[newMachinePID] = string(capabilityKeyPayloadReceived, SIZE_OF_CAPABILITYKEY);
+    PMachineToChildCapabilityKey[make_tuple(newMachinePID, string(secureChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE))] = string(capabilityKeyPayloadReceived, SIZE_OF_CAPABILITYKEY);
+    safe_free(publicCapabilityKey);
+    safe_free(privateCapabilityKey);
+    safe_free(capabilityKeyPayloadReceived);
 
     char* secureChildPublicIDKeyCopy = (char*) malloc(secureChildPublicIDKey.size() + 1);
     memcpy(secureChildPublicIDKeyCopy, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length());
@@ -327,11 +303,7 @@ int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* paren
     
     char* newMachinePublicIDKey = createMachineHelper(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload, payloadSize, true, enclaveEid);
     //"Return" the publicIDKey of the new machine
-    // if (NETWORK_DEBUG){
-    //     memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, strlen(newMachinePublicIDKey) + 1);
-    // } else {
-        memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
-    // }
+    memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
     safe_free(newMachinePublicIDKey);
 }
 
@@ -341,18 +313,12 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     char* other_machine_name = "KPS";
     char* requestString;
     int requestStringSize;
-    // if (NETWORK_DEBUG) {    
-    //     int requestSize = SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_IDENTITY_STRING + 1;
-    //     requestString = (char*) malloc(requestSize);
-    //     requestStringSize = requestSize;
-    //     snprintf(requestString, requestSize, "%s:%s", newMachinePublicIDKey, parentTrustedMachineID);
-    // } else {
 
-        char* concatStrings[] = {newMachinePublicIDKey, ":", parentTrustedMachineID};
-        int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
-        requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
-        requestStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
-    // }
+    char* concatStrings[] = {newMachinePublicIDKey, ":", parentTrustedMachineID};
+    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
+    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+
     ocall_print("Enclave is asking for creation of new cap key using");
     printRSAKey(newMachinePublicIDKey);
     printRSAKey(parentTrustedMachineID);
@@ -489,10 +455,6 @@ void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *p
 	free(p_dmp1);
 	free(p_dmq1);
 	free(p_iqmp);
-
-}
-
-bool receivePublicKeyPlainText() {
 
 }
 
@@ -752,87 +714,6 @@ void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
 
 
 } 
-
-void decrypt_message_external(                 const sgx_aes_gcm_128bit_key_t *p_key,
-                                                const uint8_t *p_src,
-                                                uint32_t src_len,
-                                                uint8_t *p_dst,
-                                                const uint8_t *p_iv,
-                                                uint32_t iv_len,
-                                                
-                                                const sgx_aes_gcm_128bit_tag_t *p_in_mac ) {
-
-    sgx_rijndael128GCM_decrypt(p_key, p_src, src_len, p_dst, p_iv, iv_len, NULL, 0, p_in_mac);
-
-}
-
-void decryptMessageForUSM(char* requestingMachineIDKey, 
-                            char* receivingMachineIDKey, 
-                            char* iv, 
-                            char* mac, 
-                            char* encryptedMessage,
-                            int machinePid,
-                            char* sessionKeyy,
-                            char* returnDecryptedMessage,
-                            uint32_t IDENTITY_SIZE,
-                            uint32_t ENCRYPTED_MESSAGE_SIZE,
-                            uint32_t SESSION_KEY_SIZE) {
-    ocall_print("entered decrypt fn for USM");
-    printPayload(encryptedMessage, ENCRYPTED_MESSAGE_SIZE);
-    // ocall_print_int(MAX_ENCRYPTED_MESSAGE);
-
-        // int machinePID = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
-        // string sendingToMachineCapabilityKeyPayload = MachinePIDtoCapabilityKeyDictionary[machinePID];
-        // char* publicCapabilityKeySendingToMachine = retrievePublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
-
-        // string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
-        int machinePID = machinePid;
-        string sessionKey = string(sessionKeyy, SIZE_OF_SESSION_KEY);
-        sgx_aes_ctr_128bit_key_t g_region_key;
-        sgx_aes_gcm_128bit_tag_t g_mac;
-        memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
-        memcpy(g_mac, mac, SIZE_OF_MAC);
-
-        char* actualEncryptedMessage = encryptedMessage;
-        sgx_status_t status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) actualEncryptedMessage, ENCRYPTED_MESSAGE_SIZE, (uint8_t*)returnDecryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
- 
-        char* checkMyPublicIdentity = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        memcpy(checkMyPublicIdentity, returnDecryptedMessage, SGX_RSA3072_KEY_SIZE);
-        if (string(checkMyPublicIdentity, SGX_RSA3072_KEY_SIZE) != string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) {
-            ocall_print("ERROR: Checking Public Identity Key inside Message FAILED in Untrusted Send");
-            // return 0;
-        }
-
-        sgx_rsa3072_signature_t* decryptedSignature = (sgx_rsa3072_signature_t*) malloc(SGX_RSA3072_KEY_SIZE);
-        // char* message = (char*) malloc(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1); 
-        // memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-        char* messageSignedOver = (char*) malloc(ENCRYPTED_MESSAGE_SIZE - SGX_RSA3072_KEY_SIZE - 1);
-        memcpy(messageSignedOver, returnDecryptedMessage, ENCRYPTED_MESSAGE_SIZE - SGX_RSA3072_KEY_SIZE - 1);
-        memcpy(decryptedSignature, returnDecryptedMessage + ENCRYPTED_MESSAGE_SIZE - SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
-        // // ocall_print("Lenght of encrypted message is ");
-        // // ocall_print(encryptedMessageSize);
-        // ocall_print("Received Signature:");
-        // printRSAKey((char*)decryptedSignature);
-        // ocall_print("Signature is over message");
-        // printRSAKey(messageSignedOver);
-        // ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-        // ocall_print("Key needed to verify signature is");
-        // ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
-        // ocall_print("actual key is");
-        // printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
-        // // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
-
-        // if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
-        //     ocall_print("Verifying Signature works!!!!");
-        // } else {
-        //     ocall_print("Error: Secure Send Signature Verification Failed!");
-        //     // return 0;
-        // }
-
-        safe_free(checkMyPublicIdentity);
-
-
-}
 
 void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *private_key, void** publicIdentity, void** privateIdentity) {
     // sgx_rsa3072_key_t *sk = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));

@@ -125,30 +125,6 @@ typedef struct ms_createRsaKeyPairEcall_t {
 	uint32_t ms_KEY_SIZE;
 } ms_createRsaKeyPairEcall_t;
 
-typedef struct ms_decrypt_message_external_t {
-	const sgx_aes_gcm_128bit_key_t* ms_p_key;
-	const uint8_t* ms_p_src;
-	uint32_t ms_src_len;
-	uint8_t* ms_p_dst;
-	const uint8_t* ms_p_iv;
-	uint32_t ms_iv_len;
-	const sgx_aes_gcm_128bit_tag_t* ms_p_in_mac;
-} ms_decrypt_message_external_t;
-
-typedef struct ms_decryptMessageForUSM_t {
-	char* ms_requestingMachineIDKey;
-	char* ms_receivingMachineIDKey;
-	char* ms_iv;
-	char* ms_mac;
-	char* ms_encryptedMessage;
-	int ms_machinePid;
-	char* ms_sessionKey;
-	char* ms_returnDecryptedMessage;
-	uint32_t ms_IDENTITY_SIZE;
-	uint32_t ms_ENCRYPTED_MESSAGE_SIZE;
-	uint32_t ms_SESSION_KEY_SIZE;
-} ms_decryptMessageForUSM_t;
-
 typedef struct ms_eprint_t {
 	char* ms_printStr;
 } ms_eprint_t;
@@ -623,46 +599,12 @@ sgx_status_t enclave_createRsaKeyPairEcall(sgx_enclave_id_t eid, char* public_ke
 	return status;
 }
 
-sgx_status_t enclave_decrypt_message_external(sgx_enclave_id_t eid, const sgx_aes_gcm_128bit_key_t* p_key, const uint8_t* p_src, uint32_t src_len, uint8_t* p_dst, const uint8_t* p_iv, uint32_t iv_len, const sgx_aes_gcm_128bit_tag_t* p_in_mac)
-{
-	sgx_status_t status;
-	ms_decrypt_message_external_t ms;
-	ms.ms_p_key = p_key;
-	ms.ms_p_src = p_src;
-	ms.ms_src_len = src_len;
-	ms.ms_p_dst = p_dst;
-	ms.ms_p_iv = p_iv;
-	ms.ms_iv_len = iv_len;
-	ms.ms_p_in_mac = p_in_mac;
-	status = sgx_ecall(eid, 13, &ocall_table_enclave, &ms);
-	return status;
-}
-
-sgx_status_t enclave_decryptMessageForUSM(sgx_enclave_id_t eid, char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, int machinePid, char* sessionKey, char* returnDecryptedMessage, uint32_t IDENTITY_SIZE, uint32_t ENCRYPTED_MESSAGE_SIZE, uint32_t SESSION_KEY_SIZE)
-{
-	sgx_status_t status;
-	ms_decryptMessageForUSM_t ms;
-	ms.ms_requestingMachineIDKey = requestingMachineIDKey;
-	ms.ms_receivingMachineIDKey = receivingMachineIDKey;
-	ms.ms_iv = iv;
-	ms.ms_mac = mac;
-	ms.ms_encryptedMessage = encryptedMessage;
-	ms.ms_machinePid = machinePid;
-	ms.ms_sessionKey = sessionKey;
-	ms.ms_returnDecryptedMessage = returnDecryptedMessage;
-	ms.ms_IDENTITY_SIZE = IDENTITY_SIZE;
-	ms.ms_ENCRYPTED_MESSAGE_SIZE = ENCRYPTED_MESSAGE_SIZE;
-	ms.ms_SESSION_KEY_SIZE = SESSION_KEY_SIZE;
-	status = sgx_ecall(eid, 14, &ocall_table_enclave, &ms);
-	return status;
-}
-
 sgx_status_t enclave_eprint(sgx_enclave_id_t eid, char* printStr)
 {
 	sgx_status_t status;
 	ms_eprint_t ms;
 	ms.ms_printStr = printStr;
-	status = sgx_ecall(eid, 15, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 13, &ocall_table_enclave, &ms);
 	return status;
 }
 
@@ -672,7 +614,7 @@ sgx_status_t enclave_sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, s
 	ms_sgx_ra_get_ga_t ms;
 	ms.ms_context = context;
 	ms.ms_g_a = g_a;
-	status = sgx_ecall(eid, 16, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 14, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
@@ -686,7 +628,7 @@ sgx_status_t enclave_sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t
 	ms.ms_p_qe_target = p_qe_target;
 	ms.ms_p_report = p_report;
 	ms.ms_p_nonce = p_nonce;
-	status = sgx_ecall(eid, 17, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 15, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
@@ -700,7 +642,7 @@ sgx_status_t enclave_sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t*
 	ms.ms_qe_report = qe_report;
 	ms.ms_p_msg3 = p_msg3;
 	ms.ms_msg3_size = msg3_size;
-	status = sgx_ecall(eid, 18, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 16, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }

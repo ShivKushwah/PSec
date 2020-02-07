@@ -87,25 +87,6 @@ enclave {
                                     [out, size=388]char* public_key_out, 
                                     [out, size=772]char* private_key_out,
                                     uint32_t KEY_SIZE);
-
-        public void decrypt_message_external([in, size = 16]const sgx_aes_gcm_128bit_key_t *p_key,
-                                               [in, size = src_len] const uint8_t *p_src,
-                                                uint32_t src_len,
-                                                [out, size = src_len]uint8_t *p_dst,
-                                                [in, size = iv_len]const uint8_t *p_iv,
-                                                uint32_t iv_len,
-                                                [in, size = 16]const sgx_aes_gcm_128bit_tag_t *p_in_mac );
-        public void decryptMessageForUSM([in, size = IDENTITY_SIZE]char* requestingMachineIDKey, 
-                            [in, size = IDENTITY_SIZE]char* receivingMachineIDKey, 
-                            [in, size = 12]char* iv, 
-                            [in, size = 16]char* mac, 
-                            [in, size = ENCRYPTED_MESSAGE_SIZE]char* encryptedMessage,
-                            int machinePid,
-                            [in, size = SESSION_KEY_SIZE]char* sessionKey,
-                            [out, size = ENCRYPTED_MESSAGE_SIZE]char* returnDecryptedMessage,
-                            uint32_t IDENTITY_SIZE,
-                            uint32_t ENCRYPTED_MESSAGE_SIZE,
-                            uint32_t SESSION_KEY_SIZE);
         public void eprint([in, size=50]char* printStr);
 
 

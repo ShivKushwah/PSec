@@ -95,8 +95,6 @@ sgx_status_t enclave_encryptMessageExternalPublicKeyEcall(sgx_enclave_id_t eid, 
 sgx_status_t enclave_decryptMessageInteralPrivateKeyEcall(sgx_enclave_id_t eid, char* message, size_t message_length_with_null_byte, char* other_party_public_key_raw, char* output_encrypted_message, uint32_t SIZE_OF_KEY);
 sgx_status_t enclave_sendUntrustedMessageAPI(sgx_enclave_id_t eid, int* retval, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize, uint32_t ID_SIZE, uint32_t MESSAGE_SIZE, uint32_t MAX_PAYLOAD_SIZE);
 sgx_status_t enclave_createRsaKeyPairEcall(sgx_enclave_id_t eid, char* public_key_raw_out, char* private_key_raw_out, char* public_key_out, char* private_key_out, uint32_t KEY_SIZE);
-sgx_status_t enclave_decrypt_message_external(sgx_enclave_id_t eid, const sgx_aes_gcm_128bit_key_t* p_key, const uint8_t* p_src, uint32_t src_len, uint8_t* p_dst, const uint8_t* p_iv, uint32_t iv_len, const sgx_aes_gcm_128bit_tag_t* p_in_mac);
-sgx_status_t enclave_decryptMessageForUSM(sgx_enclave_id_t eid, char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, int machinePid, char* sessionKey, char* returnDecryptedMessage, uint32_t IDENTITY_SIZE, uint32_t ENCRYPTED_MESSAGE_SIZE, uint32_t SESSION_KEY_SIZE);
 sgx_status_t enclave_eprint(sgx_enclave_id_t eid, char* printStr);
 sgx_status_t enclave_sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a);
 sgx_status_t enclave_sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, const sgx_ra_msg2_t* p_msg2, const sgx_target_info_t* p_qe_target, sgx_report_t* p_report, sgx_quote_nonce_t* p_nonce);
