@@ -53,13 +53,12 @@ extern int CURRENT_ENCLAVE_EID_NUM;
 extern int initialize_enclave(sgx_enclave_id_t* eid, const std::string& launch_token_path, const std::string& enclave_name);
 
 extern char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize);
-extern char* USMsendMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, int payloadSize);
 extern char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey);
 
 
 extern char* untrusted_enclave1_receiveNetworkRequest(char* request, size_t requestSize);
 
-extern char* newUSMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage);
+extern char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage);
 
 extern char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey);
 extern char* send_network_request_API(char* request);
@@ -1025,7 +1024,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             // }
             if (count > 0) {
                 // safe_free(requestCopy);
-                char* ret = newUSMSendMessageAPI(machineSendingMessage, machineReceivingMessage, iv, mac, encryptedMessage);
+                char* ret = USMSendMessageAPI(machineSendingMessage, machineReceivingMessage, iv, mac, encryptedMessage);
                 safe_free(requestCopy);
                 return ret;
                 //TODO need to implement

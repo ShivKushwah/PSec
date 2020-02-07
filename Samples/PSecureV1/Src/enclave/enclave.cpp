@@ -508,16 +508,6 @@ char* concatVoid(void* str1, size_t str1_size, void* str2, size_t str2_size) {
     return returnString;
 }
 
-char* serializeEncryptedMessage(char* encryptedMessage) {
-    for (int i = 0; i < SGX_RSA3072_KEY_SIZE; i ++) {
-        if (encryptedMessage[i] == '\0') {
-            encryptedMessage[i] ='0';
-        } else if (encryptedMessage[i] == ':') {
-            encryptedMessage[i] ='~';
-        }
-    }
-}
-
 char* checkRawRSAKeySize(char* key) {
     char* temp = (char*) malloc(SGX_RSA3072_KEY_SIZE);
     memcpy(temp, key, SGX_RSA3072_KEY_SIZE);
@@ -768,20 +758,11 @@ int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMach
 }
 
 int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize) {
-    //TODO if modifying this, modify USMsendMessageAPI in app.cpp
     //TODO eventNum should be encrypted and requestingMachineIDKey should be verified with signature
     PRT_MACHINEID receivingMachinePID;
     ocall_print("SecureChildMachine has a PID of:");
     char* temp = (char*) malloc(10);
-    // if (NETWORK_DEBUG) {
-    //     if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey)) == 0) {
-    //         ocall_print("Key not found");
-    //     }
-    //     snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)]);
-    //     ocall_print(temp);
-    //     safe_free(temp);
-    //     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey)];
-    // } else {
+   
         if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
             ocall_print("Key not found");
         }
@@ -789,7 +770,7 @@ int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey,
         ocall_print(temp);
         safe_free(temp);
         receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
-    // }
+    
     
     handle_incoming_event(atoi(event), receivingMachinePID, numArgs, payloadType, payload, payloadSize); //TODO update to untrusted send api
 }
