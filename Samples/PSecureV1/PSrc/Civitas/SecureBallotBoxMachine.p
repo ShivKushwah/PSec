@@ -28,10 +28,12 @@ secure_machine SecureBallotBoxMachine
             numberOfTotalVotesAllowed = payload;
             currentNumberOfVotes = 0;
         }
-        on TRUSTEDeVote do (payload: (credential : int, vote : int, requestingMachine : machine_handle, requestingMachineCapability: capability))
+        on TRUSTEDeVote do (payload: (credential : int, vote : secure_int, requestingMachine : machine_handle, requestingMachineCapability: capability))
         {
+            var regularVote : int;
+            regularVote = DeclassifyInt(payload.vote);
             SaveCapability(payload.requestingMachineCapability);
-            secure_send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote);
+            secure_send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = regularVote);
             receive {
                 case TRUSTEDeRespAddItem : (result: bool) {
                     if(result)

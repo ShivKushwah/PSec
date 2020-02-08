@@ -25,6 +25,8 @@ secure_machine SecureVotingClientMachine
 
     state SubmitVote {
         entry (payload: (credential : int, vote : int)) {
+            var secure_vote: secure_int;
+            secure_vote = payload.vote;
             credential = payload.credential;
             secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = GetThis(), requestingMachineCapability = GetCapability(GetThis()));
         }

@@ -11,6 +11,7 @@ fun PrintString(inputString : StringType);
 fun GetCapability(input: machine_handle) : capability; //Should be "get_capability"
 fun SaveCapability(input: capability); //Should be "save_capability"
 fun GetThis() : machine_handle; //Should be "this"
+fun DeclassifyInt(input : secure_int) : int;
 
 //Functions necessary for .h file, should not be called by user
 //TODO Add to PrtCodeGenerator
@@ -22,7 +23,7 @@ event UNTRUSTEDGetVotingSSM : machine_handle;
 event UNTRUSTEDReceiveVotingSSM : machine_handle;
 event UNTRUSTEDVoteRequest : (credential : int, vote : int);
 trusted event TRUSTEDeStartElection : int;
-trusted event TRUSTEDeVote : (credential : int, vote : int, requestingMachine: machine_handle, requestingMachineCapability: capability);
+trusted event TRUSTEDeVote : (credential : int, vote : secure_int, requestingMachine: machine_handle, requestingMachineCapability: capability);
 trusted event TRUSTEDeAddItem : (credential: int, vote: int);
 trusted event TRUSTEDeRespAddItem : bool;
 trusted event TRUSTEDeRespConfirmVote;
