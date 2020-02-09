@@ -26,7 +26,7 @@ secure_machine SecureTabulationTellerMachine
     
     state DoTally {
         entry {
-            var result: map[int, int];
+            var result: map[int, secure_int];
             var i: int;
             i = 0;
             while(i < sizeof(allVotes))
@@ -35,7 +35,7 @@ secure_machine SecureTabulationTellerMachine
                 receive {
                     case TRUSTEDValidCredential : {
                         //map enables us to consider the latest vote
-                        result[allVotes[i].credential] = DeclassifyInt(allVotes[i].vote); 
+                        result[allVotes[i].credential] = allVotes[i].vote; 
                         
                     }
                     case TRUSTEDInvalidCredential : {

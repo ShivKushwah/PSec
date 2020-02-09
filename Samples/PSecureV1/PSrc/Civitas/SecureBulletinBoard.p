@@ -7,11 +7,11 @@ Secure Bulletin Board machine
 
 secure_machine SecureBulletinBoardMachine
 {
-    var electionResults: map[int, int];
+    var electionResults: map[int, secure_int];
     
     start state Init {
         defer TRUSTEDeGetElectionResults;
-        on TRUSTEDeElectionResults do (payload: map[int, int]) {
+        on TRUSTEDeElectionResults do (payload: map[int, secure_int]) {
             electionResults = payload;
             goto SendResults;
         }
@@ -31,7 +31,7 @@ secure_machine SecureBulletinBoardMachine
             countCandidate0 = 0;
             countCandidate1 = 0;
             while (i < sizeof(electionResultsKeys)) {
-                if (electionResults[electionResultsKeys[i]] == 0) {
+                if (DeclassifyInt(electionResults[electionResultsKeys[i]]) == 0) {
                     //Vote for Candidate0
                     countCandidate0 = countCandidate0 + 1;
                 } else {

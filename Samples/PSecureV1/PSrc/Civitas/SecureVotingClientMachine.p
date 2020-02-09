@@ -39,7 +39,7 @@ secure_machine SecureVotingClientMachine
         entry {
             secure_send bulletinBoard, TRUSTEDeGetElectionResults, (requestingMachine = GetThis(), requestingMachineCapability = GetCapability(GetThis()));
         }
-        on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, int], whoWon : int)) {
+        on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, secure_int], whoWon : int)) {
             if(!(credential in payload.allVotes))
             {
                 print "ERROR: Vote not found!";
@@ -47,7 +47,7 @@ secure_machine SecureVotingClientMachine
             }
             else
             {
-                print "Your vote for {0} was counted", payload.allVotes[credential];
+                print "Your vote for {0} was counted", DeclassifyInt(payload.allVotes[credential]);
             }
             print "{0} won the election", payload.whoWon;
             goto Done;

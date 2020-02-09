@@ -34,6 +34,6 @@ trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[(credential : int,
 trusted event TRUSTEDValidateCredential : (tabulationTellerMachine : machine_handle, tabulationTellerCapability : capability, credentialToCheck : int);
 trusted event TRUSTEDValidCredential;
 trusted event TRUSTEDInvalidCredential;
-trusted event TRUSTEDeElectionResults : map[int, int];
-trusted event TRUSTEDeRespElectionResults: (allVotes : map[int, int], whoWon : int);
+trusted event TRUSTEDeElectionResults : map[int, secure_int];
+trusted event TRUSTEDeRespElectionResults: (allVotes : map[int, secure_int], whoWon : int);
 trusted event TRUSTEDeGetElectionResults : (requestingMachine: machine_handle, requestingMachineCapability: capability);
