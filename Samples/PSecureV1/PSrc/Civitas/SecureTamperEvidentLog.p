@@ -4,7 +4,7 @@ Secure TamperEvidentLog Machine
 ***************************************/
 secure_machine SecureTamperEvidentLogMachine 
 {
-    var log: seq[(credential: int, vote: int)];
+    var log: seq[(credential: int, vote: secure_int)];
     var parent: machine_handle;
     start state Init {
         entry(payload: (parentMachine: machine_handle, parentCapability:capability))
@@ -16,7 +16,7 @@ secure_machine SecureTamperEvidentLogMachine
     }
 
     state WaitForRequests {
-        on TRUSTEDeAddItem do (payload: (credential : int, vote: int)){
+        on TRUSTEDeAddItem do (payload: (credential : int, vote: secure_int)){
             log += (sizeof(log), (credential = payload.credential, vote = payload.vote));
             secure_send parent, TRUSTEDeRespAddItem, true;
         }

@@ -8,7 +8,7 @@ secure_machine SecureTabulationTellerMachine
 {
     var bulletinBoard: machine_handle;
     var supervisor: machine_handle;
-    var allVotes: seq[(credential : int, vote : int)];
+    var allVotes: seq[(credential : int, vote : secure_int)];
 
     start state Init {
         entry (payload:(bBoard: machine_handle, bBoardCapability: capability, supervisor: machine_handle, supervisorCapability: capability)){
@@ -17,7 +17,7 @@ secure_machine SecureTabulationTellerMachine
             SaveCapability(payload.bBoardCapability);
             SaveCapability(payload.supervisorCapability);
         }
-        on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[(credential : int, vote : int)])){
+        on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[(credential : int, vote : secure_int)])){
             //allVotes are ordered by time
             allVotes = payload.votes;
             goto DoTally;
@@ -35,7 +35,7 @@ secure_machine SecureTabulationTellerMachine
                 receive {
                     case TRUSTEDValidCredential : {
                         //map enables us to consider the latest vote
-                        result[allVotes[i].credential] = allVotes[i].vote; 
+                        result[allVotes[i].credential] = DeclassifyInt(allVotes[i].vote); 
                         
                     }
                     case TRUSTEDInvalidCredential : {
