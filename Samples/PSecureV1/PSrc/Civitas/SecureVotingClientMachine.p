@@ -8,6 +8,7 @@ secure_machine SecureVotingClientMachine
     var credential: int;
     var ballotBox: machine_handle;
     var bulletinBoard: machine_handle;
+    var requestingMachine : machine_handle;
 
     start state Init {
         entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, ballotBoxCapability:capability, bulletinBoardCapability:capability)) {
@@ -24,8 +25,9 @@ secure_machine SecureVotingClientMachine
     }
 
     state SubmitVote {
-        entry (payload: (credential : int, vote : int)) {
+        entry (payload: (credential : int, vote : int, requestingMachine : machine_handle)) {
             var secure_vote: secure_int;
+            requestingMachine = payload.requestingMachine;
             secure_vote = payload.vote;
             credential = payload.credential;
             secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = GetThis(), requestingMachineCapability = GetCapability(GetThis()));
@@ -39,7 +41,7 @@ secure_machine SecureVotingClientMachine
         entry {
             secure_send bulletinBoard, TRUSTEDeGetElectionResults, (requestingMachine = GetThis(), requestingMachineCapability = GetCapability(GetThis()));
         }
-        on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, secure_int], whoWon : int)) {
+        on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, secure_int], whoWon : secure_int)) {
             if(!(credential in payload.allVotes))
             {
                 print "ERROR: Vote not found!";
@@ -49,7 +51,9 @@ secure_machine SecureVotingClientMachine
             {
                 print "Your vote for {0} was counted", DeclassifyInt(payload.allVotes[credential]);
             }
-            print "{0} won the election", payload.whoWon;
+            print "{0} won the election", DeclassifyInt(payload.whoWon);
+            // untrusted_send requestingMachine, UNTRUSTEDGetResults, (whoWon = DeclassifyInt(payload.whoWon), myVoteCounted = true);
+            untrusted_send requestingMachine, UNTRUSTEDGetResults, DeclassifyInt(payload.whoWon);
             goto Done;
         }
     }

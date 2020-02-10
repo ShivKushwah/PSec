@@ -93,7 +93,6 @@ sgx_status_t enclave_initializeCommunicationAPI(sgx_enclave_id_t eid, int* retva
 sgx_status_t enclave_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, sgx_enclave_id_t currentEid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payload, int payload_length, int output_length, int payload_size, sgx_enclave_id_t enclaveEid);
 sgx_status_t enclave_encryptMessageExternalPublicKeyEcall(sgx_enclave_id_t eid, char* message, size_t message_length_with_null_byte, char* other_party_public_key_raw, char* output_encrypted_message, uint32_t SIZE_OF_KEY);
 sgx_status_t enclave_decryptMessageInteralPrivateKeyEcall(sgx_enclave_id_t eid, char* message, size_t message_length_with_null_byte, char* other_party_public_key_raw, char* output_encrypted_message, uint32_t SIZE_OF_KEY);
-sgx_status_t enclave_sendUntrustedMessageAPI(sgx_enclave_id_t eid, int* retval, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize, uint32_t ID_SIZE, uint32_t MESSAGE_SIZE, uint32_t MAX_PAYLOAD_SIZE);
 sgx_status_t enclave_createRsaKeyPairEcall(sgx_enclave_id_t eid, char* public_key_raw_out, char* private_key_raw_out, char* public_key_out, char* private_key_out, uint32_t KEY_SIZE);
 sgx_status_t enclave_eprint(sgx_enclave_id_t eid, char* printStr);
 sgx_status_t enclave_sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a);

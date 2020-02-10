@@ -757,34 +757,8 @@ int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMach
     
 }
 
-int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize) {
-    //TODO eventNum should be encrypted and requestingMachineIDKey should be verified with signature
-    PRT_MACHINEID receivingMachinePID;
-    ocall_print("SecureChildMachine has a PID of:");
-    char* temp = (char*) malloc(10);
-   
-        if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
-            ocall_print("Key not found");
-        }
-        snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
-        ocall_print(temp);
-        safe_free(temp);
-        receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
-    
-    
-    handle_incoming_event(atoi(event), receivingMachinePID, numArgs, payloadType, payload, payloadSize); //TODO update to untrusted send api
-}
-
 int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, int isSecureSend, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE) {
     decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, isSecureSend);
-}
-
-int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize) {
-    sendMessageHelper(requestingMachineIDKey, receivingMachineIDKey, event, numArgs, payloadType, payload, payloadSize);
-}
-
-int sendUntrustedMessageAPI(char* receivingMachineIDKey, char* eventNum, int numArgs, int payloadType, char* payload, int payloadSize, uint32_t ID_SIZE, uint32_t MAX_EVENT_SIZE, uint32_t MAX_PAYLOAD_SIZE) {
-    sendMessageHelper("", receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
 }
 
 extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)

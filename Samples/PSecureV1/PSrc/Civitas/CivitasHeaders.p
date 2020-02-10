@@ -21,7 +21,9 @@ fun CreateUSMMachineRequest(): machine_handle;
 
 event UNTRUSTEDGetVotingSSM : machine_handle;
 event UNTRUSTEDReceiveVotingSSM : machine_handle;
-event UNTRUSTEDVoteRequest : (credential : int, vote : int);
+event UNTRUSTEDVoteRequest : (credential : int, vote : int, requestingMachine : machine_handle);
+// event UNTRUSTEDGetResults : (whoWon : int, myVoteCounted : bool);
+event UNTRUSTEDGetResults : int;
 trusted event TRUSTEDeStartElection : int;
 trusted event TRUSTEDeVote : (credential : int, vote : secure_int, requestingMachine: machine_handle, requestingMachineCapability: capability);
 trusted event TRUSTEDeAddItem : (credential: int, vote: secure_int);
@@ -35,5 +37,5 @@ trusted event TRUSTEDValidateCredential : (tabulationTellerMachine : machine_han
 trusted event TRUSTEDValidCredential;
 trusted event TRUSTEDInvalidCredential;
 trusted event TRUSTEDeElectionResults : map[int, secure_int];
-trusted event TRUSTEDeRespElectionResults: (allVotes : map[int, secure_int], whoWon : int);
+trusted event TRUSTEDeRespElectionResults: (allVotes : map[int, secure_int], whoWon : secure_int);
 trusted event TRUSTEDeGetElectionResults : (requestingMachine: machine_handle, requestingMachineCapability: capability);

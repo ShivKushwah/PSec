@@ -1818,7 +1818,22 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
     handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize); //TODO shividentity
 
     #else
-    sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
+
+    PRT_MACHINEID receivingMachinePID;
+    ocall_print("SecureChildMachine has a PID of:");
+    char* temp = (char*) malloc(10);
+   
+    if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
+        ocall_print("Key not found");
+    }
+    snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
+    ocall_print(temp);
+    safe_free(temp);
+    receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+    
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize); //TODO update to untrusted send api
+
+    // sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
     #endif
     safe_free(decryptedMessage);
 
@@ -1842,6 +1857,9 @@ void PrintTuple(PRT_VALUE* tuple){
         } else if (currValueType == PRT_VALUE_KIND_FOREIGN) {
             ocall_print("String Value:");
             ocall_print( (char*)currValue->valueUnion.frgn->value);
+        } else if (currValueType == PRT_VALUE_KIND_BOOL) {
+            ocall_print("Bool Value:");
+            ocall_print_int((int)currValue->valueUnion.bl);
         }
     }
 

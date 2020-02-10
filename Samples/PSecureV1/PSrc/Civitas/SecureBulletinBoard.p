@@ -21,9 +21,9 @@ secure_machine SecureBulletinBoardMachine
         on TRUSTEDeGetElectionResults do (payload: (requestingMachine: machine_handle, requestingMachineCapability: capability)){
             var electionResultsKeys : seq[int];
             var i : int;
-            var countCandidate0 : int;
-            var countCandidate1 : int;
-            var winner : int;
+            var countCandidate0 : secure_int;
+            var countCandidate1 : secure_int;
+            var winner : secure_int;
 
             SaveCapability(payload.requestingMachineCapability);
             electionResultsKeys = keys(electionResults);
@@ -31,7 +31,7 @@ secure_machine SecureBulletinBoardMachine
             countCandidate0 = 0;
             countCandidate1 = 0;
             while (i < sizeof(electionResultsKeys)) {
-                if (DeclassifyInt(electionResults[electionResultsKeys[i]]) == 0) {
+                if (electionResults[electionResultsKeys[i]] == 0) {
                     //Vote for Candidate0
                     countCandidate0 = countCandidate0 + 1;
                 } else {
@@ -40,8 +40,8 @@ secure_machine SecureBulletinBoardMachine
                 }
                 i = i + 1;
             }
-            print "Count 0 - {0}", countCandidate0;
-            print "Count 1 - {0}", countCandidate1;
+            // print "Count 0 - {0}", countCandidate0;
+            // print "Count 1 - {0}", countCandidate1;
             if (countCandidate0 > countCandidate1) {
                 winner = 0;
             } else if (countCandidate1 > countCandidate0) {
