@@ -42,6 +42,7 @@ secure_machine SecureVotingClientMachine
             secure_send bulletinBoard, TRUSTEDeGetElectionResults, (requestingMachine = GetThis(), requestingMachineCapability = GetCapability(GetThis()));
         }
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, secure_int], whoWon : secure_int)) {
+            var winner : int;
             if(!(credential in payload.allVotes))
             {
                 print "ERROR: Vote not found!";
@@ -53,7 +54,8 @@ secure_machine SecureVotingClientMachine
             }
             print "{0} won the election", DeclassifyInt(payload.whoWon);
             // untrusted_send requestingMachine, UNTRUSTEDGetResults, (whoWon = DeclassifyInt(payload.whoWon), myVoteCounted = true);
-            untrusted_send requestingMachine, UNTRUSTEDGetResults, DeclassifyInt(payload.whoWon);
+            winner = DeclassifyInt(payload.whoWon);
+            untrusted_send requestingMachine, UNTRUSTEDGetResults, winner;
             goto Done;
         }
     }

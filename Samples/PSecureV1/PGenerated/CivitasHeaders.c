@@ -207,6 +207,9 @@ extern PRT_FUNDECL P_FUNCTION_Anon_22;
 PRT_VALUE* P_Anon_IMPL_23(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon_23;
 
+PRT_VALUE* P_Anon_IMPL_24(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern PRT_FUNDECL P_FUNCTION_Anon_24;
+
 
 PRT_EVENTDECL P_EVENT_UNTRUSTEDGetVotingSSM = 
 {
@@ -1560,24 +1563,29 @@ PRT_EVENTSETDECL P_EVENTSET_Vote_TRANS =
     NULL
 };
 
-PRT_EVENTDECL* P_Vote_DOS_INNER[] = { NULL };
+PRT_EVENTDECL* P_Vote_DOS_INNER[] = { &P_EVENT_UNTRUSTEDGetResults };
 PRT_EVENTSETDECL P_EVENTSET_Vote_DOS =
 {
-    0U,
+    1U,
     P_Vote_DOS_INNER,
     NULL
+};
+
+PRT_DODECL P_DOS_1[] =
+{
+    { 1, &P_EVENT_UNTRUSTEDGetResults, &P_FUNCTION_Anon_6 }
 };
 
 #define P_STATE_VotingUSM_Vote \
 { \
     "VotingUSM.Vote", \
     0U, \
-    0U, \
+    1U, \
     &P_EVENTSET_Vote_DEFERS, \
     &P_EVENTSET_Vote_TRANS, \
     &P_EVENTSET_Vote_DOS, \
     NULL, \
-    NULL, \
+    P_DOS_1, \
     &P_FUNCTION_Anon_5, \
     &_P_NO_OP, \
 }
@@ -1724,7 +1732,6 @@ PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp3_5 = NULL;
     PRT_VALUE* PTMP_tmp4_5 = NULL;
     PRT_VALUE* PTMP_tmp5_4 = NULL;
-    PRT_VALUE* P_VAR_P_payload = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32_11 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
@@ -1783,32 +1790,6 @@ PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return_6;
     }
     
-    PRT_UINT32 P_allowedEventIds[] = { 2 };
-    PrtFreeValue(P_VAR_P_payload); P_VAR_P_payload = NULL;
-    PRT_UINT32 P_eventId = PrtReceiveAsync(1U, P_allowedEventIds, &P_VAR_P_payload);
-    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
-        goto p_return_6;
-    }
-    if (p_this->isHalted == PRT_TRUE) {
-        PrtFreeValue(_P_GEN_retval);
-        _P_GEN_retval = NULL;
-        goto p_return_6;
-    }
-    switch (P_eventId) {
-        case 2: {
-            PRT_VALUE** P_VAR_whoWon = &P_VAR_P_payload;
-                        PrtFormatPrintf("", 1, *P_VAR_whoWon, 1, 0, " won the election");
-            
-            PrtGoto(p_this, 2U, 0);
-            
-            p_return_7: ;
-} break;
-        default: {
-            PrtAssert(PRT_FALSE, "receive returned unhandled event");
-        } break;
-    }
-    PrtFreeValue(P_VAR_P_payload); P_VAR_P_payload = NULL;
-    
 p_return_6: ;
     PrtFreeValue(PTMP_tmp0_5); PTMP_tmp0_5 = NULL;
     PrtFreeValue(PTMP_tmp1_5); PTMP_tmp1_5 = NULL;
@@ -1816,7 +1797,6 @@ p_return_6: ;
     PrtFreeValue(PTMP_tmp3_5); PTMP_tmp3_5 = NULL;
     PrtFreeValue(PTMP_tmp4_5); PTMP_tmp4_5 = NULL;
     PrtFreeValue(PTMP_tmp5_4); PTMP_tmp5_4 = NULL;
-    PrtFreeValue(P_VAR_P_payload); P_VAR_P_payload = NULL;
     return _P_GEN_retval;
 }
 
@@ -1828,7 +1808,31 @@ PRT_FUNDECL P_FUNCTION_Anon_5 =
 };
 
 
-PRT_FUNDECL* P_VotingUSM_METHODS[] = { &P_FUNCTION_Anon_4, &P_FUNCTION_Anon_5 };
+PRT_VALUE* P_Anon_IMPL_6(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE* _P_GEN_funval = NULL;
+    PRT_VALUE** _P_GEN_funargs[32];
+    PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
+    PRT_VALUE* _P_GEN_retval = NULL;
+    PRT_VALUE** P_VAR_whoWon = argRefs[0];
+    PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PrtFormatPrintf("", 1, *P_VAR_whoWon, 1, 0, " won the election");
+    
+    PrtGoto(p_this, 2U, 0);
+    
+p_return_7: ;
+    return _P_GEN_retval;
+}
+
+PRT_FUNDECL P_FUNCTION_Anon_6 =
+{
+    NULL,
+    &P_Anon_IMPL_6,
+    &P_GEND_TYPE_i
+};
+
+
+PRT_FUNDECL* P_VotingUSM_METHODS[] = { &P_FUNCTION_Anon_4, &P_FUNCTION_Anon_5, &P_FUNCTION_Anon_6 };
 
 PRT_EVENTDECL* P_VotingUSM_RECV_INNER_1[] = { &P_EVENT_TRUSTEDInvalidCredential, &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDValidateCredential, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeGetElectionResults, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetResults, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_eCloseElection, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_VotingUSM_RECV_1 =
@@ -1855,7 +1859,7 @@ PRT_MACHINEDECL P_MACHINE_VotingUSM =
     NULL,
     4U,
     3U,
-    2U,
+    3U,
     4294967295U,
     0U,
     P_VotingUSM_VARS,
@@ -1892,9 +1896,9 @@ PRT_EVENTSETDECL P_EVENTSET_Init_DOS_2 =
     NULL
 };
 
-PRT_DODECL P_DOS_1[] =
+PRT_DODECL P_DOS_2[] =
 {
-    { 0, &P_EVENT_TRUSTEDeElectionResults, &P_FUNCTION_Anon_6 }
+    { 0, &P_EVENT_TRUSTEDeElectionResults, &P_FUNCTION_Anon_7 }
 };
 
 #define P_STATE_SecureBulletinBoardMachine_Init \
@@ -1906,7 +1910,7 @@ PRT_DODECL P_DOS_1[] =
     &P_EVENTSET_Init_TRANS_2, \
     &P_EVENTSET_Init_DOS_2, \
     NULL, \
-    P_DOS_1, \
+    P_DOS_2, \
     &_P_NO_OP, \
     &_P_NO_OP, \
 }
@@ -1935,9 +1939,9 @@ PRT_EVENTSETDECL P_EVENTSET_SendResults_DOS =
     NULL
 };
 
-PRT_DODECL P_DOS_2[] =
+PRT_DODECL P_DOS_3[] =
 {
-    { 1, &P_EVENT_TRUSTEDeGetElectionResults, &P_FUNCTION_Anon_7 }
+    { 1, &P_EVENT_TRUSTEDeGetElectionResults, &P_FUNCTION_Anon_8 }
 };
 
 #define P_STATE_SecureBulletinBoardMachine_SendResults \
@@ -1949,14 +1953,14 @@ PRT_DODECL P_DOS_2[] =
     &P_EVENTSET_SendResults_TRANS, \
     &P_EVENTSET_SendResults_DOS, \
     NULL, \
-    P_DOS_2, \
+    P_DOS_3, \
     &_P_NO_OP, \
     &_P_NO_OP, \
 }
 
 PRT_STATEDECL P_SecureBulletinBoardMachine_STATES[] = { P_STATE_SecureBulletinBoardMachine_Init, P_STATE_SecureBulletinBoardMachine_SendResults };
 
-PRT_VALUE* P_Anon_IMPL_6(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_7(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -1974,15 +1978,15 @@ p_return_8: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_6 =
+PRT_FUNDECL P_FUNCTION_Anon_7 =
 {
     NULL,
-    &P_Anon_IMPL_6,
+    &P_Anon_IMPL_7,
     &P_GEND_TYPE_MKiVs
 };
 
 
-PRT_VALUE* P_Anon_IMPL_7(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -2246,15 +2250,15 @@ p_return_9: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_7 =
+PRT_FUNDECL P_FUNCTION_Anon_8 =
 {
     NULL,
-    &P_Anon_IMPL_7,
+    &P_Anon_IMPL_8,
     &P_GEND_TYPE_T2machine_handlecapability
 };
 
 
-PRT_FUNDECL* P_SecureBulletinBoardMachine_METHODS[] = { &P_FUNCTION_Anon_6, &P_FUNCTION_Anon_7 };
+PRT_FUNDECL* P_SecureBulletinBoardMachine_METHODS[] = { &P_FUNCTION_Anon_7, &P_FUNCTION_Anon_8 };
 
 PRT_EVENTDECL* P_SecureBulletinBoardMachine_RECV_INNER_1[] = { &P_EVENT_TRUSTEDInvalidCredential, &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDValidateCredential, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeGetElectionResults, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetResults, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_eCloseElection, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureBulletinBoardMachine_RECV_1 =
@@ -2337,7 +2341,7 @@ PRT_TRANSDECL P_TRANS_1[] =
     &P_EVENTSET_Init_DOS_3, \
     P_TRANS_1, \
     NULL, \
-    &P_FUNCTION_Anon_8, \
+    &P_FUNCTION_Anon_9, \
     &_P_NO_OP, \
 }
 
@@ -2365,9 +2369,9 @@ PRT_EVENTSETDECL P_EVENTSET_WaitForVotes_DOS =
     NULL
 };
 
-PRT_DODECL P_DOS_3[] =
+PRT_DODECL P_DOS_4[] =
 {
-    { 1, &P_EVENT_TRUSTEDeVote, &P_FUNCTION_Anon_10 }
+    { 1, &P_EVENT_TRUSTEDeVote, &P_FUNCTION_Anon_11 }
 };
 
 #define P_STATE_SecureBallotBoxMachine_WaitForVotes \
@@ -2379,8 +2383,8 @@ PRT_DODECL P_DOS_3[] =
     &P_EVENTSET_WaitForVotes_TRANS, \
     &P_EVENTSET_WaitForVotes_DOS, \
     NULL, \
-    P_DOS_3, \
-    &P_FUNCTION_Anon_9, \
+    P_DOS_4, \
+    &P_FUNCTION_Anon_10, \
     &_P_NO_OP, \
 }
 
@@ -2418,13 +2422,13 @@ PRT_EVENTSETDECL P_EVENTSET_VoteCounting_DOS =
     &P_EVENTSET_VoteCounting_DOS, \
     NULL, \
     NULL, \
-    &P_FUNCTION_Anon_11, \
+    &P_FUNCTION_Anon_12, \
     &_P_NO_OP, \
 }
 
 PRT_STATEDECL P_SecureBallotBoxMachine_STATES[] = { P_STATE_SecureBallotBoxMachine_Init, P_STATE_SecureBallotBoxMachine_WaitForVotes, P_STATE_SecureBallotBoxMachine_VoteCounting };
 
-PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -2576,15 +2580,15 @@ p_return_10: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_8 =
+PRT_FUNDECL P_FUNCTION_Anon_9 =
 {
     NULL,
-    &P_Anon_IMPL_8,
+    &P_Anon_IMPL_9,
     &P_GEND_TYPE_T4machine_handlecapabilitymachine_handlecapability
 };
 
 
-PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -2605,15 +2609,15 @@ p_return_11: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_9 =
+PRT_FUNDECL P_FUNCTION_Anon_10 =
 {
     NULL,
-    &P_Anon_IMPL_9,
+    &P_Anon_IMPL_10,
     &P_GEND_TYPE_i
 };
 
 
-PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_11(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -2631,7 +2635,7 @@ PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp8_6 = NULL;
     PRT_VALUE* PTMP_tmp9_5 = NULL;
     PRT_VALUE* PTMP_tmp10_5 = NULL;
-    PRT_VALUE* P_VAR_P_payload_1 = NULL;
+    PRT_VALUE* P_VAR_P_payload = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32_16 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
@@ -2687,9 +2691,9 @@ PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return_12;
     }
     
-    PRT_UINT32 P_allowedEventIds_1[] = { 3 };
-    PrtFreeValue(P_VAR_P_payload_1); P_VAR_P_payload_1 = NULL;
-    PRT_UINT32 P_eventId_1 = PrtReceiveAsync(1U, P_allowedEventIds_1, &P_VAR_P_payload_1);
+    PRT_UINT32 P_allowedEventIds[] = { 2 };
+    PrtFreeValue(P_VAR_P_payload); P_VAR_P_payload = NULL;
+    PRT_UINT32 P_eventId = PrtReceiveAsync(1U, P_allowedEventIds, &P_VAR_P_payload);
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_12;
     }
@@ -2698,9 +2702,9 @@ PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         _P_GEN_retval = NULL;
         goto p_return_12;
     }
-    switch (P_eventId_1) {
-        case 3: {
-            PRT_VALUE** P_VAR_result = &P_VAR_P_payload_1;
+    switch (P_eventId) {
+        case 2: {
+            PRT_VALUE** P_VAR_result = &P_VAR_P_payload;
             PRT_VALUE P_LIT_INT32_17 = { PRT_VALUE_KIND_INT, { .nt = 0 } };
             PRT_VALUE P_LIT_INT32_18 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
                         if (PrtPrimGetBool(*P_VAR_result))
@@ -2755,7 +2759,7 @@ PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
             PrtAssert(PRT_FALSE, "receive returned unhandled event");
         } break;
     }
-    PrtFreeValue(P_VAR_P_payload_1); P_VAR_P_payload_1 = NULL;
+    PrtFreeValue(P_VAR_P_payload); P_VAR_P_payload = NULL;
     
     PRT_VALUE** P_LVALUE_133 = &(PTMP_tmp10_5);
     PrtFreeValue(*P_LVALUE_133);
@@ -2784,19 +2788,19 @@ p_return_12: ;
     PrtFreeValue(PTMP_tmp8_6); PTMP_tmp8_6 = NULL;
     PrtFreeValue(PTMP_tmp9_5); PTMP_tmp9_5 = NULL;
     PrtFreeValue(PTMP_tmp10_5); PTMP_tmp10_5 = NULL;
-    PrtFreeValue(P_VAR_P_payload_1); P_VAR_P_payload_1 = NULL;
+    PrtFreeValue(P_VAR_P_payload); P_VAR_P_payload = NULL;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_10 =
+PRT_FUNDECL P_FUNCTION_Anon_11 =
 {
     NULL,
-    &P_Anon_IMPL_10,
+    &P_Anon_IMPL_11,
     &P_GEND_TYPE_T4ismachine_handlecapability
 };
 
 
-PRT_VALUE* P_Anon_IMPL_11(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_12(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -2809,7 +2813,7 @@ PRT_VALUE* P_Anon_IMPL_11(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp4_9 = NULL;
     PRT_VALUE* PTMP_tmp5_8 = NULL;
     PRT_VALUE* PTMP_tmp6_7 = NULL;
-    PRT_VALUE* P_VAR_P_payload_2 = NULL;
+    PRT_VALUE* P_VAR_P_payload_1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32_19 = { PRT_VALUE_KIND_INT, { .nt = 0 } };
@@ -2835,9 +2839,9 @@ PRT_VALUE* P_Anon_IMPL_11(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return_14;
     }
     
-    PRT_UINT32 P_allowedEventIds_2[] = { 4 };
-    PrtFreeValue(P_VAR_P_payload_2); P_VAR_P_payload_2 = NULL;
-    PRT_UINT32 P_eventId_2 = PrtReceiveAsync(1U, P_allowedEventIds_2, &P_VAR_P_payload_2);
+    PRT_UINT32 P_allowedEventIds_1[] = { 3 };
+    PrtFreeValue(P_VAR_P_payload_1); P_VAR_P_payload_1 = NULL;
+    PRT_UINT32 P_eventId_1 = PrtReceiveAsync(1U, P_allowedEventIds_1, &P_VAR_P_payload_1);
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_14;
     }
@@ -2846,9 +2850,9 @@ PRT_VALUE* P_Anon_IMPL_11(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         _P_GEN_retval = NULL;
         goto p_return_14;
     }
-    switch (P_eventId_2) {
-        case 4: {
-            PRT_VALUE** P_VAR_payload_8 = &P_VAR_P_payload_2;
+    switch (P_eventId_1) {
+        case 3: {
+            PRT_VALUE** P_VAR_payload_8 = &P_VAR_P_payload_1;
             PRT_VALUE P_LIT_INT32_20 = { PRT_VALUE_KIND_INT, { .nt = 0 } };
             PRT_VALUE P_LIT_INT32_21 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
                         PrtPrintf("Sending votes to Secure Tabulation Teller");
@@ -2894,7 +2898,7 @@ PRT_VALUE* P_Anon_IMPL_11(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
             PrtAssert(PRT_FALSE, "receive returned unhandled event");
         } break;
     }
-    PrtFreeValue(P_VAR_P_payload_2); P_VAR_P_payload_2 = NULL;
+    PrtFreeValue(P_VAR_P_payload_1); P_VAR_P_payload_1 = NULL;
     
 p_return_14: ;
     PrtFreeValue(PTMP_tmp0_9); PTMP_tmp0_9 = NULL;
@@ -2904,19 +2908,19 @@ p_return_14: ;
     PrtFreeValue(PTMP_tmp4_9); PTMP_tmp4_9 = NULL;
     PrtFreeValue(PTMP_tmp5_8); PTMP_tmp5_8 = NULL;
     PrtFreeValue(PTMP_tmp6_7); PTMP_tmp6_7 = NULL;
-    PrtFreeValue(P_VAR_P_payload_2); P_VAR_P_payload_2 = NULL;
+    PrtFreeValue(P_VAR_P_payload_1); P_VAR_P_payload_1 = NULL;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_11 =
+PRT_FUNDECL P_FUNCTION_Anon_12 =
 {
     NULL,
-    &P_Anon_IMPL_11,
+    &P_Anon_IMPL_12,
     NULL
 };
 
 
-PRT_FUNDECL* P_SecureBallotBoxMachine_METHODS[] = { &P_FUNCTION_Anon_8, &P_FUNCTION_Anon_9, &P_FUNCTION_Anon_10, &P_FUNCTION_Anon_11 };
+PRT_FUNDECL* P_SecureBallotBoxMachine_METHODS[] = { &P_FUNCTION_Anon_9, &P_FUNCTION_Anon_10, &P_FUNCTION_Anon_11, &P_FUNCTION_Anon_12 };
 
 PRT_EVENTDECL* P_SecureBallotBoxMachine_RECV_INNER_1[] = { &P_EVENT_TRUSTEDInvalidCredential, &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDValidateCredential, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeGetElectionResults, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetResults, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_eCloseElection, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureBallotBoxMachine_RECV_1 =
@@ -2993,7 +2997,7 @@ PRT_EVENTSETDECL P_EVENTSET_Init_DOS_4 =
     &P_EVENTSET_Init_DOS_4, \
     NULL, \
     NULL, \
-    &P_FUNCTION_Anon_12, \
+    &P_FUNCTION_Anon_13, \
     &_P_NO_OP, \
 }
 
@@ -3021,10 +3025,10 @@ PRT_EVENTSETDECL P_EVENTSET_WaitForRequests_DOS =
     NULL
 };
 
-PRT_DODECL P_DOS_4[] =
+PRT_DODECL P_DOS_5[] =
 {
-    { 1, &P_EVENT_TRUSTEDeAddItem, &P_FUNCTION_Anon_13 },
-    { 1, &P_EVENT_TRUSTEDeGetLog, &P_FUNCTION_Anon_14 }
+    { 1, &P_EVENT_TRUSTEDeAddItem, &P_FUNCTION_Anon_14 },
+    { 1, &P_EVENT_TRUSTEDeGetLog, &P_FUNCTION_Anon_15 }
 };
 
 #define P_STATE_SecureTamperEvidentLogMachine_WaitForRequests \
@@ -3036,14 +3040,14 @@ PRT_DODECL P_DOS_4[] =
     &P_EVENTSET_WaitForRequests_TRANS, \
     &P_EVENTSET_WaitForRequests_DOS, \
     NULL, \
-    P_DOS_4, \
+    P_DOS_5, \
     &_P_NO_OP, \
     &_P_NO_OP, \
 }
 
 PRT_STATEDECL P_SecureTamperEvidentLogMachine_STATES[] = { P_STATE_SecureTamperEvidentLogMachine_Init, P_STATE_SecureTamperEvidentLogMachine_WaitForRequests };
 
-PRT_VALUE* P_Anon_IMPL_12(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_13(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -3090,15 +3094,15 @@ p_return_16: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_12 =
+PRT_FUNDECL P_FUNCTION_Anon_13 =
 {
     NULL,
-    &P_Anon_IMPL_12,
+    &P_Anon_IMPL_13,
     &P_GEND_TYPE_T2machine_handlecapability_1
 };
 
 
-PRT_VALUE* P_Anon_IMPL_13(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_14(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -3173,15 +3177,15 @@ p_return_17: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_13 =
+PRT_FUNDECL P_FUNCTION_Anon_14 =
 {
     NULL,
-    &P_Anon_IMPL_13,
+    &P_Anon_IMPL_14,
     &P_GEND_TYPE_T2is
 };
 
 
-PRT_VALUE* P_Anon_IMPL_14(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_15(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -3227,15 +3231,15 @@ p_return_18: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_14 =
+PRT_FUNDECL P_FUNCTION_Anon_15 =
 {
     NULL,
-    &P_Anon_IMPL_14,
+    &P_Anon_IMPL_15,
     NULL
 };
 
 
-PRT_FUNDECL* P_SecureTamperEvidentLogMachine_METHODS[] = { &P_FUNCTION_Anon_12, &P_FUNCTION_Anon_13, &P_FUNCTION_Anon_14 };
+PRT_FUNDECL* P_SecureTamperEvidentLogMachine_METHODS[] = { &P_FUNCTION_Anon_13, &P_FUNCTION_Anon_14, &P_FUNCTION_Anon_15 };
 
 PRT_EVENTDECL* P_SecureTamperEvidentLogMachine_RECV_INNER_1[] = { &P_EVENT_TRUSTEDInvalidCredential, &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDValidateCredential, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeGetElectionResults, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetResults, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_eCloseElection, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureTamperEvidentLogMachine_RECV_1 =
@@ -3301,9 +3305,9 @@ PRT_EVENTSETDECL P_EVENTSET_Init_DOS_5 =
     NULL
 };
 
-PRT_DODECL P_DOS_5[] =
+PRT_DODECL P_DOS_6[] =
 {
-    { 0, &P_EVENT_TRUSTEDeAllVotes, &P_FUNCTION_Anon_16 }
+    { 0, &P_EVENT_TRUSTEDeAllVotes, &P_FUNCTION_Anon_17 }
 };
 
 #define P_STATE_SecureTabulationTellerMachine_Init \
@@ -3315,8 +3319,8 @@ PRT_DODECL P_DOS_5[] =
     &P_EVENTSET_Init_TRANS_5, \
     &P_EVENTSET_Init_DOS_5, \
     NULL, \
-    P_DOS_5, \
-    &P_FUNCTION_Anon_15, \
+    P_DOS_6, \
+    &P_FUNCTION_Anon_16, \
     &_P_NO_OP, \
 }
 
@@ -3354,13 +3358,13 @@ PRT_EVENTSETDECL P_EVENTSET_DoTally_DOS =
     &P_EVENTSET_DoTally_DOS, \
     NULL, \
     NULL, \
-    &P_FUNCTION_Anon_17, \
+    &P_FUNCTION_Anon_18, \
     &_P_NO_OP, \
 }
 
 PRT_STATEDECL P_SecureTabulationTellerMachine_STATES[] = { P_STATE_SecureTabulationTellerMachine_Init, P_STATE_SecureTabulationTellerMachine_DoTally };
 
-PRT_VALUE* P_Anon_IMPL_15(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_16(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -3437,15 +3441,15 @@ p_return_19: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_15 =
+PRT_FUNDECL P_FUNCTION_Anon_16 =
 {
     NULL,
-    &P_Anon_IMPL_15,
+    &P_Anon_IMPL_16,
     &P_GEND_TYPE_T4machine_handlecapabilitymachine_handlecapability
 };
 
 
-PRT_VALUE* P_Anon_IMPL_16(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_17(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -3473,15 +3477,15 @@ p_return_20: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_16 =
+PRT_FUNDECL P_FUNCTION_Anon_17 =
 {
     NULL,
-    &P_Anon_IMPL_16,
+    &P_Anon_IMPL_17,
     &P_GEND_TYPE_T2iST2is
 };
 
 
-PRT_VALUE* P_Anon_IMPL_17(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_18(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -3508,7 +3512,7 @@ PRT_VALUE* P_Anon_IMPL_17(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp16_1 = NULL;
     PRT_VALUE* PTMP_tmp17_1 = NULL;
     PRT_VALUE* PTMP_tmp18_1 = NULL;
-    PRT_VALUE* P_VAR_P_payload_3 = NULL;
+    PRT_VALUE* P_VAR_P_payload_2 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32_24 = { PRT_VALUE_KIND_INT, { .nt = 0 } };
@@ -3614,9 +3618,9 @@ PRT_VALUE* P_Anon_IMPL_17(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
             goto p_return_21;
         }
         
-        PRT_UINT32 P_allowedEventIds_3[] = { 5, 6 };
-        PrtFreeValue(P_VAR_P_payload_3); P_VAR_P_payload_3 = NULL;
-        PRT_UINT32 P_eventId_3 = PrtReceiveAsync(2U, P_allowedEventIds_3, &P_VAR_P_payload_3);
+        PRT_UINT32 P_allowedEventIds_2[] = { 4, 5 };
+        PrtFreeValue(P_VAR_P_payload_2); P_VAR_P_payload_2 = NULL;
+        PRT_UINT32 P_eventId_2 = PrtReceiveAsync(2U, P_allowedEventIds_2, &P_VAR_P_payload_2);
         if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
             goto p_return_21;
         }
@@ -3625,8 +3629,8 @@ PRT_VALUE* P_Anon_IMPL_17(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
             _P_GEN_retval = NULL;
             goto p_return_21;
         }
-        switch (P_eventId_3) {
-            case 5: {
+        switch (P_eventId_2) {
+            case 4: {
                                 PRT_VALUE** P_LVALUE_174 = &(PTMP_tmp11_4);
                 PrtFreeValue(*P_LVALUE_174);
                 *P_LVALUE_174 = PrtSeqGet(p_this->varValues[2], P_VAR_i_3);
@@ -3652,14 +3656,14 @@ PRT_VALUE* P_Anon_IMPL_17(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
                 
                 p_return_22: ;
 } break;
-            case 6: {
+            case 5: {
                                 p_return_23: ;
 } break;
             default: {
                 PrtAssert(PRT_FALSE, "receive returned unhandled event");
             } break;
         }
-        PrtFreeValue(P_VAR_P_payload_3); P_VAR_P_payload_3 = NULL;
+        PrtFreeValue(P_VAR_P_payload_2); P_VAR_P_payload_2 = NULL;
         
         PRT_VALUE** P_LVALUE_179 = &(PTMP_tmp15_2);
         PrtFreeValue(*P_LVALUE_179);
@@ -3724,19 +3728,19 @@ p_return_21: ;
     PrtFreeValue(PTMP_tmp16_1); PTMP_tmp16_1 = NULL;
     PrtFreeValue(PTMP_tmp17_1); PTMP_tmp17_1 = NULL;
     PrtFreeValue(PTMP_tmp18_1); PTMP_tmp18_1 = NULL;
-    PrtFreeValue(P_VAR_P_payload_3); P_VAR_P_payload_3 = NULL;
+    PrtFreeValue(P_VAR_P_payload_2); P_VAR_P_payload_2 = NULL;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_17 =
+PRT_FUNDECL P_FUNCTION_Anon_18 =
 {
     NULL,
-    &P_Anon_IMPL_17,
+    &P_Anon_IMPL_18,
     NULL
 };
 
 
-PRT_FUNDECL* P_SecureTabulationTellerMachine_METHODS[] = { &P_FUNCTION_Anon_15, &P_FUNCTION_Anon_16, &P_FUNCTION_Anon_17 };
+PRT_FUNDECL* P_SecureTabulationTellerMachine_METHODS[] = { &P_FUNCTION_Anon_16, &P_FUNCTION_Anon_17, &P_FUNCTION_Anon_18 };
 
 PRT_EVENTDECL* P_SecureTabulationTellerMachine_RECV_INNER_1[] = { &P_EVENT_TRUSTEDInvalidCredential, &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDValidateCredential, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeGetElectionResults, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetResults, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_eCloseElection, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureTabulationTellerMachine_RECV_1 =
@@ -3813,7 +3817,7 @@ PRT_EVENTSETDECL P_EVENTSET_Init_DOS_6 =
     &P_EVENTSET_Init_DOS_6, \
     NULL, \
     NULL, \
-    &P_FUNCTION_Anon_18, \
+    &P_FUNCTION_Anon_19, \
     &_P_NO_OP, \
 }
 
@@ -3886,7 +3890,7 @@ PRT_EVENTSETDECL P_EVENTSET_SubmitVote_DOS =
 
 PRT_TRANSDECL P_TRANS_3[] =
 {
-    { 2, &P_EVENT_TRUSTEDeRespConfirmVote, 3, &P_FUNCTION_Anon_20 }
+    { 2, &P_EVENT_TRUSTEDeRespConfirmVote, 3, &P_FUNCTION_Anon_21 }
 };
 
 #define P_STATE_SecureVotingClientMachine_SubmitVote \
@@ -3899,7 +3903,7 @@ PRT_TRANSDECL P_TRANS_3[] =
     &P_EVENTSET_SubmitVote_DOS, \
     P_TRANS_3, \
     NULL, \
-    &P_FUNCTION_Anon_19, \
+    &P_FUNCTION_Anon_20, \
     &_P_NO_OP, \
 }
 
@@ -3927,9 +3931,9 @@ PRT_EVENTSETDECL P_EVENTSET_ValidateResults_DOS =
     NULL
 };
 
-PRT_DODECL P_DOS_6[] =
+PRT_DODECL P_DOS_7[] =
 {
-    { 3, &P_EVENT_TRUSTEDeRespElectionResults, &P_FUNCTION_Anon_22 }
+    { 3, &P_EVENT_TRUSTEDeRespElectionResults, &P_FUNCTION_Anon_23 }
 };
 
 #define P_STATE_SecureVotingClientMachine_ValidateResults \
@@ -3941,8 +3945,8 @@ PRT_DODECL P_DOS_6[] =
     &P_EVENTSET_ValidateResults_TRANS, \
     &P_EVENTSET_ValidateResults_DOS, \
     NULL, \
-    P_DOS_6, \
-    &P_FUNCTION_Anon_21, \
+    P_DOS_7, \
+    &P_FUNCTION_Anon_22, \
     &_P_NO_OP, \
 }
 
@@ -3980,13 +3984,13 @@ PRT_EVENTSETDECL P_EVENTSET_Done_DOS_1 =
     &P_EVENTSET_Done_DOS_1, \
     NULL, \
     NULL, \
-    &P_FUNCTION_Anon_23, \
+    &P_FUNCTION_Anon_24, \
     &_P_NO_OP, \
 }
 
 PRT_STATEDECL P_SecureVotingClientMachine_STATES[] = { P_STATE_SecureVotingClientMachine_Init, P_STATE_SecureVotingClientMachine_WaitForVote, P_STATE_SecureVotingClientMachine_SubmitVote, P_STATE_SecureVotingClientMachine_ValidateResults, P_STATE_SecureVotingClientMachine_Done };
 
-PRT_VALUE* P_Anon_IMPL_18(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_19(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -4065,15 +4069,15 @@ p_return_24: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_18 =
+PRT_FUNDECL P_FUNCTION_Anon_19 =
 {
     NULL,
-    &P_Anon_IMPL_18,
+    &P_Anon_IMPL_19,
     &P_GEND_TYPE_T4machine_handlemachine_handlecapabilitycapability
 };
 
 
-PRT_VALUE* P_Anon_IMPL_19(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_20(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -4215,15 +4219,15 @@ p_return_25: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_19 =
+PRT_FUNDECL P_FUNCTION_Anon_20 =
 {
     NULL,
-    &P_Anon_IMPL_19,
+    &P_Anon_IMPL_20,
     &P_GEND_TYPE_T3iimachine_handle
 };
 
 
-PRT_VALUE* P_Anon_IMPL_20(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_21(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -4236,15 +4240,15 @@ p_return_26: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_20 =
+PRT_FUNDECL P_FUNCTION_Anon_21 =
 {
     NULL,
-    &P_Anon_IMPL_20,
+    &P_Anon_IMPL_21,
     NULL
 };
 
 
-PRT_VALUE* P_Anon_IMPL_21(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_22(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -4332,21 +4336,22 @@ p_return_27: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_21 =
+PRT_FUNDECL P_FUNCTION_Anon_22 =
 {
     NULL,
-    &P_Anon_IMPL_21,
+    &P_Anon_IMPL_22,
     NULL
 };
 
 
-PRT_VALUE* P_Anon_IMPL_22(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_23(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE** P_VAR_payload_15 = argRefs[0];
+    PRT_VALUE* P_VAR_winner_1 = PrtMkDefaultValue(&P_GEND_TYPE_i);
     PRT_VALUE* PTMP_tmp0_19 = NULL;
     PRT_VALUE* PTMP_tmp1_18 = NULL;
     PRT_VALUE* PTMP_tmp2_17 = NULL;
@@ -4360,6 +4365,7 @@ PRT_VALUE* P_Anon_IMPL_22(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp10_8 = NULL;
     PRT_VALUE* PTMP_tmp11_5 = NULL;
     PRT_VALUE* PTMP_tmp12_4 = NULL;
+    PRT_VALUE* PTMP_tmp13_4 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32_28 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
@@ -4436,19 +4442,11 @@ PRT_VALUE* P_Anon_IMPL_22(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_219 = &(PTMP_tmp9_8);
     PrtFreeValue(*P_LVALUE_219);
-    *P_LVALUE_219 = PrtCloneValue(p_this->varValues[3]);
+    *P_LVALUE_219 = PrtTupleGet(*P_VAR_payload_15, 1);
     
     PRT_VALUE** P_LVALUE_220 = &(PTMP_tmp10_8);
     PrtFreeValue(*P_LVALUE_220);
-    *P_LVALUE_220 = PrtCloneValue((&P_EVENT_UNTRUSTEDGetResults.value));
-    
-    PRT_VALUE** P_LVALUE_221 = &(PTMP_tmp11_5);
-    PrtFreeValue(*P_LVALUE_221);
-    *P_LVALUE_221 = PrtTupleGet(*P_VAR_payload_15, 1);
-    
-    PRT_VALUE** P_LVALUE_222 = &(PTMP_tmp12_4);
-    PrtFreeValue(*P_LVALUE_222);
-    *P_LVALUE_222 = ((_P_GEN_funargs[0] = &(PTMP_tmp11_5)), (_P_GEN_funval = P_DeclassifyInt_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp11_5), PTMP_tmp11_5 = NULL), (_P_GEN_funval));
+    *P_LVALUE_220 = ((_P_GEN_funargs[0] = &(PTMP_tmp9_8)), (_P_GEN_funval = P_DeclassifyInt_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp9_8), PTMP_tmp9_8 = NULL), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_28;
     }
@@ -4458,11 +4456,30 @@ PRT_VALUE* P_Anon_IMPL_22(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         goto p_return_28;
     }
     
+    {
+        PRT_VALUE** P_LVALUE_221 = &(P_VAR_winner_1);
+        PrtFreeValue(*P_LVALUE_221);
+        *P_LVALUE_221 = PTMP_tmp10_8;
+        PTMP_tmp10_8 = NULL;
+    }
+    
+    PRT_VALUE** P_LVALUE_222 = &(PTMP_tmp11_5);
+    PrtFreeValue(*P_LVALUE_222);
+    *P_LVALUE_222 = PrtCloneValue(p_this->varValues[3]);
+    
+    PRT_VALUE** P_LVALUE_223 = &(PTMP_tmp12_4);
+    PrtFreeValue(*P_LVALUE_223);
+    *P_LVALUE_223 = PrtCloneValue((&P_EVENT_UNTRUSTEDGetResults.value));
+    
+    PRT_VALUE** P_LVALUE_224 = &(PTMP_tmp13_4);
+    PrtFreeValue(*P_LVALUE_224);
+    *P_LVALUE_224 = PrtCloneValue(P_VAR_winner_1);
+    
     PRT_VALUE* P_PTMP_tmp_17 = PrtCloneValue(&(P_LIT_INT32_28));
-    _P_GEN_funargs[0] = &(PTMP_tmp9_8);
-    _P_GEN_funargs[1] = &(PTMP_tmp10_8);
+    _P_GEN_funargs[0] = &(PTMP_tmp11_5);
+    _P_GEN_funargs[1] = &(PTMP_tmp12_4);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_17);
-    _P_GEN_funargs[3] = &(PTMP_tmp12_4);
+    _P_GEN_funargs[3] = &(PTMP_tmp13_4);
     PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_28;
@@ -4476,6 +4493,7 @@ PRT_VALUE* P_Anon_IMPL_22(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PrtGoto(p_this, 4U, 0);
     
 p_return_28: ;
+    PrtFreeValue(P_VAR_winner_1); P_VAR_winner_1 = NULL;
     PrtFreeValue(PTMP_tmp0_19); PTMP_tmp0_19 = NULL;
     PrtFreeValue(PTMP_tmp1_18); PTMP_tmp1_18 = NULL;
     PrtFreeValue(PTMP_tmp2_17); PTMP_tmp2_17 = NULL;
@@ -4489,18 +4507,19 @@ p_return_28: ;
     PrtFreeValue(PTMP_tmp10_8); PTMP_tmp10_8 = NULL;
     PrtFreeValue(PTMP_tmp11_5); PTMP_tmp11_5 = NULL;
     PrtFreeValue(PTMP_tmp12_4); PTMP_tmp12_4 = NULL;
+    PrtFreeValue(PTMP_tmp13_4); PTMP_tmp13_4 = NULL;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_22 =
+PRT_FUNDECL P_FUNCTION_Anon_23 =
 {
     NULL,
-    &P_Anon_IMPL_22,
+    &P_Anon_IMPL_23,
     &P_GEND_TYPE_T2MKiVss
 };
 
 
-PRT_VALUE* P_Anon_IMPL_23(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+PRT_VALUE* P_Anon_IMPL_24(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE* _P_GEN_funval = NULL;
     PRT_VALUE** _P_GEN_funargs[32];
@@ -4511,9 +4530,9 @@ PRT_VALUE* P_Anon_IMPL_23(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PrtPrintf("Operation successfully performed, closing client safely");
     
-    PRT_VALUE** P_LVALUE_223 = &(PTMP_tmp0_20);
-    PrtFreeValue(*P_LVALUE_223);
-    *P_LVALUE_223 = PrtCloneValue((&_P_EVENT_HALT_STRUCT.value));
+    PRT_VALUE** P_LVALUE_225 = &(PTMP_tmp0_20);
+    PrtFreeValue(*P_LVALUE_225);
+    *P_LVALUE_225 = PrtCloneValue((&_P_EVENT_HALT_STRUCT.value));
     
     PrtRaise(p_this, PTMP_tmp0_20, 0);
     *(&(PTMP_tmp0_20)) = NULL;
@@ -4524,15 +4543,15 @@ p_return_29: ;
     return _P_GEN_retval;
 }
 
-PRT_FUNDECL P_FUNCTION_Anon_23 =
+PRT_FUNDECL P_FUNCTION_Anon_24 =
 {
     NULL,
-    &P_Anon_IMPL_23,
+    &P_Anon_IMPL_24,
     NULL
 };
 
 
-PRT_FUNDECL* P_SecureVotingClientMachine_METHODS[] = { &P_FUNCTION_Anon_18, &P_FUNCTION_Anon_19, &P_FUNCTION_Anon_20, &P_FUNCTION_Anon_21, &P_FUNCTION_Anon_22, &P_FUNCTION_Anon_23 };
+PRT_FUNDECL* P_SecureVotingClientMachine_METHODS[] = { &P_FUNCTION_Anon_19, &P_FUNCTION_Anon_20, &P_FUNCTION_Anon_21, &P_FUNCTION_Anon_22, &P_FUNCTION_Anon_23, &P_FUNCTION_Anon_24 };
 
 PRT_EVENTDECL* P_SecureVotingClientMachine_RECV_INNER_1[] = { &P_EVENT_TRUSTEDInvalidCredential, &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDValidateCredential, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeGetElectionResults, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_UNTRUSTEDGetResults, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_eCloseElection, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_SecureVotingClientMachine_RECV_1 =
@@ -4571,7 +4590,7 @@ PRT_MACHINEDECL P_MACHINE_SecureVotingClientMachine =
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
 PRT_TYPE* P_TYPEDEF_machine_handle = &P_GEND_TYPE_machine_handle;
 PRT_TYPE* P_TYPEDEF_capability = &P_GEND_TYPE_capability;
-PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_UNTRUSTEDGetResults, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDInvalidCredential, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_eCloseElection, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDValidateCredential, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeGetElectionResults };
+PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDInvalidCredential, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_UNTRUSTEDGetResults, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_eCloseElection, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDValidateCredential, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeGetElectionResults };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_InitializerMachine, &P_MACHINE_SecureSupervisorMachine, &P_MACHINE_VotingUSM, &P_MACHINE_SecureBulletinBoardMachine, &P_MACHINE_SecureBallotBoxMachine, &P_MACHINE_SecureTamperEvidentLogMachine, &P_MACHINE_SecureTabulationTellerMachine, &P_MACHINE_SecureVotingClientMachine };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_InitializerMachine, &P_I_SecureSupervisorMachine, &P_I_VotingUSM, &P_I_SecureBulletinBoardMachine, &P_I_SecureBallotBoxMachine, &P_I_SecureTamperEvidentLogMachine, &P_I_SecureTabulationTellerMachine, &P_I_SecureVotingClientMachine };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
