@@ -130,8 +130,6 @@ PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -419,14 +417,6 @@ PRT_FUNDECL P_FUNCTION_DeclassifyInt =
 {
     "DeclassifyInt",
     &P_DeclassifyInt_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild =
-{
-    "CreateMachineSecureChild",
-    &P_CreateMachineSecureChild_IMPL,
     NULL
 };
 

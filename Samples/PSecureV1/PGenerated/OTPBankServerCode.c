@@ -59,10 +59,25 @@ static PRT_FOREIGNTYPEDECL P_capability = {
     P_TOSTRING_capability_IMPL,
 };
 PRT_TYPE P_GEND_TYPE_capability = { PRT_KIND_FOREIGN, { .foreignType = &P_capability } };
+extern PRT_UINT64 P_MKDEF_secure_machine_handle_IMPL(void);
+extern PRT_UINT64 P_CLONE_secure_machine_handle_IMPL(PRT_UINT64);
+extern void P_FREE_secure_machine_handle_IMPL(PRT_UINT64);
+extern PRT_UINT32 P_GETHASHCODE_secure_machine_handle_IMPL(PRT_UINT64);
+extern PRT_BOOLEAN P_ISEQUAL_secure_machine_handle_IMPL(PRT_UINT64, PRT_UINT64);
+extern PRT_STRING P_TOSTRING_secure_machine_handle_IMPL(PRT_UINT64);
+static PRT_FOREIGNTYPEDECL P_secure_machine_handle = {
+    0U,
+    "secure_machine_handle",
+    P_MKDEF_secure_machine_handle_IMPL,
+    P_CLONE_secure_machine_handle_IMPL,
+    P_FREE_secure_machine_handle_IMPL,
+    P_GETHASHCODE_secure_machine_handle_IMPL,
+    P_ISEQUAL_secure_machine_handle_IMPL,
+    P_TOSTRING_secure_machine_handle_IMPL,
+};
+PRT_TYPE P_GEND_TYPE_secure_machine_handle = { PRT_KIND_FOREIGN, { .foreignType = &P_secure_machine_handle } };
 
 // Function implementation prototypes:
-PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -200,14 +215,6 @@ PRT_EVENTDECL P_EVENT_AuthFailure =
     4294967295U,
     &P_GEND_TYPE_n
 };
-
-PRT_FUNDECL P_FUNCTION_CreateMachineSecureChild =
-{
-    "CreateMachineSecureChild",
-    &P_CreateMachineSecureChild_IMPL,
-    NULL
-};
-
 
 PRT_FUNDECL P_FUNCTION_PrintString =
 {
@@ -2159,11 +2166,12 @@ PRT_MACHINEDECL P_MACHINE_ClientWebBrowser =
 PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
 PRT_TYPE* P_TYPEDEF_machine_handle = &P_GEND_TYPE_machine_handle;
 PRT_TYPE* P_TYPEDEF_capability = &P_GEND_TYPE_capability;
+PRT_TYPE* P_TYPEDEF_secure_machine_handle = &P_GEND_TYPE_secure_machine_handle;
 PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_OTPCodeEvent, &P_EVENT_AuthSuccess, &P_EVENT_AuthFailure, &P_EVENT_BankPublicIDEvent, &P_EVENT_PublicIDEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_AuthenticateRequest };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_UntrustedInitializer, &P_MACHINE_TrustedInitializer, &P_MACHINE_BankEnclave, &P_MACHINE_ClientEnclave, &P_MACHINE_ClientWebBrowser };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_UntrustedInitializer, &P_I_TrustedInitializer, &P_I_BankEnclave, &P_I_ClientEnclave, &P_I_ClientWebBrowser };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
-PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_machine_handle, &P_StringType, &P_capability };
+PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_machine_handle, &P_StringType, &P_capability, &P_secure_machine_handle };
 int P_DefaultImpl_LME_0[] = { -1,1,-1,-1,-1 };
 int P_DefaultImpl_LME_1[] = { -1,-1,2,-1,4 };
 int P_DefaultImpl_LME_2[] = { -1,-1,-1,3,-1 };
@@ -2176,7 +2184,7 @@ PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl = {
     5U,
     5U,
     0U,
-    3U,
+    4U,
     P_ALL_EVENTS,
     P_ALL_MACHINES,
     P_ALL_INTERFACES,

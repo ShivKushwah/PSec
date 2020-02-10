@@ -2248,3 +2248,46 @@ extern "C" PRT_UINT64 P_CLONE_capability_IMPL(PRT_UINT64 frgnVal)
 	
 	return (PRT_UINT64)str;
 }
+
+//secure_machine_handle class
+
+extern "C" void P_FREE_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
+{
+	PrtFree((PRT_STRING)frgnVal);
+}
+
+extern "C" PRT_BOOLEAN P_ISEQUAL_secure_machine_handle_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
+{
+	return memcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2, SIZE_OF_PRT_STRING_SERIALIZED) == 0 ? PRT_TRUE : PRT_FALSE;
+}
+
+extern "C" PRT_STRING P_TOSTRING_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "String : %s", frgnVal);
+	return str;
+}
+
+extern "C" PRT_UINT32 P_GETHASHCODE_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
+{
+	return (PRT_UINT32)frgnVal;
+}
+
+extern "C" PRT_UINT64 P_MKDEF_secure_machine_handle_IMPL(void)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "xyx$12");
+	return (PRT_UINT64)str;
+}
+
+extern "C" PRT_UINT64 P_CLONE_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    // if (NETWORK_DEBUG) {
+    //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
+    // } else {
+        memcpy(str, (void*)frgnVal, SIZE_OF_PRT_STRING_SERIALIZED);
+    // }
+	
+	return (PRT_UINT64)str;
+}

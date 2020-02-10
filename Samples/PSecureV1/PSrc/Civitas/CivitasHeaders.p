@@ -15,7 +15,7 @@ fun DeclassifyInt(input : secure_int) : int;
 
 //Functions necessary for .h file, should not be called by user
 //TODO Add to PrtCodeGenerator
-fun CreateMachineSecureChild(): machine_handle;
+// fun CreateMachineSecureChild(): machine_handle;
 fun CreateSecureMachineRequest(): machine_handle;
 fun CreateUSMMachineRequest(): machine_handle;
 

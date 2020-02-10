@@ -1,8 +1,9 @@
 type StringType;
 type machine_handle;
 type capability;
+type secure_machine_handle;
 
-fun CreateMachineSecureChild(): machine_handle;
+// fun CreateMachineSecureChild(): machine_handle;
 fun PrintString(inputString : StringType);
 fun SecureSend(sendingToMachine : machine_handle, eventToSend : event, numArgs : int, arg : int);
 fun GetThis() : machine_handle;
