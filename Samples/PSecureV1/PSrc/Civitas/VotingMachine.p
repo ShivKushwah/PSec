@@ -28,24 +28,15 @@ machine VotingUSM {
 			votingSecureMachine = payload;
 			vote = 1;
 			untrusted_send votingSecureMachine, UNTRUSTEDVoteRequest, (credential = credential, vote = vote, requestingMachine = GetThis());
-			// receive {
-			// 	// case UNTRUSTEDGetResults : (payload : (whoWon : int, myVoteCounted : bool)) {
-			// 	// 	if (payload.myVoteCounted) {
-			// 	// 		print "My vote was successfully counted!";
-			// 	// 	} else {
-			// 	// 		print "ERROR: My vote was not counted!";
-			// 	// 	}
-			// 	// 	print "{0} won the election", payload.whoWon;
-			// 	// 	goto Done;
-			// 	// }
-			// 	case UNTRUSTEDGetResults : (whoWon : int) {
-					
-			// 	}
-			// }
 		}
-		on UNTRUSTEDGetResults do (whoWon : int) {
-			print "{0} won the election", whoWon;
-			goto Done;
+		on UNTRUSTEDGetResults do (payload : (whoWon : int, myVoteCounted : bool)) {
+				if (payload.myVoteCounted) {
+					print "My vote was successfully counted!\n";
+				} else {
+					print "ERROR: My vote was not counted!\n";
+				}
+				print "{0} won the election\n", payload.whoWon;
+				goto Done;
 		}
 	}
 

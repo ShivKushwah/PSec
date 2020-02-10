@@ -43,6 +43,7 @@ secure_machine SecureVotingClientMachine
         }
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, secure_int], whoWon : secure_int)) {
             var winner : int;
+            var voteCounted : bool;
             if(!(credential in payload.allVotes))
             {
                 print "ERROR: Vote not found!";
@@ -50,12 +51,9 @@ secure_machine SecureVotingClientMachine
             }
             else
             {
-                print "Your vote for {0} was counted", DeclassifyInt(payload.allVotes[credential]);
+                voteCounted = true;
             }
-            print "{0} won the election", DeclassifyInt(payload.whoWon);
-            // untrusted_send requestingMachine, UNTRUSTEDGetResults, (whoWon = DeclassifyInt(payload.whoWon), myVoteCounted = true);
-            winner = DeclassifyInt(payload.whoWon);
-            untrusted_send requestingMachine, UNTRUSTEDGetResults, winner;
+            untrusted_send requestingMachine, UNTRUSTEDGetResults, (whoWon = DeclassifyInt(payload.whoWon), myVoteCounted = voteCounted);
             goto Done;
         }
     }
