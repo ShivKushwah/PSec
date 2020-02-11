@@ -1,6 +1,7 @@
 type StringType;
 type machine_handle;
 type capability;
+type secure_machine_handle;
 
 //Foreign Functions callable from P Code
 fun PrintKey(input : machine_handle);
@@ -12,11 +13,12 @@ fun GetCapability(input: machine_handle) : capability; //Should be "get_capabili
 fun SaveCapability(input: capability); //Should be "save_capability"
 fun GetThis() : machine_handle; //Should be "this"
 fun DeclassifyInt(input : secure_int) : int;
+fun CastHandle(input : secure_machine_handle) : machine_handle;
 
 //Functions necessary for .h file, should not be called by user
 //TODO Add to PrtCodeGenerator
 // fun CreateMachineSecureChild(): machine_handle;
-fun CreateSecureMachineRequest(): machine_handle;
+fun CreateSecureMachineRequest(): secure_machine_handle;
 fun CreateUSMMachineRequest(): machine_handle;
 
 event UNTRUSTEDGetVotingSSM : machine_handle;

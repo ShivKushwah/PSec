@@ -80,15 +80,11 @@ PRT_TYPE P_GEND_TYPE_capability = { PRT_KIND_FOREIGN, { .foreignType = &P_capabi
 // Function implementation prototypes:
 PRT_VALUE* P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
@@ -222,14 +218,6 @@ PRT_FUNDECL P_FUNCTION_PrintString =
 };
 
 
-PRT_FUNDECL P_FUNCTION_SecureSend =
-{
-    "SecureSend",
-    &P_SecureSend_IMPL,
-    NULL
-};
-
-
 PRT_FUNDECL P_FUNCTION_GetThis =
 {
     "GetThis",
@@ -250,14 +238,6 @@ PRT_FUNDECL P_FUNCTION_Hash =
 {
     "Hash",
     &P_Hash_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_UntrustedSend =
-{
-    "UntrustedSend",
-    &P_UntrustedSend_IMPL,
     NULL
 };
 
