@@ -1117,6 +1117,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     
     #ifdef ENCLAVE_STD_ALT
 
+    string capabilityKeyPayloadString;
+
     if (isSecureCreate) {
 
         //Now, need to retrieve capabilityKey for this newMachinePublicIDKey and store (thisMachineID, newMachinePublicIDKey) -> capabilityKey
@@ -1141,7 +1143,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         // printRSAKey(publicCapabilityKey);
         // printRSAKey(privateCapabilityKey);
 
-        PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))] = string(capabilityKeyPayload, SIZE_OF_CAPABILITYKEY); //TODO shiv identity
+        capabilityKeyPayloadString =  string(capabilityKeyPayload, SIZE_OF_CAPABILITYKEY);
         ocall_print("Saving capability as");
         ocall_print("currentMachinePID");
         ocall_print_int(currentMachinePID);
@@ -1166,7 +1168,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 	
     #ifdef ENCLAVE_STD_ALT
     if (isSecureCreate) {
-        string capabilityKeyPayloadString = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))];
+        // string capabilityKeyPayloadString = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))];
         PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
         char* finalString;
         int finalStringSize;
@@ -1484,7 +1486,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 char* M = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
                 int MSize = returnTotalSizeofLengthArray(concatLengths, 3);
 
-                string sendingToMachineCapabilityKeyPayload = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+                string sendingToMachineCapabilityKeyPayload = string(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, SIZE_OF_CAPABILITYKEY);//PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
                 char* privateCapabilityKeySendingToMachine = retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
                 ocall_print("Retrieving capability as");
                 ocall_print("currentMachinePID");
