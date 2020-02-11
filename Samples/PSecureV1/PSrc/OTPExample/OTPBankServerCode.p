@@ -10,7 +10,7 @@ machine UntrustedInitializer {
 secure_machine TrustedInitializer {
     
     var clientUSM: machine_handle; //TODO make a differentition between secure_machine and machine
-    var bankSSM: machine_handle;
+    var bankSSM: secure_machine_handle;
     start state Initial {
         entry {
             clientUSM = new ClientWebBrowser();
@@ -21,7 +21,7 @@ secure_machine TrustedInitializer {
 }
 
 secure_machine BankEnclave {
-    var clientSSM: StringType;//TODO why is type checking disabled for StringType vs machine_handle
+    var clientSSM: secure_machine_handle;//TODO why is type checking disabled for StringType vs machine_handle
     var clientUSM: machine_handle;
     var masterSecret : StringType;
     var userCredential : StringType;

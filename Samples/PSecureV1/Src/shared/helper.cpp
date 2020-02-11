@@ -1164,7 +1164,11 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     // }
 	
     safe_free(newMachinePublicIDKey);
+    #ifdef ENCLAVE_STD_ALT
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
+    #else 
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
+    #endif
 }
 
 //Responsibilty of caller to free return

@@ -42,23 +42,6 @@ static PRT_TYPE* P_TUP_T[] = { &P_GEND_TYPE_StringType, &P_GEND_TYPE_StringType 
 static PRT_TUPTYPE P_TUP = { 2U, P_TUP_T };
 static PRT_TYPE P_GEND_TYPE_T2StringTypeStringType = { PRT_KIND_TUPLE, { .tuple = &P_TUP } };
 static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
-extern PRT_UINT64 P_MKDEF_capability_IMPL(void);
-extern PRT_UINT64 P_CLONE_capability_IMPL(PRT_UINT64);
-extern void P_FREE_capability_IMPL(PRT_UINT64);
-extern PRT_UINT32 P_GETHASHCODE_capability_IMPL(PRT_UINT64);
-extern PRT_BOOLEAN P_ISEQUAL_capability_IMPL(PRT_UINT64, PRT_UINT64);
-extern PRT_STRING P_TOSTRING_capability_IMPL(PRT_UINT64);
-static PRT_FOREIGNTYPEDECL P_capability = {
-    0U,
-    "capability",
-    P_MKDEF_capability_IMPL,
-    P_CLONE_capability_IMPL,
-    P_FREE_capability_IMPL,
-    P_GETHASHCODE_capability_IMPL,
-    P_ISEQUAL_capability_IMPL,
-    P_TOSTRING_capability_IMPL,
-};
-PRT_TYPE P_GEND_TYPE_capability = { PRT_KIND_FOREIGN, { .foreignType = &P_capability } };
 extern PRT_UINT64 P_MKDEF_secure_machine_handle_IMPL(void);
 extern PRT_UINT64 P_CLONE_secure_machine_handle_IMPL(PRT_UINT64);
 extern void P_FREE_secure_machine_handle_IMPL(PRT_UINT64);
@@ -76,6 +59,23 @@ static PRT_FOREIGNTYPEDECL P_secure_machine_handle = {
     P_TOSTRING_secure_machine_handle_IMPL,
 };
 PRT_TYPE P_GEND_TYPE_secure_machine_handle = { PRT_KIND_FOREIGN, { .foreignType = &P_secure_machine_handle } };
+extern PRT_UINT64 P_MKDEF_capability_IMPL(void);
+extern PRT_UINT64 P_CLONE_capability_IMPL(PRT_UINT64);
+extern void P_FREE_capability_IMPL(PRT_UINT64);
+extern PRT_UINT32 P_GETHASHCODE_capability_IMPL(PRT_UINT64);
+extern PRT_BOOLEAN P_ISEQUAL_capability_IMPL(PRT_UINT64, PRT_UINT64);
+extern PRT_STRING P_TOSTRING_capability_IMPL(PRT_UINT64);
+static PRT_FOREIGNTYPEDECL P_capability = {
+    0U,
+    "capability",
+    P_MKDEF_capability_IMPL,
+    P_CLONE_capability_IMPL,
+    P_FREE_capability_IMPL,
+    P_GETHASHCODE_capability_IMPL,
+    P_ISEQUAL_capability_IMPL,
+    P_TOSTRING_capability_IMPL,
+};
+PRT_TYPE P_GEND_TYPE_capability = { PRT_KIND_FOREIGN, { .foreignType = &P_capability } };
 
 // Function implementation prototypes:
 PRT_VALUE* P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -527,7 +527,7 @@ PRT_MACHINEDECL P_MACHINE_UntrustedInitializer =
 
 PRT_VARDECL P_TrustedInitializer_VARS[] = {
     { "clientUSM", &P_GEND_TYPE_machine_handle },
-    { "bankSSM", &P_GEND_TYPE_machine_handle }
+    { "bankSSM", &P_GEND_TYPE_secure_machine_handle }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER_1[] = { NULL };
@@ -716,7 +716,7 @@ PRT_MACHINEDECL P_MACHINE_TrustedInitializer =
 };
 
 PRT_VARDECL P_BankEnclave_VARS[] = {
-    { "clientSSM", &P_GEND_TYPE_StringType },
+    { "clientSSM", &P_GEND_TYPE_secure_machine_handle },
     { "clientUSM", &P_GEND_TYPE_machine_handle },
     { "masterSecret", &P_GEND_TYPE_StringType },
     { "userCredential", &P_GEND_TYPE_StringType }
@@ -2171,7 +2171,7 @@ PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, 
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_UntrustedInitializer, &P_MACHINE_TrustedInitializer, &P_MACHINE_BankEnclave, &P_MACHINE_ClientEnclave, &P_MACHINE_ClientWebBrowser };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_UntrustedInitializer, &P_I_TrustedInitializer, &P_I_BankEnclave, &P_I_ClientEnclave, &P_I_ClientWebBrowser };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
-PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_machine_handle, &P_StringType, &P_capability, &P_secure_machine_handle };
+PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_machine_handle, &P_StringType, &P_secure_machine_handle, &P_capability };
 int P_DefaultImpl_LME_0[] = { -1,1,-1,-1,-1 };
 int P_DefaultImpl_LME_1[] = { -1,-1,2,-1,4 };
 int P_DefaultImpl_LME_2[] = { -1,-1,-1,3,-1 };
