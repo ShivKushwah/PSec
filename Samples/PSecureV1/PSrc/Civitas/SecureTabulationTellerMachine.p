@@ -6,16 +6,14 @@ Tabulation Teller Machine
 
 secure_machine SecureTabulationTellerMachine 
 {
-    var bulletinBoard: machine_handle;
-    var supervisor: machine_handle;
+    var bulletinBoard: secure_machine_handle;
+    var supervisor: secure_machine_handle;
     var allVotes: seq[(credential : int, vote : secure_int)];
 
     start state Init {
-        entry (payload:(bBoard: machine_handle, bBoardCapability: capability, supervisor: machine_handle, supervisorCapability: capability)){
+        entry (payload:(bBoard: secure_machine_handle, supervisor: secure_machine_handle)){
             bulletinBoard = payload.bBoard;
             supervisor = payload.supervisor;
-            SaveCapability(payload.bBoardCapability);
-            SaveCapability(payload.supervisorCapability);
         }
         on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[(credential : int, vote : secure_int)])){
             //allVotes are ordered by time
@@ -31,7 +29,7 @@ secure_machine SecureTabulationTellerMachine
             i = 0;
             while(i < sizeof(allVotes))
             {
-                secure_send supervisor, TRUSTEDValidateCredential, (tabulationTellerMachine = GetThis(), tabulationTellerCapability = GetCapability(GetThis()), credentialToCheck = allVotes[i].credential);
+                secure_send supervisor, TRUSTEDValidateCredential, (tabulationTellerMachine = GetThisSecure(), credentialToCheck = allVotes[i].credential);
                 receive {
                     case TRUSTEDValidCredential : {
                         //map enables us to consider the latest vote

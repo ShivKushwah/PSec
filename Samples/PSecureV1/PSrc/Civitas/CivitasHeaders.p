@@ -12,6 +12,7 @@ fun PrintString(inputString : StringType);
 fun GetCapability(input: machine_handle) : capability; //Should be "get_capability"
 fun SaveCapability(input: capability); //Should be "save_capability"
 fun GetThis() : machine_handle; //Should be "this"
+fun GetThisSecure() : secure_machine_handle; //Should be "this"
 fun DeclassifyInt(input : secure_int) : int;
 fun CastHandle(input : secure_machine_handle) : machine_handle;
 
@@ -27,7 +28,7 @@ event UNTRUSTEDVoteRequest : (credential : int, vote : int, requestingMachine : 
 event UNTRUSTEDGetResults : (whoWon : int, myVoteCounted : bool);
 // event UNTRUSTEDGetResults : int;
 trusted event TRUSTEDeStartElection : int;
-trusted event TRUSTEDeVote : (credential : int, vote : secure_int, requestingMachine: machine_handle, requestingMachineCapability: capability);
+trusted event TRUSTEDeVote : (credential : int, vote : secure_int, requestingMachine: secure_machine_handle);
 trusted event TRUSTEDeAddItem : (credential: int, vote: secure_int);
 trusted event TRUSTEDeRespAddItem : bool;
 trusted event TRUSTEDeRespConfirmVote;
@@ -35,9 +36,9 @@ event eCloseElection;
 trusted event TRUSTEDeGetLog;
 trusted event TRUSTEDeRespGetLog : seq[(credential : int, vote : secure_int)];
 trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[(credential : int, vote : secure_int)]);
-trusted event TRUSTEDValidateCredential : (tabulationTellerMachine : machine_handle, tabulationTellerCapability : capability, credentialToCheck : int);
+trusted event TRUSTEDValidateCredential : (tabulationTellerMachine : secure_machine_handle, credentialToCheck : int);
 trusted event TRUSTEDValidCredential;
 trusted event TRUSTEDInvalidCredential;
 trusted event TRUSTEDeElectionResults : map[int, secure_int];
 trusted event TRUSTEDeRespElectionResults: (allVotes : map[int, secure_int], whoWon : secure_int);
-trusted event TRUSTEDeGetElectionResults : (requestingMachine: machine_handle, requestingMachineCapability: capability);
+trusted event TRUSTEDeGetElectionResults : machine_handle;

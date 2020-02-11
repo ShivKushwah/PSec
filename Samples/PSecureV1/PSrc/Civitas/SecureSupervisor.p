@@ -7,8 +7,8 @@ Secure Supervisor machine
 
 secure_machine SecureSupervisorMachine 
 {
-    var bBoard : machine_handle;
-    var bBox : machine_handle;
+    var bBoard : secure_machine_handle;
+    var bBox : secure_machine_handle;
     var tTeller: machine_handle;
     var valid_credentials : seq[int];
 
@@ -21,7 +21,7 @@ secure_machine SecureSupervisorMachine
             var i : int;
 
             bBoard = new SecureBulletinBoardMachine();
-            bBox = new SecureBallotBoxMachine((bBoard = bBoard, bBoardCapability = GetCapability(bBoard), supervisor = GetThis(), supervisorCapability = GetCapability(GetThis()) ) );
+            bBox = new SecureBallotBoxMachine((bBoard = bBoard, supervisor = GetThisSecure()) );
 
             //These are the credentials of voters that have registered to vote
             //One credential per valid voter
@@ -41,16 +41,15 @@ secure_machine SecureSupervisorMachine
         on UNTRUSTEDGetVotingSSM do (requestingMachine: machine_handle) {
             var secureVotingClientMachine : machine_handle;
             print "Provisioning a secure voting client!";
-            secureVotingClientMachine = new SecureVotingClientMachine((ballotBox = bBox, bulletinBoard = bBoard, ballotBoxCapability = GetCapability(bBox), bulletinBoardCapability = GetCapability(bBoard)));
-            untrusted_send requestingMachine, UNTRUSTEDReceiveVotingSSM, secureVotingClientMachine;
+            secureVotingClientMachine = new SecureVotingClientMachine((ballotBox = bBox, bulletinBoard = bBoard));
+            untrusted_send requestingMachine, UNTRUSTEDReceiveVotingSSM, CastHandle(secureVotingClientMachine);
         }
-        on TRUSTEDValidateCredential do (payload: (tabulationTellerMachine : machine_handle, tabulationTellerCapability : capability, credentialToCheck : int)) {
+        on TRUSTEDValidateCredential do (payload: (tabulationTellerMachine : secure_machine_handle, credentialToCheck : int)) {
             var i : int;
             var found : bool;
 
             i = 0;
             found = false;
-            SaveCapability(payload.tabulationTellerCapability);
 
             while (i < sizeof(valid_credentials)) {
                 if (valid_credentials[i] == payload.credentialToCheck) {

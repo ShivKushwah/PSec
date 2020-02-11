@@ -18,14 +18,13 @@ secure_machine SecureBulletinBoardMachine
     }
 
     state SendResults { 
-        on TRUSTEDeGetElectionResults do (payload: (requestingMachine: machine_handle, requestingMachineCapability: capability)){
+        on TRUSTEDeGetElectionResults do (requestingMachine: secure_machine_handle){
             var electionResultsKeys : seq[int];
             var i : int;
             var countCandidate0 : secure_int;
             var countCandidate1 : secure_int;
             var winner : secure_int;
 
-            SaveCapability(payload.requestingMachineCapability);
             electionResultsKeys = keys(electionResults);
             i = 0;
             countCandidate0 = 0;
@@ -49,7 +48,7 @@ secure_machine SecureBulletinBoardMachine
             } else {
                 winner = 2; //Tie
             }
-            secure_send payload.requestingMachine, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = winner); 
+            secure_send requestingMachine, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = winner); 
         }
     }
 }

@@ -5,12 +5,11 @@ Secure TamperEvidentLog Machine
 secure_machine SecureTamperEvidentLogMachine 
 {
     var log: seq[(credential: int, vote: secure_int)];
-    var parent: machine_handle;
+    var parent: secure_machine_handle;
     start state Init {
-        entry(payload: (parentMachine: machine_handle, parentCapability:capability))
+        entry(payload: secure_machine_handle)
          {
-            parent = payload.parentMachine;
-            SaveCapability(payload.parentCapability);
+            parent = payload;
             goto WaitForRequests;
          }
     }

@@ -6,16 +6,14 @@ that enables them to vote anonymously and securely
 secure_machine SecureVotingClientMachine
 {
     var credential: int;
-    var ballotBox: machine_handle;
-    var bulletinBoard: machine_handle;
+    var ballotBox: secure_machine_handle;
+    var bulletinBoard: secure_machine_handle;
     var requestingMachine : machine_handle;
 
     start state Init {
-        entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle, ballotBoxCapability:capability, bulletinBoardCapability:capability)) {
+        entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle)) {
             ballotBox = payload.ballotBox;
             bulletinBoard = payload.bulletinBoard;
-            SaveCapability(payload.ballotBoxCapability);
-            SaveCapability(payload.bulletinBoardCapability);
             goto WaitForVote;
         }
     }
@@ -30,7 +28,7 @@ secure_machine SecureVotingClientMachine
             requestingMachine = payload.requestingMachine;
             secure_vote = payload.vote;
             credential = payload.credential;
-            secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = GetThis(), requestingMachineCapability = GetCapability(GetThis()));
+            secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = GetThisSecure());
         }
         on TRUSTEDeRespConfirmVote goto ValidateResults with {
             print "Vote successfully submitted to the ballot box";
@@ -39,7 +37,7 @@ secure_machine SecureVotingClientMachine
 
     state ValidateResults {
         entry {
-            secure_send bulletinBoard, TRUSTEDeGetElectionResults, (requestingMachine = GetThis(), requestingMachineCapability = GetCapability(GetThis()));
+            secure_send bulletinBoard, TRUSTEDeGetElectionResults, GetThisSecure();
         }
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, secure_int], whoWon : secure_int)) {
             var winner : int;

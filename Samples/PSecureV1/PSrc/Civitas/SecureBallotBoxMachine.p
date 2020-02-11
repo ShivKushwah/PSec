@@ -7,18 +7,18 @@ forwarded to SecureTabulationTellerMachine to be counted
 
 secure_machine SecureBallotBoxMachine
 {
-    var bulletinBoard: machine_handle;
-    var tabulationTeller: machine_handle;
-    var appendOnlyLog: machine_handle;
+    var bulletinBoard: secure_machine_handle;
+    var tabulationTeller: secure_machine_handle;
+    var appendOnlyLog: secure_machine_handle;
     var numberOfTotalVotesAllowed: int;
     var currentNumberOfVotes: int;
 
     start state Init {
         defer TRUSTEDeVote;
-        entry (payload: (bBoard: machine_handle, bBoardCapability: capability, supervisor : machine_handle, supervisorCapability : capability)){
+        entry (payload: (bBoard: secure_machine_handle, supervisor : secure_machine_handle)){
             bulletinBoard = payload.bBoard;
-            appendOnlyLog = new SecureTamperEvidentLogMachine((parentMachine = GetThis(), parentCapability = GetCapability(GetThis()) )); //essentially the db of votes for this ballotbox
-            tabulationTeller = new SecureTabulationTellerMachine((bBoard = bulletinBoard, bBoardCapability = payload.bBoardCapability, supervisor = payload.supervisor, supervisorCapability = payload.supervisorCapability)); //counts the votes
+            appendOnlyLog = new SecureTamperEvidentLogMachine(GetThisSecure() ); //essentially the db of votes for this ballotbox
+            tabulationTeller = new SecureTabulationTellerMachine((bBoard = bulletinBoard, supervisor = payload.supervisor)); //counts the votes
         }
         on TRUSTEDeStartElection goto WaitForVotes;
     }
@@ -28,9 +28,8 @@ secure_machine SecureBallotBoxMachine
             numberOfTotalVotesAllowed = payload;
             currentNumberOfVotes = 0;
         }
-        on TRUSTEDeVote do (payload: (credential : int, vote : secure_int, requestingMachine : machine_handle, requestingMachineCapability: capability))
+        on TRUSTEDeVote do (payload: (credential : int, vote : secure_int, requestingMachine : secure_machine_handle))
         {
-            SaveCapability(payload.requestingMachineCapability);
             secure_send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote);
             receive {
                 case TRUSTEDeRespAddItem : (result: bool) {
