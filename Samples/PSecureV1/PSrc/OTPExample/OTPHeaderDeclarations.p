@@ -9,14 +9,15 @@ fun SecureSend(sendingToMachine : secure_machine_handle, eventToSend : event, nu
 fun GetThis() : machine_handle;
 fun Concat(input1:StringType, input2:StringType) : StringType;
 fun Hash(input1:StringType, input2:StringType) : StringType;
-fun UntrustedCreateCoordinator();
+// fun UntrustedCreateCoordinator();
 fun UntrustedSend(publicID: machine_handle, even : event, payload: int);
-fun InitializeUntrustedMachine();
+// fun InitializeUntrustedMachine();
 fun CreateSecureMachineRequest(): secure_machine_handle;
 fun CreateUSMMachineRequest(): machine_handle;
 fun PrintKey(input : machine_handle);
 fun GenerateRandomMasterSecret() : StringType;
 fun GetUserInput() : StringType;
+fun CastHandle(input : secure_machine_handle) : machine_handle;
 
 event BankPublicIDEvent : machine_handle;
 event PublicIDEvent : machine_handle;

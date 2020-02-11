@@ -88,11 +88,7 @@ PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
@@ -103,6 +99,8 @@ PRT_VALUE* P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_CastHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
@@ -256,26 +254,10 @@ PRT_FUNDECL P_FUNCTION_Hash =
 };
 
 
-PRT_FUNDECL P_FUNCTION_UntrustedCreateCoordinator =
-{
-    "UntrustedCreateCoordinator",
-    &P_UntrustedCreateCoordinator_IMPL,
-    NULL
-};
-
-
 PRT_FUNDECL P_FUNCTION_UntrustedSend =
 {
     "UntrustedSend",
     &P_UntrustedSend_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_InitializeUntrustedMachine =
-{
-    "InitializeUntrustedMachine",
-    &P_InitializeUntrustedMachine_IMPL,
     NULL
 };
 
@@ -316,6 +298,14 @@ PRT_FUNDECL P_FUNCTION_GetUserInput =
 {
     "GetUserInput",
     &P_GetUserInput_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_CastHandle =
+{
+    "CastHandle",
+    &P_CastHandle_IMPL,
     NULL
 };
 
