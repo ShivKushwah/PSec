@@ -264,6 +264,8 @@ int returnSizeOfForeignType(int type_tag) {
         return SIZE_OF_PRT_STRING_SERIALIZED;
     } else if (type_tag == P_TYPEDEF_capability->typeUnion.foreignType->declIndex) {
         return SIZE_OF_P_CAPABILITY_FOREIGN_TYPE;
+    } else if (type_tag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex) {
+        return SIZE_OF_SECURE_MACHINE_HANDLE;
     } else {
         return -1;
     }
@@ -1113,7 +1115,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         printRSAKey(newMachinePublicIDKey);
     // }
     
-
     #ifdef ENCLAVE_STD_ALT
 
     if (isSecureCreate) {
@@ -1156,18 +1157,35 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     safe_free(currentMachineIDPublicKey);
 
     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
     // if (NETWORK_DEBUG) {
     //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, newMachinePublicIDKey);
     // } else {
-        memcpy(str, newMachinePublicIDKey, SIZE_OF_PRT_STRING_SERIALIZED);
     // }
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    memcpy(str, newMachinePublicIDKey, SIZE_OF_PRT_STRING_SERIALIZED);
+
 	
     safe_free(newMachinePublicIDKey);
     #ifdef ENCLAVE_STD_ALT
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
-    #else 
+    // string capabilityKeyPayloadString = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))];
+    // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
+	// char* finalString;
+    // int finalStringSize;
+    // char* concatStrings[] = {newMachinePublicIDKey, ":", (char*)capabilityKeyPayloadString.c_str()};
+    // int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_CAPABILITYKEY};
+    // finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+    // finalStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+
+    // memcpy(str, finalString, finalStringSize);
+    // safe_free(finalString);
+    // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
+    // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
+    // memcpy(str, newMachinePublicIDKey, SIZE_OF_PRT_STRING_SERIALIZED);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
+    #else 
+    // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    // memcpy(str, newMachinePublicIDKey, SIZE_OF_PRT_STRING_SERIALIZED);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     #endif
 }
 
@@ -2262,13 +2280,13 @@ extern "C" void P_FREE_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
 
 extern "C" PRT_BOOLEAN P_ISEQUAL_secure_machine_handle_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
 {
-	return memcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2, SIZE_OF_PRT_STRING_SERIALIZED) == 0 ? PRT_TRUE : PRT_FALSE;
+	return memcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2, SIZE_OF_SECURE_MACHINE_HANDLE) == 0 ? PRT_TRUE : PRT_FALSE;
 }
 
 extern "C" PRT_STRING P_TOSTRING_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
 {
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "String : %s", frgnVal);
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
+	sprintf_s(str, SIZE_OF_SECURE_MACHINE_HANDLE, "String : %s", frgnVal);
 	return str;
 }
 
@@ -2279,18 +2297,18 @@ extern "C" PRT_UINT32 P_GETHASHCODE_secure_machine_handle_IMPL(PRT_UINT64 frgnVa
 
 extern "C" PRT_UINT64 P_MKDEF_secure_machine_handle_IMPL(void)
 {
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "xyx$12");
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
+	sprintf_s(str, SIZE_OF_SECURE_MACHINE_HANDLE, "xyx$12");
 	return (PRT_UINT64)str;
 }
 
 extern "C" PRT_UINT64 P_CLONE_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
 {
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
     // if (NETWORK_DEBUG) {
-    //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
+    //     sprintf_s(str, SIZE_OF_SECURE_MACHINE_HANDLE, (PRT_STRING)frgnVal);
     // } else {
-        memcpy(str, (void*)frgnVal, SIZE_OF_PRT_STRING_SERIALIZED);
+        memcpy(str, (void*)frgnVal, SIZE_OF_SECURE_MACHINE_HANDLE);
     // }
 	
 	return (PRT_UINT64)str;

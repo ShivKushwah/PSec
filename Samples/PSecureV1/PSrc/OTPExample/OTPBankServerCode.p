@@ -14,6 +14,8 @@ secure_machine TrustedInitializer {
     start state Initial {
         entry {
             clientUSM = new ClientWebBrowser();
+            print "created new client USM with key";
+            PrintKey(clientUSM);
             bankSSM = new BankEnclave(clientUSM);
             untrusted_send clientUSM, BankPublicIDEvent, bankSSM;
         }
