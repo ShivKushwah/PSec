@@ -29,7 +29,7 @@ secure_machine SecureTabulationTellerMachine
             i = 0;
             while(i < sizeof(allVotes))
             {
-                secure_send supervisor, TRUSTEDValidateCredential, (tabulationTellerMachine = GetThis(), credentialToCheck = allVotes[i].credential);
+                secure_send supervisor, TRUSTEDValidateCredential, (tabulationTellerMachine = GetThisSecure(), credentialToCheck = allVotes[i].credential);
                 receive {
                     case TRUSTEDValidCredential : {
                         //map enables us to consider the latest vote

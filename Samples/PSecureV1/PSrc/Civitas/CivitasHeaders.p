@@ -11,7 +11,8 @@ fun PrintString(inputString : StringType);
 //TODO Make below functions P commands rather than Foreign functions user needs to call
 fun GetCapability(input: machine_handle) : capability; //Should be "get_capability"
 fun SaveCapability(input: capability); //Should be "save_capability"
-fun GetThis() : machine_handle; //Should be "this", also note this can also return secure_machine_handle
+fun GetThis() : machine_handle; //Should be "this"
+fun GetThisSecure() : secure_machine_handle; //Should be "this"
 fun DeclassifyInt(input : secure_int) : int;
 fun CastHandle(input : secure_machine_handle) : machine_handle;
 
@@ -40,4 +41,4 @@ trusted event TRUSTEDValidCredential;
 trusted event TRUSTEDInvalidCredential;
 trusted event TRUSTEDeElectionResults : map[int, secure_int];
 trusted event TRUSTEDeRespElectionResults: (allVotes : map[int, secure_int], whoWon : secure_int);
-trusted event TRUSTEDeGetElectionResults : machine_handle;
+trusted event TRUSTEDeGetElectionResults : secure_machine_handle;

@@ -11,7 +11,7 @@ secure_machine SecureVotingClientMachine
     var requestingMachine : machine_handle;
 
     start state Init {
-        entry (payload: (ballotBox:machine_handle, bulletinBoard:machine_handle)) {
+        entry (payload: (ballotBox:secure_machine_handle, bulletinBoard:secure_machine_handle)) {
             ballotBox = payload.ballotBox;
             bulletinBoard = payload.bulletinBoard;
             goto WaitForVote;
@@ -28,7 +28,7 @@ secure_machine SecureVotingClientMachine
             requestingMachine = payload.requestingMachine;
             secure_vote = payload.vote;
             credential = payload.credential;
-            secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = GetThis());
+            secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = GetThisSecure());
         }
         on TRUSTEDeRespConfirmVote goto ValidateResults with {
             print "Vote successfully submitted to the ballot box";
@@ -37,7 +37,7 @@ secure_machine SecureVotingClientMachine
 
     state ValidateResults {
         entry {
-            secure_send bulletinBoard, TRUSTEDeGetElectionResults, GetThis();
+            secure_send bulletinBoard, TRUSTEDeGetElectionResults, GetThisSecure();
         }
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, secure_int], whoWon : secure_int)) {
             var winner : int;
