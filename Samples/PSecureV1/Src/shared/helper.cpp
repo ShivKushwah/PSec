@@ -2005,21 +2005,7 @@ extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRe
 
 extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
-    char* currentMachineIDPublicKey;
- 
-    currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
-    memcpy(currentMachineIDPublicKey,(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str(), SIZE_OF_IDENTITY_STRING);
-    //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SGX_RSA3072_KEY_SIZE));
-    memcpy(str, currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE);
-	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey); //TODO shividentity
-    safe_free(currentMachineIDPublicKey);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
-}
-
-extern "C" PRT_VALUE* P_GetThisSecure_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
+    #ifdef ENCLAVE_STD_ALT
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* currentMachineIDPublicKey;
  
@@ -2030,7 +2016,7 @@ extern "C" PRT_VALUE* P_GetThisSecure_IMPL(PRT_MACHINEINST* context, PRT_VALUE**
     // printRSAKey((char*) val);
     //TODO put check here before obtaining the value
     if ( PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string((char*) currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE))) == 0){
-        ocall_print("ERROR IN GETTING CAPABILITY FROM GetThisSecure P METHOD");
+        ocall_print("ERROR IN GETTING CAPABILITY FROM GetThis Secure P METHOD");
     }
     string capabilityKeyPayload = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string((char*) currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE))];
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
@@ -2044,6 +2030,21 @@ extern "C" PRT_VALUE* P_GetThisSecure_IMPL(PRT_MACHINEINST* context, PRT_VALUE**
     memcpy(str, finalString, finalStringSize);
     safe_free(finalString);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
+    
+    #else 
+    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
+    char* currentMachineIDPublicKey;
+ 
+    currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    memcpy(currentMachineIDPublicKey,(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str(), SIZE_OF_IDENTITY_STRING);
+    //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SGX_RSA3072_KEY_SIZE));
+    memcpy(str, currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE);
+	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey); //TODO shividentity
+    safe_free(currentMachineIDPublicKey);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
+
+    #endif
 }
 
 extern "C" void P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)

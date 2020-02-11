@@ -28,7 +28,7 @@ secure_machine SecureVotingClientMachine
             requestingMachine = payload.requestingMachine;
             secure_vote = payload.vote;
             credential = payload.credential;
-            secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = GetThisSecure());
+            secure_send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = GetThis());
         }
         on TRUSTEDeRespConfirmVote goto ValidateResults with {
             print "Vote successfully submitted to the ballot box";
@@ -37,7 +37,7 @@ secure_machine SecureVotingClientMachine
 
     state ValidateResults {
         entry {
-            secure_send bulletinBoard, TRUSTEDeGetElectionResults, GetThisSecure();
+            secure_send bulletinBoard, TRUSTEDeGetElectionResults, GetThis();
         }
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, secure_int], whoWon : secure_int)) {
             var winner : int;

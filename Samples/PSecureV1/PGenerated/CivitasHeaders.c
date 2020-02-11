@@ -85,14 +85,18 @@ static PRT_NMDTUPTYPE P_NMDTUP_9 = { 2U, P_NMDTUP_N_9, P_NMDTUP_T_9 };
 static PRT_TYPE P_GEND_TYPE_T2machine_handlemachine_handle = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_9 } };
 static PRT_SEQTYPE P_SEQTYPE_1 = { &P_GEND_TYPE_i };
 static PRT_TYPE P_GEND_TYPE_Si = { PRT_KIND_SEQ, { .seq = &P_SEQTYPE_1 } };
-static PRT_STRING P_NMDTUP_N_10[] = { "ballotBox", "bulletinBoard" };
-static PRT_TYPE* P_NMDTUP_T_10[] = { &P_GEND_TYPE_secure_machine_handle, &P_GEND_TYPE_secure_machine_handle };
+static PRT_STRING P_NMDTUP_N_10[] = { "bBoard", "supervisor" };
+static PRT_TYPE* P_NMDTUP_T_10[] = { &P_GEND_TYPE_secure_machine_handle, &P_GEND_TYPE_machine_handle };
 static PRT_NMDTUPTYPE P_NMDTUP_10 = { 2U, P_NMDTUP_N_10, P_NMDTUP_T_10 };
-static PRT_TYPE P_GEND_TYPE_T2secure_machine_handlesecure_machine_handle_1 = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_10 } };
-static PRT_STRING P_NMDTUP_N_11[] = { "credential", "vote", "requestingMachine" };
-static PRT_TYPE* P_NMDTUP_T_11[] = { &P_GEND_TYPE_i, &P_GEND_TYPE_i, &P_GEND_TYPE_secure_machine_handle };
-static PRT_NMDTUPTYPE P_NMDTUP_11 = { 3U, P_NMDTUP_N_11, P_NMDTUP_T_11 };
-static PRT_TYPE P_GEND_TYPE_T3iisecure_machine_handle = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_11 } };
+static PRT_TYPE P_GEND_TYPE_T2secure_machine_handlemachine_handle = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_10 } };
+static PRT_STRING P_NMDTUP_N_11[] = { "ballotBox", "bulletinBoard" };
+static PRT_TYPE* P_NMDTUP_T_11[] = { &P_GEND_TYPE_secure_machine_handle, &P_GEND_TYPE_secure_machine_handle };
+static PRT_NMDTUPTYPE P_NMDTUP_11 = { 2U, P_NMDTUP_N_11, P_NMDTUP_T_11 };
+static PRT_TYPE P_GEND_TYPE_T2secure_machine_handlesecure_machine_handle_1 = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_11 } };
+static PRT_STRING P_NMDTUP_N_12[] = { "tabulationTellerMachine", "credentialToCheck" };
+static PRT_TYPE* P_NMDTUP_T_12[] = { &P_GEND_TYPE_machine_handle, &P_GEND_TYPE_i };
+static PRT_NMDTUPTYPE P_NMDTUP_12 = { 2U, P_NMDTUP_N_12, P_NMDTUP_T_12 };
+static PRT_TYPE P_GEND_TYPE_T2machine_handlei_1 = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_12 } };
 extern PRT_UINT64 P_MKDEF_StringType_IMPL(void);
 extern PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64);
 extern void P_FREE_StringType_IMPL(PRT_UINT64);
@@ -140,8 +144,6 @@ PRT_VALUE* P_GetCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 PRT_VALUE* P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_GetThisSecure_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
@@ -426,14 +428,6 @@ PRT_FUNDECL P_FUNCTION_GetThis =
 {
     "GetThis",
     &P_GetThis_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_GetThisSecure =
-{
-    "GetThisSecure",
-    &P_GetThisSecure_IMPL,
     NULL
 };
 
@@ -978,7 +972,7 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_15 = &(PTMP_tmp2_1);
     PrtFreeValue(*P_LVALUE_15);
-    *P_LVALUE_15 = ((_P_GEN_funval = P_GetThisSecure_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE_15 = ((_P_GEN_funval = P_GetThis_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_2;
     }
@@ -990,7 +984,7 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_16 = &(PTMP_tmp3_1);
     PrtFreeValue(*P_LVALUE_16);
-    *P_LVALUE_16 = (PrtMkTuple(&P_GEND_TYPE_T2secure_machine_handlesecure_machine_handle, &(PTMP_tmp1_1), &(PTMP_tmp2_1)));
+    *P_LVALUE_16 = (PrtMkTuple(&P_GEND_TYPE_T2secure_machine_handlemachine_handle, &(PTMP_tmp1_1), &(PTMP_tmp2_1)));
     
     _P_GEN_funargs[0] = "SecureBallotBoxMachine";
     _P_GEN_funargs[1] = "1";
@@ -2392,7 +2386,7 @@ PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_99 = &(PTMP_tmp1_8);
     PrtFreeValue(*P_LVALUE_99);
-    *P_LVALUE_99 = ((_P_GEN_funval = P_GetThisSecure_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE_99 = ((_P_GEN_funval = P_GetThis_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_10;
     }
@@ -3358,7 +3352,7 @@ PRT_VALUE* P_Anon_IMPL_18(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         
         PRT_VALUE** P_LVALUE_150 = &(PTMP_tmp5_10);
         PrtFreeValue(*P_LVALUE_150);
-        *P_LVALUE_150 = ((_P_GEN_funval = P_GetThisSecure_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+        *P_LVALUE_150 = ((_P_GEN_funval = P_GetThis_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
         if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
             goto p_return_21;
         }
@@ -3378,7 +3372,7 @@ PRT_VALUE* P_Anon_IMPL_18(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         
         PRT_VALUE** P_LVALUE_153 = &(PTMP_tmp8_5);
         PrtFreeValue(*P_LVALUE_153);
-        *P_LVALUE_153 = (PrtMkTuple(&P_GEND_TYPE_T2secure_machine_handlei, &(PTMP_tmp5_10), &(PTMP_tmp7_6)));
+        *P_LVALUE_153 = (PrtMkTuple(&P_GEND_TYPE_T2machine_handlei_1, &(PTMP_tmp5_10), &(PTMP_tmp7_6)));
         
         PRT_VALUE* P_PTMP_tmp_13 = PrtCloneValue(&(P_LIT_INT32_25));
         _P_GEN_funargs[0] = &(PTMP_tmp3_11);
@@ -3885,7 +3879,7 @@ PRT_VALUE* P_Anon_IMPL_20(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_178 = &(PTMP_tmp7_7);
     PrtFreeValue(*P_LVALUE_178);
-    *P_LVALUE_178 = ((_P_GEN_funval = P_GetThisSecure_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE_178 = ((_P_GEN_funval = P_GetThis_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_25;
     }
@@ -3897,7 +3891,7 @@ PRT_VALUE* P_Anon_IMPL_20(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_179 = &(PTMP_tmp8_6);
     PrtFreeValue(*P_LVALUE_179);
-    *P_LVALUE_179 = (PrtMkTuple(&P_GEND_TYPE_T3iisecure_machine_handle, &(PTMP_tmp5_11), &(PTMP_tmp6_10), &(PTMP_tmp7_7)));
+    *P_LVALUE_179 = (PrtMkTuple(&P_GEND_TYPE_T3iimachine_handle, &(PTMP_tmp5_11), &(PTMP_tmp6_10), &(PTMP_tmp7_7)));
     
     PRT_VALUE* P_PTMP_tmp_15 = PrtCloneValue(&(P_LIT_INT32_26));
     _P_GEN_funargs[0] = &(PTMP_tmp3_12);
@@ -3979,7 +3973,7 @@ PRT_VALUE* P_Anon_IMPL_22(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_182 = &(PTMP_tmp2_14);
     PrtFreeValue(*P_LVALUE_182);
-    *P_LVALUE_182 = ((_P_GEN_funval = P_GetThisSecure_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE_182 = ((_P_GEN_funval = P_GetThis_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_27;
     }

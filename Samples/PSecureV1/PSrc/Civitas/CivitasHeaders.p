@@ -11,8 +11,7 @@ fun PrintString(inputString : StringType);
 //TODO Make below functions P commands rather than Foreign functions user needs to call
 fun GetCapability(input: machine_handle) : capability; //Should be "get_capability"
 fun SaveCapability(input: capability); //Should be "save_capability"
-fun GetThis() : machine_handle; //Should be "this"
-fun GetThisSecure() : secure_machine_handle; //Should be "this"
+fun GetThis() : machine_handle; //Should be "this", also note this can also return secure_machine_handle
 fun DeclassifyInt(input : secure_int) : int;
 fun CastHandle(input : secure_machine_handle) : machine_handle;
 
