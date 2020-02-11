@@ -1161,30 +1161,36 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, newMachinePublicIDKey);
     // } else {
     // }
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-    memcpy(str, newMachinePublicIDKey, SIZE_OF_PRT_STRING_SERIALIZED);
+    
 
 	
-    safe_free(newMachinePublicIDKey);
     #ifdef ENCLAVE_STD_ALT
-    // string capabilityKeyPayloadString = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))];
-    // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
-	// char* finalString;
-    // int finalStringSize;
-    // char* concatStrings[] = {newMachinePublicIDKey, ":", (char*)capabilityKeyPayloadString.c_str()};
-    // int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_CAPABILITYKEY};
-    // finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
-    // finalStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+    if (isSecureCreate) {
+        string capabilityKeyPayloadString = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))];
+        PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
+        char* finalString;
+        int finalStringSize;
+        char* concatStrings[] = {newMachinePublicIDKey, ":", (char*)capabilityKeyPayloadString.c_str()};
+        int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_CAPABILITYKEY};
+        finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+        finalStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
 
-    // memcpy(str, finalString, finalStringSize);
-    // safe_free(finalString);
-    // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
-    // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
-    // memcpy(str, newMachinePublicIDKey, SIZE_OF_PRT_STRING_SERIALIZED);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
+        memcpy(str, finalString, finalStringSize);
+        safe_free(finalString);
+        safe_free(newMachinePublicIDKey);
+        return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
+
+    } else {
+        PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+        memcpy(str, newMachinePublicIDKey, SIZE_OF_PRT_STRING_SERIALIZED);
+        safe_free(newMachinePublicIDKey);
+        return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
+    }
+    
     #else 
-    // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-    // memcpy(str, newMachinePublicIDKey, SIZE_OF_PRT_STRING_SERIALIZED);
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    memcpy(str, newMachinePublicIDKey, SIZE_OF_PRT_STRING_SERIALIZED);
+    safe_free(newMachinePublicIDKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     #endif
 }
