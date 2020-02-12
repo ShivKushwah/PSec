@@ -17,7 +17,7 @@ secure_machine TrustedInitializer {
             print "created new client USM with key";
             PrintKey(clientUSM);
             bankSSM = new BankEnclave(clientUSM);
-            untrusted_send clientUSM, BankPublicIDEvent, bankSSM;
+            untrusted_send clientUSM, BankPublicIDEvent, CastHandle(bankSSM);
         }
     }
 }
@@ -40,7 +40,7 @@ secure_machine BankEnclave {
             secure_send clientSSM, MasterSecretEvent, masterSecret;
             // print "Bank Enclave about to print clientSSM";
             // PrintKey(clientSSM);
-            untrusted_send clientUSM, PublicIDEvent, clientSSM;
+            untrusted_send clientUSM, PublicIDEvent, CastHandle(clientSSM);
             goto AuthCheck;
         } 
     }
