@@ -597,7 +597,8 @@ PRT_INTERFACEDECL P_I_SecureVotingClientMachine =
 PRT_VARDECL P_InitializerMachine_VARS[] = {
     { "supervisor", &P_GEND_TYPE_machine_handle },
     { "votingMachine", &P_GEND_TYPE_machine_handle },
-    { "votingMachine2", &P_GEND_TYPE_machine_handle }
+    { "votingMachine2", &P_GEND_TYPE_machine_handle },
+    { "supervisor2", &P_GEND_TYPE_secure_machine_handle }
 };
 
 PRT_EVENTDECL* P_Init_DEFERS_INNER[] = { NULL };
@@ -796,7 +797,7 @@ PRT_MACHINEDECL P_MACHINE_InitializerMachine =
     &P_EVENTSET_InitializerMachine_RECV_1,
     &P_EVENTSET_InitializerMachine_SEND,
     &P_InitializerMachine_CREATES,
-    3U,
+    4U,
     1U,
     1U,
     4294967295U,
