@@ -36,7 +36,7 @@ unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary; //USM Dictio
 unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
 map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 map<PMachineChildPair, string> PMachineToChildCapabilityKey; //should be empty
-map<string, int> ChildSessionKeyToNonce;
+map<tuple<string,string>, int> ChildSessionKeyToNonce;
 
 
 
@@ -216,7 +216,7 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
     
     if (count == 0) {
         PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY);
-        ChildSessionKeyToNonce[string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY)] = 0;
+        ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY))] = 0;
         char* successMessage = createStringLiteralMalloced("Success: Session Key Received");
         printf("Received correct session key!\n");
         return successMessage;

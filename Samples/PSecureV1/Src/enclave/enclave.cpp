@@ -12,7 +12,7 @@ unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
 
 map<PMachineChildPair, string> PMachineToChildCapabilityKey;
 map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
-map<string, int> ChildSessionKeyToNonce;
+map<tuple<string, string>, int> ChildSessionKeyToNonce;
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
@@ -744,7 +744,7 @@ int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMach
     
     if (count == 0) {
         PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY);
-        ChildSessionKeyToNonce[string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY)] = 0;
+        ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY))] = 0;
         char* successMessage = "Success: Session Key Received!";
         ocall_print(successMessage);
         printSessionKey(decryptedMessage);
