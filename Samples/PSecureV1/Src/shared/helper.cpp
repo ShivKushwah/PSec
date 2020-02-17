@@ -57,7 +57,7 @@ extern char* untrusted_enclave1_receiveNetworkRequest(char* request, size_t requ
 
 extern char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage);
 
-extern char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey);
+extern char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey, char* requestedMachineTypeToCreate);
 extern char* send_network_request_API(char* request);
 
 extern int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize);
@@ -1132,7 +1132,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         // }
         //TODO replace above line with snprintf as did with createMachineRequest, and do this everywhere in code
         char* getChildMachineIDRequest = (char*) request.c_str(); 
-        char* capabilityKeyPayload = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey);//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
+        char* capabilityKeyPayload = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey, requestedNewMachineTypeToCreate);//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
         //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKeyPayload, SIZE_OF_CAPABILITYKEY);        
         
 
@@ -1796,8 +1796,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
                 ocall_print("Verifying Signature works!!!!");
             } else {
                 ocall_print("Error: Secure Send Signature Verification Failed!");
-                // return;
-                // TODO re-add return 0 but add a flag in this method so that if untrusted, doesn't verify signature
+                return;
             }
         }
 

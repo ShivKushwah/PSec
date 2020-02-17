@@ -3,7 +3,7 @@ machine InitializerMachine {
 	var supervisor: machine_handle;
 	var votingMachine: machine_handle;
 	var votingMachine2: machine_handle;
-	var supervisor2: secure_machine_handle;
+	// var supervisor2: secure_machine_handle;
 	// var votingMachine3: secure_machine_handle;
 
 

@@ -37,15 +37,16 @@
 #include "remote_attestation_result.h"
 #include "ias_ra.h"
 #include "network_ra.h"
-#include <unordered_map>
+#include <map>
+#include <tuple>
 #include <string>
 #include "app.h"
 
 
 using namespace std;
-
-extern unordered_map<string, string> capabilityKeyAccessDictionary;
-extern unordered_map<string, string> capabilityKeyDictionary;
+// typedef tuple <string,string> key;
+extern map<tuple<string, string>, string> capabilityKeyAccessDictionary;
+extern map<tuple<string, string>, string> capabilityKeyDictionary;
 
 
 #ifdef  __cplusplus
@@ -148,8 +149,8 @@ int receive_encrypted_message(uint8_t *p_secret,
                                 uint32_t secret_size,
                                  uint8_t *p_gcm_mac);
 
-int createCapabilityKey(char* newMachineID, char* parentTrustedMachineID);
-char* retrieveCapabilityKey(char* currentMachineID, char* childMachineID);
+int createCapabilityKey(char* newMachineID, char* parentTrustedMachineID, char* requestedMachineTypeToCreate);
+char* retrieveCapabilityKey(char* currentMachineID, char* childMachineID, char* requestedMachineTypeToCreate);
 
 // void initKPS();
 

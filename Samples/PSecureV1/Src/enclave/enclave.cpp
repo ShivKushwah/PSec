@@ -146,15 +146,15 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 }
 
 //Responsibility of caller to free return
-char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey) {
+char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey, char* requestedMachineTypeToCreate) {
     int ret;
     char* other_machine_name = "KPS";
     char* requestString;
     int requestStringSize;
-    char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey};
-    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
-    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
-    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+    char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey, ":", requestedMachineTypeToCreate};
+    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedMachineTypeToCreate)};
+    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
+    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 5) + 1;
       
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString, requestStringSize);
     safe_free(requestString);
@@ -256,9 +256,9 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     //Contacting KPS for capability key
     char* capabilityKeyPayloadReceived;
     if (isSecureCreate) {
-        capabilityKeyPayloadReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str());
+        capabilityKeyPayloadReceived = receiveNewCapabilityKeyFromKPS(parentTrustedMachinePublicIDKey ,(char*)secureChildPublicIDKey.c_str(), machineType);
     } else {
-        capabilityKeyPayloadReceived = receiveNewCapabilityKeyFromKPS((char*)secureChildPublicIDKey.c_str() ,(char*)secureChildPublicIDKey.c_str());
+        capabilityKeyPayloadReceived = receiveNewCapabilityKeyFromKPS((char*)secureChildPublicIDKey.c_str() ,(char*)secureChildPublicIDKey.c_str(), machineType);
     } 
     ocall_print("Enclave received new capability Key from KPS: ");
     char* publicCapabilityKey = retrievePublicCapabilityKey(capabilityKeyPayloadReceived);
@@ -308,20 +308,21 @@ int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* paren
 }
 
 //Responbility of caller to free return
-char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey) {
+char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey, char* requestedMachineTypeToCreate) {
     int ret;
     char* other_machine_name = "KPS";
     char* requestString;
     int requestStringSize;
 
-    char* concatStrings[] = {newMachinePublicIDKey, ":", parentTrustedMachineID};
-    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
-    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
-    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+    char* concatStrings[] = {newMachinePublicIDKey, ":", parentTrustedMachineID, ":", requestedMachineTypeToCreate};
+    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedMachineTypeToCreate)};
+    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
+    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 5) + 1;
 
     ocall_print("Enclave is asking for creation of new cap key using");
     printRSAKey(newMachinePublicIDKey);
     printRSAKey(parentTrustedMachineID);
+    ocall_print(requestedMachineTypeToCreate);
     // ocall_print("last one should be same as");
     // printRSAKey(requestString + SGX_RSA3072_KEY_SIZE + 1);
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, CREATE_CAPABILITY_KEY_CONSTANT, requestString, requestStringSize);
