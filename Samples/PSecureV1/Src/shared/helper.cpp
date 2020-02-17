@@ -36,6 +36,7 @@ extern unordered_map<string, sgx_enclave_id_t> PublicIdentityKeyToEidDictionary;
 
 typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPublicKey
 extern map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
+extern map<string, int> ChildSessionKeyToNonce;
 extern unordered_map<string, int> PublicIdentityKeyToMachinePIDDictionary;
 extern unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
 
@@ -1405,6 +1406,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 safe_free(printStr);       
                 ocall_print(returnMessage);
                 PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
+                ChildSessionKeyToNonce[newSessionKey] = 0;
                 // safe_free(newSessionKey);
                 safe_free(returnMessage);
             
@@ -1483,10 +1485,19 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
             if (!NETWORK_DEBUG) {
                 //add encryption logic here
-                char* concatStrings[] = {sendingToMachinePublicID, colon, messageToEncrypt};
-                int concatLengths[] = {SGX_RSA3072_KEY_SIZE, strlen(colon), messageToEncryptSize};
-                char* M = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
-                int MSize = returnTotalSizeofLengthArray(concatLengths, 3);
+
+                string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+                int nonce = ChildSessionKeyToNonce[sessionKey];
+                ChildSessionKeyToNonce[sessionKey] = ChildSessionKeyToNonce[sessionKey] + 1;
+                char* nonceStr = (char*) malloc(10);
+                itoa(nonce, nonceStr, 10);
+
+                char* concatStrings[] = {sendingToMachinePublicID, colon, nonceStr, colon, messageToEncrypt};
+                int concatLengths[] = {SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(nonceStr), strlen(colon), messageToEncryptSize};
+                char* M = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
+                int MSize = returnTotalSizeofLengthArray(concatLengths, 5);
+
+                safe_free(nonceStr);
 
                 string sendingToMachineCapabilityKeyPayload = string(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, SIZE_OF_CAPABILITYKEY);//PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
                 char* privateCapabilityKeySendingToMachine = retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
@@ -1526,8 +1537,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
                 sgx_aes_ctr_128bit_key_t g_region_key;
                 sgx_aes_gcm_128bit_tag_t g_mac;
-                string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
-
                 memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
 
                 encryptedMessageSize = trustedPayloadLength;
@@ -1586,10 +1595,18 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
             if (!NETWORK_DEBUG) {
                 //add encryption logic here
-                char* concatStrings[] = {sendingToMachinePublicID, colon, messageToEncrypt};
-                int concatLengths[] = {SGX_RSA3072_KEY_SIZE, strlen(colon), messageToEncryptSize};
-                char* M = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
-                int MSize = returnTotalSizeofLengthArray(concatLengths, 3);
+                string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+                int nonce = ChildSessionKeyToNonce[sessionKey];
+                ChildSessionKeyToNonce[sessionKey] = ChildSessionKeyToNonce[sessionKey] + 1;
+                char* nonceStr = (char*) malloc(10);
+                itoa(nonce, nonceStr, 10);
+
+                char* concatStrings[] = {sendingToMachinePublicID, colon, nonceStr, colon, messageToEncrypt};
+                int concatLengths[] = {SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(nonceStr), strlen(colon), messageToEncryptSize};
+                char* M = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
+                int MSize = returnTotalSizeofLengthArray(concatLengths, 5);
+
+                safe_free(nonceStr);
 
                 //TODO make it actual identity key
                 sgx_rsa3072_key_t* fake_private_identity_key = (sgx_rsa3072_key_t*) malloc(sizeof(sgx_rsa3072_key_t));
@@ -1613,8 +1630,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
                 sgx_aes_ctr_128bit_key_t g_region_key;
                 sgx_aes_gcm_128bit_tag_t g_mac;
-                string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
-
                 memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
 
                 encryptedMessageSize = trustedPayloadLength;
@@ -1803,8 +1818,18 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         #endif
 
         safe_free(checkMyPublicIdentity);
-        char* message = (char*) malloc(atoi(encryptedMessageSize)); 
-        memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, atoi(encryptedMessageSize));
+        char* nonce = strtok(decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, ":");
+        if (atoi(nonce) == ChildSessionKeyToNonce[sessionKey]) {
+            ChildSessionKeyToNonce[sessionKey] = ChildSessionKeyToNonce[sessionKey] + 1;
+        } else {
+            ocall_print("Error: Replay attack! Nonce reused");
+            ocall_print("expecting");
+            ocall_print_int(ChildSessionKeyToNonce[sessionKey]);
+            ocall_print("received");
+            ocall_print_int(atoi(nonce));
+        }
+        char* message = (char*) malloc(atoi(encryptedMessageSize) - strlen(nonce) - 1); 
+        memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1 + strlen(nonce) + 1, atoi(encryptedMessageSize) - strlen(nonce) - 1);
         next = message;
 
     }
