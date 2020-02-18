@@ -21,7 +21,7 @@ secure_machine SecureSupervisorMachine
             var i : int;
 
             bBoard = new SecureBulletinBoardMachine();
-            bBox = new SecureBallotBoxMachine((bBoard = bBoard, supervisor = GetThisSecure()) );
+            bBox = new SecureBallotBoxMachine((bBoard = bBoard, supervisor = secure_this));
 
             //These are the credentials of voters that have registered to vote
             //One credential per valid voter
