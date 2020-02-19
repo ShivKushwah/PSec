@@ -1810,7 +1810,6 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         memcpy(decryptedSignature, decryptedMessage + atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
         // ocall_print("Lenght of encrypted message is ");
         // ocall_print(encryptedMessageSize);
-        #ifdef ENCLAVE_STD_ALT
         if (isSecureSend) {
             ocall_print("Received Signature:");
             printRSAKey((char*)decryptedSignature);
@@ -1822,6 +1821,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
             ocall_print("actual key is");
             printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
             // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
+            #ifdef ENCLAVE_STD_ALT
 
             if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
                 ocall_print("Verifying Signature works!!!!");
@@ -1829,11 +1829,47 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
                 ocall_print("Error: Secure Send Signature Verification Failed!");
                 return;
             }
-        } 
-        #else
-        
 
-        #endif
+            #endif
+
+        } else {
+            // ocall_print("Received Signature:");
+            // printRSAKey((char*)decryptedSignature);
+            // ocall_print("Signature is over message");
+            // printRSAKey(messageSignedOver);
+            // ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+            // ocall_print("Key needed to verify signature is");
+            // ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
+            // ocall_print("actual key is");
+            // printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
+            // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
+            sgx_rsa3072_public_key_t* publicSigningKeyRequestingMachine = (sgx_rsa3072_public_key_t*) PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)].c_str();
+            #ifndef ENCLAVE_STD_ALT
+            int success;
+
+            sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
+
+            if (success == 1) {
+                ocall_print("Verifying Signature works!!!!");
+            } else {
+                ocall_print("Error: Untrusted Send Signature Verification Failed!");
+                return;
+            }
+
+            #else 
+
+            if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicSigningKeyRequestingMachine)) {
+                ocall_print("Verifying Signature works!!!!");
+            } else {
+                ocall_print("Error: Untrusted Send Enclave Signature Verification Failed!");
+                return;
+            }
+
+            #endif
+
+        }
+        
+        
 
         safe_free(checkMyPublicIdentity);
         char* nonce = strtok(decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, ":");

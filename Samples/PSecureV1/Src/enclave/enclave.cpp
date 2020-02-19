@@ -511,6 +511,11 @@ bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* s
     }
 }
 
+int verifySignatureEcall(char* message, uint32_t MESSAGE_SIZE, char* signature, char* public_key, uint32_t SIZE_OF_SIGNATURE, uint32_t SIZE_OF_PUBLIC_KEY) {
+    bool ret = verifySignature(message, MESSAGE_SIZE, (sgx_rsa3072_signature_t*) signature, (sgx_rsa3072_public_key_t*) public_key);
+    return ret ? 1 : 0;
+}
+
 //Responsibilty of caller to free return
 char* generateSessionKeyTest() {
     char* sessionKey = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
