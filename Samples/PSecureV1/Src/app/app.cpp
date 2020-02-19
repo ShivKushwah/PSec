@@ -216,7 +216,14 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
     string requestingMachinePublicSigningKey = string(requestingMachineIDKey + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
     PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)] = requestingMachinePublicSigningKey;
 
+    ocall_print("TEMPER: usm init comm public signing key");
+    printPayload((char*)requestingMachinePublicSigningKey.c_str(), sizeof(sgx_rsa3072_public_key_t));
+    ocall_print("public id key");
+    printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
 
+    ocall_print("Init comm between");
+    printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+    printPayload(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE);
     char* receivingMachinePrivateID = (char*)get<1>(MachinePIDToIdentityDictionary[USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
     char* decryptedMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
     enclave_decryptMessageInteralPrivateKeyEcall(global_app_eid ,newSessionKey, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID, decryptedMessage, SGX_RSA3072_KEY_SIZE);
@@ -302,7 +309,8 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     PrivateIdentityKeyToPrivateSigningKey[usmChildPrivateIDKey] = usmChildPrivateSigningKey;
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE), string(usmChildPrivateIDKey.c_str(), SGX_RSA3072_KEY_SIZE));
     USMPublicIdentityKeyToMachinePIDDictionary[string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE)] = newMachinePID;
-
+    // ocall_print("Created USM with public id:");
+    // printPayload(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE);
     char* usmChildPublicIDKeyCopy = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
     registerMachineWithNetwork(usmChildPublicIDKeyCopy);

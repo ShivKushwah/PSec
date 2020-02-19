@@ -65,6 +65,7 @@ extern char* send_network_request_API(char* request);
 
 extern int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize);
 
+extern sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_key_t *private_key);
 
 void safe_free(void* ptr) {
     if (ptr != NULL) {
@@ -868,7 +869,10 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             return returnMessage;
 
         } else {
+            // ocall_print("checking the following");
+            // printPayload(machineReceivingComm, SGX_RSA3072_KEY_SIZE);
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)) > 0) {
+                // ocall_print("YEEEEEET");
                 char* ret = USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm, encryptedSessionKey);
                 safe_free(requestCopy);
                 return ret;
@@ -1244,35 +1248,6 @@ void generateSessionKey(string& newSessionKey) {
     
 } 
 
-//Responsibility of caller to free signature
-sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_key_t *private_key) {
-
-    sgx_rsa3072_signature_t* signatureMessage = (sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));
-    uint8_t* p_data = (uint8_t*) message;
-    uint32_t data_size = size;
-
-    ocall_print("Inside sign string message!");
-    ocall_print("Message size is");
-    ocall_print_int(size);
-
-
-    sgx_status_t status = SGX_ERROR_UNRECOGNIZED_PLATFORM;
-    #ifdef ENCLAVE_STD_ALT
-    status = sgx_rsa3072_sign(
-        p_data,
-        data_size,
-        private_key,
-        signatureMessage
-    );
-    #endif
-    if (status != SGX_SUCCESS) {
-        ocall_print("Error in signing string!");
-    } else {
-        ocall_print("Message signed successfully!");
-    }
-    return signatureMessage;
-}
-
 char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_null_byte, void* other_party_public_key_raw, int& output_encrypted_message_length) {
     #ifdef ENCLAVE_STD_ALT
     // ocall_print("Pub key received is");
@@ -1392,7 +1367,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 // ocall_print("Decrypted message is");
                 // printSessionKey(decryptedMessage);
 
-                char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", (char*)PublicIdentityKeyToPublicSigningKey[currentMachineIDPublicKey].c_str(), ":", sendingToMachinePublicID, ":", encryptedSessionKeyMessage};
+                char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", (char*)PublicIdentityKeyToPublicSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str(), ":", sendingToMachinePublicID, ":", encryptedSessionKeyMessage};
                 int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t), 1, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
                 char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 8);
                 int requestSize = returnTotalSizeofLengthArray(concatLenghts, 8) + 1;
@@ -1412,6 +1387,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 #ifdef ENCLAVE_STD_ALT
                 ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY);
                 #else
+                ocall_print("Init comm untrusted! 1");
                 ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY); 
                 #endif
                 safe_free(initComRequest);
@@ -1523,7 +1499,10 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 // ocall_print("capabilityKey");
                 printPublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
                 printPrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
-                sgx_rsa3072_signature_t* signatureM = signStringMessage(M, MSize, (sgx_rsa3072_key_t*) privateCapabilityKeySendingToMachine);
+                sgx_rsa3072_signature_t* signatureM;
+                #ifdef ENCLAVE_STD_ALT
+                signatureM = signStringMessage(M, MSize, (sgx_rsa3072_key_t*) privateCapabilityKeySendingToMachine);
+                #endif
                 int sizeOfSignature = SGX_RSA3072_KEY_SIZE;
                 char* sigString[] = {M, colon, (char*)signatureM};
                 int sigLengths[] = {MSize, strlen(colon), sizeOfSignature};
@@ -1623,10 +1602,26 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
                 safe_free(nonceStr);
 
-                //TODO make it actual identity key
-                sgx_rsa3072_key_t* private_identity_key = (sgx_rsa3072_key_t*)PrivateIdentityKeyToPrivateSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str();//(sgx_rsa3072_key_t*) malloc(sizeof(sgx_rsa3072_key_t));
-                //TODO uncomment below
-                sgx_rsa3072_signature_t* signatureM = signStringMessage(M, MSize, (sgx_rsa3072_key_t*) private_identity_key);//(sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));//
+                char* currentMachineIDPrivateKey;
+                #ifndef ENCLAVE_STD_ALT
+                currentMachineIDPrivateKey = (char*)get<1>(MachinePIDToIdentityDictionary[USMPublicIdentityKeyToMachinePIDDictionary[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
+                #else 
+                currentMachineIDPrivateKey = (char*)get<1>(MachinePIDToIdentityDictionary[PublicIdentityKeyToMachinePIDDictionary[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
+                #endif
+                sgx_rsa3072_key_t* private_identity_key = (sgx_rsa3072_key_t*)PrivateIdentityKeyToPrivateSigningKey[string(currentMachineIDPrivateKey, SGX_RSA3072_KEY_SIZE)].c_str();//(sgx_rsa3072_key_t*) malloc(sizeof(sgx_rsa3072_key_t));
+                ocall_print("TEMPER:Signing with following key pair");
+                ocall_print("public signing");
+                printPayload((char*)PublicIdentityKeyToPublicSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str(), sizeof(sgx_rsa3072_public_key_t));
+                ocall_print("public identity");
+                printPayload(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE);
+                // printPayload();
+                sgx_rsa3072_signature_t* signatureM;
+                #ifdef ENCLAVE_STD_ALT
+                signatureM = signStringMessage(M, MSize, (sgx_rsa3072_key_t*) private_identity_key);//(sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));//
+                #else
+                signatureM = (sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));
+                sgx_status_t status = enclave_signStringMessageEcall(global_app_eid, M, MSize, (char*) private_identity_key, (char*)signatureM, sizeof(sgx_rsa3072_key_t), sizeof(sgx_rsa3072_signature_t));
+                #endif
                 int sizeOfSignature = SGX_RSA3072_KEY_SIZE;
                 char* sigString[] = {M, colon, (char*)signatureM};
                 int sigLengths[] = {MSize, strlen(colon), sizeOfSignature};
@@ -1843,18 +1838,30 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
             // ocall_print("actual key is");
             // printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
             // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
-            sgx_rsa3072_public_key_t* publicSigningKeyRequestingMachine = (sgx_rsa3072_public_key_t*) PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)].c_str();
-            #ifndef ENCLAVE_STD_ALT
-            int success;
-
-            sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
-
-            if (success == 1) {
-                ocall_print("Verifying Signature works!!!!");
-            } else {
-                ocall_print("Error: Untrusted Send Signature Verification Failed!");
-                return;
+            if (PublicIdentityKeyToPublicSigningKey.count(string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
+                ocall_print("ERROR: BIG");
+                ocall_print("cannot find init comm between");
+                printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+                printPayload(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE);
             }
+            sgx_rsa3072_public_key_t* publicSigningKeyRequestingMachine = (sgx_rsa3072_public_key_t*) PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)].c_str();
+            ocall_print("TEMPER:verifying signature using this public signing key");
+            printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
+            ocall_print("public identity key");
+            printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+
+            #ifndef ENCLAVE_STD_ALT
+            //TODO uncomment
+            // int success;
+
+            // sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
+
+            // if (success == 1) {
+            //     ocall_print("Verifying Signature works!!!!");
+            // } else {
+            //     ocall_print("Error: Untrusted Send Signature Verification Failed!");
+            //     return;
+            // }
 
             #else 
 

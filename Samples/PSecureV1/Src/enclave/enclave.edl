@@ -55,6 +55,12 @@ enclave {
                                             [in, size=SIZE_OF_PUBLIC_KEY]char* public_key,
                                             uint32_t SIZE_OF_SIGNATURE,
                                             uint32_t SIZE_OF_PUBLIC_KEY);
+        public void signStringMessageEcall( [in, size=MESSAGE_SIZE]char* message, 
+                                    int MESSAGE_SIZE, 
+                                    [in, size=private_key_size] char *private_key, 
+                                    [out, size=signature_size] char* signature_out, 
+                                    uint32_t private_key_size, 
+                                    uint32_t signature_size);
 
         public void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid,
                                                 [in, size=lengthString]char* machineTypeToCreate, 

@@ -516,6 +516,39 @@ int verifySignatureEcall(char* message, uint32_t MESSAGE_SIZE, char* signature, 
     return ret ? 1 : 0;
 }
 
+//Responsibility of caller to free signature
+sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_key_t *private_key) {
+
+    sgx_rsa3072_signature_t* signatureMessage = (sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));
+    uint8_t* p_data = (uint8_t*) message;
+    uint32_t data_size = size;
+
+    ocall_print("Inside sign string message!");
+    ocall_print("Message size is");
+    ocall_print_int(size);
+
+
+    sgx_status_t status = SGX_ERROR_UNRECOGNIZED_PLATFORM;
+    status = sgx_rsa3072_sign(
+        p_data,
+        data_size,
+        private_key,
+        signatureMessage
+    );
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error in signing string!");
+    } else {
+        ocall_print("Message signed successfully!");
+    }
+    return signatureMessage;
+}
+
+void signStringMessageEcall(char* message, int MESSAGE_SIZE, char *private_key, char* signature_out, uint32_t private_key_size, uint32_t signature_size) {
+    sgx_rsa3072_signature_t* ret = signStringMessage(message, MESSAGE_SIZE, (sgx_rsa3072_key_t*) private_key);
+    memcpy(signature_out, (char*)ret, signature_size);
+    safe_free(ret);
+}
+
 //Responsibilty of caller to free return
 char* generateSessionKeyTest() {
     char* sessionKey = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
@@ -769,6 +802,15 @@ int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMach
 
     string requestingMachinePublicSigningKey = string(requestingMachineIDKey + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
     PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)] = requestingMachinePublicSigningKey;
+
+    ocall_print("TEMPER: init comm public signing key");
+    printPayload((char*)requestingMachinePublicSigningKey.c_str(), sizeof(sgx_rsa3072_public_key_t));
+    ocall_print("public id key");
+    printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+
+    ocall_print("Init comm between");
+    printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+    printPayload(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE);
 
     char* receivingMachinePrivateID = (char*)get<1>(MachinePIDToIdentityDictionary[PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
     char* decryptedMessage = decryptMessageInteralPrivateKey(newSessionKey, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID);
