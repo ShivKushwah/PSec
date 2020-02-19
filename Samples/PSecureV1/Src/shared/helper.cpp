@@ -1200,14 +1200,14 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
 
     } else {
-        PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SGX_RSA3072_KEY_SIZE));
+        PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
         memcpy(str, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
         safe_free(newMachinePublicIDKey);
         return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     }
     
     #else 
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SGX_RSA3072_KEY_SIZE));
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
     memcpy(str, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
     safe_free(newMachinePublicIDKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
@@ -2123,7 +2123,7 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     memcpy(currentMachineIDPublicKey,(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str(), SIZE_OF_IDENTITY_STRING);
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SGX_RSA3072_KEY_SIZE));
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
     memcpy(str, currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE);
 	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey); //TODO shividentity
     safe_free(currentMachineIDPublicKey);
@@ -2160,7 +2160,7 @@ extern "C" PRT_VALUE* P_CastHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     PRT_VALUE** P_VAR_payload = argRefs[0];
     PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
 
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SGX_RSA3072_KEY_SIZE));
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
     memcpy(str, (char*) val, SGX_RSA3072_KEY_SIZE);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     
@@ -2334,13 +2334,13 @@ extern "C" void P_FREE_machine_handle_IMPL(PRT_UINT64 frgnVal)
 
 extern "C" PRT_BOOLEAN P_ISEQUAL_machine_handle_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
 {
-	return memcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2, SGX_RSA3072_KEY_SIZE) == 0 ? PRT_TRUE : PRT_FALSE;
+	return memcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2, SIZE_OF_MACHINE_HANDLE) == 0 ? PRT_TRUE : PRT_FALSE;
 }
 
 extern "C" PRT_STRING P_TOSTRING_machine_handle_IMPL(PRT_UINT64 frgnVal)
 {
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SGX_RSA3072_KEY_SIZE));
-	sprintf_s(str, SGX_RSA3072_KEY_SIZE, "String : %s", frgnVal);
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
+	sprintf_s(str, SIZE_OF_MACHINE_HANDLE, "String : %s", frgnVal);
 	return str;
 }
 
@@ -2351,18 +2351,18 @@ extern "C" PRT_UINT32 P_GETHASHCODE_machine_handle_IMPL(PRT_UINT64 frgnVal)
 
 extern "C" PRT_UINT64 P_MKDEF_machine_handle_IMPL(void)
 {
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SGX_RSA3072_KEY_SIZE));
-	sprintf_s(str, SGX_RSA3072_KEY_SIZE, "xyx$12");
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
+	sprintf_s(str, SIZE_OF_MACHINE_HANDLE, "xyx$12");
 	return (PRT_UINT64)str;
 }
 
 extern "C" PRT_UINT64 P_CLONE_machine_handle_IMPL(PRT_UINT64 frgnVal)
 {
-	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SGX_RSA3072_KEY_SIZE));
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
     // if (NETWORK_DEBUG) {
     //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
     // } else {
-        memcpy(str, (void*)frgnVal, SGX_RSA3072_KEY_SIZE);
+        memcpy(str, (void*)frgnVal, SIZE_OF_MACHINE_HANDLE);
     // }
 	
 	return (PRT_UINT64)str;
