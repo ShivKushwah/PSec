@@ -39,6 +39,8 @@ extern map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 extern map<tuple<string, string>, int> ChildSessionKeyToNonce;
 extern unordered_map<string, int> PublicIdentityKeyToMachinePIDDictionary;
 extern unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
+extern unordered_map<string, string> PublicIdentityKeyToPublicSigningKey;
+extern unordered_map<string, string> PrivateIdentityKeyToPrivateSigningKey;
 
 extern bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* signature, sgx_rsa3072_public_key_t* public_key);
 extern int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize);
@@ -1611,9 +1613,9 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 safe_free(nonceStr);
 
                 //TODO make it actual identity key
-                sgx_rsa3072_key_t* fake_private_identity_key = (sgx_rsa3072_key_t*) malloc(sizeof(sgx_rsa3072_key_t));
+                sgx_rsa3072_key_t* private_identity_key = (sgx_rsa3072_key_t*)PrivateIdentityKeyToPrivateSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str();//(sgx_rsa3072_key_t*) malloc(sizeof(sgx_rsa3072_key_t));
                 //TODO uncomment below
-                sgx_rsa3072_signature_t* signatureM = (sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));//signStringMessage(M, MSize, (sgx_rsa3072_key_t*) fake_private_identity_key);
+                sgx_rsa3072_signature_t* signatureM = signStringMessage(M, MSize, (sgx_rsa3072_key_t*) private_identity_key);//(sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));//
                 int sizeOfSignature = SGX_RSA3072_KEY_SIZE;
                 char* sigString[] = {M, colon, (char*)signatureM};
                 int sigLengths[] = {MSize, strlen(colon), sizeOfSignature};
