@@ -38,6 +38,10 @@ map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 map<PMachineChildPair, string> PMachineToChildCapabilityKey; //should be empty
 map<tuple<string,string>, int> ChildSessionKeyToNonce;
 
+unordered_map<string, string> PublicIdentityKeyToPublicSigningKey;
+unordered_map<string, string> PrivateIdentityKeyToPrivateSigningKey;
+
+
 
 
 unordered_set<string> USMAuthorizedTypes; //TODO unhardcode
@@ -290,6 +294,8 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     string usmChildPrivateSigningKey;
     generateIdentity(usmChildPublicIDKey, usmChildPrivateIDKey, machineType, usmChildPublicSigningKey, usmChildPrivateSigningKey);
     
+    PublicIdentityKeyToPublicSigningKey[usmChildPublicIDKey] = usmChildPublicSigningKey;
+    PrivateIdentityKeyToPrivateSigningKey[usmChildPrivateIDKey] = usmChildPrivateSigningKey;
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE), string(usmChildPrivateIDKey.c_str(), SGX_RSA3072_KEY_SIZE));
     USMPublicIdentityKeyToMachinePIDDictionary[string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE)] = newMachinePID;
 

@@ -13,6 +13,9 @@ unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
 unordered_map<string, int> PublicIdentityKeyToMachinePIDDictionary;
 unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
 
+unordered_map<string, string> PublicIdentityKeyToPublicSigningKey;
+unordered_map<string, string> PrivateIdentityKeyToPrivateSigningKey;
+
 map<PMachineChildPair, string> PMachineToChildCapabilityKey;
 map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 map<tuple<string, string>, int> ChildSessionKeyToNonce;
@@ -249,6 +252,8 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
         generateIdentity(public_key, private_key, &publicIdentity, &privateIdentity, p_dmp1, p_dmq1, p_iqmp);
         secureChildPublicIDKey = string((char*)publicIdentity, SGX_RSA3072_KEY_SIZE);
         secureChildPrivateIDKey = string((char*)privateIdentity, SGX_RSA3072_KEY_SIZE);
+        PublicIdentityKeyToPublicSigningKey[secureChildPublicIDKey] = string((char*)public_key, sizeof(sgx_rsa3072_public_key_t));
+        PrivateIdentityKeyToPrivateSigningKey[secureChildPrivateIDKey] = string((char*)private_key, sizeof(sgx_rsa3072_key_t));
     }
         
     char* publicIdKeyCopy = (char*) malloc(secureChildPublicIDKey.length() + 1);
