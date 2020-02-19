@@ -130,7 +130,7 @@ static void RunToIdle(void* process)
 }
 
 
-void generateIdentity(string& publicID, string& privateID, string prefix) {
+void generateIdentity(string& publicID, string& privateID, string prefix, string& publicIDSigningKey, string& privateIDSigningKey) {
     if (!NETWORK_DEBUG) {
         char* private_identity_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
         char* public_identity_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
@@ -142,6 +142,8 @@ void generateIdentity(string& publicID, string& privateID, string prefix) {
         }
         publicID = string(public_identity_key_raw, SGX_RSA3072_KEY_SIZE);
         privateID = string(private_identity_key_raw, SGX_RSA3072_KEY_SIZE);
+        publicIDSigningKey = string(public_identity_key, sizeof(sgx_rsa3072_public_key_t));
+        privateIDSigningKey = string(private_identity_key, sizeof(sgx_rsa3072_key_t));
 
     } else {
         uint32_t randNum = rand() % 100;
@@ -165,7 +167,9 @@ extern "C" PRT_VALUE* P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     string publicID;
     string privateID;
-    generateIdentity(publicID, privateID, string("Initial"));
+    string publicIDSigningKey;
+    string privateIDSigningKey;
+    generateIdentity(publicID, privateID, string("Initial"), publicIDSigningKey, privateIDSigningKey);
     //TODO store the privateID
     //TODO register this machine over network
     MachinePIDToIdentityDictionary[currentMachinePID] = make_tuple(string(publicID.c_str(), SGX_RSA3072_KEY_SIZE), string(privateID.c_str(), SGX_RSA3072_KEY_SIZE));
@@ -282,7 +286,9 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     string machineTypeString = createString(machineType);
     string usmChildPublicIDKey;
     string usmChildPrivateIDKey;
-    generateIdentity(usmChildPublicIDKey, usmChildPrivateIDKey, machineType);
+    string usmChildPublicSigningKey;
+    string usmChildPrivateSigningKey;
+    generateIdentity(usmChildPublicIDKey, usmChildPrivateIDKey, machineType, usmChildPublicSigningKey, usmChildPrivateSigningKey);
     
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE), string(usmChildPrivateIDKey.c_str(), SGX_RSA3072_KEY_SIZE));
     USMPublicIdentityKeyToMachinePIDDictionary[string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE)] = newMachinePID;
@@ -292,13 +298,19 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     registerMachineWithNetwork(usmChildPublicIDKeyCopy);
     safe_free(usmChildPublicIDKeyCopy);
 
-    char* usmChildPublicIDKeyCopy2 = (char*) malloc(usmChildPublicIDKey.size() + 1);
-    memcpy(usmChildPublicIDKeyCopy2, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
+    char* usmChildPublicIDKeyCopy2 = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    memcpy(usmChildPublicIDKeyCopy2, usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE);
 
     createMachine(machineType, numArgs, payloadType, payload, payloadSize);
 
+    char* concatStrings[] = {usmChildPublicIDKeyCopy2, ":", (char*) usmChildPublicSigningKey.c_str()};
+    int concatLenghts[] = {SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t)};
+    char* returnID = concatMutipleStringsWithLength(concatStrings, concatLenghts, 3);
+    int requestSize = returnTotalSizeofLengthArray(concatLenghts, 3) + 1;
+    safe_free(usmChildPublicIDKeyCopy2);
+
     //Return the publicIDKey of the new machine
-    return usmChildPublicIDKeyCopy2;
+    return returnID;
 }
 
 long threadsRunning = 0;

@@ -2,7 +2,6 @@
 // #include "PingPongEnclave.h"
 // #include "OTPBankServerCode.h"
 
-
 const int SIZE_OF_IDENTITY_STRING = 385; //TODO figure out why i cant make this 384
 const int SIZE_OF_PUBLIC_CAPABILITY_KEY = 384 + 4;
 const int SIZE_OF_PRIVATE_CAPABILITY_KEY = 384 + 384 + 4;
@@ -12,6 +11,8 @@ const int SIZE_OF_NEWMACHINETYPE = 20;
 const int SIZE_OF_SESSION_KEY = 70;
 const int SIZE_OF_MAX_MESSAGE = 16400;
 const int MAX_NETWORK_MESSAGE = 16400;
+
+const int SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST = 384 + 1 + 384 + 4;
 
 const int SIZE_OF_REAL_SESSION_KEY = 16;
 const int SIZE_OF_IV = 12;

@@ -37,7 +37,7 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
 int handle_incoming_events_pong_enclave(PRT_UINT32 eventIdentifier);
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize);
 void generateIdentityDebug(string& publicID, string& privateID, string prefix);
-void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *private_key, void** publicIdentity, void** privateIdentity);
+void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *private_key, void** publicIdentity, void** privateIdentity, unsigned char *p_dmp1, unsigned char *p_dmq1, unsigned char *p_iqmp);
 string createString(char* str);
 char* itoa(int num, char* str, int base);
 PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* createTypeCommand, bool isSecureCreate);
@@ -70,7 +70,7 @@ int returnTotalSizeofLengthArray(int lengths[], int size);
 void printRSAKey(char* key);
 void printPublicCapabilityKey(char* key);
 void printPrivateCapabilityKey(char* key);
-void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *private_key, void** public_key_raw, void** private_key_raw);
+void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *private_key, void** public_key_raw, void** private_key_raw, unsigned char *p_dmp1, unsigned char *p_dmq1, unsigned char *p_iqmp);
 char* retrievePublicCapabilityKey(char* capabilityPayload);
 char* retrievePrivateCapabilityKey(char* capabilityPayload);
 void printPayload(char* payload, int size);

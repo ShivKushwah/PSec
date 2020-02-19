@@ -707,7 +707,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         int payloadType;
         char* payload;
 
-        newMachineID = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
+        newMachineID = (char* ) malloc(SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
 
         parentTrustedMachinePublicIDKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
         memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
@@ -755,7 +755,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
             ocall_print("at helper.cpp level");
             printRSAKey(parentTrustedMachinePublicIDKey);
-            sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, payloadSize, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
+            sgx_status_t status = enclave_createMachineAPI(new_enclave_eid, &ptr, new_enclave_eid, machineType, parentTrustedMachinePublicIDKey, newMachineID, numArgs, payloadType, payload, payloadSize, SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST, SIZE_OF_MAX_EVENT_PAYLOAD, new_enclave_eid);
             
             safe_free(requestCopy);
             return newMachineID;
@@ -773,7 +773,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
     
     }  else if (strcmp(split, "UntrustedCreate") == 0) {
 
-        char* newMachineID = (char* ) malloc(SIZE_OF_IDENTITY_STRING);
+        char* newMachineID = (char* ) malloc(SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
         split = strtok(NULL, ":");
         char* machineType = split;
         split = strtok(NULL, ":");
@@ -805,7 +805,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             }   
 
             
-            sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, payloadSize, SGX_RSA3072_KEY_SIZE, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
+            sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, payloadSize, SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
             
             safe_free(requestCopy);
             return newMachineID;
@@ -1033,7 +1033,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     char* payloadStringSizeString = (char*) malloc(10);
     itoa(payloadStringSize, payloadStringSizeString, 10);
 
-    char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_IDENTITY_STRING + 1);
+    char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
     int requestSize = -1;
     char* createMachineRequest = (char*) malloc(requestSize);
     int requestLength;
@@ -1099,10 +1099,12 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     ocall_print(createMachineRequest);
     int ret_value; 
 
+    int response_size = SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST;//SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST;// + 1 + SIZE_OF_CAPABILITYKEY;
+
     #ifdef ENCLAVE_STD_ALT   
-    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, requestLength, SIZE_OF_IDENTITY_STRING + 1);
+    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, requestLength, response_size);
     #else
-    ocall_network_request(createMachineRequest, newMachinePublicIDKey, requestLength, SIZE_OF_IDENTITY_STRING + 1);
+    ocall_network_request(createMachineRequest, newMachinePublicIDKey, requestLength, response_size);
     // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
     #endif
     safe_free(createMachineRequest);

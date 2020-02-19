@@ -1,5 +1,8 @@
 #include "enclave.h"
 
+const int n_byte_size = SGX_RSA3072_KEY_SIZE;
+
+
 PRT_PROCESS *process =  NULL;
 extern PRT_PROGRAMDECL* program;
 
@@ -168,7 +171,7 @@ void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid, char* machineTypeToC
     current_eid = currentEid;
     char* newMachinePublicIDKey = createMachineHelper(machineTypeToCreate, "", numArgs, payloadType, payloadString, payloadSize, false, enclaveEid);
     //"Return" the publicIDKey of the new machine
-    memcpy(returnNewMachinePublicID, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+    memcpy(returnNewMachinePublicID, newMachinePublicIDKey, SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
     safe_free(newMachinePublicIDKey);
 }
 
@@ -229,15 +232,21 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     string machineTypeToCreateString = createString(machineType);
     string secureChildPublicIDKey;
     string secureChildPrivateIDKey;
+
+    sgx_rsa3072_key_t *private_key;
+    sgx_rsa3072_public_key_t *public_key;
   
     if (NETWORK_DEBUG) {
         generateIdentityDebug(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
     } else {
-        sgx_rsa3072_key_t *private_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t)); //TODO shivfree need to free this and below
-        sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
+        private_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t)); //TODO shivfree need to free this and below
+        public_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
         void* publicIdentity = NULL;
         void* privateIdentity = NULL;
-        generateIdentity(public_key, private_key, &publicIdentity, &privateIdentity);
+        unsigned char *p_dmp1 = (unsigned char *)malloc(n_byte_size);
+        unsigned char *p_dmq1 = (unsigned char *)malloc(n_byte_size);
+        unsigned char *p_iqmp = (unsigned char *)malloc(n_byte_size);
+        generateIdentity(public_key, private_key, &publicIdentity, &privateIdentity, p_dmp1, p_dmq1, p_iqmp);
         secureChildPublicIDKey = string((char*)publicIdentity, SGX_RSA3072_KEY_SIZE);
         secureChildPrivateIDKey = string((char*)privateIdentity, SGX_RSA3072_KEY_SIZE);
     }
@@ -288,7 +297,15 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     char* returnNewMachinePublicIDKey = (char*) malloc(secureChildPublicIDKey.length() + 1);
     memcpy(returnNewMachinePublicIDKey, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length());
     returnNewMachinePublicIDKey[secureChildPublicIDKey.length()] = '\0';
-    return returnNewMachinePublicIDKey;
+
+    char* concatStrings[] = {returnNewMachinePublicIDKey, ":", (char*) public_key};
+    int concatLenghts[] = {SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t)};
+    char* returnID = concatMutipleStringsWithLength(concatStrings, concatLenghts, 3);
+    int requestSize = returnTotalSizeofLengthArray(concatLenghts, 3) + 1;
+
+    safe_free(returnNewMachinePublicIDKey);
+
+    return returnID;
 
 }
 
@@ -304,7 +321,7 @@ int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* paren
     
     char* newMachinePublicIDKey = createMachineHelper(machineType, parentTrustedMachinePublicIDKey, numArgs, payloadType, payload, payloadSize, true, enclaveEid);
     //"Return" the publicIDKey of the new machine
-    memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+    memcpy(returnNewMachinePublicIDKey, newMachinePublicIDKey, SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
     safe_free(newMachinePublicIDKey);
 }
 
@@ -359,7 +376,10 @@ void createRsaKeyPairEcall(char* public_key_raw_out, char* private_key_raw_out, 
     sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
     void* private_key_raw = NULL;
     void* public_key_raw = NULL;
-    createRsaKeyPair(public_key, private_key, &public_key_raw, &private_key_raw);
+    unsigned char *p_dmp1 = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_dmq1 = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_iqmp = (unsigned char *)malloc(n_byte_size);
+    createRsaKeyPair(public_key, private_key, &public_key_raw, &private_key_raw, p_dmp1, p_dmq1, p_iqmp);
     memcpy(public_key_raw_out, public_key_raw, SGX_RSA3072_KEY_SIZE);
     memcpy(private_key_raw_out, private_key_raw, SGX_RSA3072_KEY_SIZE);
     memcpy(public_key_out, public_key, sizeof(sgx_rsa3072_public_key_t));
@@ -367,17 +387,16 @@ void createRsaKeyPairEcall(char* public_key_raw_out, char* private_key_raw_out, 
 }
 
 //Caller needs to allocate space for public_key and private_key
-void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *private_key, void** public_key_raw, void** private_key_raw) {
-    int n_byte_size = SGX_RSA3072_KEY_SIZE;
+void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *private_key, void** public_key_raw, void** private_key_raw, unsigned char *p_dmp1, unsigned char *p_dmq1, unsigned char *p_iqmp) {
     int e_byte_size = SGX_RSA3072_PUB_EXP_SIZE;
     unsigned char *p_n = (unsigned char *)malloc(n_byte_size);
     unsigned char *p_d = (unsigned char *)malloc(SGX_RSA3072_PRI_EXP_SIZE);
     unsigned char p_e[] = {0x01, 0x00, 0x01, 0x00}; //65537
     unsigned char *p_p = (unsigned char *)malloc(n_byte_size);
     unsigned char *p_q = (unsigned char *)malloc(n_byte_size);
-    unsigned char *p_dmp1 = (unsigned char *)malloc(n_byte_size);
-    unsigned char *p_dmq1 = (unsigned char *)malloc(n_byte_size);
-    unsigned char *p_iqmp = (unsigned char *)malloc(n_byte_size);
+    // unsigned char *p_dmp1 = (unsigned char *)malloc(n_byte_size);
+    // unsigned char *p_dmq1 = (unsigned char *)malloc(n_byte_size);
+    // unsigned char *p_iqmp = (unsigned char *)malloc(n_byte_size);
     
 
     sgx_status_t status = SGX_SUCCESS;
@@ -454,9 +473,9 @@ void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *p
 	free(p_d);
 	free(p_p);
 	free(p_q);
-	free(p_dmp1);
-	free(p_dmq1);
-	free(p_iqmp);
+	// free(p_dmp1);
+	// free(p_dmq1);
+	// free(p_iqmp);
 
 }
 
@@ -707,12 +726,15 @@ void generateIdentityDebug(string& publicID, string& privateID, string prefix) {
 
 } 
 
-void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *private_key, void** publicIdentity, void** privateIdentity) {
+void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *private_key, void** publicIdentity, void** privateIdentity, unsigned char *p_dmp1, unsigned char *p_dmq1, unsigned char *p_iqmp) {
     // sgx_rsa3072_key_t *sk = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t));
     // sgx_rsa3072_public_key_t *pk = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
     void* sk_raw = NULL;
     void* pk_raw = NULL;
-    createRsaKeyPair(public_key, private_key, publicIdentity, privateIdentity);
+    // unsigned char *p_dmp1 = (unsigned char *)malloc(n_byte_size);
+    // unsigned char *p_dmq1 = (unsigned char *)malloc(n_byte_size);
+    // unsigned char *p_iqmp = (unsigned char *)malloc(n_byte_size);
+    createRsaKeyPair(public_key, private_key, publicIdentity, privateIdentity, p_dmp1, p_dmq1, p_iqmp);
     // public_key = pk;
     // private_key = sk;
     // publicIdentity = (char*)pk_raw;
