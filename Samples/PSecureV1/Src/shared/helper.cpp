@@ -833,14 +833,20 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         char* machineInitializingComm;
         char* machineReceivingComm;
 
-        machineInitializingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+        machineInitializingComm = (char*) malloc(SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
+        memcpy(machineInitializingComm, request + strlen(split) + 1, SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
         machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+        memcpy(machineReceivingComm, request + strlen(split) + 1 + SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST + 1, SGX_RSA3072_KEY_SIZE);
         encryptedSessionKey = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
-        memcpy(encryptedSessionKey, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+        memcpy(encryptedSessionKey, request + strlen(split) + 1 + SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
             
-        
+        // machineInitializingComm = (char*) malloc(SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
+        // memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE + 2);
+        // machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        // memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+        // encryptedSessionKey = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
+        // memcpy(encryptedSessionKey, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+            
         
         if (isEnclaveUntrustedHost) {
 
@@ -852,7 +858,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             char* returnMessage = (char*) malloc(100);
             int ptr;
             //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
-            sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, encryptedSessionKey, returnMessage, SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
+            sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, encryptedSessionKey, returnMessage, SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST, SGX_RSA3072_KEY_SIZE);
             if (status != SGX_SUCCESS) {
                 printf("Sgx Error Code: %x\n", status);
             }
@@ -1386,10 +1392,15 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 // ocall_print("Decrypted message is");
                 // printSessionKey(decryptedMessage);
 
-                char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", sendingToMachinePublicID, ":", encryptedSessionKeyMessage};
-                int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
-                char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 6);
-                int requestSize = returnTotalSizeofLengthArray(concatLenghts, 6) + 1;
+                char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", (char*)PublicIdentityKeyToPublicSigningKey[currentMachineIDPublicKey].c_str(), ":", sendingToMachinePublicID, ":", encryptedSessionKeyMessage};
+                int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t), 1, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
+                char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 8);
+                int requestSize = returnTotalSizeofLengthArray(concatLenghts, 8) + 1;
+
+                // char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ";", sendingToMachinePublicID, ":", encryptedSessionKeyMessage};
+                // int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
+                // char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 6);
+                // int requestSize = returnTotalSizeofLengthArray(concatLenghts, 6) + 1;
                 
                 char* machineNameWrapper[] = {currentMachineIDPublicKey};
                 char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
@@ -1818,7 +1829,9 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
                 ocall_print("Error: Secure Send Signature Verification Failed!");
                 return;
             }
-        }
+        } 
+        #else
+        
 
         #endif
 

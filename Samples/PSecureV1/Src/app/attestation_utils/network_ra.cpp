@@ -244,10 +244,16 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
         //     ocall_print("machine Receiving comm is :");
         //     ocall_print(machineReceivingComm);
         // } else {
-            machineInitializingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+            // machineInitializingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            // memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
+            // machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            // memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+            // ocall_print("machine Receiving comm is :");
+            // printRSAKey(machineReceivingComm);
+            machineInitializingComm = (char*) malloc(SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
+            memcpy(machineInitializingComm, request + strlen(split) + 1, SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
             machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
+            memcpy(machineReceivingComm, request + strlen(split) + 1 + SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST + 1, SGX_RSA3072_KEY_SIZE);
             ocall_print("machine Receiving comm is :");
             printRSAKey(machineReceivingComm);
         // }

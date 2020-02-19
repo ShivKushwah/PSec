@@ -762,6 +762,9 @@ void decryptMessageInteralPrivateKeyEcall(char* encryptedData, size_t encryptedD
 int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey, char* returnMessage, uint32_t ID_SIZE, uint32_t SESSION_KEY_SIZE) {
     ocall_print("Initialize Communication API Called!");
 
+    string requestingMachinePublicSigningKey = string(requestingMachineIDKey + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
+    PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)] = requestingMachinePublicSigningKey;
+
     char* receivingMachinePrivateID = (char*)get<1>(MachinePIDToIdentityDictionary[PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
     char* decryptedMessage = decryptMessageInteralPrivateKey(newSessionKey, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID);
     printPayload(newSessionKey, SGX_RSA3072_KEY_SIZE);
