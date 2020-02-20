@@ -267,7 +267,7 @@ int returnSizeOfForeignType(int type_tag) {
     if (type_tag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex) { 
         return SIZE_OF_PRT_STRING_SERIALIZED;
     }  else if (type_tag == P_TYPEDEF_machine_handle->typeUnion.foreignType->declIndex) {        
-        return SGX_RSA3072_KEY_SIZE;
+        return SIZE_OF_MACHINE_HANDLE;
     } else if (type_tag == P_TYPEDEF_capability->typeUnion.foreignType->declIndex) {
         return SIZE_OF_P_CAPABILITY_FOREIGN_TYPE;
     } else if (type_tag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex) {
@@ -1201,14 +1201,14 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     } else {
         PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-        memcpy(str, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+        memcpy(str, newMachinePublicIDKey, SIZE_OF_MACHINE_HANDLE);
         safe_free(newMachinePublicIDKey);
         return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     }
     
     #else 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-    memcpy(str, newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+    memcpy(str, newMachinePublicIDKey, SIZE_OF_MACHINE_HANDLE);
     safe_free(newMachinePublicIDKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     #endif
@@ -2120,11 +2120,13 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* currentMachineIDPublicKey;
  
-    currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
+    currentMachineIDPublicKey = (char*) malloc(SIZE_OF_MACHINE_HANDLE);
     memcpy(currentMachineIDPublicKey,(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str(), SIZE_OF_IDENTITY_STRING);
+    memcpy(currentMachineIDPublicKey + SGX_RSA3072_KEY_SIZE, ":", 1);
+    memcpy(currentMachineIDPublicKey + SGX_RSA3072_KEY_SIZE + 1, (char*)PublicIdentityKeyToPublicSigningKey[get<0>(MachinePIDToIdentityDictionary[currentMachinePID])].c_str(), 384 + 4);
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-    memcpy(str, currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE);
+    memcpy(str, currentMachineIDPublicKey, SIZE_OF_MACHINE_HANDLE);
 	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey); //TODO shividentity
     safe_free(currentMachineIDPublicKey);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
