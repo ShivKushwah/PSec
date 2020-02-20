@@ -7,6 +7,7 @@ type secure_machine_handle;
 fun PrintKey(input : machine_handle);
 fun PrintPCapability(input : capability);
 fun PrintString(inputString : StringType);
+fun PrintMachineHandle(inputString : machine_handle);
 
 //TODO Make below functions P commands rather than Foreign functions user needs to call
 fun GetCapability(input: machine_handle) : capability; //Should be "get_capability"

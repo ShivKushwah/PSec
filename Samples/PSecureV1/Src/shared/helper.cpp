@@ -1203,6 +1203,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
         memcpy(str, newMachinePublicIDKey, SIZE_OF_MACHINE_HANDLE);
         safe_free(newMachinePublicIDKey);
+        // ocall_print("check check");
+        // printPayload((char*)str, SIZE_OF_MACHINE_HANDLE);
         return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     }
     
@@ -1210,6 +1212,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
     memcpy(str, newMachinePublicIDKey, SIZE_OF_MACHINE_HANDLE);
     safe_free(newMachinePublicIDKey);
+    // ocall_print("check check");
+    // printPayload((char*)str, SIZE_OF_MACHINE_HANDLE);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     #endif
 }
@@ -1334,6 +1338,12 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     PRT_VALUE** P_ToMachine_Payload = argRefs[0];
     PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
     char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
+    PublicIdentityKeyToPublicSigningKey[string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE)] = string(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
+
+    ocall_print("saving following signing key:");
+    printPayload(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
+    ocall_print("for public identity");
+    printPayload(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE);
 
     ocall_print("Need to send to machine (received via P argument)");
     printRSAKey(sendingToMachinePublicID);
@@ -1609,7 +1619,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 currentMachineIDPrivateKey = (char*)get<1>(MachinePIDToIdentityDictionary[PublicIdentityKeyToMachinePIDDictionary[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
                 #endif
                 sgx_rsa3072_key_t* private_identity_key = (sgx_rsa3072_key_t*)PrivateIdentityKeyToPrivateSigningKey[string(currentMachineIDPrivateKey, SGX_RSA3072_KEY_SIZE)].c_str();//(sgx_rsa3072_key_t*) malloc(sizeof(sgx_rsa3072_key_t));
-                ocall_print("TEMPER:Signing with following key pair");
+                ocall_print("TEMPER: Signing the following key pair");
                 ocall_print("public signing");
                 printPayload((char*)PublicIdentityKeyToPublicSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str(), sizeof(sgx_rsa3072_public_key_t));
                 ocall_print("public identity");
@@ -1852,16 +1862,26 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
 
             #ifndef ENCLAVE_STD_ALT
             //TODO uncomment
-            // int success;
+            int success;
+            ocall_print("OUTSIDE:");
+            ocall_print("message is");
+            printPayload(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+            ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+            ocall_print("signature is");
+            printPayload((char*)decryptedSignature, SGX_RSA3072_KEY_SIZE);
+            ocall_print("signing key is");
+            printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
 
-            // sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
-
-            // if (success == 1) {
-            //     ocall_print("Verifying Signature works!!!!");
-            // } else {
-            //     ocall_print("Error: Untrusted Send Signature Verification Failed!");
-            //     return;
-            // }
+            sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
+            if (status != SGX_SUCCESS) {
+                ocall_print("sgx call failed!");
+            }
+            if (success == 1) {
+                ocall_print("Verifying Signature works!!!!");
+            } else {
+                ocall_print("Error: Untrusted Send Signature Verification Failed!");
+                return;
+            }
 
             #else 
 
@@ -2123,7 +2143,7 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_MACHINE_HANDLE);
     memcpy(currentMachineIDPublicKey,(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str(), SIZE_OF_IDENTITY_STRING);
     memcpy(currentMachineIDPublicKey + SGX_RSA3072_KEY_SIZE, ":", 1);
-    memcpy(currentMachineIDPublicKey + SGX_RSA3072_KEY_SIZE + 1, (char*)PublicIdentityKeyToPublicSigningKey[get<0>(MachinePIDToIdentityDictionary[currentMachinePID])].c_str(), 384 + 4);
+    memcpy(currentMachineIDPublicKey + SGX_RSA3072_KEY_SIZE + 1, (char*)PublicIdentityKeyToPublicSigningKey[get<0>(MachinePIDToIdentityDictionary[currentMachinePID])].c_str(), sizeof(sgx_rsa3072_public_key_t));
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
     memcpy(str, currentMachineIDPublicKey, SIZE_OF_MACHINE_HANDLE);
@@ -2164,6 +2184,12 @@ extern "C" PRT_VALUE* P_CastHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
     memcpy(str, (char*) val, SGX_RSA3072_KEY_SIZE);
+    memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
+    ocall_print("checking temp fix");
+    if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
+        ocall_print("TEMP FIX WONT WORK");
+    }
+    // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     
 }
@@ -2255,6 +2281,18 @@ extern "C" PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE**
     ocall_print("declassify int is returning");
     ocall_print_int((*P_VAR_payload)->valueUnion.nt);
     return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
+}
+
+extern "C" void P_PrintMachineHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    ocall_print("print machine handle");
+    ocall_print("print public id key");
+    printPayload((char*)(*P_VAR_payload)->valueUnion.frgn->value, SGX_RSA3072_KEY_SIZE);
+    ocall_print("print public signing key");
+    printPayload((char*)(*P_VAR_payload)->valueUnion.frgn->value + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
+
+
 }
 
 extern "C" void P_Debug_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)

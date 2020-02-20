@@ -30,7 +30,7 @@ secure_machine SecureSupervisorMachine
 
             //We send 2 because this is how many votes we need to be submitted
             //before the election is considered finished
-            secure_send bBox, TRUSTEDeStartElection, 2;
+            secure_send bBox, TRUSTEDeStartElection, 1;
 
             goto SendVotingClientMachinesOrValidateCredentials;
         }

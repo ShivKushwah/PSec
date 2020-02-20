@@ -27,7 +27,12 @@ machine VotingUSM {
 		entry (payload: machine_handle) {
 			votingSecureMachine = payload;
 			vote = 1;
+			print "HARPREET";
+			PrintMachineHandle(votingSecureMachine);
 			untrusted_send votingSecureMachine, UNTRUSTEDVoteRequest, (credential = credential, vote = vote, requestingMachine = this);
+			print "Kiran";
+			PrintMachineHandle(votingSecureMachine);	
+			//make foreign function to check PublicIdentityKey of votingSecureMachine
 		}
 		on UNTRUSTEDGetResults do (payload : (whoWon : int, myVoteCounted : bool)) {
 				if (payload.myVoteCounted) {

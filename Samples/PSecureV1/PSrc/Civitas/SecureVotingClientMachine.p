@@ -12,6 +12,9 @@ secure_machine SecureVotingClientMachine
 
     start state Init {
         entry (payload: (ballotBox:secure_machine_handle, bulletinBoard:secure_machine_handle)) {
+            //print out THIS here
+            print "TEST1";
+            PrintMachineHandle(this);
             ballotBox = payload.ballotBox;
             bulletinBoard = payload.bulletinBoard;
             goto WaitForVote;
@@ -51,7 +54,12 @@ secure_machine SecureVotingClientMachine
             {
                 voteCounted = true;
             }
+            print "HARBINDER";
+            print "TEST2";
+            PrintMachineHandle(this);
+            //print out this here
             untrusted_send requestingMachine, UNTRUSTEDGetResults, (whoWon = DeclassifyInt(payload.whoWon), myVoteCounted = voteCounted);
+            print "GURGY";
             goto Done;
         }
     }
