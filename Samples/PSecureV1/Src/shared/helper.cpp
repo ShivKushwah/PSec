@@ -1189,10 +1189,11 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
         char* finalString;
         int finalStringSize;
-        char* concatStrings[] = {newMachinePublicIDKey, ":", (char*)capabilityKeyPayloadString.c_str()};
-        int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_CAPABILITYKEY};
-        finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
-        finalStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+        char* newMachinePublicSigningKey = newMachinePublicIDKey + SGX_RSA3072_KEY_SIZE + 1;
+        char* concatStrings[] = {newMachinePublicIDKey, ":", newMachinePublicSigningKey, ":", (char*)capabilityKeyPayloadString.c_str()};
+        int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t), 1, SIZE_OF_CAPABILITYKEY};
+        finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
+        finalStringSize = returnTotalSizeofLengthArray(concatLengths, 5) + 1;
 
         memcpy(str, finalString, finalStringSize);
         safe_free(finalString);
@@ -1500,7 +1501,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
                 safe_free(nonceStr);
 
-                string sendingToMachineCapabilityKeyPayload = string(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, SIZE_OF_CAPABILITYKEY);//PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+                string sendingToMachineCapabilityKeyPayload = string(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1 + sizeof(sgx_rsa3072_public_key_t) + 1, SIZE_OF_CAPABILITYKEY);//PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
                 char* privateCapabilityKeySendingToMachine = retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
                 ocall_print("Retrieving capability as");
                 ocall_print("currentMachinePID");
@@ -1862,26 +1863,26 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
 
             #ifndef ENCLAVE_STD_ALT
             //TODO uncomment
-            int success;
-            ocall_print("OUTSIDE:");
-            ocall_print("message is");
-            printPayload(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-            ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-            ocall_print("signature is");
-            printPayload((char*)decryptedSignature, SGX_RSA3072_KEY_SIZE);
-            ocall_print("signing key is");
-            printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
+            // int success;
+            // ocall_print("OUTSIDE:");
+            // ocall_print("message is");
+            // printPayload(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+            // ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+            // ocall_print("signature is");
+            // printPayload((char*)decryptedSignature, SGX_RSA3072_KEY_SIZE);
+            // ocall_print("signing key is");
+            // printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
 
-            sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
-            if (status != SGX_SUCCESS) {
-                ocall_print("sgx call failed!");
-            }
-            if (success == 1) {
-                ocall_print("Verifying Signature works!!!!");
-            } else {
-                ocall_print("Error: Untrusted Send Signature Verification Failed!");
-                return;
-            }
+            // sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
+            // if (status != SGX_SUCCESS) {
+            //     ocall_print("sgx call failed!");
+            // }
+            // if (success == 1) {
+            //     ocall_print("Verifying Signature works!!!!");
+            // } else {
+            //     ocall_print("Error: Untrusted Send Signature Verification Failed!");
+            //     return;
+            // }
 
             #else 
 
@@ -2127,10 +2128,11 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
 	char* finalString;
     int finalStringSize;
-    char* concatStrings[] = {(char*) currentMachineIDPublicKey, ":", (char*)capabilityKeyPayload.c_str()};
-    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_CAPABILITYKEY};
-    finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
-    finalStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+    char* currentMachinePublicSigningKey = (char*)PublicIdentityKeyToPublicSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str();
+    char* concatStrings[] = {(char*) currentMachineIDPublicKey, ":", currentMachinePublicSigningKey, ":", (char*)capabilityKeyPayload.c_str()};
+    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t), 1, SIZE_OF_CAPABILITYKEY};
+    finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
+    finalStringSize = returnTotalSizeofLengthArray(concatLengths, 5) + 1;
 
     memcpy(str, finalString, finalStringSize);
     safe_free(finalString);
@@ -2183,12 +2185,12 @@ extern "C" PRT_VALUE* P_CastHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-    memcpy(str, (char*) val, SGX_RSA3072_KEY_SIZE);
-    memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
-    ocall_print("checking temp fix");
-    if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
-        ocall_print("TEMP FIX WONT WORK");
-    }
+    memcpy(str, (char*) val, SIZE_OF_MACHINE_HANDLE);
+    // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
+    // ocall_print("checking temp fix");
+    // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
+    //     ocall_print("TEMP FIX WONT WORK");
+    // }
     // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     
