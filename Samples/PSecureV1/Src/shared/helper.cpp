@@ -1341,10 +1341,10 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
     PublicIdentityKeyToPublicSigningKey[string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE)] = string(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
 
-    ocall_print("saving following signing key:");
-    printPayload(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
-    ocall_print("for public identity");
-    printPayload(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE);
+    // ocall_print("saving following signing key:");
+    // printPayload(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
+    // ocall_print("for public identity");
+    // printPayload(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE);
 
     ocall_print("Need to send to machine (received via P argument)");
     printRSAKey(sendingToMachinePublicID);
@@ -1398,7 +1398,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 #ifdef ENCLAVE_STD_ALT
                 ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY);
                 #else
-                ocall_print("Init comm untrusted! 1");
+                // ocall_print("Init comm untrusted! 1");
                 ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY); 
                 #endif
                 safe_free(initComRequest);
@@ -1620,11 +1620,11 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 currentMachineIDPrivateKey = (char*)get<1>(MachinePIDToIdentityDictionary[PublicIdentityKeyToMachinePIDDictionary[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
                 #endif
                 sgx_rsa3072_key_t* private_identity_key = (sgx_rsa3072_key_t*)PrivateIdentityKeyToPrivateSigningKey[string(currentMachineIDPrivateKey, SGX_RSA3072_KEY_SIZE)].c_str();//(sgx_rsa3072_key_t*) malloc(sizeof(sgx_rsa3072_key_t));
-                ocall_print("TEMPER: Signing the following key pair");
-                ocall_print("public signing");
-                printPayload((char*)PublicIdentityKeyToPublicSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str(), sizeof(sgx_rsa3072_public_key_t));
-                ocall_print("public identity");
-                printPayload(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE);
+                // ocall_print("TEMPER: Signing the following key pair");
+                // ocall_print("public signing");
+                // printPayload((char*)PublicIdentityKeyToPublicSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str(), sizeof(sgx_rsa3072_public_key_t));
+                // ocall_print("public identity");
+                // printPayload(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE);
                 // printPayload();
                 sgx_rsa3072_signature_t* signatureM;
                 #ifdef ENCLAVE_STD_ALT
@@ -1850,28 +1850,27 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
             // printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
             // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
             if (PublicIdentityKeyToPublicSigningKey.count(string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
-                ocall_print("ERROR: BIG");
-                ocall_print("cannot find init comm between");
-                printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
-                printPayload(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+                ocall_print("ERROR: Cannot find signing key!");
+                // ocall_print("cannot find init comm between");
+                // printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+                // printPayload(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE);
             }
             sgx_rsa3072_public_key_t* publicSigningKeyRequestingMachine = (sgx_rsa3072_public_key_t*) PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)].c_str();
-            ocall_print("TEMPER:verifying signature using this public signing key");
-            printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
-            ocall_print("public identity key");
-            printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+            // ocall_print("TEMPER:verifying signature using this public signing key");
+            // printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
+            // ocall_print("public identity key");
+            // printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
 
             #ifndef ENCLAVE_STD_ALT
-            //TODO uncomment
             int success;
-            ocall_print("OUTSIDE:");
-            ocall_print("message is");
-            printPayload(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-            ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-            ocall_print("signature is");
-            printPayload((char*)decryptedSignature, SGX_RSA3072_KEY_SIZE);
-            ocall_print("signing key is");
-            printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
+            // ocall_print("OUTSIDE:");
+            // ocall_print("message is");
+            // printPayload(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+            // ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+            // ocall_print("signature is");
+            // printPayload((char*)decryptedSignature, SGX_RSA3072_KEY_SIZE);
+            // ocall_print("signing key is");
+            // printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
 
             sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
             if (status != SGX_SUCCESS) {

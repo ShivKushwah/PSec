@@ -30,7 +30,7 @@ secure_machine SecureSupervisorMachine
 
             //We send 2 because this is how many votes we need to be submitted
             //before the election is considered finished
-            secure_send bBox, TRUSTEDeStartElection, 1;
+            secure_send bBox, TRUSTEDeStartElection, 2;
 
             goto SendVotingClientMachinesOrValidateCredentials;
         }
@@ -42,6 +42,7 @@ secure_machine SecureSupervisorMachine
             var secureVotingClientMachine : secure_machine_handle;
             print "Provisioning a secure voting client!";
             secureVotingClientMachine = new SecureVotingClientMachine((ballotBox = bBox, bulletinBoard = bBoard));
+            
             untrusted_send requestingMachine, UNTRUSTEDReceiveVotingSSM, CastHandle(secureVotingClientMachine); //TODO why can I comment out CastHandle
         }
         on TRUSTEDValidateCredential do (payload: (tabulationTellerMachine : secure_machine_handle, credentialToCheck : int)) {

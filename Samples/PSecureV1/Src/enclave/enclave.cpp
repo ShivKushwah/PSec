@@ -253,9 +253,9 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
         secureChildPublicIDKey = string((char*)publicIdentity, SGX_RSA3072_KEY_SIZE);
         secureChildPrivateIDKey = string((char*)privateIdentity, SGX_RSA3072_KEY_SIZE);
         PublicIdentityKeyToPublicSigningKey[secureChildPublicIDKey] = string((char*)public_key, sizeof(sgx_rsa3072_public_key_t));
-        ocall_print("SAVING PUBLIC IDENTITY KEY WIHT SIGNING KEY UPON MACHINE CREATION");
-        printPayload((char*)secureChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE);
-        printPayload((char*)public_key, sizeof(sgx_rsa3072_public_key_t));
+        // ocall_print("SAVING PUBLIC IDENTITY KEY WIHT SIGNING KEY UPON MACHINE CREATION");
+        // printPayload((char*)secureChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE);
+        // printPayload((char*)public_key, sizeof(sgx_rsa3072_public_key_t));
         PrivateIdentityKeyToPrivateSigningKey[secureChildPrivateIDKey] = string((char*)private_key, sizeof(sgx_rsa3072_key_t));
     }
         
@@ -516,14 +516,14 @@ bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* s
 }
 
 int verifySignatureEcall(char* message, uint32_t MESSAGE_SIZE, char* signature, char* public_key, uint32_t SIZE_OF_SIGNATURE, uint32_t SIZE_OF_PUBLIC_KEY) {
-    ocall_print("INSIDE:");
-            ocall_print("message is");
-            printPayload(message, MESSAGE_SIZE);
-            ocall_print_int(MESSAGE_SIZE);
-            ocall_print("signature is");
-            printPayload(signature, SGX_RSA3072_KEY_SIZE);
-            ocall_print("signing key is");
-            printPayload(public_key, sizeof(sgx_rsa3072_public_key_t));
+    // ocall_print("INSIDE:");
+    //         ocall_print("message is");
+    //         printPayload(message, MESSAGE_SIZE);
+    //         ocall_print_int(MESSAGE_SIZE);
+    //         ocall_print("signature is");
+    //         printPayload(signature, SGX_RSA3072_KEY_SIZE);
+    //         ocall_print("signing key is");
+    //         printPayload(public_key, sizeof(sgx_rsa3072_public_key_t));
     ocall_print("We are inside VerifySignatureEcall");
     // printPayload(public_key, sizeof(sgx_rsa3072_public_key_t));
     bool ret = verifySignature(message, MESSAGE_SIZE, (sgx_rsa3072_signature_t*) signature, (sgx_rsa3072_public_key_t*) public_key);
@@ -817,14 +817,14 @@ int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMach
     string requestingMachinePublicSigningKey = string(requestingMachineIDKey + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
     PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)] = requestingMachinePublicSigningKey;
 
-    ocall_print("TEMPER: init comm public signing key");
-    printPayload((char*)requestingMachinePublicSigningKey.c_str(), sizeof(sgx_rsa3072_public_key_t));
-    ocall_print("public id key");
-    printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+    // ocall_print("TEMPER: init comm public signing key");
+    // printPayload((char*)requestingMachinePublicSigningKey.c_str(), sizeof(sgx_rsa3072_public_key_t));
+    // ocall_print("public id key");
+    // printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
 
-    ocall_print("Init comm between");
-    printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
-    printPayload(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+    // ocall_print("Init comm between");
+    // printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+    // printPayload(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE);
 
     char* receivingMachinePrivateID = (char*)get<1>(MachinePIDToIdentityDictionary[PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
     char* decryptedMessage = decryptMessageInteralPrivateKey(newSessionKey, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID);
