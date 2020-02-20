@@ -1863,26 +1863,26 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
 
             #ifndef ENCLAVE_STD_ALT
             //TODO uncomment
-            // int success;
-            // ocall_print("OUTSIDE:");
-            // ocall_print("message is");
-            // printPayload(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-            // ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-            // ocall_print("signature is");
-            // printPayload((char*)decryptedSignature, SGX_RSA3072_KEY_SIZE);
-            // ocall_print("signing key is");
-            // printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
+            int success;
+            ocall_print("OUTSIDE:");
+            ocall_print("message is");
+            printPayload(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+            ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+            ocall_print("signature is");
+            printPayload((char*)decryptedSignature, SGX_RSA3072_KEY_SIZE);
+            ocall_print("signing key is");
+            printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
 
-            // sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
-            // if (status != SGX_SUCCESS) {
-            //     ocall_print("sgx call failed!");
-            // }
-            // if (success == 1) {
-            //     ocall_print("Verifying Signature works!!!!");
-            // } else {
-            //     ocall_print("Error: Untrusted Send Signature Verification Failed!");
-            //     return;
-            // }
+            sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
+            if (status != SGX_SUCCESS) {
+                ocall_print("sgx call failed!");
+            }
+            if (success == 1) {
+                ocall_print("Verifying Signature works!!!!");
+            } else {
+                ocall_print("Error: Untrusted Send Signature Verification Failed!");
+                return;
+            }
 
             #else 
 
