@@ -240,6 +240,8 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     sgx_rsa3072_public_key_t *public_key;
   
     if (NETWORK_DEBUG) {
+        private_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t)); //TODO shivfree need to free this and below
+        public_key = (sgx_rsa3072_public_key_t*)malloc(sizeof(sgx_rsa3072_public_key_t));
         generateIdentityDebug(secureChildPublicIDKey, secureChildPrivateIDKey, machineTypeToCreateString);
     } else {
         private_key = (sgx_rsa3072_key_t*)malloc(sizeof(sgx_rsa3072_key_t)); //TODO shivfree need to free this and below

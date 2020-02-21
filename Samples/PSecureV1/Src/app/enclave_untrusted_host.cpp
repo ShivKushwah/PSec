@@ -807,9 +807,11 @@ int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, 
     fflush(stdout);
 
 
-    network_socket_sender(request, REQUEST_SIZE);
+    // char* result = network_socket_sender(request, REQUEST_SIZE, RESPONSE_SIZE);
+    char* result = network_socket_sender(request, REQUEST_SIZE);
 
-    char* result = send_network_request_API(request, REQUEST_SIZE);
+
+    // char* result = send_network_request_API(request, REQUEST_SIZE);
 
 
     if (RESPONSE_SIZE == 0) {

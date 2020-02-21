@@ -27,11 +27,11 @@ void func(int sockfd)
 		int actual_response_size = read(sockfd, buff, sizeof(buff)); 
 
 		if (actual_response_size >= sizeof(buff)) {
-			printf("ERROR: Server Network buffer full\n");
+			printf("NOTE: Server Network buffer full\n");
 		}
 
-		// char* retString = send_network_request_API(buff, actual_response_size);
-		char* retString = "netreceive";
+		char* retString = send_network_request_API(buff, actual_response_size);
+		// char* retString = "netreceive";
 
 
 		// print buffer which contains the client contents 
@@ -46,6 +46,8 @@ void func(int sockfd)
         // buff[2] = 'R';
         // buff[3] = '\n';
 		memcpy(buff, retString, sizeof(buff)); //todo have return types have string size
+		//TODO basically if response_size is 0, then it is expected for this to not return anything,
+		//need to figure that out
 
 		// and send that buffer to client 
 		write(sockfd, buff, sizeof(buff)); 
@@ -55,10 +57,17 @@ void func(int sockfd)
 		// 	printf("Server Exit...\n"); 
 		// 	break; 
 		// } 
-		printf("Server sent message to client!");
+		printf("Server sent message to client!\n");
         break;
 	} 
 } 
+
+void* server_handle_connection_thread(void* arg) {
+	int sockfd = *((int *)arg);
+	func(sockfd);
+	close(sockfd);
+
+}
 
 // Driver function 
 void* handle_socket_network_request(void* arg) 
@@ -154,43 +163,48 @@ void* handle_socket_network_request(void* arg)
         else
             printf("server acccept the client...\n"); 
 
+		pthread_t pid;
+		pthread_create(&pid, NULL, server_handle_connection_thread, &connfd);
+
         // Function for chatting between client and server 
-        func(connfd); 
+        // func(connfd); 
 
         // After chatting close the socket 
-        close(connfd); 
+        // close(connfd); 
     }
 	
 } 
 
 
-void func_sender(int sockfd) 
+void func_sender(int sockfd, char* request, int request_size, char* network_response) 
 { 
 	char buff[MAX]; 
 	int n; 
 	for (;;) { 
 		bzero(buff, sizeof(buff)); 
-		memcpy(buff, "netsend", 6);
+		memcpy(buff, request, request_size);
 		// printf("Enter the string : "); 
 		n = 0; 
 		// while ((buff[n++] = getchar()) != '\n') 
 		// 	; 
-		write(sockfd, buff, sizeof(buff)); 
+		write(sockfd, buff, request_size); 
 		bzero(buff, sizeof(buff)); 
 		read(sockfd, buff, sizeof(buff)); 
-		printf("From Server : %s", buff); 
+		printf("From Server : %s\n", buff); 
 		if ((strncmp(buff, "exit", 4)) == 0) { 
 			printf("Client Exit...\n"); 
 			break; 
 		} 
 		break;
-	} 
+	}
+	memcpy(network_response, buff, MAX); 
 } 
 
 char* network_socket_sender(char* request, int request_size) 
 { 
 	int sockfd, connfd; 
-	struct sockaddr_in servaddr, cli; 
+	struct sockaddr_in servaddr, cli;
+	char* network_response = (char*) malloc(MAX); 
 
 	// socket create and varification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
@@ -236,10 +250,10 @@ char* network_socket_sender(char* request, int request_size)
 		printf("client connected to the server..\n"); 
 
 	// function for chat 
-	func_sender(sockfd); 
+	func_sender(sockfd, request, request_size, network_response); 
 
 	// close the socket 
 	close(sockfd); 
 
-	return "halo";
+	return network_response;
 } 
