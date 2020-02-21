@@ -28,17 +28,22 @@ void func(int sockfd)
 		bzero(buff, MAX); 
 		n = 0; 
 		// copy server message in the buffer 
-		while ((buff[n++] = getchar()) != '\n') 
-			; 
+		// while ((buff[n++] = getchar()) != '\n') 
+		// 	; 
+        buff[0] = 'K';
+        buff[1] = 'I';
+        buff[2] = 'R';
+        buff[3] = '\n';
 
 		// and send that buffer to client 
 		write(sockfd, buff, sizeof(buff)); 
 
 		// if msg contains "Exit" then server exit and chat ended. 
-		if (strncmp("exit", buff, 4) == 0) { 
-			printf("Server Exit...\n"); 
-			break; 
-		} 
+		// if (strncmp("exit", buff, 4) == 0) { 
+		// 	printf("Server Exit...\n"); 
+		// 	break; 
+		// } 
+        break;
 	} 
 } 
 
@@ -102,26 +107,29 @@ void* handle_socket_network_request(void* arg)
 	// -----------------------------
 
 	// Now server is ready to listen and verification 
-	if ((listen(sockfd, 5)) != 0) { 
-		printf("Listen failed...\n"); 
-		exit(0); 
-	} 
-	else
-		printf("Server listening..\n"); 
-	len = sizeof(cli); 
+    while (1) {
+        if ((listen(sockfd, 5)) != 0) { 
+            printf("Listen failed...\n"); 
+            exit(0); 
+        } 
+        else
+            printf("Server listening..\n"); 
+        len = sizeof(cli); 
 
-	// Accept the data packet from client and verification 
-	connfd = accept(sockfd, (SA*)&cli, (socklen_t*)&len); 
-	if (connfd < 0) { 
-		printf("server acccept failed...\n"); 
-		exit(0); 
-	} 
-	else
-		printf("server acccept the client...\n"); 
+        // Accept the data packet from client and verification 
+        connfd = accept(sockfd, (SA*)&cli, (socklen_t*)&len); 
+        if (connfd < 0) { 
+            printf("server acccept failed...\n"); 
+            exit(0); 
+        } 
+        else
+            printf("server acccept the client...\n"); 
 
-	// Function for chatting between client and server 
-	func(connfd); 
+        // Function for chatting between client and server 
+        func(connfd); 
 
-	// After chatting close the socket 
-	close(sockfd); 
+        // After chatting close the socket 
+        close(sockfd); 
+    }
+	
 } 
