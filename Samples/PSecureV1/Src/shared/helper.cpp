@@ -924,6 +924,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             }
             
             safe_free(requestCopy);
+            temp = createStringLiteralMalloced("TODO");
             return temp;
 
         } else {
@@ -934,6 +935,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             if (count > 0) {
                 char* ret = USMSendMessageAPI(machineSendingMessage, machineReceivingMessage, iv, mac, encryptedMessage);
                 safe_free(requestCopy);
+                ret = createStringLiteralMalloced("TODO");
                 return ret;
                 
             } else {
@@ -983,6 +985,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             }
             
             safe_free(requestCopy);
+            temp = createStringLiteralMalloced("TODO");
             return temp;
 
         } else {
@@ -1730,7 +1733,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     // ocall_print(sendRequest);
     // ocall_print_int(strlen(sendRequest) + 1);
     // ocall_print("KUUUURUT");
-    char* empty = (char*) malloc(10);
+    char* empty = (char*) malloc(100);
     int ret_value;
 
     
@@ -1739,9 +1742,9 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     printPayload(sendRequest, requestSize);
 
     #ifdef ENCLAVE_STD_ALT
-        sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, requestSize, 0);
+        sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, requestSize, 100);
     #else
-        ocall_network_request(sendRequest, empty, requestSize, 0); 
+        ocall_network_request(sendRequest, empty, requestSize, 100); 
     #endif
     safe_free(sendRequest);
 

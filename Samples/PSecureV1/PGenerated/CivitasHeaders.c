@@ -3112,16 +3112,17 @@ PRT_EVENTSETDECL P_EVENTSET_Init_TRANS_5 =
     NULL
 };
 
-PRT_EVENTDECL* P_Init_DOS_INNER_5[] = { &P_EVENT_TRUSTEDeAllVotes };
+PRT_EVENTDECL* P_Init_DOS_INNER_5[] = { &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDeAllVotes };
 PRT_EVENTSETDECL P_EVENTSET_Init_DOS_5 =
 {
-    1U,
+    2U,
     P_Init_DOS_INNER_5,
     NULL
 };
 
 PRT_DODECL P_DOS_6[] =
 {
+    { 0, &P_EVENT_TRUSTEDValidCredential, NULL },
     { 0, &P_EVENT_TRUSTEDeAllVotes, &P_FUNCTION_Anon_17 }
 };
 
@@ -3129,7 +3130,7 @@ PRT_DODECL P_DOS_6[] =
 { \
     "SecureTabulationTellerMachine.Init", \
     0U, \
-    1U, \
+    2U, \
     &P_EVENTSET_Init_DEFERS_5, \
     &P_EVENTSET_Init_TRANS_5, \
     &P_EVENTSET_Init_DOS_5, \

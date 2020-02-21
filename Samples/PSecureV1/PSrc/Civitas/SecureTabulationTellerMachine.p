@@ -11,6 +11,7 @@ secure_machine SecureTabulationTellerMachine
     var allVotes: seq[(credential : int, vote : secure_int)];
 
     start state Init {
+        ignore TRUSTEDValidCredential;
         entry (payload:(bBoard: secure_machine_handle, supervisor: secure_machine_handle)){
             bulletinBoard = payload.bBoard;
             supervisor = payload.supervisor;
