@@ -63,6 +63,8 @@
 #include "enclave_untrusted_host.h"
 #include "kps.h"
 
+#include "network_simulator.h"
+
 #ifndef SAFE_FREE
 #define SAFE_FREE(ptr) {if (NULL != (ptr)) {free(ptr); (ptr) = NULL;}}
 #endif
@@ -804,7 +806,12 @@ int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, 
     printf("Network Request is : %s\n", request);
     fflush(stdout);
 
+
+    network_socket_sender(request, REQUEST_SIZE);
+
     char* result = send_network_request_API(request, REQUEST_SIZE);
+
+
     if (RESPONSE_SIZE == 0) {
         return 1;
     }

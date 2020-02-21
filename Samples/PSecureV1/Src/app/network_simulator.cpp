@@ -7,6 +7,8 @@
 #include <sys/socket.h> 
 #include <sys/types.h> 
 #include <unistd.h>
+#include <arpa/inet.h>
+#include <errno.h>
 #define MAX MAX_NETWORK_MESSAGE 
 #define PORT 8080
 // #define PORT2 8091 
@@ -25,10 +27,11 @@ void func(int sockfd)
 		int actual_response_size = read(sockfd, buff, sizeof(buff)); 
 
 		if (actual_response_size >= sizeof(buff)) {
-			printf("ERROR: Network buffer full\n");
+			printf("ERROR: Server Network buffer full\n");
 		}
 
-		char* retString = send_network_request_API(buff, actual_response_size);
+		// char* retString = send_network_request_API(buff, actual_response_size);
+		char* retString = "netreceive";
 
 
 		// print buffer which contains the client contents 
@@ -52,6 +55,7 @@ void func(int sockfd)
 		// 	printf("Server Exit...\n"); 
 		// 	break; 
 		// } 
+		printf("Server sent message to client!");
         break;
 	} 
 } 
@@ -65,12 +69,19 @@ void* handle_socket_network_request(void* arg)
 	// socket create and verification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
 	if (sockfd == -1) { 
-		printf("socket creation failed...\n"); 
+		printf("Server Socket creation failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Socket successfully created..\n"); 
+		printf("Server Socket successfully created..\n"); 
 	bzero(&servaddr, sizeof(servaddr)); 
+
+	int enable = 1;
+
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
+		printf("server setsockopt(SO_REUSEADDR) failed\n");
+	}
+    
 
 	// assign IP, PORT 
 	servaddr.sin_family = AF_INET; 
@@ -79,11 +90,14 @@ void* handle_socket_network_request(void* arg)
 
 	// Binding newly created socket to given IP and verification 
 	if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) { 
-		printf("socket bind failed...\n"); 
+		if (errno == EADDRINUSE) {
+			printf("Error: Address already in use!\n");
+		}
+		printf("Server Socket bind failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Socket successfully binded..\n"); 
+		printf("Server Socket successfully binded..\n"); 
 
 	// -------------------------------------------------------
 	
@@ -116,15 +130,21 @@ void* handle_socket_network_request(void* arg)
 	// -----------------------------
 
 	// Now server is ready to listen and verification 
-    while (1) {
-        if ((listen(sockfd, 5)) != 0) { 
-            printf("Listen failed...\n"); 
-            exit(0); 
-        } 
-        else
-            printf("Server listening..\n"); 
-        len = sizeof(cli); 
+	if ((listen(sockfd, 5)) != 0) { 
+		if (errno == EADDRINUSE) {
+			printf("ERROR: Server Address already in use!\n");
+		} else if (errno == EBADF) {
+			printf("ERROR: Server sockfd is not valid for listen command!\n");
 
+		}
+		printf("Server listen failed...\n"); 
+		exit(0); 
+	} 
+	else
+		printf("Server listening..\n"); 
+	len = sizeof(cli);
+
+    while (1) {
         // Accept the data packet from client and verification 
         connfd = accept(sockfd, (SA*)&cli, (socklen_t*)&len); 
         if (connfd < 0) { 
@@ -138,7 +158,88 @@ void* handle_socket_network_request(void* arg)
         func(connfd); 
 
         // After chatting close the socket 
-        close(sockfd); 
+        close(connfd); 
     }
 	
+} 
+
+
+void func_sender(int sockfd) 
+{ 
+	char buff[MAX]; 
+	int n; 
+	for (;;) { 
+		bzero(buff, sizeof(buff)); 
+		memcpy(buff, "netsend", 6);
+		// printf("Enter the string : "); 
+		n = 0; 
+		// while ((buff[n++] = getchar()) != '\n') 
+		// 	; 
+		write(sockfd, buff, sizeof(buff)); 
+		bzero(buff, sizeof(buff)); 
+		read(sockfd, buff, sizeof(buff)); 
+		printf("From Server : %s", buff); 
+		if ((strncmp(buff, "exit", 4)) == 0) { 
+			printf("Client Exit...\n"); 
+			break; 
+		} 
+		break;
+	} 
+} 
+
+char* network_socket_sender(char* request, int request_size) 
+{ 
+	int sockfd, connfd; 
+	struct sockaddr_in servaddr, cli; 
+
+	// socket create and varification 
+	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
+	if (sockfd == -1) { 
+		printf("client socket creation failed...\n"); 
+		exit(0); 
+	} 
+	else
+		printf("Client Socket successfully created..\n"); 
+	bzero(&servaddr, sizeof(servaddr)); 
+
+	// assign IP, PORT 
+	servaddr.sin_family = AF_INET; 
+	servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+	servaddr.sin_port = htons(PORT); 
+
+	//---------------------------
+	// int sockfd2, connfd2; 
+	// struct sockaddr_in servaddr2, cli2; 
+
+	// // socket create and varification 
+	// sockfd2 = socket(AF_INET, SOCK_STREAM, 0); 
+	// if (sockfd2 == -1) { 
+	// 	printf("socket2 creation failed...\n"); 
+	// 	exit(0); 
+	// } 
+	// else
+	// 	printf("Socket2 successfully created..\n"); 
+	// bzero(&servaddr2, sizeof(servaddr2)); 
+
+	// // assign IP, PORT 
+	// servaddr2.sin_family = AF_INET; 
+	// servaddr2.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+	// servaddr2.sin_port = htons(PORT2); 
+	//--------------------
+
+	// connect the client socket to server socket 
+	if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) != 0) { 
+		printf("client connection with the server failed...\n"); 
+		exit(0); 
+	} 
+	else
+		printf("client connected to the server..\n"); 
+
+	// function for chat 
+	func_sender(sockfd); 
+
+	// close the socket 
+	close(sockfd); 
+
+	return "halo";
 } 
