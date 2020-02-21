@@ -14,6 +14,7 @@
 #include <map>
 #include <tuple>
 #include "sample_libcrypto.h"
+#include "network_simulator.h"
 
 using namespace std;
 
@@ -408,10 +409,18 @@ void initApp() {
     }    
 }
 
+void start_socket_network_handler() {
+    pthread_t thread_id; 
+    printf("\n Creating Network Socket Handler Thread\n"); 
+    pthread_create(&thread_id, NULL, handle_socket_network_request, NULL);
+
+}
+
 int main(int argc, char const *argv[]) {
     initNetwork();
     initKPS();
     initApp();
+    start_socket_network_handler();
  
     // Place the measurement of the enclave into metadata_info.txt
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");

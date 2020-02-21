@@ -1,3 +1,5 @@
+#ifndef CONSTANT_FILE
+#define CONSTANT_FILE
 #include "CivitasHeaders.h"
 // #include "PingPongEnclave.h"
 // #include "OTPBankServerCode.h"
@@ -47,4 +49,5 @@ const int ENABLE_ENCLAVE_ATTESTATION_PRINT = 0;
 const int PROGRAM_DEBUG = 1;
 
 const int NETWORK_DEBUG = 0;
+#endif
 
