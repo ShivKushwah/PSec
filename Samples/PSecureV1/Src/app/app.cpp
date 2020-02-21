@@ -283,7 +283,8 @@ char* registerMachineWithNetwork(char* newMachineID) {
     int concatLenghts[] = {strlen(requestType), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(num)};
     char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
     int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
-    char* returnValue = send_network_request_API(networkRequest, networkRequestSize);
+    char* returnValue = (char*) malloc(100);
+    ocall_network_request(networkRequest, returnValue, networkRequestSize, 100);
     safe_free(networkRequest);
 
     return returnValue;

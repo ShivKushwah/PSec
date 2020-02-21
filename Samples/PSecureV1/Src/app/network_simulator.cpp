@@ -22,18 +22,27 @@ void func(int sockfd)
 		bzero(buff, MAX); 
 
 		// read the message from client and copy it in buffer 
-		read(sockfd, buff, sizeof(buff)); 
+		int actual_response_size = read(sockfd, buff, sizeof(buff)); 
+
+		if (actual_response_size >= sizeof(buff)) {
+			printf("ERROR: Network buffer full\n");
+		}
+
+		char* retString = send_network_request_API(buff, actual_response_size);
+
+
 		// print buffer which contains the client contents 
-		printf("From client: %s\t To client : ", buff); 
+		// printf("From client: %s\t To client : ", buff); 
 		bzero(buff, MAX); 
 		n = 0; 
 		// copy server message in the buffer 
 		// while ((buff[n++] = getchar()) != '\n') 
 		// 	; 
-        buff[0] = 'K';
-        buff[1] = 'I';
-        buff[2] = 'R';
-        buff[3] = '\n';
+        // buff[0] = 'K';
+        // buff[1] = 'I';
+        // buff[2] = 'R';
+        // buff[3] = '\n';
+		memcpy(buff, retString, sizeof(buff)); //todo have return types have string size
 
 		// and send that buffer to client 
 		write(sockfd, buff, sizeof(buff)); 
