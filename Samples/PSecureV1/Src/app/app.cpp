@@ -83,6 +83,7 @@ void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
         ocall_print("unexpected PRT_STATUS in ErrorHandler: \n");
         // exit(2);
     }
+    exit(1);
 
 }
 
