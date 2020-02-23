@@ -39,23 +39,12 @@ void func(int sockfd)
 		bzero(buff, MAX); 
 		n = 0; 
 		// copy server message in the buffer 
-		// while ((buff[n++] = getchar()) != '\n') 
-		// 	; 
-        // buff[0] = 'K';
-        // buff[1] = 'I';
-        // buff[2] = 'R';
-        // buff[3] = '\n';
-		if (strcmp(retString, "TODO") == 0) {
-			memcpy(buff, retString, 5); //todo have return types have string size
-		} else {
-			printf("Server: copying into return buffer\n");
-			printPayload(retString, 20);
-			printf("Server: about to memcpy\n");
-			memcpy(buff, retString, 1000);  
-		}
+		printf("Server: copying into return buffer\n");
+		printPayload(retString, 20);
+		printf("Server: about to memcpy\n");
+		memcpy(buff, retString, 1000);  //TODO unhardcode 1000 and have make network request
+										//return values have size assoicated with them 
 		
-		//TODO basically if response_size is 0, then it is expected for this to not return anything,
-		//need to figure that out
 
 		// and send that buffer to client 
 		write(sockfd, buff, sizeof(buff)); 
