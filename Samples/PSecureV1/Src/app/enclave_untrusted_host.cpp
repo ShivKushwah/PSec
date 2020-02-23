@@ -814,9 +814,9 @@ int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, 
     // char* result = send_network_request_API(request, REQUEST_SIZE);
 
 
-    if (RESPONSE_SIZE == 0) {
-        return 1;
-    }
+    // if (RESPONSE_SIZE == 0) {
+    //     return 1;
+    // }
 
     printf("Network Response is : %s\n", result);
     if (result == NULL || result[0] == '\0') {
