@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <errno.h>
-#define MAX 72400 
+#define MAX 99900 
 #define PORT 8080
 // #define PORT2 8091 
 #define SA struct sockaddr 

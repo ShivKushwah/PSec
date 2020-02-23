@@ -159,10 +159,14 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     char* other_machine_name = "KPS";
     char* requestString;
     int requestStringSize;
-    char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey, ":", requestedMachineTypeToCreate};
-    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedMachineTypeToCreate)};
-    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
-    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 5) + 1;
+    char* sizeOfRequestedMachineTypeString = (char*) malloc(10);
+    itoa(strlen(requestedMachineTypeToCreate), sizeOfRequestedMachineTypeString, 10);
+
+    char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey, ":", sizeOfRequestedMachineTypeString, ":", requestedMachineTypeToCreate};
+    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(sizeOfRequestedMachineTypeString), 1, strlen(requestedMachineTypeToCreate)};
+    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 7);
+    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 7) + 1;
+    safe_free(sizeOfRequestedMachineTypeString);
       
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString, requestStringSize);
     safe_free(requestString);
@@ -343,10 +347,14 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     char* requestString;
     int requestStringSize;
 
-    char* concatStrings[] = {newMachinePublicIDKey, ":", parentTrustedMachineID, ":", requestedMachineTypeToCreate};
-    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(requestedMachineTypeToCreate)};
-    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
-    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 5) + 1;
+    char* sizeOfRequestedMachineTypeString = (char*) malloc(10);
+    itoa(strlen(requestedMachineTypeToCreate), sizeOfRequestedMachineTypeString, 10);    
+
+    char* concatStrings[] = {newMachinePublicIDKey, ":", parentTrustedMachineID, ":", sizeOfRequestedMachineTypeString, ":", requestedMachineTypeToCreate};
+    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(sizeOfRequestedMachineTypeString), 1, strlen(requestedMachineTypeToCreate)};
+    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 7);
+    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 7) + 1;
+    safe_free(sizeOfRequestedMachineTypeString);
 
     ocall_print("Enclave is asking for creation of new cap key using");
     printRSAKey(newMachinePublicIDKey);

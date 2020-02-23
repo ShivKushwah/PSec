@@ -441,7 +441,7 @@ char* send_network_request_API(char* request, size_t requestSize) {
 
 char* createStringLiteralMalloced(char* stringLiteral) {
     //TODO if modifying here, modify in helper.cpp
-    char* malloced = (char*) malloc(strlen(stringLiteral));
+    char* malloced = (char*) malloc(99900);//strlen(stringLiteral));
     strncpy(malloced, stringLiteral, strlen(stringLiteral) + 1);
     return malloced;
 
