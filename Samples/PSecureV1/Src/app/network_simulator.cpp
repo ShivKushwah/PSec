@@ -45,7 +45,12 @@ void func(int sockfd)
         // buff[1] = 'I';
         // buff[2] = 'R';
         // buff[3] = '\n';
-		memcpy(buff, retString, sizeof(buff)); //todo have return types have string size
+		if (strcmp(retString, "TODO") == 0) {
+			memcpy(buff, retString, 5); //todo have return types have string size
+		} else {
+			memcpy(buff, retString, sizeof(buff)); 
+		}
+		
 		//TODO basically if response_size is 0, then it is expected for this to not return anything,
 		//need to figure that out
 
