@@ -3,3 +3,4 @@
 
 void* handle_socket_network_request(void* arg);
 char* network_socket_sender(char* request, int request_size);
+void printPayload(char* payload, int size);

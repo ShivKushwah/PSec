@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <errno.h>
-#define MAX 99900 
+#define MAX 72400 
 #define PORT 8080
 // #define PORT2 8091 
 #define SA struct sockaddr 
@@ -48,7 +48,10 @@ void func(int sockfd)
 		if (strcmp(retString, "TODO") == 0) {
 			memcpy(buff, retString, 5); //todo have return types have string size
 		} else {
-			memcpy(buff, retString, sizeof(buff)); 
+			printf("Server: copying into return buffer\n");
+			printPayload(retString, 20);
+			printf("Server: about to memcpy\n");
+			memcpy(buff, retString, 1000);  
 		}
 		
 		//TODO basically if response_size is 0, then it is expected for this to not return anything,
