@@ -192,7 +192,7 @@ ra_samp_response_header_t* mock_net(const char *sending_machine_name,
     ret = ra_network_send_receive(sending_machine_name,
             receiving_machine_name,
             p_req,
-            &p_msg0_resp_full);
+            &p_msg0_resp_full, optional_Message, plain_text_message);
     int size;
     if (expectingResponse) {
         size = p_msg0_resp_full->size;
@@ -248,8 +248,6 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
     sgx_status_t status = SGX_SUCCESS;
     ra_samp_request_header_t* p_msg3_full = NULL;
     char* current_machine_name = "PongMachine";
-
-    struct Encrypted_Message empty;
 
     int32_t verify_index = -1;
     int32_t verification_samples = sizeof(msg1_samples)/sizeof(msg1_samples[0]);
@@ -332,7 +330,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         
         p_msg0_resp_full = mock_net(current_machine_name,
             receiving_machine_name,
-            p_msg0_full, empty, NULL, ret, false);
+            p_msg0_full, default_Encrypted_Message, NULL, ret, false);
         if (ret != 0)
         {
             fprintf(OUTPUT, "\nError, ra_network_send_receive for msg0 failed "
@@ -446,7 +444,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         p_msg2_full = mock_net(current_machine_name,
                                       receiving_machine_name,
                                       p_msg1_full,
-                                        empty, NULL, ret, true);
+                                        default_Encrypted_Message, NULL, ret, true);
 
         if(ret != 0 || !p_msg2_full)
         {
@@ -640,6 +638,10 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                                       &p_att_result_msg_full,
                                       temp,
                                     optional_message);
+        // p_att_result_msg_full = mock_net(current_machine_name,
+        //                               receiving_machine_name,
+        //                               p_msg3_full,
+        //                                 temp, optional_message, ret, true);
         if(ret || !p_att_result_msg_full)
         {
             ret = -1;
@@ -786,11 +788,15 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                 //Send encrypted message to Ping machine
                 struct Encrypted_Message emsg = {encrypted_string, secret_size, payload_tag};
 
-                ret = ra_network_send_receive(current_machine_name,
+                // ret = ra_network_send_receive(current_machine_name,
+                //                       receiving_machine_name,
+                //                       NULL,
+                //                       NULL,
+                //                       emsg);
+                p_att_result_msg_full = mock_net(current_machine_name,
                                       receiving_machine_name,
-                                      NULL,
-                                      NULL,
-                                      emsg);
+                                      NULL, 
+                                        emsg, NULL, ret, false);
                 
             }
         }
