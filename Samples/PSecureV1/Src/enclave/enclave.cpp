@@ -168,6 +168,17 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 7);
     requestStringSize = returnTotalSizeofLengthArray(concatLengths, 7) + 1;
     safe_free(sizeOfRequestedMachineTypeString);
+
+    char* concatStrings2[] = {"Retrieve:" , currentMachinePublicIDKey, ":", childPublicIDKey, ":", sizeOfRequestedMachineTypeString, ":", requestedMachineTypeToCreate};
+    int concatLengths2[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(sizeOfRequestedMachineTypeString), 1, strlen(requestedMachineTypeToCreate)};
+    char* requestStringReal = concatMutipleStringsWithLength(concatStrings2, concatLengths2, 8);
+    int requestStringSizeReal = returnTotalSizeofLengthArray(concatLengths2, 8) + 1;
+
+    if (requestStringSizeReal > SIZE_OF_MESSAGE) {
+        ocall_print("ERROR: attestation request overflow");
+    }
+
+    memcpy(secure_message_attestation_request, requestStringReal, requestStringSizeReal);
       
     ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString, requestStringSize);
     safe_free(requestString);
@@ -357,11 +368,16 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     requestStringSize = returnTotalSizeofLengthArray(concatLengths, 7) + 1;
     safe_free(sizeOfRequestedMachineTypeString);
 
-    if (requestStringSize > SIZE_OF_MESSAGE) {
+    char* concatStrings2[] = {"Create:" , newMachinePublicIDKey, ":", parentTrustedMachineID, ":", sizeOfRequestedMachineTypeString, ":", requestedMachineTypeToCreate};
+    int concatLengths2[] = {7, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(sizeOfRequestedMachineTypeString), 1, strlen(requestedMachineTypeToCreate)};
+    char* requestStringReal = concatMutipleStringsWithLength(concatStrings2, concatLengths2, 8);
+    int requestStringSizeReal = returnTotalSizeofLengthArray(concatLengths2, 8) + 1;
+
+    if (requestStringSizeReal > SIZE_OF_MESSAGE) {
         ocall_print("ERROR: attestation request overflow");
     }
 
-    memcpy(secure_message_attestation_request, requestString, requestStringSize);
+    memcpy(secure_message_attestation_request, requestStringReal, requestStringSizeReal);
 
     ocall_print("Enclave is asking for creation of new cap key using");
     printRSAKey(newMachinePublicIDKey);

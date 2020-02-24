@@ -1034,6 +1034,32 @@ ra_samp_response_header_t* ocall_ping_machine_receive_encrypted_message(uint8_t 
         bool secret_match = true;
         // handle_incoming_events_ping_machine(atoi((char*) g_secret));
         int respSize = 100;
+        
+
+        int messageSize = 50;
+
+        char* message = (char*) malloc(messageSize);
+        strncpy(message, "RETURNKIRATENCRYPTED", 21);
+
+        int payload_size = messageSize;
+
+        char* encrypted_payload = (char*) malloc(payload_size);
+        uint8_t payload_tag[16];
+
+
+
+        //encrypt and send message back
+        ret = sample_rijndael128GCM_encrypt(&g_sp_db.sk_key,
+                            (const uint8_t *)message,
+                            payload_size,
+                            (uint8_t *)encrypted_payload,
+                            &aes_gcm_iv[0],
+                            SAMPLE_SP_IV_SIZE,
+                            NULL,
+                            0,
+                            &payload_tag);
+        
+
         ra_samp_response_header_t* p_resp_msg = (ra_samp_response_header_t*)malloc(respSize
                       + sizeof(ra_samp_response_header_t));
 
@@ -1042,6 +1068,13 @@ ra_samp_response_header_t* ocall_ping_machine_receive_encrypted_message(uint8_t 
         p_resp_msg->size = respSize;
         p_resp_msg->status[0] = 0;
         p_resp_msg->status[1] = 0;
+        
+
+
+
+
+
+
         strncpy((char*)p_resp_msg->body, "RETURNKIRAT", 12);
         return p_resp_msg;
 }
