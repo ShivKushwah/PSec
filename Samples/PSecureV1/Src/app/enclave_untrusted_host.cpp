@@ -196,6 +196,8 @@ ra_samp_response_header_t* mock_net(const char *sending_machine_name,
     int size;
     if (expectingResponse) {
         size = p_msg0_resp_full->size;
+        ocall_print("size of ra is ");
+        ocall_print_int(size);
     } else {
         size = 0;
     }
@@ -632,16 +634,16 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         struct Encrypted_Message temp = {(uint8_t*)&message_from_machine_to_enclave, 0, NULL};
         //TODO change name from encrypted_message to like normal message? idk tho
 
-        ret = ra_network_send_receive(current_machine_name,
-                                      receiving_machine_name,
-                                      p_msg3_full,
-                                      &p_att_result_msg_full,
-                                      temp,
-                                    optional_message);
-        // p_att_result_msg_full = mock_net(current_machine_name,
+        // ret = ra_network_send_receive(current_machine_name,
         //                               receiving_machine_name,
         //                               p_msg3_full,
-        //                                 temp, optional_message, ret, true);
+        //                               &p_att_result_msg_full,
+        //                               temp,
+        //                             optional_message);
+        p_att_result_msg_full = mock_net(current_machine_name,
+                                      receiving_machine_name,
+                                      p_msg3_full,
+                                        temp, optional_message, ret, true);
         if(ret || !p_att_result_msg_full)
         {
             ret = -1;
@@ -793,7 +795,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                 //                       NULL,
                 //                       NULL,
                 //                       emsg);
-                p_att_result_msg_full = mock_net(current_machine_name,
+                mock_net(current_machine_name,
                                       receiving_machine_name,
                                       NULL, 
                                         emsg, NULL, ret, false);
