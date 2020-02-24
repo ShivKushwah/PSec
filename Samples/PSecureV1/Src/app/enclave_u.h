@@ -33,10 +33,6 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_request_user_input, (char* user_input, 
 #define OCALL_PONG_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
 int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_pong_enclave_attestation_in_thread, (sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t other_machine_name_size, int message_from_machine_to_enclave, char* optional_message, uint32_t OPTIONAL_MESSAGE_SIZE));
 #endif
-#ifndef OCALL_PING_MACHINE_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
-#define OCALL_PING_MACHINE_RECEIVE_ENCRYPTED_MESSAGE_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_ping_machine_receive_encrypted_message, (uint8_t* p_secret, uint32_t secret_size, uint8_t* p_gcm_mac));
-#endif
 #ifndef OCALL_NETWORK_REQUEST_DEFINED__
 #define OCALL_NETWORK_REQUEST_DEFINED__
 int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_network_request, (char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE));

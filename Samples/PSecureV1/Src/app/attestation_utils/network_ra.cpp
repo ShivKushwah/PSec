@@ -139,10 +139,12 @@ int ra_network_send_receive(const char *sending_machine_name,
 
      //Request to KPS to send encrypted data based on previous secure channel
      } else if (strcmp(receiving_machine_name, "KPS") == 0 && optional_Message.secret_size > 0) {
-         ocall_ping_machine_receive_encrypted_message(
+        ra_samp_response_header_t* p_resp_msg = ocall_ping_machine_receive_encrypted_message(
                                 (uint8_t*)optional_Message.encrypted_message, 
                                 optional_Message.secret_size,
                                  optional_Message.payload_tag);
+        
+        *p_resp = p_resp_msg;
 
     } else {
         return -1;

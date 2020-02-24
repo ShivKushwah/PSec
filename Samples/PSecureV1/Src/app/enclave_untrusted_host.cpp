@@ -777,6 +777,8 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                 uint8_t* encrypted_string = (uint8_t *) malloc(sizeof(uint8_t) * SIZE_OF_MESSAGE);
                 uint32_t secret_size = SIZE_OF_MESSAGE;
 
+                ra_samp_response_header_t *resp_1 = NULL;
+
                 //Encrypt message using enclave
                 ret = enclave_encrypt_secure_message(enclave_id,
                                     &status,
@@ -794,10 +796,12 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                 //                       NULL,
                 //                       NULL,
                 //                       emsg);
-                mock_net(current_machine_name,
+                resp_1 = mock_net(current_machine_name,
                                       receiving_machine_name,
                                       NULL, 
-                                        emsg, NULL, ret, false);
+                                        emsg, NULL, ret, true);
+                ocall_print("Received secret message from KPS");
+                ocall_print((char*)resp_1->body);
 
 
 

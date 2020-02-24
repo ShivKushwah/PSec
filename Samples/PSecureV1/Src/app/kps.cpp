@@ -1012,7 +1012,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 
 //When Ping machine receives an encrypted secret from the Pong enclave
 //We have already created an attestation channel before this point
-int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,  
+ra_samp_response_header_t* ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,  
                                 uint32_t secret_size,
                                  uint8_t *p_gcm_mac) {
 
@@ -1032,7 +1032,17 @@ int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,
         uint32_t i;
         bool secret_match = true;
         // handle_incoming_events_ping_machine(atoi((char*) g_secret));
-        return 0;
+        int respSize = 100;
+        ra_samp_response_header_t* p_resp_msg = (ra_samp_response_header_t*)malloc(respSize
+                      + sizeof(ra_samp_response_header_t));
+
+        memset(p_resp_msg, 0, respSize + sizeof(ra_samp_response_header_t));
+        p_resp_msg->type = TYPE_RA_MSG2;
+        p_resp_msg->size = respSize;
+        p_resp_msg->status[0] = 0;
+        p_resp_msg->status[1] = 0;
+        strncpy((char*)p_resp_msg->body, "RETURNKIRAT", 12);
+        return p_resp_msg;
 }
 
 void initKPS() {

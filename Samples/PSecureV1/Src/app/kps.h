@@ -151,6 +151,9 @@ int receive_encrypted_message(uint8_t *p_secret,
 
 int createCapabilityKey(char* newMachineID, char* parentTrustedMachineID, char* requestedMachineTypeToCreate);
 char* retrieveCapabilityKey(char* currentMachineID, char* childMachineID, char* requestedMachineTypeToCreate);
+ra_samp_response_header_t* ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,  
+                                uint32_t secret_size,
+                                 uint8_t *p_gcm_mac);
 
 // void initKPS();
 
