@@ -9,6 +9,7 @@ extern PRT_PROGRAMDECL* program;
 sgx_enclave_id_t current_eid;
 
 extern char secure_message[SIZE_OF_MESSAGE]; 
+extern char secure_message_attestation_request[SIZE_OF_MESSAGE];
 unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary;
 unordered_map<string, int> PublicIdentityKeyToMachinePIDDictionary;
 unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
@@ -355,6 +356,12 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 7);
     requestStringSize = returnTotalSizeofLengthArray(concatLengths, 7) + 1;
     safe_free(sizeOfRequestedMachineTypeString);
+
+    if (requestStringSize > SIZE_OF_MESSAGE) {
+        ocall_print("ERROR: attestation request overflow");
+    }
+
+    memcpy(secure_message_attestation_request, requestString, requestStringSize);
 
     ocall_print("Enclave is asking for creation of new cap key using");
     printRSAKey(newMachinePublicIDKey);

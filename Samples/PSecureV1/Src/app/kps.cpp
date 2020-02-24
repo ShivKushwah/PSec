@@ -1028,6 +1028,7 @@ ra_samp_response_header_t* ocall_ping_machine_receive_encrypted_message(uint8_t 
                             0,
                             (sample_aes_gcm_128bit_tag_t *)p_gcm_mac);
         printf("KPS Secret is %s\n" , (char*)g_secret);
+        printPayload((char*) g_secret, secret_size);
 
         uint32_t i;
         bool secret_match = true;

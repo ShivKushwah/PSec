@@ -69,6 +69,7 @@ static const sgx_ec256_public_t g_sp_pub_key = {
 };
 
 char secure_message[SIZE_OF_MESSAGE]; 
+char secure_message_attestation_request[SIZE_OF_MESSAGE]; 
 
 // Used to store the secret passed by the SP in the sample code. The
 // size is forced to be 8 bytes. Expected value is
@@ -397,7 +398,6 @@ sgx_status_t put_secret_data(
     return ret;
 }
 
-char secure_temp_message[SIZE_OF_MESSAGE]; 
 
 // Writes the results to the parameters
 sgx_status_t encrypt_secure_message(
@@ -424,13 +424,13 @@ sgx_status_t encrypt_secure_message(
             break;
         }
 
-        strncpy(secure_temp_message, "KIRAT", 6);
+        // strncpy(secure_message_attestation_request, "KIRAT", 6);
 
         uint8_t aes_gcm_iv[12] = {0};
         uint8_t payload_tag[16];
         uint8_t encrypted_string[SIZE_OF_MESSAGE] = {0};
         ret = sgx_rijndael128GCM_encrypt(&sk_key,
-                                         (uint8_t*)secure_temp_message,
+                                         (uint8_t*)secure_message_attestation_request,
                                          secret_size,
                                          &encrypted_string[0],
                                          &aes_gcm_iv[0],
