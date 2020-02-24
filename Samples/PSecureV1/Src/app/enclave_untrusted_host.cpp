@@ -801,7 +801,32 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                                       NULL, 
                                         emsg, NULL, ret, true);
                 ocall_print("Received secret message from KPS");
-                ocall_print((char*)resp_1->body);
+                printPayload((char*)resp_1->body, resp_1->size);
+                // ocall_print((char*)resp_1->body);
+                char* responseCopy = (char*) malloc(resp_1->size);
+                memcpy(responseCopy, resp_1->body, resp_1->size);
+                char* split = strtok(responseCopy, ":");
+                int encryptedMessageSize = atoi(split);
+                char* encyptedMessage = (char*) malloc(encryptedMessageSize);
+                memcpy(encyptedMessage, responseCopy + strlen(split) + 1, encryptedMessageSize);
+                uint8_t payload_tag_encrypted[16];
+                memcpy((char*) payload_tag_encrypted, responseCopy + strlen(split) + 1 + encryptedMessageSize + 1, 16);
+
+                ret = enclave_put_secret_data(enclave_id,
+                                    &status,
+                                    context,
+                                    (uint8_t *)encyptedMessage,
+                                    encryptedMessageSize,
+                                    payload_tag_encrypted);
+                if((SGX_SUCCESS != ret)  || (SGX_SUCCESS != status))
+                {
+                    ocall_print("Error: attesttion failure");
+                    fprintf(OUTPUT, "\nError, attestation result message secret "
+                                    "using SK based AESGCM failed in [%s]. ret = "
+                                    "0x%0x. status = 0x%0x", __FUNCTION__, ret,
+                                    status);
+                    goto CLEANUP;
+                }
 
 
 

@@ -357,11 +357,11 @@ sgx_status_t put_secret_data(
     sgx_ec_key_128bit_t sk_key;
 
     do {
-        if(secret_size != SIZE_OF_MESSAGE)
-        {
-            ret = SGX_ERROR_INVALID_PARAMETER;
-            break;
-        }
+        // if(secret_size != SIZE_OF_MESSAGE)
+        // {
+        //     ret = SGX_ERROR_INVALID_PARAMETER;
+        //     break;
+        // }
 
         ret = sgx_ra_get_keys(context, SGX_RA_KEY_SK, &sk_key);
         if(SGX_SUCCESS != ret)
@@ -383,6 +383,8 @@ sgx_status_t put_secret_data(
 
         uint32_t i;
         bool secret_match = true;
+        ocall_print("Enclave's secret is");
+        ocall_print((char*)g_secret);
         //handle_incoming_events_pong_enclave(atoi((char*) g_secret));
   
         if(!secret_match)

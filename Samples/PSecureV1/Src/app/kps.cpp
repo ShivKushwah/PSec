@@ -1012,6 +1012,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 
 //When Ping machine receives an encrypted secret from the Pong enclave
 //We have already created an attestation channel before this point
+//TODO fix memory leaks
 ra_samp_response_header_t* ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,  
                                 uint32_t secret_size,
                                  uint8_t *p_gcm_mac) {
@@ -1032,9 +1033,7 @@ ra_samp_response_header_t* ocall_ping_machine_receive_encrypted_message(uint8_t 
 
         uint32_t i;
         bool secret_match = true;
-        // handle_incoming_events_ping_machine(atoi((char*) g_secret));
-        int respSize = 100;
-        
+        // handle_incoming_events_ping_machine(atoi((char*) g_secret));        
 
         int messageSize = 50;
 
@@ -1058,6 +1057,16 @@ ra_samp_response_header_t* ocall_ping_machine_receive_encrypted_message(uint8_t 
                             NULL,
                             0,
                             &payload_tag);
+
+        char* payload_sizeString = (char*) malloc(10);
+        itoa(payload_size, payload_sizeString, 10);
+
+        char* concatStrings[] = {payload_sizeString, ":", encrypted_payload, ":", (char*)payload_tag};
+        int concatLengths[] = {strlen(payload_sizeString), 1, payload_size, 1, 16};
+        char* requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
+        int requestStringSize = returnTotalSizeofLengthArray(concatLengths, 5) + 1;
+
+        int respSize = requestStringSize;
         
 
         ra_samp_response_header_t* p_resp_msg = (ra_samp_response_header_t*)malloc(respSize
@@ -1068,14 +1077,10 @@ ra_samp_response_header_t* ocall_ping_machine_receive_encrypted_message(uint8_t 
         p_resp_msg->size = respSize;
         p_resp_msg->status[0] = 0;
         p_resp_msg->status[1] = 0;
-        
 
+        memcpy(p_resp_msg->body, requestString, respSize);
 
-
-
-
-
-        strncpy((char*)p_resp_msg->body, "RETURNKIRAT", 12);
+        // strncpy((char*)p_resp_msg->body, "RETURNKIRAT", 12);
         return p_resp_msg;
 }
 
