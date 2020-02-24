@@ -138,11 +138,11 @@ int ra_network_send_receive(const char *sending_machine_name,
         return ret;
 
      //Request to KPS to send encrypted data based on previous secure channel
-    //  } else if (strcmp(receiving_machine_name, "KPS") == 0 && optional_Message.secret_size > 0) {
-    //      ocall_ping_machine_receive_encrypted_message(
-    //                             (uint8_t*)optional_Message.encrypted_message, 
-    //                             optional_Message.secret_size,
-    //                              optional_Message.payload_tag);
+     } else if (strcmp(receiving_machine_name, "KPS") == 0 && optional_Message.secret_size > 0) {
+         ocall_ping_machine_receive_encrypted_message(
+                                (uint8_t*)optional_Message.encrypted_message, 
+                                optional_Message.secret_size,
+                                 optional_Message.payload_tag);
 
     } else {
         return -1;

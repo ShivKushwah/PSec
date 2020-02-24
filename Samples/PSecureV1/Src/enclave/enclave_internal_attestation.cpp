@@ -397,6 +397,8 @@ sgx_status_t put_secret_data(
     return ret;
 }
 
+char secure_temp_message[SIZE_OF_MESSAGE]; 
+
 // Writes the results to the parameters
 sgx_status_t encrypt_secure_message(
     sgx_ra_context_t context,
@@ -422,11 +424,13 @@ sgx_status_t encrypt_secure_message(
             break;
         }
 
+        strncpy(secure_temp_message, "KIRAT", 6);
+
         uint8_t aes_gcm_iv[12] = {0};
         uint8_t payload_tag[16];
         uint8_t encrypted_string[SIZE_OF_MESSAGE] = {0};
         ret = sgx_rijndael128GCM_encrypt(&sk_key,
-                                         (uint8_t*)secure_message,
+                                         (uint8_t*)secure_temp_message,
                                          secret_size,
                                          &encrypted_string[0],
                                          &aes_gcm_iv[0],

@@ -1027,7 +1027,7 @@ int ocall_ping_machine_receive_encrypted_message(uint8_t *p_secret,
                             NULL,
                             0,
                             (sample_aes_gcm_128bit_tag_t *)p_gcm_mac);
-        //printf("Secret is %s\n" , (char*)g_secret);
+        printf("KPS Secret is %s\n" , (char*)g_secret);
 
         uint32_t i;
         bool secret_match = true;

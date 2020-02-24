@@ -768,6 +768,41 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                                     status);
                     goto CLEANUP;
                 }
+
+                //TODO Comment this case out since only KPS sends messages to us, not us to KPS
+                //TODO think about use case where we don't want anyone knowing our requests so we
+                //first perform attestaion to get secure channel, get a session ID, and then send our
+                //request to create the capability Key and stuff
+                uint8_t payload_tag[16];
+                uint8_t* encrypted_string = (uint8_t *) malloc(sizeof(uint8_t) * SIZE_OF_MESSAGE);
+                uint32_t secret_size = SIZE_OF_MESSAGE;
+
+                //Encrypt message using enclave
+                ret = enclave_encrypt_secure_message(enclave_id,
+                                    &status,
+                                    context,
+                                    encrypted_string,
+                                    secret_size,
+                                    payload_tag);
+                //TODO: Do we need to pad message?
+
+                //Send encrypted message to Ping machine
+                struct Encrypted_Message emsg = {encrypted_string, secret_size, payload_tag};
+
+                // ret = ra_network_send_receive(current_machine_name,
+                //                       receiving_machine_name,
+                //                       NULL,
+                //                       NULL,
+                //                       emsg);
+                mock_net(current_machine_name,
+                                      receiving_machine_name,
+                                      NULL, 
+                                        emsg, NULL, ret, false);
+
+
+
+
+
             //If Pong enclave wants to send a secure message to Ping machine
             } else { //if message_from_machine_to_enclave == 0
                 //TODO Comment this case out since only KPS sends messages to us, not us to KPS
