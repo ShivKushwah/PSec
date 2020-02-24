@@ -177,6 +177,55 @@ inline void PRINT_ATTESTATION_SERVICE_RESPONSE(
     }
 }
 
+ra_samp_response_header_t* mock_net(const char *sending_machine_name, 
+    const char *receiving_machine_name,
+    const ra_samp_request_header_t *p_req,
+    Encrypted_Message optional_Message,
+    char* plain_text_message,
+    int& ret, bool expectingResponse) {
+
+    ra_samp_response_header_t *p_msg0_resp_full = NULL;
+
+    // const ra_samp_request_header_t *p_req = (const ra_samp_request_header_t *) malloc(sizeof(const ra_samp_request_header_t));
+    // memcpy(p_req, );
+
+    ret = ra_network_send_receive(sending_machine_name,
+            receiving_machine_name,
+            p_req,
+            &p_msg0_resp_full);
+    int size;
+    if (expectingResponse) {
+        size = p_msg0_resp_full->size;
+    } else {
+        size = 0;
+    }
+    ra_samp_response_header_t *return_resp = (ra_samp_response_header_t*) malloc(sizeof(ra_samp_response_header_t) + size);
+    // return_resp->type = p_msg0_resp_full->type;
+    // return_resp->status = (uint8_t [2]) malloc(2);
+    // for (int i = 0; i < 2; i++) {
+    //     return_resp->status[i] = p_msg0_resp_full->status[i];
+    // }
+    // return_resp->size = p_msg0_resp_full->size;
+    // return_resp->align = (uint8_t*) malloc(1);
+    // return_resp->align[0] = p_msg0_resp_full->align[0];
+    // return_resp->body = (uint8_t*) malloc(return_resp->size);
+    // for (int i = 0; i < return_resp->size; i++) {
+    //     return_resp->body[i] = p_msg0_resp_full->body[i];
+    // }
+
+    if (expectingResponse) {
+        memcpy(return_resp, p_msg0_resp_full, sizeof(ra_samp_response_header_t));
+
+        for (int i = 0; i < size; i++) {
+            return_resp->body[i] = p_msg0_resp_full->body[i];
+        }
+    }
+
+    return return_resp;
+
+}
+
+
 // This sample code doesn't have any recovery/retry mechanisms for the remote
 // attestation. Since the enclave can be lost due S3 transitions, apps
 // susceptible to S3 transitions should have logic to restart attestation in
@@ -199,6 +248,8 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
     sgx_status_t status = SGX_SUCCESS;
     ra_samp_request_header_t* p_msg3_full = NULL;
     char* current_machine_name = "PongMachine";
+
+    struct Encrypted_Message empty;
 
     int32_t verify_index = -1;
     int32_t verification_samples = sizeof(msg1_samples)/sizeof(msg1_samples[0]);
@@ -274,10 +325,14 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         // The ISV decides whether to support this extended epid group id.
         fprintf(OUTPUT, "\nSending msg0 to remote attestation service provider.\n");
 
-        ret = ra_network_send_receive(current_machine_name,
+        // ret = ra_network_send_receive(current_machine_name,
+        //     receiving_machine_name,
+        //     p_msg0_full,
+        //     &p_msg0_resp_full);
+        
+        p_msg0_resp_full = mock_net(current_machine_name,
             receiving_machine_name,
-            p_msg0_full,
-            &p_msg0_resp_full);
+            p_msg0_full, empty, NULL, ret, false);
         if (ret != 0)
         {
             fprintf(OUTPUT, "\nError, ra_network_send_receive for msg0 failed "
@@ -384,10 +439,14 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                         "Expecting msg2 back.\n");
 
 
-        ret = ra_network_send_receive(current_machine_name,
+        // ret = ra_network_send_receive(current_machine_name,
+        //                               receiving_machine_name,
+        //                               p_msg1_full,
+        //                               &p_msg2_full);
+        p_msg2_full = mock_net(current_machine_name,
                                       receiving_machine_name,
                                       p_msg1_full,
-                                      &p_msg2_full);
+                                        empty, NULL, ret, true);
 
         if(ret != 0 || !p_msg2_full)
         {
