@@ -754,20 +754,20 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         {
             //If Ping machine wants to send the enclave a secure message
             if (message_from_machine_to_enclave) { // message_from_machine_to_enclave == 1 or == 2
-                ret = enclave_put_secret_data(enclave_id,
-                                    &status,
-                                    context,
-                                    p_att_result_msg_body->secret.payload,
-                                    p_att_result_msg_body->secret.payload_size,
-                                    p_att_result_msg_body->secret.payload_tag);
-                if((SGX_SUCCESS != ret)  || (SGX_SUCCESS != status))
-                {
-                    fprintf(OUTPUT, "\nError, attestation result message secret "
-                                    "using SK based AESGCM failed in [%s]. ret = "
-                                    "0x%0x. status = 0x%0x", __FUNCTION__, ret,
-                                    status);
-                    goto CLEANUP;
-                }
+                // ret = enclave_put_secret_data(enclave_id,
+                //                     &status,
+                //                     context,
+                //                     p_att_result_msg_body->secret.payload,
+                //                     p_att_result_msg_body->secret.payload_size,
+                //                     p_att_result_msg_body->secret.payload_tag);
+                // if((SGX_SUCCESS != ret)  || (SGX_SUCCESS != status))
+                // {
+                //     fprintf(OUTPUT, "\nError, attestation result message secret "
+                //                     "using SK based AESGCM failed in [%s]. ret = "
+                //                     "0x%0x. status = 0x%0x", __FUNCTION__, ret,
+                //                     status);
+                //     goto CLEANUP;
+                // }
 
                 //TODO Comment this case out since only KPS sends messages to us, not us to KPS
                 //TODO think about use case where we don't want anyone knowing our requests so we

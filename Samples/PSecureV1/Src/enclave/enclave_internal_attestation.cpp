@@ -383,8 +383,8 @@ sgx_status_t put_secret_data(
 
         uint32_t i;
         bool secret_match = true;
-        ocall_print("Enclave's secret is");
-        ocall_print((char*)g_secret);
+        // ocall_print("Enclave's secret is");
+        // printPayload((char*)g_secret, SIZE_OF_CAPABILITYKEY);
         //handle_incoming_events_pong_enclave(atoi((char*) g_secret));
   
         if(!secret_match)
