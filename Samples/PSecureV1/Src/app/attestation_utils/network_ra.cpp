@@ -440,52 +440,107 @@ char* send_network_request_API(char* request, size_t requestSize) {
 
 }
 
-// char* handle_socket_attestation_request(char* serializedString, int& responseSize) {
-//     RA_network_serialization_headers* deseralized = deserialize_ra_network_headers(serializedString);
+//TODO prevent memory leaks
+struct RA_network_serialization_headers* deserialize_ra_network_headers(char* serialized_string) {
 
-//     ra_samp_response_header_t *p_msg0_resp_full = NULL;
+    struct RA_network_serialization_headers* returnHeaders = ( struct RA_network_serialization_headers*) malloc(sizeof(struct RA_network_serialization_headers));
 
-//     // const ra_samp_request_header_t *p_req = (const ra_samp_request_header_t *) malloc(sizeof(const ra_samp_request_header_t));
-//     // memcpy(p_req, );
+    char* split = strtok(serialized_string , ":");
 
-//     int ret = ra_network_send_receive(deseralized->sending_machine_name,
-//             deseralized->receiving_machine_name,
-//             deseralized->p_req,
-//             &p_msg0_resp_full, deseralized->optional_Message);
-//     int size;
-//     if (expectingResponse) {
-//         size = p_msg0_resp_full->size;
-//         ocall_print("size of ra is ");
-//         ocall_print_int(size);
-//     } else {
-//         size = 0;
-//     }
-//     ra_samp_response_header_t *return_resp = (ra_samp_response_header_t*) malloc(sizeof(ra_samp_response_header_t) + size);
-//     // return_resp->type = p_msg0_resp_full->type;
-//     // return_resp->status = (uint8_t [2]) malloc(2);
-//     // for (int i = 0; i < 2; i++) {
-//     //     return_resp->status[i] = p_msg0_resp_full->status[i];
-//     // }
-//     // return_resp->size = p_msg0_resp_full->size;
-//     // return_resp->align = (uint8_t*) malloc(1);
-//     // return_resp->align[0] = p_msg0_resp_full->align[0];
-//     // return_resp->body = (uint8_t*) malloc(return_resp->size);
-//     // for (int i = 0; i < return_resp->size; i++) {
-//     //     return_resp->body[i] = p_msg0_resp_full->body[i];
-//     // }
+    char* sending_machine_name = split;
+    returnHeaders->sending_machine_name = (char*) malloc(strlen(sending_machine_name) + 1);
+    strncpy(returnHeaders->sending_machine_name, sending_machine_name, strlen(sending_machine_name) + 1);
 
-//     if (expectingResponse) {
-//         memcpy(return_resp, p_msg0_resp_full, sizeof(ra_samp_response_header_t));
+    split = strtok(NULL , ":");
+    char* receiving_machine_name = split;
+    returnHeaders->receiving_machine_name = (char*) malloc(strlen(receiving_machine_name) + 1);
+    strncpy(returnHeaders->receiving_machine_name, receiving_machine_name, strlen(receiving_machine_name) + 1);
 
-//         for (int i = 0; i < size; i++) {
-//             return_resp->body[i] = p_msg0_resp_full->body[i];
-//         }
-//     }
+    split = strtok(NULL , ":");
+    char* p_req_size_string = split;
+    int p_req_size = atoi(split);
+    ra_samp_request_header_t* p_req_serial = (ra_samp_request_header_t*) malloc(sizeof(ra_samp_request_header_t) + p_req_size);
+    if (p_req_size != 0) {
+        memcpy((char*)p_req_serial, serialized_string + strlen(sending_machine_name) + 1 + strlen(receiving_machine_name) + 1 + strlen(p_req_size_string) + 1, sizeof(ra_samp_request_header_t) + p_req_size);
 
-//     return return_resp;
+    } else {
+        p_req_serial = NULL;
+    }
+    returnHeaders->p_req = p_req_serial;
+
+    split = serialized_string + strlen(sending_machine_name) + 1 + strlen(receiving_machine_name) + 1 + strlen(p_req_size_string) + 1 + sizeof(ra_samp_request_header_t) + p_req_size + 1;
+    char* optionalMessageSizeString  = strtok(split, ":");
+    int optionalMessageSize = atoi(optionalMessageSizeString);
+
+    
+    if (optionalMessageSizeString == 0) {
+        returnHeaders->optional_Message.encrypted_message = NULL;
+        returnHeaders->optional_Message.secret_size = 0;
+        returnHeaders->optional_Message.payload_tag = NULL;
+
+    } else {
+        returnHeaders->optional_Message.encrypted_message = (uint8_t*) malloc(optionalMessageSize);
+        returnHeaders->optional_Message.secret_size = optionalMessageSize;
+        returnHeaders->optional_Message.payload_tag = (uint8_t*) malloc(16);
+
+        memcpy(returnHeaders->optional_Message.encrypted_message, split + strlen(optionalMessageSizeString) + 1, optionalMessageSize);
+        memcpy(returnHeaders->optional_Message.payload_tag, split + strlen(optionalMessageSizeString) + 1 + optionalMessageSize + 1, 16);
+
+    }
+
+    return returnHeaders;
 
 
-// }
+}
+
+char* handle_socket_attestation_request(char* serializedString, int& responseSize) {
+    RA_network_serialization_headers* deseralized = deserialize_ra_network_headers(serializedString);
+
+    ra_samp_response_header_t *p_msg0_resp_full = NULL;
+
+    // const ra_samp_request_header_t *p_req = (const ra_samp_request_header_t *) malloc(sizeof(const ra_samp_request_header_t));
+    // memcpy(p_req, );
+
+    int ret = ra_network_send_receive(deseralized->sending_machine_name,
+            deseralized->receiving_machine_name,
+            deseralized->p_req,
+            &p_msg0_resp_full, deseralized->optional_Message);
+    int size;
+    if (p_msg0_resp_full != NULL) {
+        size = p_msg0_resp_full->size;
+        ocall_print("size of ra is ");
+        ocall_print_int(size);
+    } else {
+        size = 0;
+    }
+    ra_samp_response_header_t *return_resp = (ra_samp_response_header_t*) malloc(sizeof(ra_samp_response_header_t) + size);
+    // return_resp->type = p_msg0_resp_full->type;
+    // return_resp->status = (uint8_t [2]) malloc(2);
+    // for (int i = 0; i < 2; i++) {
+    //     return_resp->status[i] = p_msg0_resp_full->status[i];
+    // }
+    // return_resp->size = p_msg0_resp_full->size;
+    // return_resp->align = (uint8_t*) malloc(1);
+    // return_resp->align[0] = p_msg0_resp_full->align[0];
+    // return_resp->body = (uint8_t*) malloc(return_resp->size);
+    // for (int i = 0; i < return_resp->size; i++) {
+    //     return_resp->body[i] = p_msg0_resp_full->body[i];
+    // }
+
+    if (p_msg0_resp_full != NULL) {
+        memcpy(return_resp, p_msg0_resp_full, sizeof(ra_samp_response_header_t));
+
+        for (int i = 0; i < size; i++) {
+            return_resp->body[i] = p_msg0_resp_full->body[i];
+        }
+    }
+
+    responseSize = sizeof(ra_samp_response_header_t) + size;
+
+    return (char*)return_resp;
+
+
+}
 
 char* createStringLiteralMalloced(char* stringLiteral) {
     //TODO if modifying here, modify in helper.cpp

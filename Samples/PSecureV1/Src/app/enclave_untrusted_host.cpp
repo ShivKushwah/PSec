@@ -236,59 +236,16 @@ char* serialize_ra_network_headers(const char *sending_machine_name,
 
 }
 
-//TODO prevent memory leaks
-struct RA_network_serialization_headers* deserialize_ra_network_headers(char* serialized_string) {
+char* mock_send_request(char* request, int requestSize) {
+    char* net_request = (char*) malloc(requestSize);
+    memcpy(net_request, request, requestSize);
 
-    struct RA_network_serialization_headers* returnHeaders = ( struct RA_network_serialization_headers*) malloc(sizeof(struct RA_network_serialization_headers));
-
-    char* split = strtok(serialized_string , ":");
-
-    char* sending_machine_name = split;
-    returnHeaders->sending_machine_name = (char*) malloc(strlen(sending_machine_name) + 1);
-    strncpy(returnHeaders->sending_machine_name, sending_machine_name, strlen(sending_machine_name) + 1);
-
-    split = strtok(NULL , ":");
-    char* receiving_machine_name = split;
-    returnHeaders->receiving_machine_name = (char*) malloc(strlen(receiving_machine_name) + 1);
-    strncpy(returnHeaders->receiving_machine_name, receiving_machine_name, strlen(receiving_machine_name) + 1);
-
-    split = strtok(NULL , ":");
-    char* p_req_size_string = split;
-    int p_req_size = atoi(split);
-    ra_samp_request_header_t* p_req_serial = (ra_samp_request_header_t*) malloc(sizeof(ra_samp_request_header_t) + p_req_size);
-    if (p_req_size != 0) {
-        memcpy((char*)p_req_serial, serialized_string + strlen(sending_machine_name) + 1 + strlen(receiving_machine_name) + 1 + strlen(p_req_size_string) + 1, sizeof(ra_samp_request_header_t) + p_req_size);
-
-    } else {
-        p_req_serial = NULL;
-    }
-    returnHeaders->p_req = p_req_serial;
-
-    split = serialized_string + strlen(sending_machine_name) + 1 + strlen(receiving_machine_name) + 1 + strlen(p_req_size_string) + 1 + sizeof(ra_samp_request_header_t) + p_req_size + 1;
-    char* optionalMessageSizeString  = strtok(split, ":");
-    int optionalMessageSize = atoi(optionalMessageSizeString);
-
-    
-    if (optionalMessageSizeString == 0) {
-        returnHeaders->optional_Message.encrypted_message = NULL;
-        returnHeaders->optional_Message.secret_size = 0;
-        returnHeaders->optional_Message.payload_tag = NULL;
-
-    } else {
-        returnHeaders->optional_Message.encrypted_message = (uint8_t*) malloc(optionalMessageSize);
-        returnHeaders->optional_Message.secret_size = optionalMessageSize;
-        returnHeaders->optional_Message.payload_tag = (uint8_t*) malloc(16);
-
-        memcpy(returnHeaders->optional_Message.encrypted_message, split + strlen(optionalMessageSizeString) + 1, optionalMessageSize);
-        memcpy(returnHeaders->optional_Message.payload_tag, split + strlen(optionalMessageSizeString) + 1 + optionalMessageSize + 1, 16);
-
-    }
-
-    return returnHeaders;
-
+    char* net_response;
+    int responseSize;
+    net_response = handle_socket_attestation_request(net_request, responseSize);
+    return (char*) net_response;
 
 }
-
 
 
 ra_samp_response_header_t* send_attestation_network_request(const char *sending_machine_name, 
@@ -296,22 +253,27 @@ ra_samp_response_header_t* send_attestation_network_request(const char *sending_
     const ra_samp_request_header_t *p_req,
     Encrypted_Message optional_Message,
     int& ret, bool expectingResponse) {
+
+    ra_samp_response_header_t *p_msg0_resp_full = NULL;
+
     
     int returnSize;
     // ocall_print("serializing");
     // ocall_print_int(p_req->size);
     char* serializedString = serialize_ra_network_headers(sending_machine_name, receiving_machine_name, p_req, optional_Message, returnSize);
-    RA_network_serialization_headers* deseralized = deserialize_ra_network_headers(serializedString);
+    p_msg0_resp_full = (ra_samp_response_header_t*)mock_send_request(serializedString, returnSize);
+    ret = 0;
+    
+    // RA_network_serialization_headers* deseralized = deserialize_ra_network_headers(serializedString);
 
-    ra_samp_response_header_t *p_msg0_resp_full = NULL;
 
     // const ra_samp_request_header_t *p_req = (const ra_samp_request_header_t *) malloc(sizeof(const ra_samp_request_header_t));
     // memcpy(p_req, );
 
-    ret = ra_network_send_receive(deseralized->sending_machine_name,
-            deseralized->receiving_machine_name,
-            deseralized->p_req,
-            &p_msg0_resp_full, deseralized->optional_Message);
+    // ret = ra_network_send_receive(deseralized->sending_machine_name,
+    //         deseralized->receiving_machine_name,
+    //         deseralized->p_req,
+    //         &p_msg0_resp_full, deseralized->optional_Message);
     int size;
     if (expectingResponse) {
         size = p_msg0_resp_full->size;
