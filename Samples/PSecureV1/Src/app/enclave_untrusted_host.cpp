@@ -181,7 +181,6 @@ ra_samp_response_header_t* mock_net(const char *sending_machine_name,
     const char *receiving_machine_name,
     const ra_samp_request_header_t *p_req,
     Encrypted_Message optional_Message,
-    char* plain_text_message,
     int& ret, bool expectingResponse) {
 
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -233,7 +232,7 @@ ra_samp_response_header_t* mock_net(const char *sending_machine_name,
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
 // This method makes network_ra call to have the pong enclave attest to the ping machine
-inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const char* receiving_machine_name, int message_from_machine_to_enclave, char* optional_message) {
+inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const char* receiving_machine_name, int message_from_machine_to_enclave) {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -332,7 +331,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         
         p_msg0_resp_full = mock_net(current_machine_name,
             receiving_machine_name,
-            p_msg0_full, default_Encrypted_Message, NULL, ret, false);
+            p_msg0_full, default_Encrypted_Message, ret, false);
         if (ret != 0)
         {
             fprintf(OUTPUT, "\nError, ra_network_send_receive for msg0 failed "
@@ -446,7 +445,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         p_msg2_full = mock_net(current_machine_name,
                                       receiving_machine_name,
                                       p_msg1_full,
-                                        default_Encrypted_Message, NULL, ret, true);
+                                        default_Encrypted_Message, ret, true);
 
         if(ret != 0 || !p_msg2_full)
         {
@@ -643,7 +642,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         p_att_result_msg_full = mock_net(current_machine_name,
                                       receiving_machine_name,
                                       p_msg3_full,
-                                        temp, optional_message, ret, true);
+                                        temp, ret, true);
         if(ret || !p_att_result_msg_full)
         {
             ret = -1;
@@ -799,7 +798,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                 resp_1 = mock_net(current_machine_name,
                                       receiving_machine_name,
                                       NULL, 
-                                        emsg, NULL, ret, true);
+                                        emsg, ret, true);
                 ocall_print("Received secret message from KPS");
                 printPayload((char*)resp_1->body, resp_1->size);
                 // ocall_print((char*)resp_1->body);
@@ -831,40 +830,40 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
 
 
 
-
-            //If Pong enclave wants to send a secure message to Ping machine
-            } else { //if message_from_machine_to_enclave == 0
-                //TODO Comment this case out since only KPS sends messages to us, not us to KPS
-                //TODO think about use case where we don't want anyone knowing our requests so we
-                //first perform attestaion to get secure channel, get a session ID, and then send our
-                //request to create the capability Key and stuff
-                uint8_t payload_tag[16];
-                uint8_t* encrypted_string = (uint8_t *) malloc(sizeof(uint8_t) * SIZE_OF_MESSAGE);
-                uint32_t secret_size = SIZE_OF_MESSAGE;
-
-                //Encrypt message using enclave
-                ret = enclave_encrypt_secure_message(enclave_id,
-                                    &status,
-                                    context,
-                                    encrypted_string,
-                                    secret_size,
-                                    payload_tag);
-                //TODO: Do we need to pad message?
-
-                //Send encrypted message to Ping machine
-                struct Encrypted_Message emsg = {encrypted_string, secret_size, payload_tag};
-
-                // ret = ra_network_send_receive(current_machine_name,
-                //                       receiving_machine_name,
-                //                       NULL,
-                //                       NULL,
-                //                       emsg);
-                mock_net(current_machine_name,
-                                      receiving_machine_name,
-                                      NULL, 
-                                        emsg, NULL, ret, false);
-                
             }
+            //If Pong enclave wants to send a secure message to Ping machine
+            // } else { //if message_from_machine_to_enclave == 0
+            //     //TODO Comment this case out since only KPS sends messages to us, not us to KPS
+            //     //TODO think about use case where we don't want anyone knowing our requests so we
+            //     //first perform attestaion to get secure channel, get a session ID, and then send our
+            //     //request to create the capability Key and stuff
+            //     uint8_t payload_tag[16];
+            //     uint8_t* encrypted_string = (uint8_t *) malloc(sizeof(uint8_t) * SIZE_OF_MESSAGE);
+            //     uint32_t secret_size = SIZE_OF_MESSAGE;
+
+            //     //Encrypt message using enclave
+            //     ret = enclave_encrypt_secure_message(enclave_id,
+            //                         &status,
+            //                         context,
+            //                         encrypted_string,
+            //                         secret_size,
+            //                         payload_tag);
+            //     //TODO: Do we need to pad message?
+
+            //     //Send encrypted message to Ping machine
+            //     struct Encrypted_Message emsg = {encrypted_string, secret_size, payload_tag};
+
+            //     // ret = ra_network_send_receive(current_machine_name,
+            //     //                       receiving_machine_name,
+            //     //                       NULL,
+            //     //                       NULL,
+            //     //                       emsg);
+            //     mock_net(current_machine_name,
+            //                           receiving_machine_name,
+            //                           NULL, 
+            //                             emsg, ret, false);
+                
+            // }
         }
         fprintf(OUTPUT, "\nSecret successfully received from server.");
         fprintf(OUTPUT, "\nRemote attestation success!");
@@ -913,7 +912,7 @@ CLEANUP:
 inline void* pong_enclave_attestation_thread(void* parameters) { //message_from_machine_to_enclave should be true when the enclave is receiving the message
                                                           //false when the enclave wants to send a message
     struct Enclave_start_attestation_wrapper_arguments* p = (struct Enclave_start_attestation_wrapper_arguments*)parameters;
-    return (void*) pong_enclave_start_attestation(p->currentEid, p->machineName,  p->message_from_machine_to_enclave, p->optional_message);
+    return (void*) pong_enclave_start_attestation(p->currentEid, p->machineName,  p->message_from_machine_to_enclave);
 }
 
 char* enclave_attestation_network_serializer(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, char* optional_message, uint32_t OPTIONAL_MESSAGE_SIZE, int& returnSize) {
@@ -962,8 +961,6 @@ struct Enclave_start_attestation_wrapper_arguments* enclave_attestation_network_
     parameters->currentEid = currentEid;
     parameters->machineName = other_machine_name;
     parameters->message_from_machine_to_enclave = message_from_machine_to_enclave;
-    parameters->optional_message = optionalMessage;
-
 
     return parameters;
 
