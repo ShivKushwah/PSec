@@ -91,6 +91,13 @@ typedef struct _ra_samp_response_header_t{
     uint8_t  body[];
 }ra_samp_response_header_t;
 
+struct RA_network_serialization_headers{
+    char *sending_machine_name; 
+    char *receiving_machine_name;
+    ra_samp_request_header_t *p_req;
+    Encrypted_Message optional_Message;
+};
+
 #pragma pack()
 
 #ifdef  __cplusplus

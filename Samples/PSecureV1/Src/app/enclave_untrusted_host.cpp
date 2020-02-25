@@ -184,11 +184,21 @@ char* serialize_ra_network_headers(const char *sending_machine_name,
     Encrypted_Message optional_Message,
     int& returnSize) {
 
+    
+    int size_p_req;
     char* p_req_size_string = (char*) malloc(10);
-    itoa(p_req->size, p_req_size_string, 10);
+    if(p_req == NULL) {
+        size_p_req = 0;
+        strncpy(p_req_size_string, "0", 2);
+    } else {
+        size_p_req = p_req->size;
+        itoa(p_req->size, p_req_size_string, 10);
+    }
 
-    char* p_req_serial = (char*) malloc(sizeof(ra_samp_request_header_t) + p_req->size);
-    memcpy(p_req_serial, (char*)p_req, sizeof(ra_samp_request_header_t) + p_req->size);
+    char* p_req_serial = (char*) malloc(sizeof(ra_samp_request_header_t) + size_p_req);
+    if (p_req != NULL) {
+        memcpy(p_req_serial, (char*)p_req, sizeof(ra_samp_request_header_t) + size_p_req);
+    }
 
     char* optional_Message_Serialized;
     int optional_Message_size;
@@ -217,11 +227,111 @@ char* serialize_ra_network_headers(const char *sending_machine_name,
     }
 
     char* concatStrings[] = {(char*)sending_machine_name, ":", (char*)receiving_machine_name, ":", p_req_size_string, ":",  p_req_serial, ":", optional_Message_Serialized};
-    int concatLengths[] = {strlen(sending_machine_name), 1, strlen(receiving_machine_name), 1, strlen(p_req_size_string), 1, sizeof(ra_samp_request_header_t) + p_req->size, 1, optional_Message_size};
+    int concatLengths[] = {strlen(sending_machine_name), 1, strlen(receiving_machine_name), 1, strlen(p_req_size_string), 1, sizeof(ra_samp_request_header_t) + size_p_req, 1, optional_Message_size};
     char* serializedString = concatMutipleStringsWithLength(concatStrings, concatLengths, 9);
     returnSize = returnTotalSizeofLengthArray(concatLengths, 9) + 1;
 
     return serializedString;
+
+
+}
+
+//TODO prevent memory leaks
+struct RA_network_serialization_headers* deserialize_ra_network_headers(char* serialized_string) {
+
+    struct RA_network_serialization_headers* returnHeaders = ( struct RA_network_serialization_headers*) malloc(sizeof(struct RA_network_serialization_headers));
+
+    char* split = strtok(serialized_string , ":");
+
+    char* sending_machine_name = split;
+    returnHeaders->sending_machine_name = (char*) malloc(strlen(sending_machine_name) + 1);
+    strncpy(returnHeaders->sending_machine_name, sending_machine_name, strlen(sending_machine_name) + 1);
+
+    split = strtok(NULL , ":");
+    char* receiving_machine_name = split;
+    returnHeaders->receiving_machine_name = (char*) malloc(strlen(receiving_machine_name) + 1);
+    strncpy(returnHeaders->receiving_machine_name, receiving_machine_name, strlen(receiving_machine_name) + 1);
+
+    split = strtok(NULL , ":");
+    char* p_req_size_string = split;
+    int p_req_size = atoi(split);
+    ra_samp_request_header_t* p_req_serial = (ra_samp_request_header_t*) malloc(sizeof(ra_samp_request_header_t) + p_req_size);
+    if (p_req_size != 0) {
+        memcpy((char*)p_req_serial, serialized_string + strlen(sending_machine_name) + 1 + strlen(receiving_machine_name) + 1 + strlen(p_req_size_string) + 1, sizeof(ra_samp_request_header_t) + p_req_size);
+
+    } else {
+        p_req_serial = NULL;
+    }
+    returnHeaders->p_req = p_req_serial;
+
+    split = serialized_string + strlen(sending_machine_name) + 1 + strlen(receiving_machine_name) + 1 + strlen(p_req_size_string) + 1 + sizeof(ra_samp_request_header_t) + p_req_size + 1;
+    char* optionalMessageSizeString  = strtok(split, ":");
+    int optionalMessageSize = atoi(optionalMessageSizeString);
+
+    
+    if (optionalMessageSizeString == 0) {
+        returnHeaders->optional_Message.encrypted_message = NULL;
+        returnHeaders->optional_Message.secret_size = 0;
+        returnHeaders->optional_Message.payload_tag = NULL;
+
+    } else {
+        returnHeaders->optional_Message.encrypted_message = (uint8_t*) malloc(optionalMessageSize);
+        returnHeaders->optional_Message.secret_size = optionalMessageSize;
+        returnHeaders->optional_Message.payload_tag = (uint8_t*) malloc(16);
+
+        memcpy(returnHeaders->optional_Message.encrypted_message, split + strlen(optionalMessageSizeString) + 1, optionalMessageSize);
+        memcpy(returnHeaders->optional_Message.payload_tag, split + strlen(optionalMessageSizeString) + 1 + optionalMessageSize + 1, 16);
+
+    }
+
+    return returnHeaders;
+
+    // struct Enclave_start_attestation_wrapper_arguments* parameters = (struct Enclave_start_attestation_wrapper_arguments*) malloc(sizeof(struct Enclave_start_attestation_wrapper_arguments));
+    // //{currentEid, other_machine_name, message_from_machine_to_enclave, optionalMessage};
+    // parameters->currentEid = currentEid;
+    // parameters->machineName = other_machine_name;
+
+    // //char* payload_tag_serialized = serialized_string + strlen(sending_machine_name) + 1 + strlen(receiving_machine_name) + 1 + strlen(p_req_size_string) + 1 + sizeof(ra_samp_request_header_t) + p_req_size + 1;
+
+
+    // char* p_req_size_string = (char*) malloc(10);
+    // itoa(p_req->size, p_req_size_string, 10);
+
+    // char* p_req_serial = (char*) malloc(sizeof(ra_samp_request_header_t) + p_req->size);
+    // memcpy(p_req_serial, (char*)p_req, sizeof(ra_samp_request_header_t) + p_req->size);
+
+    // char* optional_Message_Serialized;
+    // int optional_Message_size;
+    
+    // if (optional_Message.secret_size == 0) {
+
+    //     optional_Message_Serialized = "0";
+    //     optional_Message_size = 1;
+    
+
+    // } else {
+    //     char* secret_size_string = (char*) malloc(10);
+    //     itoa(optional_Message.secret_size, secret_size_string, 10);
+
+    //     char* encrypted_message_string = (char*) malloc(optional_Message.secret_size);
+    //     memcpy(encrypted_message_string, optional_Message.encrypted_message, optional_Message.secret_size);
+
+    //     char* payload_tag_string = (char*) malloc(16);
+    //     memcpy(payload_tag_string, optional_Message.payload_tag, 16);
+
+    //     char* concatStrings[] = {secret_size_string, ":", encrypted_message_string, ":", payload_tag_string};
+    //     int concatLengths[] = {strlen(secret_size_string), 1, optional_Message.secret_size, 1, 16};
+    //     optional_Message_Serialized = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
+    //     optional_Message_size = returnTotalSizeofLengthArray(concatLengths, 5);
+
+    // }
+
+    // char* concatStrings[] = {(char*)sending_machine_name, ":", (char*)receiving_machine_name, ":", p_req_size_string, ":",  p_req_serial, ":", optional_Message_Serialized};
+    // int concatLengths[] = {strlen(sending_machine_name), 1, strlen(receiving_machine_name), 1, strlen(p_req_size_string), 1, sizeof(ra_samp_request_header_t) + p_req->size, 1, optional_Message_size};
+    // char* serializedString = concatMutipleStringsWithLength(concatStrings, concatLengths, 9);
+    // returnSize = returnTotalSizeofLengthArray(concatLengths, 9) + 1;
+
+    // return serializedString;
 
 
 }
@@ -233,16 +343,22 @@ ra_samp_response_header_t* mock_net(const char *sending_machine_name,
     const ra_samp_request_header_t *p_req,
     Encrypted_Message optional_Message,
     int& ret, bool expectingResponse) {
+    
+    int returnSize;
+    // ocall_print("serializing");
+    // ocall_print_int(p_req->size);
+    char* serializedString = serialize_ra_network_headers(sending_machine_name, receiving_machine_name, p_req, optional_Message, returnSize);
+    RA_network_serialization_headers* deseralized = deserialize_ra_network_headers(serializedString);
 
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
 
     // const ra_samp_request_header_t *p_req = (const ra_samp_request_header_t *) malloc(sizeof(const ra_samp_request_header_t));
     // memcpy(p_req, );
 
-    ret = ra_network_send_receive(sending_machine_name,
-            receiving_machine_name,
-            p_req,
-            &p_msg0_resp_full, optional_Message);
+    ret = ra_network_send_receive(deseralized->sending_machine_name,
+            deseralized->receiving_machine_name,
+            deseralized->p_req,
+            &p_msg0_resp_full, deseralized->optional_Message);
     int size;
     if (expectingResponse) {
         size = p_msg0_resp_full->size;
