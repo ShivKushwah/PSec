@@ -37,7 +37,7 @@
 
 #include "constants.h"
 
-struct Encrypted_Message{
+struct Encrypted_Message{ //Used to send metadata over or used to send actual encrypted messages
     uint8_t* encrypted_message;
     uint32_t secret_size;
     uint8_t* payload_tag;

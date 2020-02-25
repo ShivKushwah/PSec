@@ -163,16 +163,17 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
     char* sizeOfRequestedMachineTypeString = (char*) malloc(10);
     itoa(strlen(requestedMachineTypeToCreate), sizeOfRequestedMachineTypeString, 10);
 
-    char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey, ":", sizeOfRequestedMachineTypeString, ":", requestedMachineTypeToCreate};
-    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(sizeOfRequestedMachineTypeString), 1, strlen(requestedMachineTypeToCreate)};
-    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 7);
-    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 7) + 1;
-    safe_free(sizeOfRequestedMachineTypeString);
+    // char* concatStrings[] = {currentMachinePublicIDKey, ":", childPublicIDKey, ":", sizeOfRequestedMachineTypeString, ":", requestedMachineTypeToCreate};
+    // int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(sizeOfRequestedMachineTypeString), 1, strlen(requestedMachineTypeToCreate)};
+    // requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 7);
+    // requestStringSize = returnTotalSizeofLengthArray(concatLengths, 7) + 1;
+    // safe_free(sizeOfRequestedMachineTypeString);
 
     char* concatStrings2[] = {"Retrieve:" , currentMachinePublicIDKey, ":", childPublicIDKey, ":", sizeOfRequestedMachineTypeString, ":", requestedMachineTypeToCreate};
     int concatLengths2[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(sizeOfRequestedMachineTypeString), 1, strlen(requestedMachineTypeToCreate)};
     char* requestStringReal = concatMutipleStringsWithLength(concatStrings2, concatLengths2, 8);
     int requestStringSizeReal = returnTotalSizeofLengthArray(concatLengths2, 8) + 1;
+    safe_free(sizeOfRequestedMachineTypeString);
 
     if (requestStringSizeReal > SIZE_OF_MESSAGE) {
         ocall_print("ERROR: attestation request overflow");
@@ -180,8 +181,8 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
 
     memcpy(secure_message_attestation_request, requestStringReal, requestStringSizeReal);
       
-    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT, requestString, requestStringSize);
-    safe_free(requestString);
+    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, RETRIEVE_CAPABLITY_KEY_CONSTANT);
+    safe_free(requestStringReal);
     char* capabilityKeyPayload = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKeyPayload, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKeyPayload;
@@ -362,16 +363,17 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     char* sizeOfRequestedMachineTypeString = (char*) malloc(10);
     itoa(strlen(requestedMachineTypeToCreate), sizeOfRequestedMachineTypeString, 10);    
 
-    char* concatStrings[] = {newMachinePublicIDKey, ":", parentTrustedMachineID, ":", sizeOfRequestedMachineTypeString, ":", requestedMachineTypeToCreate};
-    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(sizeOfRequestedMachineTypeString), 1, strlen(requestedMachineTypeToCreate)};
-    requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 7);
-    requestStringSize = returnTotalSizeofLengthArray(concatLengths, 7) + 1;
-    safe_free(sizeOfRequestedMachineTypeString);
+    // char* concatStrings[] = {newMachinePublicIDKey, ":", parentTrustedMachineID, ":", sizeOfRequestedMachineTypeString, ":", requestedMachineTypeToCreate};
+    // int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(sizeOfRequestedMachineTypeString), 1, strlen(requestedMachineTypeToCreate)};
+    // requestString = concatMutipleStringsWithLength(concatStrings, concatLengths, 7);
+    // requestStringSize = returnTotalSizeofLengthArray(concatLengths, 7) + 1;
+    // safe_free(sizeOfRequestedMachineTypeString);
 
     char* concatStrings2[] = {"Create:" , newMachinePublicIDKey, ":", parentTrustedMachineID, ":", sizeOfRequestedMachineTypeString, ":", requestedMachineTypeToCreate};
     int concatLengths2[] = {7, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, strlen(sizeOfRequestedMachineTypeString), 1, strlen(requestedMachineTypeToCreate)};
     char* requestStringReal = concatMutipleStringsWithLength(concatStrings2, concatLengths2, 8);
     int requestStringSizeReal = returnTotalSizeofLengthArray(concatLengths2, 8) + 1;
+    safe_free(sizeOfRequestedMachineTypeString);
 
     if (requestStringSizeReal > SIZE_OF_MESSAGE) {
         ocall_print("ERROR: attestation request overflow");
@@ -385,8 +387,8 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     ocall_print(requestedMachineTypeToCreate);
     // ocall_print("last one should be same as");
     // printRSAKey(requestString + SGX_RSA3072_KEY_SIZE + 1);
-    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, CREATE_CAPABILITY_KEY_CONSTANT, requestString, requestStringSize);
-    safe_free(requestString);
+    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE, CREATE_CAPABILITY_KEY_CONSTANT);
+    safe_free(requestStringReal);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;

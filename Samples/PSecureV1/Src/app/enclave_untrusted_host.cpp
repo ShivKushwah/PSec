@@ -915,9 +915,8 @@ inline void* pong_enclave_attestation_thread(void* parameters) { //message_from_
     return (void*) pong_enclave_start_attestation(p->currentEid, p->machineName,  p->message_from_machine_to_enclave);
 }
 
-char* enclave_attestation_network_serializer(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, char* optional_message, uint32_t OPTIONAL_MESSAGE_SIZE, int& returnSize) {
+char* enclave_attestation_network_serializer(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, int& returnSize) {
     char* message_from_machine_to_enclaveString = (char*) malloc(10);
-    char* optionalMessageSizeString = (char*) malloc(10);
 
     std::ostringstream oss;
     oss << currentEid;
@@ -925,16 +924,14 @@ char* enclave_attestation_network_serializer(sgx_enclave_id_t currentEid, char* 
     char* eidString = (char*)eidStringObject.c_str();
 
     itoa((int) message_from_machine_to_enclave, message_from_machine_to_enclaveString, 10);
-    itoa((int) OPTIONAL_MESSAGE_SIZE, optionalMessageSizeString, 10);
 
-    char* concatStrings[] = {eidString, ":", other_machine_name, ":", message_from_machine_to_enclaveString, ":", optionalMessageSizeString, ":", optional_message};
-    int concatLengths[] = {strlen(eidString), 1, strlen(other_machine_name), 1, strlen(message_from_machine_to_enclaveString), 1, strlen(optionalMessageSizeString), 1, OPTIONAL_MESSAGE_SIZE};
-    char* serializedString = concatMutipleStringsWithLength(concatStrings, concatLengths, 9);
-    returnSize = returnTotalSizeofLengthArray(concatLengths, 9) + 1;
+    char* concatStrings[] = {eidString, ":", other_machine_name, ":", message_from_machine_to_enclaveString};
+    int concatLengths[] = {strlen(eidString), 1, strlen(other_machine_name), 1, strlen(message_from_machine_to_enclaveString)};
+    char* serializedString = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
+    returnSize = returnTotalSizeofLengthArray(concatLengths, 5) + 1;
     ocall_print("Attestation Serializer:");
     printPayload(serializedString, returnSize);
     safe_free(message_from_machine_to_enclaveString);
-    safe_free(optionalMessageSizeString);
     return serializedString;
 
 }
@@ -951,11 +948,6 @@ struct Enclave_start_attestation_wrapper_arguments* enclave_attestation_network_
     strncpy(other_machine_name, split, strlen(split) + 1);
     split = strtok(NULL, ":");
     int message_from_machine_to_enclave = atoi(split);
-    split = strtok(NULL, ":");
-    int optionalMessageSize = atoi(split);
-    split = strtok(NULL, ":");
-    char* optionalMessage = (char*) malloc(optionalMessageSize);
-    memcpy(optionalMessage, split, optionalMessageSize);
     struct Enclave_start_attestation_wrapper_arguments* parameters = (struct Enclave_start_attestation_wrapper_arguments*) malloc(sizeof(struct Enclave_start_attestation_wrapper_arguments));
     //{currentEid, other_machine_name, message_from_machine_to_enclave, optionalMessage};
     parameters->currentEid = currentEid;
@@ -966,12 +958,12 @@ struct Enclave_start_attestation_wrapper_arguments* enclave_attestation_network_
 
 }
 
-int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, char* optional_message, uint32_t OPTIONAL_MESSAGE_SIZE) {
+int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave) {
 
     // struct Enclave_start_attestation_wrapper_arguments parameters = {currentEidSGX, other_machine_name, message_from_machine_to_enclave, optional_message};
     struct Enclave_start_attestation_wrapper_arguments* parameters;// = {currentEid, other_machine_name, message_from_machine_to_enclave, optional_message};
     int sizeOfSerializedString = 0;
-    char* serializedString = enclave_attestation_network_serializer(currentEid, other_machine_name, size, message_from_machine_to_enclave, optional_message, OPTIONAL_MESSAGE_SIZE, sizeOfSerializedString);
+    char* serializedString = enclave_attestation_network_serializer(currentEid, other_machine_name, size, message_from_machine_to_enclave, sizeOfSerializedString);
     parameters = enclave_attestation_network_deserializer(serializedString);
 
     // ocall_print("inside ocall_pong_enclave_attestation_in_thread");
