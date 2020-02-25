@@ -515,8 +515,8 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
 // Process remote attestation message 3
 int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
                         uint32_t msg3_size,
-                        ra_samp_response_header_t **pp_att_result_msg,
-                        int message_from_machine_to_enclave) //message_from_machine_to_enclave is 1 when the enclave is supposed to receive a message
+                        ra_samp_response_header_t **pp_att_result_msg)
+                        // int message_from_machine_to_enclave) //message_from_machine_to_enclave is 1 when the enclave is supposed to receive a message
                                                              //0 when the enclave is suppposed to send a message
 {
     int ret = 0;

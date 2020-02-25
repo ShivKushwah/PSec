@@ -113,8 +113,9 @@ int ra_network_send_receive(const char *sending_machine_name,
             ret =sp_ra_proc_msg3_req((const sample_ra_msg3_t*)((size_t)p_req +
                 sizeof(ra_samp_request_header_t)),
                 p_req->size,
-                &p_resp_msg,
-                *(optional_Message.encrypted_message));
+                &p_resp_msg);
+                //3);
+                // *(optional_Message.encrypted_message));
             if(0 != ret)
             {
                 fprintf(stderr, "\nError, call sp_ra_proc_msg3_req fail [%s].",
