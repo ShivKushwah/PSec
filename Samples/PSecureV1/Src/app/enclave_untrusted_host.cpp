@@ -240,10 +240,13 @@ char* mock_send_request(char* request, int requestSize) {
     char* net_request = (char*) malloc(requestSize);
     memcpy(net_request, request, requestSize);
 
-    char* net_response;
+    char* copied_response;
     int responseSize;
-    net_response = handle_socket_attestation_request(net_request, responseSize);
-    return (char*) net_response;
+    char* net_response = handle_socket_attestation_request(net_request, responseSize);
+    copied_response = (char*) malloc(responseSize);
+    memcpy(copied_response, net_response, responseSize);
+    
+    return (char*) copied_response;
 
 }
 
