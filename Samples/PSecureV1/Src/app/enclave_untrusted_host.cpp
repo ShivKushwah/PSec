@@ -192,7 +192,7 @@ ra_samp_response_header_t* mock_net(const char *sending_machine_name,
     ret = ra_network_send_receive(sending_machine_name,
             receiving_machine_name,
             p_req,
-            &p_msg0_resp_full, optional_Message, plain_text_message);
+            &p_msg0_resp_full, optional_Message);
     int size;
     if (expectingResponse) {
         size = p_msg0_resp_full->size;
