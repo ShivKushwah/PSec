@@ -440,6 +440,53 @@ char* send_network_request_API(char* request, size_t requestSize) {
 
 }
 
+// char* handle_socket_attestation_request(char* serializedString, int& responseSize) {
+//     RA_network_serialization_headers* deseralized = deserialize_ra_network_headers(serializedString);
+
+//     ra_samp_response_header_t *p_msg0_resp_full = NULL;
+
+//     // const ra_samp_request_header_t *p_req = (const ra_samp_request_header_t *) malloc(sizeof(const ra_samp_request_header_t));
+//     // memcpy(p_req, );
+
+//     int ret = ra_network_send_receive(deseralized->sending_machine_name,
+//             deseralized->receiving_machine_name,
+//             deseralized->p_req,
+//             &p_msg0_resp_full, deseralized->optional_Message);
+//     int size;
+//     if (expectingResponse) {
+//         size = p_msg0_resp_full->size;
+//         ocall_print("size of ra is ");
+//         ocall_print_int(size);
+//     } else {
+//         size = 0;
+//     }
+//     ra_samp_response_header_t *return_resp = (ra_samp_response_header_t*) malloc(sizeof(ra_samp_response_header_t) + size);
+//     // return_resp->type = p_msg0_resp_full->type;
+//     // return_resp->status = (uint8_t [2]) malloc(2);
+//     // for (int i = 0; i < 2; i++) {
+//     //     return_resp->status[i] = p_msg0_resp_full->status[i];
+//     // }
+//     // return_resp->size = p_msg0_resp_full->size;
+//     // return_resp->align = (uint8_t*) malloc(1);
+//     // return_resp->align[0] = p_msg0_resp_full->align[0];
+//     // return_resp->body = (uint8_t*) malloc(return_resp->size);
+//     // for (int i = 0; i < return_resp->size; i++) {
+//     //     return_resp->body[i] = p_msg0_resp_full->body[i];
+//     // }
+
+//     if (expectingResponse) {
+//         memcpy(return_resp, p_msg0_resp_full, sizeof(ra_samp_response_header_t));
+
+//         for (int i = 0; i < size; i++) {
+//             return_resp->body[i] = p_msg0_resp_full->body[i];
+//         }
+//     }
+
+//     return return_resp;
+
+
+// }
+
 char* createStringLiteralMalloced(char* stringLiteral) {
     //TODO if modifying here, modify in helper.cpp
     char* malloced = (char*) malloc(99999);//strlen(stringLiteral));

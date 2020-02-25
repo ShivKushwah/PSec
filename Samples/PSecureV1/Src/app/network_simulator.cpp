@@ -10,7 +10,6 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #define MAX 72400 
-#define PORT 8080
 // #define PORT2 8091 
 #define SA struct sockaddr 
 
@@ -197,7 +196,7 @@ void func_sender(int sockfd, char* request, int request_size, char* network_resp
 	memcpy(network_response, buff, MAX); 
 } 
 
-char* network_socket_sender(char* request, int request_size) 
+char* network_socket_sender(char* request, int request_size, int port) 
 { 
 	int sockfd, connfd; 
 	struct sockaddr_in servaddr, cli;
@@ -216,7 +215,7 @@ char* network_socket_sender(char* request, int request_size)
 	// assign IP, PORT 
 	servaddr.sin_family = AF_INET; 
 	servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
-	servaddr.sin_port = htons(PORT); 
+	servaddr.sin_port = htons(port); 
 
 	//---------------------------
 	// int sockfd2, connfd2; 

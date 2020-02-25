@@ -286,59 +286,12 @@ struct RA_network_serialization_headers* deserialize_ra_network_headers(char* se
 
     return returnHeaders;
 
-    // struct Enclave_start_attestation_wrapper_arguments* parameters = (struct Enclave_start_attestation_wrapper_arguments*) malloc(sizeof(struct Enclave_start_attestation_wrapper_arguments));
-    // //{currentEid, other_machine_name, message_from_machine_to_enclave, optionalMessage};
-    // parameters->currentEid = currentEid;
-    // parameters->machineName = other_machine_name;
-
-    // //char* payload_tag_serialized = serialized_string + strlen(sending_machine_name) + 1 + strlen(receiving_machine_name) + 1 + strlen(p_req_size_string) + 1 + sizeof(ra_samp_request_header_t) + p_req_size + 1;
-
-
-    // char* p_req_size_string = (char*) malloc(10);
-    // itoa(p_req->size, p_req_size_string, 10);
-
-    // char* p_req_serial = (char*) malloc(sizeof(ra_samp_request_header_t) + p_req->size);
-    // memcpy(p_req_serial, (char*)p_req, sizeof(ra_samp_request_header_t) + p_req->size);
-
-    // char* optional_Message_Serialized;
-    // int optional_Message_size;
-    
-    // if (optional_Message.secret_size == 0) {
-
-    //     optional_Message_Serialized = "0";
-    //     optional_Message_size = 1;
-    
-
-    // } else {
-    //     char* secret_size_string = (char*) malloc(10);
-    //     itoa(optional_Message.secret_size, secret_size_string, 10);
-
-    //     char* encrypted_message_string = (char*) malloc(optional_Message.secret_size);
-    //     memcpy(encrypted_message_string, optional_Message.encrypted_message, optional_Message.secret_size);
-
-    //     char* payload_tag_string = (char*) malloc(16);
-    //     memcpy(payload_tag_string, optional_Message.payload_tag, 16);
-
-    //     char* concatStrings[] = {secret_size_string, ":", encrypted_message_string, ":", payload_tag_string};
-    //     int concatLengths[] = {strlen(secret_size_string), 1, optional_Message.secret_size, 1, 16};
-    //     optional_Message_Serialized = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
-    //     optional_Message_size = returnTotalSizeofLengthArray(concatLengths, 5);
-
-    // }
-
-    // char* concatStrings[] = {(char*)sending_machine_name, ":", (char*)receiving_machine_name, ":", p_req_size_string, ":",  p_req_serial, ":", optional_Message_Serialized};
-    // int concatLengths[] = {strlen(sending_machine_name), 1, strlen(receiving_machine_name), 1, strlen(p_req_size_string), 1, sizeof(ra_samp_request_header_t) + p_req->size, 1, optional_Message_size};
-    // char* serializedString = concatMutipleStringsWithLength(concatStrings, concatLengths, 9);
-    // returnSize = returnTotalSizeofLengthArray(concatLengths, 9) + 1;
-
-    // return serializedString;
-
 
 }
 
 
 
-ra_samp_response_header_t* mock_net(const char *sending_machine_name, 
+ra_samp_response_header_t* send_attestation_network_request(const char *sending_machine_name, 
     const char *receiving_machine_name,
     const ra_samp_request_header_t *p_req,
     Encrypted_Message optional_Message,
@@ -496,7 +449,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         //     p_msg0_full,
         //     &p_msg0_resp_full);
         
-        p_msg0_resp_full = mock_net(current_machine_name,
+        p_msg0_resp_full = send_attestation_network_request(current_machine_name,
             receiving_machine_name,
             p_msg0_full, default_Encrypted_Message, ret, false);
         if (ret != 0)
@@ -609,7 +562,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         //                               receiving_machine_name,
         //                               p_msg1_full,
         //                               &p_msg2_full);
-        p_msg2_full = mock_net(current_machine_name,
+        p_msg2_full = send_attestation_network_request(current_machine_name,
                                       receiving_machine_name,
                                       p_msg1_full,
                                         default_Encrypted_Message, ret, true);
@@ -806,7 +759,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         //                               &p_att_result_msg_full,
         //                               temp,
         //                             optional_message);
-        p_att_result_msg_full = mock_net(current_machine_name,
+        p_att_result_msg_full = send_attestation_network_request(current_machine_name,
                                       receiving_machine_name,
                                       p_msg3_full,
                                         default_Encrypted_Message, ret, true);
@@ -962,7 +915,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                 //                       NULL,
                 //                       NULL,
                 //                       emsg);
-                resp_1 = mock_net(current_machine_name,
+                resp_1 = send_attestation_network_request(current_machine_name,
                                       receiving_machine_name,
                                       NULL, 
                                         emsg, ret, true);
