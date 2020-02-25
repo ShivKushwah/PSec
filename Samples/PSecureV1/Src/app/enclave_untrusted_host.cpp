@@ -177,37 +177,56 @@ inline void PRINT_ATTESTATION_SERVICE_RESPONSE(
     }
 }
 
+//TODO prevent memory leaks
+char* serialize_ra_network_headers(const char *sending_machine_name, 
+    const char *receiving_machine_name,
+    const ra_samp_request_header_t *p_req,
+    Encrypted_Message optional_Message,
+    int& returnSize) {
 
-// char* serialize_ra_network_headers(const char *sending_machine_name, 
-//     const char *receiving_machine_name,
-//     const ra_samp_request_header_t *p_req,
-//     Encrypted_Message optional_Message) {
+    char* p_req_size_string = (char*) malloc(10);
+    itoa(p_req->size, p_req_size_string, 10);
 
-//     char* p_req_serial = (char*) malloc(sizeof(ra_samp_request_header_t) + p_req->size);
-//     memcpy(p_req_serial, (char*)p_req, sizeof(ra_samp_request_header_t) + p_req->size);
+    char* p_req_serial = (char*) malloc(sizeof(ra_samp_request_header_t) + p_req->size);
+    memcpy(p_req_serial, (char*)p_req, sizeof(ra_samp_request_header_t) + p_req->size);
 
-//     char* encrypted_message_serialized = (char*) malloc(optional_Message.secret_size) optional_Message.encrypted_message ;
+    char* optional_Message_Serialized;
+    int optional_Message_size;
+    
+    if (optional_Message.secret_size == 0) {
 
-//     char* message_from_machine_to_enclaveString = (char*) malloc(10);
+        optional_Message_Serialized = "0";
+        optional_Message_size = 1;
+    
 
-//     std::ostringstream oss;
-//     oss << currentEid;
-//     string eidStringObject = oss.str();
-//     char* eidString = (char*)eidStringObject.c_str();
+    } else {
+        char* secret_size_string = (char*) malloc(10);
+        itoa(optional_Message.secret_size, secret_size_string, 10);
 
-//     itoa((int) message_from_machine_to_enclave, message_from_machine_to_enclaveString, 10);
+        char* encrypted_message_string = (char*) malloc(optional_Message.secret_size);
+        memcpy(encrypted_message_string, optional_Message.encrypted_message, optional_Message.secret_size);
 
-//     char* concatStrings[] = {eidString, ":", other_machine_name, ":", message_from_machine_to_enclaveString};
-//     int concatLengths[] = {strlen(eidString), 1, strlen(other_machine_name), 1, strlen(message_from_machine_to_enclaveString)};
-//     char* serializedString = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
-//     returnSize = returnTotalSizeofLengthArray(concatLengths, 5) + 1;
-//     ocall_print("Attestation Serializer:");
-//     printPayload(serializedString, returnSize);
-//     safe_free(message_from_machine_to_enclaveString);
-//     return serializedString;
+        char* payload_tag_string = (char*) malloc(16);
+        memcpy(payload_tag_string, optional_Message.payload_tag, 16);
+
+        char* concatStrings[] = {secret_size_string, ":", encrypted_message_string, ":", payload_tag_string};
+        int concatLengths[] = {strlen(secret_size_string), 1, optional_Message.secret_size, 1, 16};
+        optional_Message_Serialized = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
+        optional_Message_size = returnTotalSizeofLengthArray(concatLengths, 5);
+
+    }
+
+    char* concatStrings[] = {(char*)sending_machine_name, ":", (char*)receiving_machine_name, ":", p_req_size_string, ":",  p_req_serial, ":", optional_Message_Serialized};
+    int concatLengths[] = {strlen(sending_machine_name), 1, strlen(receiving_machine_name), 1, strlen(p_req_size_string), 1, sizeof(ra_samp_request_header_t) + p_req->size, 1, optional_Message_size};
+    char* serializedString = concatMutipleStringsWithLength(concatStrings, concatLengths, 9);
+    returnSize = returnTotalSizeofLengthArray(concatLengths, 9) + 1;
+
+    return serializedString;
 
 
-// }
+}
+
+
 
 ra_samp_response_header_t* mock_net(const char *sending_machine_name, 
     const char *receiving_machine_name,
