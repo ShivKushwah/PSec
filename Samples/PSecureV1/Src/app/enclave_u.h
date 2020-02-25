@@ -31,7 +31,7 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_request_user_input, (char* user_input, 
 #endif
 #ifndef OCALL_PONG_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
 #define OCALL_PONG_ENCLAVE_ATTESTATION_IN_THREAD_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_pong_enclave_attestation_in_thread, (sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t other_machine_name_size, int message_from_machine_to_enclave));
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_pong_enclave_attestation_in_thread, (sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t other_machine_name_size));
 #endif
 #ifndef OCALL_NETWORK_REQUEST_DEFINED__
 #define OCALL_NETWORK_REQUEST_DEFINED__

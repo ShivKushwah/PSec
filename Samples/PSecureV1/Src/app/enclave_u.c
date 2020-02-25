@@ -177,7 +177,6 @@ typedef struct ms_ocall_pong_enclave_attestation_in_thread_t {
 	sgx_enclave_id_t ms_currentEid;
 	char* ms_other_machine_name;
 	uint32_t ms_other_machine_name_size;
-	int ms_message_from_machine_to_enclave;
 } ms_ocall_pong_enclave_attestation_in_thread_t;
 
 typedef struct ms_ocall_network_request_t {
@@ -282,7 +281,7 @@ static sgx_status_t SGX_CDECL enclave_ocall_request_user_input(void* pms)
 static sgx_status_t SGX_CDECL enclave_ocall_pong_enclave_attestation_in_thread(void* pms)
 {
 	ms_ocall_pong_enclave_attestation_in_thread_t* ms = SGX_CAST(ms_ocall_pong_enclave_attestation_in_thread_t*, pms);
-	ms->ms_retval = ocall_pong_enclave_attestation_in_thread(ms->ms_currentEid, ms->ms_other_machine_name, ms->ms_other_machine_name_size, ms->ms_message_from_machine_to_enclave);
+	ms->ms_retval = ocall_pong_enclave_attestation_in_thread(ms->ms_currentEid, ms->ms_other_machine_name, ms->ms_other_machine_name_size);
 
 	return SGX_SUCCESS;
 }

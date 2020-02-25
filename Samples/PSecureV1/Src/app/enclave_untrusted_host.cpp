@@ -264,7 +264,7 @@ ra_samp_response_header_t* mock_net(const char *sending_machine_name,
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
 // This method makes network_ra call to have the pong enclave attest to the ping machine
-inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const char* receiving_machine_name, int message_from_machine_to_enclave) {
+inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const char* receiving_machine_name) {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -662,7 +662,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         // demonstration.  Note that the attestation result message makes use
         // of both the MK for the MAC and the SK for the secret. These keys are
         // established from the SIGMA secure channel binding.
-        struct Encrypted_Message temp = {(uint8_t*)&message_from_machine_to_enclave, 0, NULL};
+        // struct Encrypted_Message temp = {(uint8_t*)&message_from_machine_to_enclave, 0, NULL};
         //TODO change name from encrypted_message to like normal message? idk tho
 
         // ret = ra_network_send_receive(current_machine_name,
@@ -674,7 +674,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         p_att_result_msg_full = mock_net(current_machine_name,
                                       receiving_machine_name,
                                       p_msg3_full,
-                                        temp, ret, true);
+                                        default_Encrypted_Message, ret, true);
         if(ret || !p_att_result_msg_full)
         {
             ret = -1;
@@ -784,7 +784,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         if(attestation_passed)
         {
             //If Ping machine wants to send the enclave a secure message
-            if (message_from_machine_to_enclave) { // message_from_machine_to_enclave == 1 or == 2
+            // if (message_from_machine_to_enclave) { // message_from_machine_to_enclave == 1 or == 2
                 // ret = enclave_put_secret_data(enclave_id,
                 //                     &status,
                 //                     context,
@@ -862,7 +862,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
 
 
 
-            }
+            // }
             //If Pong enclave wants to send a secure message to Ping machine
             // } else { //if message_from_machine_to_enclave == 0
             //     //TODO Comment this case out since only KPS sends messages to us, not us to KPS
@@ -944,7 +944,7 @@ CLEANUP:
 inline void* pong_enclave_attestation_thread(void* parameters) { //message_from_machine_to_enclave should be true when the enclave is receiving the message
                                                           //false when the enclave wants to send a message
     struct Enclave_start_attestation_wrapper_arguments* p = (struct Enclave_start_attestation_wrapper_arguments*)parameters;
-    return (void*) pong_enclave_start_attestation(p->currentEid, p->machineName,  p->message_from_machine_to_enclave);
+    return (void*) pong_enclave_start_attestation(p->currentEid, p->machineName);
 }
 
 char* enclave_attestation_network_serializer(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, int& returnSize) {
@@ -978,25 +978,25 @@ struct Enclave_start_attestation_wrapper_arguments* enclave_attestation_network_
     split = strtok(NULL, ":");
     char* other_machine_name = (char*) malloc(strlen(split) + 1);
     strncpy(other_machine_name, split, strlen(split) + 1);
-    split = strtok(NULL, ":");
-    int message_from_machine_to_enclave = atoi(split);
+    // split = strtok(NULL, ":");
+    // int message_from_machine_to_enclave = atoi(split);
     struct Enclave_start_attestation_wrapper_arguments* parameters = (struct Enclave_start_attestation_wrapper_arguments*) malloc(sizeof(struct Enclave_start_attestation_wrapper_arguments));
     //{currentEid, other_machine_name, message_from_machine_to_enclave, optionalMessage};
     parameters->currentEid = currentEid;
     parameters->machineName = other_machine_name;
-    parameters->message_from_machine_to_enclave = message_from_machine_to_enclave;
+    // parameters->message_from_machine_to_enclave = message_from_machine_to_enclave;
 
     return parameters;
 
 }
 
-int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave) {
+int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size) {
 
-    // struct Enclave_start_attestation_wrapper_arguments parameters = {currentEidSGX, other_machine_name, message_from_machine_to_enclave, optional_message};
-    struct Enclave_start_attestation_wrapper_arguments* parameters;// = {currentEid, other_machine_name, message_from_machine_to_enclave, optional_message};
-    int sizeOfSerializedString = 0;
-    char* serializedString = enclave_attestation_network_serializer(currentEid, other_machine_name, size, message_from_machine_to_enclave, sizeOfSerializedString);
-    parameters = enclave_attestation_network_deserializer(serializedString);
+    struct Enclave_start_attestation_wrapper_arguments parameters = {currentEid, other_machine_name};
+    // struct Enclave_start_attestation_wrapper_arguments* parameters;// = {currentEid, other_machine_name, message_from_machine_to_enclave, optional_message};
+    // int sizeOfSerializedString = 0;
+    // char* serializedString = enclave_attestation_network_serializer(currentEid, other_machine_name, size, message_from_machine_to_enclave, sizeOfSerializedString);
+    // parameters = enclave_attestation_network_deserializer(serializedString);
 
     // ocall_print("inside ocall_pong_enclave_attestation_in_thread");
     // printRSAKey(optional_message);
@@ -1005,8 +1005,8 @@ int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* 
     void* thread_ret;
     pthread_t thread_id; 
     printf("\n Calling Attestation Thread\n"); 
-    pthread_create(&thread_id, NULL, pong_enclave_attestation_thread, (void*) parameters);
-    // pthread_create(&thread_id, NULL, pong_enclave_attestation_thread, (void*) (&parameters));
+    // pthread_create(&thread_id, NULL, pong_enclave_attestation_thread, (void*) parameters);
+    pthread_create(&thread_id, NULL, pong_enclave_attestation_thread, (void*) (&parameters));
 
     //TODO look into not calling pthread_join but actually let this run asynchoronous
     pthread_join(thread_id, &thread_ret); 
