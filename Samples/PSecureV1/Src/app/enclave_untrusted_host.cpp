@@ -236,7 +236,7 @@ char* serialize_ra_network_headers(const char *sending_machine_name,
 
 }
 
-char* mock_send_request(char* request, int requestSize) {
+char* make_socket_attestation_send_request(char* request, int requestSize) {
     char* net_request = (char*) malloc(requestSize);
     memcpy(net_request, request, requestSize);
 
@@ -265,7 +265,7 @@ ra_samp_response_header_t* send_attestation_network_request(const char *sending_
     // ocall_print("serializing");
     // ocall_print_int(p_req->size);
     char* serializedString = serialize_ra_network_headers(sending_machine_name, receiving_machine_name, p_req, optional_Message, returnSize);
-    p_msg0_resp_full = (ra_samp_response_header_t*)mock_send_request(serializedString, returnSize);
+    p_msg0_resp_full = (ra_samp_response_header_t*)make_socket_attestation_send_request(serializedString, returnSize);
     ret = 0;
     
     // RA_network_serialization_headers* deseralized = deserialize_ra_network_headers(serializedString);
