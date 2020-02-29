@@ -14,12 +14,19 @@ secure_machine SecureBallotBoxMachine
     var currentNumberOfVotes: int;
 
     start state Init {
-        defer TRUSTEDeVote;
-        entry (payload: (bBoard: secure_machine_handle, supervisor : secure_machine_handle)){
+        on TRUSTEDProvisionSecureBallotBoxMachine do (payload: (bBoard: secure_machine_handle, supervisor : secure_machine_handle)){
             bulletinBoard = payload.bBoard;
-            appendOnlyLog = new SecureTamperEvidentLogMachine(secure_this); //essentially the db of votes for this ballotbox
-            tabulationTeller = new SecureTabulationTellerMachine((bBoard = bulletinBoard, supervisor = payload.supervisor)); //counts the votes
+            appendOnlyLog = new SecureTamperEvidentLogMachine(); //essentially the db of votes for this ballotbox
+            secure_send appendOnlyLog, TRUSTEDProvisionSecureTamperEvidentLogMachine, secure_this;
+            tabulationTeller = new SecureTabulationTellerMachine(); //counts the votes
+            secure_send tabulationTeller, TRUSTEDProvisionSecureTabulationTellerMachine, (bBoard = bulletinBoard, supervisor = payload.supervisor);
+            goto StartElection;
         }
+        
+    }
+
+    state StartElection {
+        defer TRUSTEDeVote;
         on TRUSTEDeStartElection goto WaitForVotes;
     }
 

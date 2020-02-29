@@ -13,7 +13,7 @@ machine VotingUSM {
 
 
 	start state Init {
-        entry (payload: (supervisor: machine_handle, credential: int)) {
+		on UNTRUSTEDProvisionVotingUSM do (payload: (supervisor: machine_handle, credential: int)) {
 			supervisor = payload.supervisor;
 			credential = payload.credential;
 

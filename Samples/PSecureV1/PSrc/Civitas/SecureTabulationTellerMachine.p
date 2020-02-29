@@ -11,10 +11,15 @@ secure_machine SecureTabulationTellerMachine
     var allVotes: seq[(credential : int, vote : secure_int)];
 
     start state Init {
-        entry (payload:(bBoard: secure_machine_handle, supervisor: secure_machine_handle)){
+
+        on TRUSTEDProvisionSecureTabulationTellerMachine do (payload:(bBoard: secure_machine_handle, supervisor: secure_machine_handle)){
             bulletinBoard = payload.bBoard;
             supervisor = payload.supervisor;
+            goto ReceiveVotes;
         }
+    }
+
+    state ReceiveVotes {
         on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[(credential : int, vote : secure_int)])){
             //allVotes are ordered by time
             allVotes = payload.votes;

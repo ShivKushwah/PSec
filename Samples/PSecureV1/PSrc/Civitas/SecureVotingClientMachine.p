@@ -11,7 +11,7 @@ secure_machine SecureVotingClientMachine
     var requestingMachine : machine_handle;
 
     start state Init {
-        entry (payload: (ballotBox:secure_machine_handle, bulletinBoard:secure_machine_handle)) {
+        on TRUSTEDProvisionSecureVotingClientMachine do (payload: (ballotBox:secure_machine_handle, bulletinBoard:secure_machine_handle)) {
             ballotBox = payload.ballotBox;
             bulletinBoard = payload.bulletinBoard;
             goto WaitForVote;

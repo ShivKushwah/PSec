@@ -43,3 +43,9 @@ trusted event TRUSTEDInvalidCredential;
 trusted event TRUSTEDeElectionResults : map[int, secure_int];
 trusted event TRUSTEDeRespElectionResults: (allVotes : map[int, secure_int], whoWon : secure_int);
 trusted event TRUSTEDeGetElectionResults : secure_machine_handle;
+
+event UNTRUSTEDProvisionVotingUSM : (supervisor : machine_handle, credential : int);
+trusted event TRUSTEDProvisionSecureTamperEvidentLogMachine : secure_machine_handle;
+trusted event TRUSTEDProvisionSecureTabulationTellerMachine : (bBoard : secure_machine_handle, supervisor : secure_machine_handle);
+trusted event TRUSTEDProvisionSecureBallotBoxMachine : (bBoard : secure_machine_handle, supervisor : secure_machine_handle);
+trusted event TRUSTEDProvisionSecureVotingClientMachine : (ballotBox : secure_machine_handle, bulletinBoard : secure_machine_handle);

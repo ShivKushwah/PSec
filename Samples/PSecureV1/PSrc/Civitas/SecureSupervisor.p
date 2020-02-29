@@ -21,7 +21,8 @@ secure_machine SecureSupervisorMachine
             var i : int;
 
             bBoard = new SecureBulletinBoardMachine();
-            bBox = new SecureBallotBoxMachine((bBoard = bBoard, supervisor = secure_this));
+            bBox = new SecureBallotBoxMachine();
+            secure_send bBox, TRUSTEDProvisionSecureBallotBoxMachine, (bBoard = bBoard, supervisor = secure_this); 
 
             //These are the credentials of voters that have registered to vote
             //One credential per valid voter
@@ -41,7 +42,8 @@ secure_machine SecureSupervisorMachine
         on UNTRUSTEDGetVotingSSM do (requestingMachine: machine_handle) {
             var secureVotingClientMachine : secure_machine_handle;
             print "Provisioning a secure voting client!";
-            secureVotingClientMachine = new SecureVotingClientMachine((ballotBox = bBox, bulletinBoard = bBoard));
+            secureVotingClientMachine = new SecureVotingClientMachine();
+            secure_send secureVotingClientMachine, TRUSTEDProvisionSecureVotingClientMachine, (ballotBox = bBox, bulletinBoard = bBoard);
             
             untrusted_send requestingMachine, UNTRUSTEDReceiveVotingSSM, CastHandle(secureVotingClientMachine); //TODO why can I comment out CastHandle
         }

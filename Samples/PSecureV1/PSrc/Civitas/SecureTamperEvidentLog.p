@@ -7,8 +7,7 @@ secure_machine SecureTamperEvidentLogMachine
     var log: seq[(credential: int, vote: secure_int)];
     var parent: secure_machine_handle;
     start state Init {
-        entry(payload: secure_machine_handle)
-         {
+         on TRUSTEDProvisionSecureTamperEvidentLogMachine do (payload: secure_machine_handle) {
             parent = payload;
             goto WaitForRequests;
          }
