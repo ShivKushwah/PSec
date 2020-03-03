@@ -22,7 +22,7 @@ secure_machine SecureSupervisorMachine
 
             bBoard = new SecureBulletinBoardMachine();
             bBox = new SecureBallotBoxMachine();
-            secure_send bBox, TRUSTEDProvisionSecureBallotBoxMachine, (bBoard = bBoard, supervisor = secure_this); 
+            send bBox, TRUSTEDProvisionSecureBallotBoxMachine, (bBoard = bBoard, supervisor = secure_this); //secure_send
 
             //These are the credentials of voters that have registered to vote
             //One credential per valid voter
@@ -31,7 +31,7 @@ secure_machine SecureSupervisorMachine
 
             //We send 2 because this is how many votes we need to be submitted
             //before the election is considered finished
-            secure_send bBox, TRUSTEDeStartElection, 2;
+            send bBox, TRUSTEDeStartElection, 2; //secure_send
 
             goto SendVotingClientMachinesOrValidateCredentials;
         }
@@ -43,9 +43,9 @@ secure_machine SecureSupervisorMachine
             var secureVotingClientMachine : secure_machine_handle;
             print "Provisioning a secure voting client!";
             secureVotingClientMachine = new SecureVotingClientMachine();
-            secure_send secureVotingClientMachine, TRUSTEDProvisionSecureVotingClientMachine, (ballotBox = bBox, bulletinBoard = bBoard);
+            send secureVotingClientMachine, TRUSTEDProvisionSecureVotingClientMachine, (ballotBox = bBox, bulletinBoard = bBoard); //secure_send
             
-            untrusted_send requestingMachine, UNTRUSTEDReceiveVotingSSM, CastHandle(secureVotingClientMachine); //TODO why can I comment out CastHandle
+            send requestingMachine, UNTRUSTEDReceiveVotingSSM, CastHandle(secureVotingClientMachine); //untrusted_send
         }
         on TRUSTEDValidateCredential do (payload: (tabulationTellerMachine : secure_machine_handle, credentialToCheck : int)) {
             var i : int;
@@ -61,9 +61,9 @@ secure_machine SecureSupervisorMachine
                 i = i + 1;
             }
             if (found) {
-                secure_send payload.tabulationTellerMachine, TRUSTEDValidCredential;
+                send payload.tabulationTellerMachine, TRUSTEDValidCredential; //secure_send
             } else {
-                secure_send payload.tabulationTellerMachine, TRUSTEDInvalidCredential;
+                send payload.tabulationTellerMachine, TRUSTEDInvalidCredential; //secure_send
             }
 
         }

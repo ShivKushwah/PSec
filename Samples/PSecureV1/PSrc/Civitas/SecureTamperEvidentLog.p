@@ -16,11 +16,11 @@ secure_machine SecureTamperEvidentLogMachine
     state WaitForRequests {
         on TRUSTEDeAddItem do (payload: (credential : int, vote: secure_int)){
             log += (sizeof(log), (credential = payload.credential, vote = payload.vote));
-            secure_send parent, TRUSTEDeRespAddItem, true;
+            send parent, TRUSTEDeRespAddItem, true; //secure_send
         }
         on TRUSTEDeGetLog do
         {
-            secure_send parent, TRUSTEDeRespGetLog, log;
+            send parent, TRUSTEDeRespGetLog, log; //secure_send
         }
     }
 }

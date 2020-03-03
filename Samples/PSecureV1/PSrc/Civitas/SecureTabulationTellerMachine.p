@@ -34,7 +34,7 @@ secure_machine SecureTabulationTellerMachine
             i = 0;
             while(i < sizeof(allVotes))
             {
-                secure_send supervisor, TRUSTEDValidateCredential, (tabulationTellerMachine = secure_this, credentialToCheck = allVotes[i].credential);
+                send supervisor, TRUSTEDValidateCredential, (tabulationTellerMachine = secure_this, credentialToCheck = allVotes[i].credential); //secure_send
                 receive {
                     case TRUSTEDValidCredential : {
                         //map enables us to consider the latest vote
@@ -49,7 +49,7 @@ secure_machine SecureTabulationTellerMachine
                 
             }
 
-            secure_send bulletinBoard, TRUSTEDeElectionResults, result;
+            send bulletinBoard, TRUSTEDeElectionResults, result; //secure_send
         }
     }
 }

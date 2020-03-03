@@ -1119,7 +1119,7 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp3_1);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_2);
     _P_GEN_funargs[3] = &(PTMP_tmp6_1);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_2;
     }
@@ -1168,7 +1168,7 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp12_1);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_3);
     _P_GEN_funargs[3] = &(PTMP_tmp13);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_2;
     }
@@ -1276,7 +1276,7 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp2_2);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_4);
     _P_GEN_funargs[3] = &(PTMP_tmp5_2);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_3;
     }
@@ -1466,7 +1466,7 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         _P_GEN_funargs[0] = &(PTMP_tmp8_3);
         _P_GEN_funargs[1] = &(PTMP_tmp9_3);
         _P_GEN_funargs[2] = &(P_PTMP_tmp_6);
-        PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+        PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
         if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
             goto p_return_4;
         }
@@ -1496,7 +1496,7 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         _P_GEN_funargs[0] = &(PTMP_tmp11_2);
         _P_GEN_funargs[1] = &(PTMP_tmp12_2);
         _P_GEN_funargs[2] = &(P_PTMP_tmp_7);
-        PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+        PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
         if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
             goto p_return_4;
         }
@@ -2281,7 +2281,7 @@ PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp13_1);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_10);
     _P_GEN_funargs[3] = &(PTMP_tmp16);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_9;
     }
@@ -2608,7 +2608,7 @@ PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp3_7);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_11);
     _P_GEN_funargs[3] = &(PTMP_tmp4_7);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_10;
     }
@@ -2664,7 +2664,7 @@ PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp7_5);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_12);
     _P_GEN_funargs[3] = &(PTMP_tmp10_4);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_10;
     }
@@ -2774,7 +2774,7 @@ PRT_VALUE* P_Anon_IMPL_11(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp1_9);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_13);
     _P_GEN_funargs[3] = &(PTMP_tmp4_8);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_12;
     }
@@ -2818,7 +2818,7 @@ PRT_VALUE* P_Anon_IMPL_11(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
                 _P_GEN_funargs[0] = &(PTMP_tmp6_6);
                 _P_GEN_funargs[1] = &(PTMP_tmp7_6);
                 _P_GEN_funargs[2] = &(P_PTMP_tmp_14);
-                PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+                PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
                 if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
                     goto p_return_12;
                 }
@@ -2921,7 +2921,7 @@ PRT_VALUE* P_Anon_IMPL_12(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[0] = &(PTMP_tmp0_10);
     _P_GEN_funargs[1] = &(PTMP_tmp1_10);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_15);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_14;
     }
@@ -2974,7 +2974,7 @@ PRT_VALUE* P_Anon_IMPL_12(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
             _P_GEN_funargs[1] = &(PTMP_tmp3_9);
             _P_GEN_funargs[2] = &(P_PTMP_tmp_16);
             _P_GEN_funargs[3] = &(PTMP_tmp6_7);
-            PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+            PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
             if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
                 goto p_return_14;
             }
@@ -3224,7 +3224,7 @@ PRT_VALUE* P_Anon_IMPL_14(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp5_9);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_17);
     _P_GEN_funargs[3] = &(PTMP_tmp6_8);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_17;
     }
@@ -3282,7 +3282,7 @@ PRT_VALUE* P_Anon_IMPL_15(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp1_12);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_18);
     _P_GEN_funargs[3] = &(PTMP_tmp2_11);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_18;
     }
@@ -3649,7 +3649,7 @@ PRT_VALUE* P_Anon_IMPL_18(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         _P_GEN_funargs[1] = &(PTMP_tmp4_11);
         _P_GEN_funargs[2] = &(P_PTMP_tmp_19);
         _P_GEN_funargs[3] = &(PTMP_tmp8_7);
-        PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+        PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
         if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
             goto p_return_21;
         }
@@ -3737,7 +3737,7 @@ PRT_VALUE* P_Anon_IMPL_18(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp15_1);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_20);
     _P_GEN_funargs[3] = &(PTMP_tmp16_1);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_21;
     }
@@ -4165,7 +4165,7 @@ PRT_VALUE* P_Anon_IMPL_20(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp4_12);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_21);
     _P_GEN_funargs[3] = &(PTMP_tmp8_8);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_25;
     }
@@ -4247,7 +4247,7 @@ PRT_VALUE* P_Anon_IMPL_22(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = &(PTMP_tmp1_17);
     _P_GEN_funargs[2] = &(P_PTMP_tmp_22);
     _P_GEN_funargs[3] = &(PTMP_tmp2_14);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_27;
     }

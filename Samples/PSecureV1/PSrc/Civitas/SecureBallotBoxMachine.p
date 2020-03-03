@@ -17,9 +17,9 @@ secure_machine SecureBallotBoxMachine
         on TRUSTEDProvisionSecureBallotBoxMachine do (payload: (bBoard: secure_machine_handle, supervisor : secure_machine_handle)){
             bulletinBoard = payload.bBoard;
             appendOnlyLog = new SecureTamperEvidentLogMachine(); //essentially the db of votes for this ballotbox
-            secure_send appendOnlyLog, TRUSTEDProvisionSecureTamperEvidentLogMachine, secure_this;
+            send appendOnlyLog, TRUSTEDProvisionSecureTamperEvidentLogMachine, secure_this; //secure_send
             tabulationTeller = new SecureTabulationTellerMachine(); //counts the votes
-            secure_send tabulationTeller, TRUSTEDProvisionSecureTabulationTellerMachine, (bBoard = bulletinBoard, supervisor = payload.supervisor);
+            send tabulationTeller, TRUSTEDProvisionSecureTabulationTellerMachine, (bBoard = bulletinBoard, supervisor = payload.supervisor);//secure_send
             goto StartElection;
         }
         
@@ -37,12 +37,12 @@ secure_machine SecureBallotBoxMachine
         }
         on TRUSTEDeVote do (payload: (credential : int, vote : secure_int, requestingMachine : secure_machine_handle))
         {
-            secure_send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote);
+            send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote); //secure_send
             receive {
                 case TRUSTEDeRespAddItem : (result: bool) {
                     if(result)
                     {
-                        secure_send payload.requestingMachine, TRUSTEDeRespConfirmVote;
+                        send payload.requestingMachine, TRUSTEDeRespConfirmVote; //secure_send
                         currentNumberOfVotes = currentNumberOfVotes + 1;
                     }
                 }
@@ -56,12 +56,12 @@ secure_machine SecureBallotBoxMachine
 
     state VoteCounting {
         entry {
-            secure_send appendOnlyLog, TRUSTEDeGetLog;
+            send appendOnlyLog, TRUSTEDeGetLog; //secure_send
             receive{
                 case TRUSTEDeRespGetLog: (payload: seq[(credential : int, vote : secure_int)])
                 {
                     print "Sending votes to Secure Tabulation Teller";
-                    secure_send tabulationTeller, TRUSTEDeAllVotes, (ballotID = 0, votes = payload);
+                    send tabulationTeller, TRUSTEDeAllVotes, (ballotID = 0, votes = payload); //secure_send
                 }
             }
 

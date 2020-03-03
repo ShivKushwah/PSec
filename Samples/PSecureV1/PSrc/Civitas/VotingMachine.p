@@ -17,7 +17,7 @@ machine VotingUSM {
 			supervisor = payload.supervisor;
 			credential = payload.credential;
 
-			untrusted_send supervisor, UNTRUSTEDGetVotingSSM, this;
+			send supervisor, UNTRUSTEDGetVotingSSM, this; //untrusted_send
 			
 		}
 		on UNTRUSTEDReceiveVotingSSM goto Vote;
@@ -27,7 +27,7 @@ machine VotingUSM {
 		entry (payload: machine_handle) {
 			votingSecureMachine = payload;
 			vote = 1;
-			untrusted_send votingSecureMachine, UNTRUSTEDVoteRequest, (credential = credential, vote = vote, requestingMachine = this);
+			send votingSecureMachine, UNTRUSTEDVoteRequest, (credential = credential, vote = vote, requestingMachine = this); //untrusted_send
 		}
 		on UNTRUSTEDGetResults do (payload : (whoWon : int, myVoteCounted : bool)) {
 				if (payload.myVoteCounted) {

@@ -48,7 +48,7 @@ secure_machine SecureBulletinBoardMachine
             } else {
                 winner = 2; //Tie
             }
-            secure_send requestingMachine, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = winner); 
+            send requestingMachine, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = winner); //secure_send
         }
     }
 }
