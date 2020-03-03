@@ -139,8 +139,6 @@ PRT_VALUE* P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 
 PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_GetThisSecure_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -468,14 +466,6 @@ PRT_FUNDECL P_FUNCTION_GetThis =
 {
     "GetThis",
     &P_GetThis_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_GetThisSecure =
-{
-    "GetThisSecure",
-    &P_GetThisSecure_IMPL,
     NULL
 };
 
@@ -1088,7 +1078,7 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_23 = &(PTMP_tmp5_1);
     PrtFreeValue(*P_LVALUE_23);
-    *P_LVALUE_23 = PrtCloneValue((P_GetThisSecure_IMPL(context, _P_GEN_funargs)));
+    *P_LVALUE_23 = PrtCloneValue((P_GetThis_IMPL(context, _P_GEN_funargs)));
     
     PRT_VALUE** P_LVALUE_24 = &(PTMP_tmp6_1);
     PrtFreeValue(*P_LVALUE_24);
@@ -2567,7 +2557,7 @@ PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_110 = &(PTMP_tmp4_7);
     PrtFreeValue(*P_LVALUE_110);
-    *P_LVALUE_110 = PrtCloneValue((P_GetThisSecure_IMPL(context, _P_GEN_funargs)));
+    *P_LVALUE_110 = PrtCloneValue((P_GetThis_IMPL(context, _P_GEN_funargs)));
     
     PRT_VALUE* P_PTMP_tmp_11 = PrtCloneValue(&(P_LIT_INT32_16));
     _P_GEN_funargs[0] = &(PTMP_tmp2_7);
@@ -3596,7 +3586,7 @@ PRT_VALUE* P_Anon_IMPL_18(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         
         PRT_VALUE** P_LVALUE_161 = &(PTMP_tmp5_10);
         PrtFreeValue(*P_LVALUE_161);
-        *P_LVALUE_161 = PrtCloneValue((P_GetThisSecure_IMPL(context, _P_GEN_funargs)));
+        *P_LVALUE_161 = PrtCloneValue((P_GetThis_IMPL(context, _P_GEN_funargs)));
         
         PRT_VALUE** P_LVALUE_162 = &(PTMP_tmp6_9);
         PrtFreeValue(*P_LVALUE_162);
@@ -4120,7 +4110,7 @@ PRT_VALUE* P_Anon_IMPL_20(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_189 = &(PTMP_tmp7_8);
     PrtFreeValue(*P_LVALUE_189);
-    *P_LVALUE_189 = PrtCloneValue((P_GetThisSecure_IMPL(context, _P_GEN_funargs)));
+    *P_LVALUE_189 = PrtCloneValue((P_GetThis_IMPL(context, _P_GEN_funargs)));
     
     PRT_VALUE** P_LVALUE_190 = &(PTMP_tmp8_8);
     PrtFreeValue(*P_LVALUE_190);
@@ -4206,7 +4196,7 @@ PRT_VALUE* P_Anon_IMPL_22(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_193 = &(PTMP_tmp2_14);
     PrtFreeValue(*P_LVALUE_193);
-    *P_LVALUE_193 = PrtCloneValue((P_GetThisSecure_IMPL(context, _P_GEN_funargs)));
+    *P_LVALUE_193 = PrtCloneValue((P_GetThis_IMPL(context, _P_GEN_funargs)));
     
     PRT_VALUE* P_PTMP_tmp_22 = PrtCloneValue(&(P_LIT_INT32_29));
     _P_GEN_funargs[0] = &(PTMP_tmp0_18);

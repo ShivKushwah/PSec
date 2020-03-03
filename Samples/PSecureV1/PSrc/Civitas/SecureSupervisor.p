@@ -22,7 +22,7 @@ secure_machine SecureSupervisorMachine
 
             bBoard = new SecureBulletinBoardMachine();
             bBox = new SecureBallotBoxMachine();
-            send bBox, TRUSTEDProvisionSecureBallotBoxMachine, (bBoard = bBoard, supervisor = secure_this); //secure_send
+            send bBox, TRUSTEDProvisionSecureBallotBoxMachine, (bBoard = bBoard, supervisor = this); //secure_send
 
             //These are the credentials of voters that have registered to vote
             //One credential per valid voter

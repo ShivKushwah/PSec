@@ -2158,10 +2158,10 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     #endif
 }
 
-extern "C" PRT_VALUE* P_GetThisSecure_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    return P_GetThis_IMPL(context, argRefs);
-}
+// extern "C" PRT_VALUE* P_GetThisSecure_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+// {
+//     return P_GetThis_IMPL(context, argRefs);
+// }
 
 extern "C" void P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {

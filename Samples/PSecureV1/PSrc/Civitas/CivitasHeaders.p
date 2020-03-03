@@ -13,7 +13,7 @@ fun PrintMachineHandle(inputString : machine_handle);
 fun GetCapability(input: machine_handle) : capability; //Should be "get_capability"
 fun SaveCapability(input: capability); //Should be "save_capability"
 fun GetThis() : machine_handle; //Should be "this"
-fun GetThisSecure() : secure_machine_handle; //Should be "this"
+// fun GetThisSecure() : secure_machine_handle; //Should be "this"
 // fun DeclassifyInt(input : secure_int) : int;
 // fun CastHandle(input : secure_machine_handle) : machine_handle;
 
