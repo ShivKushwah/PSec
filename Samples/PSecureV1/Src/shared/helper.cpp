@@ -2181,10 +2181,26 @@ extern "C" void P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
 }
 
-extern "C" PRT_VALUE* P_CastHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+// extern "C" PRT_VALUE* P_CastHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+// {
+//     PRT_VALUE** P_VAR_payload = argRefs[0];
+//     PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+
+//     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
+//     memcpy(str, (char*) val, SIZE_OF_MACHINE_HANDLE);
+//     // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
+//     // ocall_print("checking temp fix");
+//     // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
+//     //     ocall_print("TEMP FIX WONT WORK");
+//     // }
+//     // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
+//     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
+    
+// }
+
+extern "C" PRT_VALUE* P_CastSecureMachineHandleToMachineHandle_IMPL(PRT_VALUE* value)
 {
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    PRT_UINT64 val = value->valueUnion.frgn->value;
 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
     memcpy(str, (char*) val, SIZE_OF_MACHINE_HANDLE);
@@ -2279,13 +2295,13 @@ extern "C" PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context
     
 }
 
-extern "C" PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    ocall_print("declassify int is returning");
-    ocall_print_int((*P_VAR_payload)->valueUnion.nt);
-    return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
-}
+// extern "C" PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+// {
+//     PRT_VALUE** P_VAR_payload = argRefs[0];
+//     ocall_print("declassify int is returning");
+//     ocall_print_int((*P_VAR_payload)->valueUnion.nt);
+//     return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
+// }
 
 extern "C" void P_PrintMachineHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {

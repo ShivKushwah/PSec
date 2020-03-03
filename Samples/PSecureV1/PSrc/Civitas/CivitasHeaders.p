@@ -14,8 +14,8 @@ fun GetCapability(input: machine_handle) : capability; //Should be "get_capabili
 fun SaveCapability(input: capability); //Should be "save_capability"
 fun GetThis() : machine_handle; //Should be "this"
 fun GetThisSecure() : secure_machine_handle; //Should be "this"
-fun DeclassifyInt(input : secure_int) : int;
-fun CastHandle(input : secure_machine_handle) : machine_handle;
+// fun DeclassifyInt(input : secure_int) : int;
+// fun CastHandle(input : secure_machine_handle) : machine_handle;
 
 //Functions necessary for .h file, should not be called by user
 //TODO Add to PrtCodeGenerator
