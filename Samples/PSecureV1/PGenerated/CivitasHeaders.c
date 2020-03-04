@@ -123,6 +123,23 @@ static PRT_FOREIGNTYPEDECL P_capability = {
     P_TOSTRING_capability_IMPL,
 };
 PRT_TYPE P_GEND_TYPE_capability = { PRT_KIND_FOREIGN, { .foreignType = &P_capability } };
+extern PRT_UINT64 P_MKDEF_secure_StringType_IMPL(void);
+extern PRT_UINT64 P_CLONE_secure_StringType_IMPL(PRT_UINT64);
+extern void P_FREE_secure_StringType_IMPL(PRT_UINT64);
+extern PRT_UINT32 P_GETHASHCODE_secure_StringType_IMPL(PRT_UINT64);
+extern PRT_BOOLEAN P_ISEQUAL_secure_StringType_IMPL(PRT_UINT64, PRT_UINT64);
+extern PRT_STRING P_TOSTRING_secure_StringType_IMPL(PRT_UINT64);
+static PRT_FOREIGNTYPEDECL P_secure_StringType = {
+    0U,
+    "secure_StringType",
+    P_MKDEF_secure_StringType_IMPL,
+    P_CLONE_secure_StringType_IMPL,
+    P_FREE_secure_StringType_IMPL,
+    P_GETHASHCODE_secure_StringType_IMPL,
+    P_ISEQUAL_secure_StringType_IMPL,
+    P_TOSTRING_secure_StringType_IMPL,
+};
+PRT_TYPE P_GEND_TYPE_secure_StringType = { PRT_KIND_FOREIGN, { .foreignType = &P_secure_StringType } };
 
 // Function implementation prototypes:
 PRT_VALUE* P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -4423,11 +4440,12 @@ PRT_TYPE* P_TYPEDEF_StringType = &P_GEND_TYPE_StringType;
 PRT_TYPE* P_TYPEDEF_machine_handle = &P_GEND_TYPE_machine_handle;
 PRT_TYPE* P_TYPEDEF_capability = &P_GEND_TYPE_capability;
 PRT_TYPE* P_TYPEDEF_secure_machine_handle = &P_GEND_TYPE_secure_machine_handle;
+PRT_TYPE* P_TYPEDEF_secure_StringType = &P_GEND_TYPE_secure_StringType;
 PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDInvalidCredential, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_UNTRUSTEDGetResults, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_eCloseElection, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDValidateCredential, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeGetElectionResults, &P_EVENT_UNTRUSTEDProvisionVotingUSM, &P_EVENT_TRUSTEDProvisionSecureTamperEvidentLogMachine, &P_EVENT_TRUSTEDProvisionSecureTabulationTellerMachine, &P_EVENT_TRUSTEDProvisionSecureBallotBoxMachine, &P_EVENT_TRUSTEDProvisionSecureVotingClientMachine };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_InitializerMachine, &P_MACHINE_SecureSupervisorMachine, &P_MACHINE_VotingUSM, &P_MACHINE_SecureBulletinBoardMachine, &P_MACHINE_SecureBallotBoxMachine, &P_MACHINE_SecureTamperEvidentLogMachine, &P_MACHINE_SecureTabulationTellerMachine, &P_MACHINE_SecureVotingClientMachine };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_InitializerMachine, &P_I_SecureSupervisorMachine, &P_I_VotingUSM, &P_I_SecureBulletinBoardMachine, &P_I_SecureBallotBoxMachine, &P_I_SecureTamperEvidentLogMachine, &P_I_SecureTabulationTellerMachine, &P_I_SecureVotingClientMachine };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
-PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_machine_handle, &P_secure_machine_handle, &P_StringType, &P_capability };
+PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_machine_handle, &P_secure_machine_handle, &P_StringType, &P_capability, &P_secure_StringType };
 int P_DefaultImpl_LME_0[] = { -1,1,2,-1,-1,-1,-1,-1 };
 int P_DefaultImpl_LME_1[] = { -1,-1,-1,3,4,-1,-1,7 };
 int P_DefaultImpl_LME_2[] = { -1,-1,-1,-1,-1,-1,-1,-1 };
@@ -4443,7 +4461,7 @@ PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl = {
     8U,
     8U,
     0U,
-    4U,
+    5U,
     P_ALL_EVENTS,
     P_ALL_MACHINES,
     P_ALL_INTERFACES,

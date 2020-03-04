@@ -2,6 +2,7 @@ type StringType;
 type machine_handle;
 type capability;
 type secure_machine_handle;
+type secure_StringType;
 
 //Foreign Functions callable from P Code
 fun PrintKey(input : machine_handle);
