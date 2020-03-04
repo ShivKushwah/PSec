@@ -19,7 +19,7 @@ secure_machine ClientEnclave {
 
     state WaitForGenerateOTP {
         on GenerateOTPCodeEvent do (usernamePassword: StringType) {
-            untrusted_send clientUSM, OTPCodeEvent, Hash(masterSecret, usernamePassword);
+            send clientUSM, OTPCodeEvent, Hash(masterSecret, usernamePassword); //untrusted_send
         }
     }
 
@@ -53,7 +53,7 @@ machine ClientWebBrowser {
 
     state RequestOTPCodeGeneration {
         entry {
-            untrusted_send clientSSM, GenerateOTPCodeEvent, usernamePassword;
+            send clientSSM, GenerateOTPCodeEvent, usernamePassword; //untrusted_send
             receive {
                 case OTPCodeEvent : (payload : StringType) {
                     goto SaveOTPCode, payload;
@@ -75,7 +75,7 @@ machine ClientWebBrowser {
 
     state ValidateOTPCode {
         entry {
-            untrusted_send bankSSM, AuthenticateRequest, (usernamePassword, OTPCode);
+            send bankSSM, AuthenticateRequest, (usernamePassword, OTPCode); //untrusted_send
             receive {
                 case AuthSuccess : {
                     goto Done;

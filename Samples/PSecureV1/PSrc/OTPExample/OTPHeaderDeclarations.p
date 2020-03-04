@@ -17,7 +17,7 @@ fun CreateUSMMachineRequest(): machine_handle;
 fun PrintKey(input : machine_handle);
 fun GenerateRandomMasterSecret() : StringType;
 fun GetUserInput() : StringType;
-fun CastHandle(input : secure_machine_handle) : machine_handle;
+// fun CastHandle(input : secure_machine_handle) : machine_handle;
 
 event BankPublicIDEvent : machine_handle;
 event PublicIDEvent : machine_handle;

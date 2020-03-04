@@ -17,7 +17,7 @@ secure_machine TrustedInitializer {
             print "created new client USM with key";
             PrintKey(clientUSM);
             bankSSM = new BankEnclave(clientUSM);
-            untrusted_send clientUSM, BankPublicIDEvent, CastHandle(bankSSM);
+            send clientUSM, BankPublicIDEvent, bankSSM as machine_handle; //untrusted_send
         }
     }
 }
@@ -37,10 +37,10 @@ secure_machine BankEnclave {
             
             masterSecret = GenerateRandomMasterSecret();
 
-            secure_send clientSSM, MasterSecretEvent, masterSecret;
+            send clientSSM, MasterSecretEvent, masterSecret; //secure_send
             // print "Bank Enclave about to print clientSSM";
             // PrintKey(clientSSM);
-            untrusted_send clientUSM, PublicIDEvent, CastHandle(clientSSM);
+            send clientUSM, PublicIDEvent, clientSSM as machine_handle; //untrusted_send
             goto AuthCheck;
         } 
     }
@@ -52,9 +52,9 @@ secure_machine BankEnclave {
     state Verify { 
         entry (payload : (StringType, StringType)) {
             if (userCredential == payload.0 && Hash(masterSecret, userCredential) == payload.1) {
-                untrusted_send clientUSM, AuthSuccess;
+                send clientUSM, AuthSuccess; //untrusted_send
             } else {
-                untrusted_send clientUSM, AuthFailure;
+                send clientUSM, AuthFailure; //untrusted_send
             }
             
             goto AuthCheck;
