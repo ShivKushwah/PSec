@@ -16,6 +16,8 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_AuthenticateRequest;
     extern PRT_EVENTDECL P_EVENT_AuthSuccess;
     extern PRT_EVENTDECL P_EVENT_AuthFailure;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionBankSSM;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionClientSSM;
     extern PRT_INTERFACEDECL P_I_UntrustedInitializer;
     extern PRT_INTERFACEDECL P_I_TrustedInitializer;
     extern PRT_INTERFACEDECL P_I_BankEnclave;

@@ -9,14 +9,15 @@ machine UntrustedInitializer {
 
 secure_machine TrustedInitializer {
     
-    var clientUSM: machine_handle; //TODO make a differentition between secure_machine and machine
+    var clientUSM: machine_handle;
     var bankSSM: secure_machine_handle;
     start state Initial {
         entry {
             clientUSM = new ClientWebBrowser();
             print "created new client USM with key";
             PrintKey(clientUSM);
-            bankSSM = new BankEnclave(clientUSM);
+            bankSSM = new BankEnclave();
+            send bankSSM, TRUSTEDProvisionBankSSM, clientUSM;
             send clientUSM, BankPublicIDEvent, bankSSM as machine_handle; //untrusted_send
         }
     }
@@ -28,9 +29,16 @@ secure_machine BankEnclave {
     var masterSecret : StringType;
     var userCredential : StringType;
     start state Initial {
-        entry (payload: machine_handle) { 
+        entry { 
+            goto ReceiveClientUSM;
+        } 
+    }
+
+    state ReceiveClientUSM {
+        on TRUSTEDProvisionBankSSM do (payload: machine_handle) {
             clientUSM = payload;
-            clientSSM = new ClientEnclave(clientUSM);
+            clientSSM = new ClientEnclave();
+            send clientSSM, TRUSTEDProvisionClientSSM, clientUSM;
 
             print "Bank: Creating New Bank Account. Enter Credentials below!";
             userCredential = GetUserInput();
@@ -42,7 +50,7 @@ secure_machine BankEnclave {
             // PrintKey(clientSSM);
             send clientUSM, PublicIDEvent, clientSSM as machine_handle; //untrusted_send
             goto AuthCheck;
-        } 
+        }
     }
 
     state AuthCheck {

@@ -4,9 +4,14 @@ secure_machine ClientEnclave {
     var result: map[int, int];
     start state Initial {
         defer GenerateOTPCodeEvent;
-        entry (payload: machine_handle) {
+        on TRUSTEDProvisionClientSSM do (payload : machine_handle) {
             clientUSM = payload;
+            goto ReceiveMasterSecretEvent;
         }
+    }
+
+    state ReceiveMasterSecretEvent {
+        defer GenerateOTPCodeEvent;
         on MasterSecretEvent goto ProvisionEnclaveWithSecret;
     }
 

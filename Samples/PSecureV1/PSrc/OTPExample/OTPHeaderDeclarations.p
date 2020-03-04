@@ -29,3 +29,6 @@ trusted event MapEvent: map[int, int];
 event AuthenticateRequest : (StringType, StringType);
 event AuthSuccess;
 event AuthFailure;
+
+trusted event TRUSTEDProvisionBankSSM : machine_handle;
+trusted event TRUSTEDProvisionClientSSM : machine_handle;
