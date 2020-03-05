@@ -17,7 +17,7 @@ secure_machine TrustedInitializer {
             print "created new client USM with key";
             PrintKey(clientUSM);
             bankSSM = new BankEnclave();
-            send bankSSM, TRUSTEDProvisionBankSSM, clientUSM;
+            send bankSSM, TRUSTEDProvisionBankSSM, clientUSM; //secure_send
             send clientUSM, BankPublicIDEvent, bankSSM as machine_handle; //untrusted_send
         }
     }
@@ -26,7 +26,7 @@ secure_machine TrustedInitializer {
 secure_machine BankEnclave {
     var clientSSM: secure_machine_handle;//TODO why is type checking disabled for StringType vs machine_handle
     var clientUSM: machine_handle;
-    var masterSecret : StringType;
+    var masterSecret : secure_StringType;
     var userCredential : StringType;
     start state Initial {
         entry { 
@@ -59,7 +59,7 @@ secure_machine BankEnclave {
 
     state Verify { 
         entry (payload : (StringType, StringType)) {
-            if (userCredential == payload.0 && Hash(masterSecret, userCredential) == payload.1) {
+            if (userCredential == payload.0 && Hash(masterSecret as StringType, userCredential) == payload.1) {
                 send clientUSM, AuthSuccess; //untrusted_send
             } else {
                 send clientUSM, AuthFailure; //untrusted_send

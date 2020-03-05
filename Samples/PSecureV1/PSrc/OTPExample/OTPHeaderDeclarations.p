@@ -5,7 +5,9 @@ type secure_machine_handle;
 type secure_StringType;
 
 // fun CreateMachineSecureChild(): machine_handle;
-fun PrintString(inputString : StringType);
+// fun PrintString(inputString : StringType);
+fun PrintString(inputString : secure_StringType);
+
 // fun SecureSend(sendingToMachine : secure_machine_handle, eventToSend : event, numArgs : int, arg : int);
 fun GetThis() : machine_handle;
 fun Concat(input1:StringType, input2:StringType) : StringType;
@@ -22,7 +24,7 @@ fun GetUserInput() : StringType;
 
 event BankPublicIDEvent : machine_handle;
 event PublicIDEvent : machine_handle;
-trusted event MasterSecretEvent: StringType;
+trusted event MasterSecretEvent: secure_StringType;
 event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
 trusted event MapEvent: map[int, int];
