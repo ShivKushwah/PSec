@@ -24,7 +24,7 @@ secure_machine TrustedInitializer {
 }
 
 secure_machine BankEnclave {
-    var clientSSM: secure_machine_handle;//TODO why is type checking disabled for StringType vs machine_handle
+    var clientSSM: secure_machine_handle;
     var clientUSM: machine_handle;
     var masterSecret : secure_StringType;
     var userCredential : StringType;

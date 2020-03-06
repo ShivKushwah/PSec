@@ -24,18 +24,9 @@ secure_machine ClientEnclave {
 
     state WaitForGenerateOTP {
         on GenerateOTPCodeEvent do (usernamePassword: StringType) {
-            var hashedString : StringType;
-            var masterSecretDeclassifed : StringType;
-            print "debug-1 bro";
-            print "yellokirat2";
-            PrintString(masterSecret);
-            masterSecretDeclassifed = masterSecret as StringType;
-            print "debug0 bro";
-            hashedString = Hash(masterSecretDeclassifed, usernamePassword);
-            print "debug bro";
-
+            var hashedString : StringType;          
+            hashedString = Hash(masterSecret as StringType, usernamePassword);
             send clientUSM, OTPCodeEvent, hashedString; //untrusted_send
-            print "debug2 bro";
         }
     }
 
@@ -82,7 +73,7 @@ machine ClientWebBrowser {
         entry (payload : StringType) {
             //print "OTP Code Received: {0}\n", payload;
             print "OTP Code Received:\n";
-            // PrintString(payload); //TODO undo comment this out
+            PrintString(payload); 
             OTPCode = payload;
             goto ValidateOTPCode;
         }

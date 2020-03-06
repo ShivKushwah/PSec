@@ -6,7 +6,7 @@ type secure_StringType;
 
 // fun CreateMachineSecureChild(): machine_handle;
 // fun PrintString(inputString : StringType);
-fun PrintString(inputString : secure_StringType);
+fun PrintString(inputString : StringType);
 
 // fun SecureSend(sendingToMachine : secure_machine_handle, eventToSend : event, numArgs : int, arg : int);
 fun GetThis() : machine_handle;
