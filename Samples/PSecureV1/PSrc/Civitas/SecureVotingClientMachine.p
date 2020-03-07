@@ -5,7 +5,7 @@ that enables them to vote anonymously and securely
 ***************************/
 secure_machine SecureVotingClientMachine
 {
-    var credential: int;
+    var credential: secure_int;
     var ballotBox: secure_machine_handle;
     var bulletinBoard: secure_machine_handle;
     var requestingMachine : machine_handle;
@@ -42,7 +42,7 @@ secure_machine SecureVotingClientMachine
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[secure_int, secure_int], whoWon : secure_int)) {
             var winner : int;
             var voteCounted : bool;
-            if(!(credential in payload.allVotes))
+            if(DeclassifyBool(!(credential in payload.allVotes)))
             {
                 print "ERROR: Vote not found!";
                 raise halt;

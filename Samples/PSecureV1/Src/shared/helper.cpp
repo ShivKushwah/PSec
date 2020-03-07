@@ -2351,6 +2351,14 @@ extern "C" PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE**
     return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
 }
 
+extern "C" PRT_VALUE* P_DeclassifyBool_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
+}
+
+
+
 extern "C" void P_PrintMachineHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE** P_VAR_payload = argRefs[0];
