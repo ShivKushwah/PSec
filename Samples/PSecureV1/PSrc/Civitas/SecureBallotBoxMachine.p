@@ -50,11 +50,15 @@ secure_machine SecureBallotBoxMachine
             if (currentNumberOfVotes >= numberOfTotalVotesAllowed) {
                 goto VoteCounting;
             }
+            // if ($) {
+            //     goto VoteCounting;
+            // }
             
         }
     }
 
     state VoteCounting {
+        ignore TRUSTEDeVote;
         entry {
             send appendOnlyLog, TRUSTEDeGetLog; //secure_send
             receive{
