@@ -985,7 +985,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             }
             
             safe_free(requestCopy);
-            temp = createStringLiteralMalloced("TODO");
+            temp = createStringLiteralMalloced("SecureSendReturn");
             return temp;
 
         } else {
@@ -1747,6 +1747,8 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         ocall_network_request(sendRequest, empty, requestSize, 100); 
     #endif
     safe_free(sendRequest);
+    ocall_print("Send/UntrustedSend Network call returned:");
+    ocall_print(empty);
 
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
     printStr = generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1);
@@ -1833,7 +1835,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
             #ifdef ENCLAVE_STD_ALT
 
             if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
-                ocall_print("Verifying Signature works!!!!");
+                ocall_print("Secure Send Verifying Signature works!!!!");
             } else {
                 ocall_print("Error: Secure Send Signature Verification Failed!");
                 return;
@@ -1880,7 +1882,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
                 ocall_print("sgx call failed!");
             }
             if (success == 1) {
-                ocall_print("Verifying Signature works!!!!");
+                ocall_print("Untrusted Send Verifying Signature works!!!!");
             } else {
                 ocall_print("Error: Untrusted Send Signature Verification Failed!");
                 return;
@@ -1889,7 +1891,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
             #else 
 
             if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicSigningKeyRequestingMachine)) {
-                ocall_print("Verifying Signature works!!!!");
+                ocall_print("Untrusted Send Verifying Signature works!!!!");
             } else {
                 ocall_print("Error: Untrusted Send Enclave Signature Verification Failed!");
                 return;
