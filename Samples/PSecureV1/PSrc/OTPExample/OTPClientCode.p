@@ -1,7 +1,7 @@
 secure_machine ClientEnclave {
     var masterSecret: secure_StringType;
     var clientUSM : machine_handle;
-    var result: map[int, int];
+    
     start state Initial {
         defer GenerateOTPCodeEvent;
         on TRUSTEDProvisionClientSSM do (payload : machine_handle) {

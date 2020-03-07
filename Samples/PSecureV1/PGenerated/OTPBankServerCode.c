@@ -1560,8 +1560,7 @@ PRT_MACHINEDECL P_MACHINE_BankEnclave =
 
 PRT_VARDECL P_ClientEnclave_VARS[] = {
     { "masterSecret", &P_GEND_TYPE_secure_StringType },
-    { "clientUSM", &P_GEND_TYPE_machine_handle },
-    { "result", &P_GEND_TYPE_MKiVi }
+    { "clientUSM", &P_GEND_TYPE_machine_handle }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER_3[] = { &P_EVENT_GenerateOTPCodeEvent };
@@ -1981,7 +1980,7 @@ PRT_MACHINEDECL P_MACHINE_ClientEnclave =
     &P_EVENTSET_ClientEnclave_RECV_1,
     &P_EVENTSET_ClientEnclave_SEND,
     NULL,
-    3U,
+    2U,
     4U,
     3U,
     4294967295U,
