@@ -250,7 +250,8 @@ PRT_EVENTDECL P_EVENT_UNTRUSTEDGetVotingSSM =
     { PRT_VALUE_KIND_EVENT, 0U },
     "UNTRUSTEDGetVotingSSM",
     4294967295U,
-    &P_GEND_TYPE_machine_handle
+    &P_GEND_TYPE_machine_handle,
+    0
 };
 
 PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveVotingSSM = 
@@ -258,7 +259,8 @@ PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveVotingSSM =
     { PRT_VALUE_KIND_EVENT, 0U },
     "UNTRUSTEDReceiveVotingSSM",
     4294967295U,
-    &P_GEND_TYPE_machine_handle
+    &P_GEND_TYPE_machine_handle,
+    0
 };
 
 PRT_EVENTDECL P_EVENT_UNTRUSTEDVoteRequest = 
@@ -266,7 +268,8 @@ PRT_EVENTDECL P_EVENT_UNTRUSTEDVoteRequest =
     { PRT_VALUE_KIND_EVENT, 0U },
     "UNTRUSTEDVoteRequest",
     4294967295U,
-    &P_GEND_TYPE_T3iimachine_handle
+    &P_GEND_TYPE_T3iimachine_handle,
+    0
 };
 
 PRT_EVENTDECL P_EVENT_UNTRUSTEDGetResults = 
@@ -274,7 +277,8 @@ PRT_EVENTDECL P_EVENT_UNTRUSTEDGetResults =
     { PRT_VALUE_KIND_EVENT, 0U },
     "UNTRUSTEDGetResults",
     4294967295U,
-    &P_GEND_TYPE_T2ib
+    &P_GEND_TYPE_T2ib,
+    0
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeStartElection = 
@@ -282,7 +286,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeStartElection =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDeStartElection",
     4294967295U,
-    &P_GEND_TYPE_i
+    &P_GEND_TYPE_i,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeVote = 
@@ -290,7 +295,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeVote =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDeVote",
     4294967295U,
-    &P_GEND_TYPE_T3sssecure_machine_handle
+    &P_GEND_TYPE_T3sssecure_machine_handle,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeAddItem = 
@@ -298,7 +304,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeAddItem =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDeAddItem",
     4294967295U,
-    &P_GEND_TYPE_T2ss
+    &P_GEND_TYPE_T2ss,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeRespAddItem = 
@@ -306,7 +313,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeRespAddItem =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDeRespAddItem",
     4294967295U,
-    &P_GEND_TYPE_b
+    &P_GEND_TYPE_b,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeRespConfirmVote = 
@@ -314,7 +322,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeRespConfirmVote =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDeRespConfirmVote",
     4294967295U,
-    &P_GEND_TYPE_n
+    &P_GEND_TYPE_n,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_eCloseElection = 
@@ -322,7 +331,8 @@ PRT_EVENTDECL P_EVENT_eCloseElection =
     { PRT_VALUE_KIND_EVENT, 0U },
     "eCloseElection",
     4294967295U,
-    &P_GEND_TYPE_n
+    &P_GEND_TYPE_n,
+    0
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeGetLog = 
@@ -330,7 +340,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeGetLog =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDeGetLog",
     4294967295U,
-    &P_GEND_TYPE_n
+    &P_GEND_TYPE_n,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeRespGetLog = 
@@ -338,7 +349,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeRespGetLog =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDeRespGetLog",
     4294967295U,
-    &P_GEND_TYPE_ST2ss
+    &P_GEND_TYPE_ST2ss,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeAllVotes = 
@@ -346,7 +358,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeAllVotes =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDeAllVotes",
     4294967295U,
-    &P_GEND_TYPE_T2iST2ss
+    &P_GEND_TYPE_T2iST2ss,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDValidateCredential = 
@@ -354,7 +367,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDValidateCredential =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDValidateCredential",
     4294967295U,
-    &P_GEND_TYPE_T2secure_machine_handles
+    &P_GEND_TYPE_T2secure_machine_handles,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDValidCredential = 
@@ -362,7 +376,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDValidCredential =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDValidCredential",
     4294967295U,
-    &P_GEND_TYPE_n
+    &P_GEND_TYPE_n,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDInvalidCredential = 
@@ -370,7 +385,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDInvalidCredential =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDInvalidCredential",
     4294967295U,
-    &P_GEND_TYPE_n
+    &P_GEND_TYPE_n,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeElectionResults = 
@@ -378,7 +394,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeElectionResults =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDeElectionResults",
     4294967295U,
-    &P_GEND_TYPE_MKsVs
+    &P_GEND_TYPE_MKsVs,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeRespElectionResults = 
@@ -386,7 +403,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeRespElectionResults =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDeRespElectionResults",
     4294967295U,
-    &P_GEND_TYPE_T2MKsVss
+    &P_GEND_TYPE_T2MKsVss,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeGetElectionResults = 
@@ -394,7 +412,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeGetElectionResults =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDeGetElectionResults",
     4294967295U,
-    &P_GEND_TYPE_secure_machine_handle
+    &P_GEND_TYPE_secure_machine_handle,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_UNTRUSTEDProvisionVotingUSM = 
@@ -402,7 +421,8 @@ PRT_EVENTDECL P_EVENT_UNTRUSTEDProvisionVotingUSM =
     { PRT_VALUE_KIND_EVENT, 0U },
     "UNTRUSTEDProvisionVotingUSM",
     4294967295U,
-    &P_GEND_TYPE_T2machine_handlei
+    &P_GEND_TYPE_T2machine_handlei,
+    0
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureTamperEvidentLogMachine = 
@@ -410,7 +430,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureTamperEvidentLogMachine =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDProvisionSecureTamperEvidentLogMachine",
     4294967295U,
-    &P_GEND_TYPE_secure_machine_handle
+    &P_GEND_TYPE_secure_machine_handle,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureTabulationTellerMachine = 
@@ -418,7 +439,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureTabulationTellerMachine =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDProvisionSecureTabulationTellerMachine",
     4294967295U,
-    &P_GEND_TYPE_T2secure_machine_handlesecure_machine_handle
+    &P_GEND_TYPE_T2secure_machine_handlesecure_machine_handle,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureBallotBoxMachine = 
@@ -426,7 +448,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureBallotBoxMachine =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDProvisionSecureBallotBoxMachine",
     4294967295U,
-    &P_GEND_TYPE_T2secure_machine_handlesecure_machine_handle
+    &P_GEND_TYPE_T2secure_machine_handlesecure_machine_handle,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureVotingClientMachine = 
@@ -434,7 +457,8 @@ PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureVotingClientMachine =
     { PRT_VALUE_KIND_EVENT, 0U },
     "TRUSTEDProvisionSecureVotingClientMachine",
     4294967295U,
-    &P_GEND_TYPE_T2secure_machine_handlesecure_machine_handle_1
+    &P_GEND_TYPE_T2secure_machine_handlesecure_machine_handle_1,
+    1
 };
 
 PRT_FUNDECL P_FUNCTION_PrintKey =

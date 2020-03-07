@@ -63,7 +63,7 @@ extern char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMach
 extern char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey, char* requestedMachineTypeToCreate);
 extern char* send_network_request_API(char* request);
 
-extern int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize);
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize, bool isSecureSend);
 
 extern sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_key_t *private_key);
 
@@ -1957,7 +1957,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
     safe_free(temp);
     receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
 
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize); //TODO shividentity
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize, isSecureSend); //TODO shividentity
 
     #else
 
@@ -1973,7 +1973,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
     safe_free(temp);
     receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
     
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize); //TODO update to untrusted send api
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize, isSecureSend); //TODO update to untrusted send api
 
     // sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
     #endif
@@ -2007,11 +2007,22 @@ void PrintTuple(PRT_VALUE* tuple){
 
 }
 
-int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize) {
+int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize, bool isSecureSend) {
     ocall_print("About to enqueue event:");
     PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
     char* eventName = program->events[PrtPrimGetEvent(event)]->name;
     ocall_print(eventName);
+    if (isSecureSend) {
+        if (program->events[PrtPrimGetEvent(event)]->isTrustedEvent == 0) {
+            ocall_print("ERROR: UntrustedEvent was received through a secure send");
+            return -1;
+        }
+    } else {
+        if (program->events[PrtPrimGetEvent(event)]->isTrustedEvent == 1) {
+            ocall_print("ERROR: TrustedEvent was received through a untrusted send");
+            return -1;
+        }
+    }
     
     PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
     if (numArgs == 0) {

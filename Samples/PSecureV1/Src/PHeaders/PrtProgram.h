@@ -29,6 +29,7 @@ typedef struct PRT_EVENTDECL
 	PRT_STRING name; /**< The name of this event                                                  */
 	PRT_UINT32 eventMaxInstances; /**< The value of maximum instances of the event that can occur in the queue */
 	PRT_TYPE* type; /**< The type of the payload associated with this event                      */
+	int isTrustedEvent;
 } PRT_EVENTDECL;
 
 /** Represents a set of P events and the set packed into a bit vector */
