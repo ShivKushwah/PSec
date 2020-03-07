@@ -52,7 +52,7 @@ secure_machine SecureVotingClientMachine
                 voteCounted = true;
             }
             
-            send requestingMachine, UNTRUSTEDGetResults, (whoWon = payload.whoWon as int, myVoteCounted = voteCounted); //untrusted_send, whoWon = DeclassifyInt(payload.whoWon)
+            send requestingMachine, UNTRUSTEDGetResults, (whoWon = DeclassifyInt(payload.whoWon), myVoteCounted = voteCounted); //untrusted_send, whoWon = DeclassifyInt(payload.whoWon)
             goto Done;
         }
     }

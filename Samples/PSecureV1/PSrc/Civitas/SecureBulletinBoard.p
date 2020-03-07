@@ -30,7 +30,7 @@ secure_machine SecureBulletinBoardMachine
             countCandidate0 = 0;
             countCandidate1 = 0;
             while (i < sizeof(electionResultsKeys)) {
-                if (electionResults[electionResultsKeys[i]] as int == 0) {
+                if (DeclassifyInt(electionResults[electionResultsKeys[i]]) == 0) {
                     //Vote for Candidate0
                     countCandidate0 = countCandidate0 + 1;
                 } else {

@@ -55,7 +55,7 @@ secure_machine SecureSupervisorMachine
             found = false;
 
             while (i < sizeof(valid_credentials)) {
-                if (valid_credentials[i] as int == payload.credentialToCheck as int) {
+                if (DeclassifyInt(valid_credentials[i]) == DeclassifyInt(payload.credentialToCheck)) {
                     found = true;
                 }
                 i = i + 1;

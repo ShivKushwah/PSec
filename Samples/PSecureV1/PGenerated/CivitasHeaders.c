@@ -156,6 +156,8 @@ PRT_VALUE* P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 
 PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
+PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -483,6 +485,14 @@ PRT_FUNDECL P_FUNCTION_GetThis =
 {
     "GetThis",
     &P_GetThis_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_DeclassifyInt =
+{
+    "DeclassifyInt",
+    &P_DeclassifyInt_IMPL,
     NULL
 };
 
@@ -1390,7 +1400,15 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         
         PRT_VALUE** P_LVALUE_48 = &(PTMP_tmp4_3);
         PrtFreeValue(*P_LVALUE_48);
-        *P_LVALUE_48 = PrtCloneValue(PrtCastValue(PTMP_tmp3_3, &P_GEND_TYPE_i));
+        *P_LVALUE_48 = ((_P_GEN_funargs[0] = &(PTMP_tmp3_3)), (_P_GEN_funval = P_DeclassifyInt_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp3_3), PTMP_tmp3_3 = NULL), (_P_GEN_funval));
+        if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+            goto p_return_4;
+        }
+        if (p_this->isHalted == PRT_TRUE) {
+            PrtFreeValue(_P_GEN_retval);
+            _P_GEN_retval = NULL;
+            goto p_return_4;
+        }
         
         PRT_VALUE** P_LVALUE_49 = &(PTMP_tmp5_3);
         PrtFreeValue(*P_LVALUE_49);
@@ -1398,7 +1416,15 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         
         PRT_VALUE** P_LVALUE_50 = &(PTMP_tmp6_3);
         PrtFreeValue(*P_LVALUE_50);
-        *P_LVALUE_50 = PrtCloneValue(PrtCastValue(PTMP_tmp5_3, &P_GEND_TYPE_i));
+        *P_LVALUE_50 = ((_P_GEN_funargs[0] = &(PTMP_tmp5_3)), (_P_GEN_funval = P_DeclassifyInt_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp5_3), PTMP_tmp5_3 = NULL), (_P_GEN_funval));
+        if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+            goto p_return_4;
+        }
+        if (p_this->isHalted == PRT_TRUE) {
+            PrtFreeValue(_P_GEN_retval);
+            _P_GEN_retval = NULL;
+            goto p_return_4;
+        }
         
         PRT_VALUE** P_LVALUE_51 = &(PTMP_tmp7_3);
         PrtFreeValue(*P_LVALUE_51);
@@ -2157,7 +2183,15 @@ PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         
         PRT_VALUE** P_LVALUE_89 = &(PTMP_tmp6_4);
         PrtFreeValue(*P_LVALUE_89);
-        *P_LVALUE_89 = PrtCloneValue(PrtCastValue(PTMP_tmp5_5, &P_GEND_TYPE_i));
+        *P_LVALUE_89 = ((_P_GEN_funargs[0] = &(PTMP_tmp5_5)), (_P_GEN_funval = P_DeclassifyInt_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp5_5), PTMP_tmp5_5 = NULL), (_P_GEN_funval));
+        if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+            goto p_return_9;
+        }
+        if (p_this->isHalted == PRT_TRUE) {
+            PrtFreeValue(_P_GEN_retval);
+            _P_GEN_retval = NULL;
+            goto p_return_9;
+        }
         
         PRT_VALUE** P_LVALUE_90 = &(PTMP_tmp7_4);
         PrtFreeValue(*P_LVALUE_90);
@@ -4335,7 +4369,15 @@ PRT_VALUE* P_Anon_IMPL_23(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_205 = &(PTMP_tmp7_9);
     PrtFreeValue(*P_LVALUE_205);
-    *P_LVALUE_205 = PrtCloneValue(PrtCastValue(PTMP_tmp6_11, &P_GEND_TYPE_i));
+    *P_LVALUE_205 = ((_P_GEN_funargs[0] = &(PTMP_tmp6_11)), (_P_GEN_funval = P_DeclassifyInt_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp6_11), PTMP_tmp6_11 = NULL), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_28;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_28;
+    }
     
     PRT_VALUE** P_LVALUE_206 = &(PTMP_tmp8_9);
     PrtFreeValue(*P_LVALUE_206);

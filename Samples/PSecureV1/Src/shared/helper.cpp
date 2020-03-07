@@ -2343,14 +2343,13 @@ extern "C" void P_PrintRawSecureStringType_IMPL(PRT_MACHINEINST* context, PRT_VA
 }
 
 
-
-// extern "C" PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-// {
-//     PRT_VALUE** P_VAR_payload = argRefs[0];
-//     ocall_print("declassify int is returning");
-//     ocall_print_int((*P_VAR_payload)->valueUnion.nt);
-//     return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
-// }
+extern "C" PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    // ocall_print("declassify int is returning");
+    // ocall_print_int((*P_VAR_payload)->valueUnion.nt);
+    return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
+}
 
 extern "C" void P_PrintMachineHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
