@@ -10,7 +10,7 @@ secure_machine SecureSupervisorMachine
     var bBoard : secure_machine_handle;
     var bBox : secure_machine_handle;
     var tTeller: machine_handle;
-    var valid_credentials : seq[int];
+    var valid_credentials : seq[secure_int];
 
     fun generateRandomCredential() : int {
         return 3;
@@ -47,7 +47,7 @@ secure_machine SecureSupervisorMachine
             
             send requestingMachine, UNTRUSTEDReceiveVotingSSM, secureVotingClientMachine as machine_handle; //untrusted_send, CastHandle(secureVotingClientMachine)
         }
-        on TRUSTEDValidateCredential do (payload: (tabulationTellerMachine : secure_machine_handle, credentialToCheck : int)) {
+        on TRUSTEDValidateCredential do (payload: (tabulationTellerMachine : secure_machine_handle, credentialToCheck : secure_int)) {
             var i : int;
             var found : bool;
 
@@ -55,7 +55,7 @@ secure_machine SecureSupervisorMachine
             found = false;
 
             while (i < sizeof(valid_credentials)) {
-                if (valid_credentials[i] == payload.credentialToCheck) {
+                if (valid_credentials[i] as int == payload.credentialToCheck as int) {
                     found = true;
                 }
                 i = i + 1;

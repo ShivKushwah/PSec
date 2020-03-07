@@ -39,7 +39,7 @@ secure_machine SecureVotingClientMachine
         entry {
             send bulletinBoard, TRUSTEDeGetElectionResults, this; //secure_send
         }
-        on TRUSTEDeRespElectionResults do (payload: (allVotes : map[int, secure_int], whoWon : secure_int)) {
+        on TRUSTEDeRespElectionResults do (payload: (allVotes : map[secure_int, secure_int], whoWon : secure_int)) {
             var winner : int;
             var voteCounted : bool;
             if(!(credential in payload.allVotes))

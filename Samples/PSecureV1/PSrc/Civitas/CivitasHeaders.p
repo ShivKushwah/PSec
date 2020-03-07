@@ -30,19 +30,19 @@ event UNTRUSTEDVoteRequest : (credential : int, vote : int, requestingMachine : 
 event UNTRUSTEDGetResults : (whoWon : int, myVoteCounted : bool);
 // event UNTRUSTEDGetResults : int;
 trusted event TRUSTEDeStartElection : int;
-trusted event TRUSTEDeVote : (credential : int, vote : secure_int, requestingMachine: secure_machine_handle);
-trusted event TRUSTEDeAddItem : (credential: int, vote: secure_int);
+trusted event TRUSTEDeVote : (credential : secure_int, vote : secure_int, requestingMachine: secure_machine_handle);
+trusted event TRUSTEDeAddItem : (credential: secure_int, vote: secure_int);
 trusted event TRUSTEDeRespAddItem : bool;
 trusted event TRUSTEDeRespConfirmVote;
 event eCloseElection;
 trusted event TRUSTEDeGetLog;
-trusted event TRUSTEDeRespGetLog : seq[(credential : int, vote : secure_int)];
-trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[(credential : int, vote : secure_int)]);
-trusted event TRUSTEDValidateCredential : (tabulationTellerMachine : secure_machine_handle, credentialToCheck : int);
+trusted event TRUSTEDeRespGetLog : seq[(credential : secure_int, vote : secure_int)];
+trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[(credential : secure_int, vote : secure_int)]);
+trusted event TRUSTEDValidateCredential : (tabulationTellerMachine : secure_machine_handle, credentialToCheck : secure_int);
 trusted event TRUSTEDValidCredential;
 trusted event TRUSTEDInvalidCredential;
-trusted event TRUSTEDeElectionResults : map[int, secure_int];
-trusted event TRUSTEDeRespElectionResults: (allVotes : map[int, secure_int], whoWon : secure_int);
+trusted event TRUSTEDeElectionResults : map[secure_int, secure_int];
+trusted event TRUSTEDeRespElectionResults: (allVotes : map[secure_int, secure_int], whoWon : secure_int);
 trusted event TRUSTEDeGetElectionResults : secure_machine_handle;
 
 event UNTRUSTEDProvisionVotingUSM : (supervisor : machine_handle, credential : int);

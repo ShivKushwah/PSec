@@ -8,7 +8,7 @@ secure_machine SecureTabulationTellerMachine
 {
     var bulletinBoard: secure_machine_handle;
     var supervisor: secure_machine_handle;
-    var allVotes: seq[(credential : int, vote : secure_int)];
+    var allVotes: seq[(credential : secure_int, vote : secure_int)];
 
     start state Init {
 
@@ -20,7 +20,7 @@ secure_machine SecureTabulationTellerMachine
     }
 
     state ReceiveVotes {
-        on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[(credential : int, vote : secure_int)])){
+        on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[(credential : secure_int, vote : secure_int)])){
             //allVotes are ordered by time
             allVotes = payload.votes;
             goto DoTally;
@@ -29,7 +29,7 @@ secure_machine SecureTabulationTellerMachine
     
     state DoTally {
         entry {
-            var result: map[int, secure_int];
+            var result: map[secure_int, secure_int];
             var i: int;
             i = 0;
             while(i < sizeof(allVotes))
