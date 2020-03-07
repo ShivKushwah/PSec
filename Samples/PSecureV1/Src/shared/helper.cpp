@@ -2008,7 +2008,11 @@ void PrintTuple(PRT_VALUE* tuple){
 }
 
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize) {
+    ocall_print("About to enqueue event:");
     PRT_VALUE* event = PrtMkEventValue(eventIdentifier);
+    char* eventName = program->events[PrtPrimGetEvent(event)]->name;
+    ocall_print(eventName);
+    
     PRT_MACHINEINST* machine = PrtGetMachine(process, PrtMkMachineValue(receivingMachinePID));
     if (numArgs == 0) {
         PrtSend(NULL, machine, event, 0);
