@@ -2322,6 +2322,28 @@ extern "C" PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context
     
 }
 
+extern "C" void P_PrintRawStringType_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+
+    printPayload((char*)val, SIZE_OF_PRT_STRING_SERIALIZED);
+   
+    
+}
+
+extern "C" void P_PrintRawSecureStringType_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+
+    printPayload((char*)val, SIZE_OF_PRT_STRING_SERIALIZED);
+   
+    
+}
+
+
+
 // extern "C" PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 // {
 //     PRT_VALUE** P_VAR_payload = argRefs[0];

@@ -42,9 +42,13 @@ secure_machine BankEnclave {
 
             print "Bank: Creating New Bank Account. Enter Credentials below!";
             userCredential = GetUserInput();
+            print "KIRAT-CRED";
+            PrintString(userCredential);
+            PrintRawStringType(userCredential);
             
             masterSecret = GenerateRandomMasterSecret();
-
+            print "Stuff";
+            PrintRawSecureStringType(masterSecret);
             send clientSSM, MasterSecretEvent, masterSecret; //secure_send
             // print "Bank Enclave about to print clientSSM";
             // PrintKey(clientSSM);
@@ -58,8 +62,12 @@ secure_machine BankEnclave {
     }
 
     state Verify { 
-        entry (payload : (StringType, StringType)) {
-            if (userCredential == payload.0 && Hash(masterSecret as StringType, userCredential) == payload.1) {
+        entry (payload : (usernamePW: StringType, OTPCode: StringType)) {
+            print "KIRAT2-CRED";
+            PrintString(payload.usernamePW);
+            PrintString(userCredential);
+            PrintRawStringType(Hash(masterSecret as StringType, userCredential));
+            if (userCredential == payload.usernamePW && Hash(masterSecret as StringType, userCredential) == payload.OTPCode) {
                 send clientUSM, AuthSuccess; //untrusted_send
             } else {
                 send clientUSM, AuthFailure; //untrusted_send

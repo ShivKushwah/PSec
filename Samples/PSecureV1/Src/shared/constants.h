@@ -1,8 +1,8 @@
 #ifndef CONSTANT_FILE
 #define CONSTANT_FILE
-#include "CivitasHeaders.h"
+// #include "CivitasHeaders.h"
 // #include "PingPongEnclave.h"
-// #include "OTPBankServerCode.h"
+#include "OTPBankServerCode.h"
 
 const int SIZE_OF_IDENTITY_STRING = 385; //TODO figure out why i cant make this 384
 const int SIZE_OF_PUBLIC_CAPABILITY_KEY = 384 + 4;

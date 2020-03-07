@@ -7,6 +7,9 @@ type secure_StringType;
 // fun CreateMachineSecureChild(): machine_handle;
 // fun PrintString(inputString : StringType);
 fun PrintString(inputString : StringType);
+fun PrintRawStringType(inputString : StringType);
+fun PrintRawSecureStringType(inputString : secure_StringType);
+
 
 // fun SecureSend(sendingToMachine : secure_machine_handle, eventToSend : event, numArgs : int, arg : int);
 fun GetThis() : machine_handle;
@@ -28,7 +31,7 @@ trusted event MasterSecretEvent: secure_StringType;
 event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
 trusted event MapEvent: map[int, int];
-event AuthenticateRequest : (StringType, StringType);
+event AuthenticateRequest : (usernamePW : StringType, OTPCode : StringType);
 event AuthSuccess;
 event AuthFailure;
 
