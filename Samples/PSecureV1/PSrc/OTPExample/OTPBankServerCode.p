@@ -27,7 +27,7 @@ secure_machine BankEnclave {
     var clientSSM: secure_machine_handle;
     var clientUSM: machine_handle;
     var masterSecret : secure_StringType;
-    var userCredential : StringType;
+    var userCredential : secure_StringType;
     start state Initial {
         entry { 
             goto ReceiveClientUSM;
@@ -43,8 +43,8 @@ secure_machine BankEnclave {
             print "Bank: Creating New Bank Account. Enter Credentials below!";
             userCredential = GetUserInput();
             print "KIRAT-CRED";
-            PrintString(userCredential);
-            PrintRawStringType(userCredential);
+            // PrintString(userCredential);
+            PrintRawSecureStringType(userCredential);
             
             masterSecret = GenerateRandomMasterSecret();
             print "Stuff";
@@ -65,9 +65,15 @@ secure_machine BankEnclave {
         entry (payload : (usernamePW: StringType, OTPCode: StringType)) {
             print "KIRAT2-CRED";
             PrintString(payload.usernamePW);
-            PrintString(userCredential);
-            PrintRawStringType(Hash(masterSecret as StringType, userCredential));
-            if (userCredential == payload.usernamePW && Hash(masterSecret as StringType, userCredential) == payload.OTPCode) {
+            PrintRawSecureStringType(userCredential);
+            PrintRawStringType(Hash(masterSecret as StringType, userCredential as StringType));
+            if (userCredential as StringType == payload.usernamePW) {
+                print "YEETKIRAT";
+            }
+            if (Hash(masterSecret as StringType, userCredential as StringType) == payload.OTPCode) {
+                print "YEETKIRAT2";
+            }
+            if (userCredential as StringType == payload.usernamePW && Hash(masterSecret as StringType, userCredential as StringType) == payload.OTPCode) {
                 send clientUSM, AuthSuccess; //untrusted_send
             } else {
                 send clientUSM, AuthFailure; //untrusted_send
