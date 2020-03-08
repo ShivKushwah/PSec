@@ -26,8 +26,8 @@ secure_machine SecureSupervisorMachine
 
             //These are the credentials of voters that have registered to vote
             //One credential per valid voter
-            valid_credentials += (sizeof(valid_credentials), 17);
-            valid_credentials += (sizeof(valid_credentials), 98);
+            valid_credentials += (sizeof(valid_credentials), 177584736);
+            valid_credentials += (sizeof(valid_credentials), 986126237);
 
             //We send 2 because this is how many votes we need to be submitted
             //before the election is considered finished
