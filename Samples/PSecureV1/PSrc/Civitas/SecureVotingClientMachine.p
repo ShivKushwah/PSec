@@ -10,8 +10,6 @@ secure_machine SecureVotingClientMachine
     var bulletinBoard: secure_machine_handle;
     var requestingMachine : machine_handle;
 
-    var temp_int_credential : secure_int;
-
     start state Init {
         on TRUSTEDProvisionSecureVotingClientMachine do (payload: (ballotBox:secure_machine_handle, bulletinBoard:secure_machine_handle)) {
             ballotBox = payload.ballotBox;
@@ -30,11 +28,6 @@ secure_machine SecureVotingClientMachine
             requestingMachine = payload.requestingMachine;
             secure_vote = payload.vote;
             credential = payload.credential;
-            if (payload.credential == GenerateCredential1()) {
-				temp_int_credential = 1775847362;
-			} else {
-				temp_int_credential = 1861262373;
-			}
             send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = this); //secure_send
         }
         on TRUSTEDeRespConfirmVote goto ValidateResults with {

@@ -31,20 +31,9 @@ secure_machine SecureTabulationTellerMachine
         entry {
             var result: map[secure_StringType, secure_int];
             var i: int;
-            var cred : secure_int;
             i = 0;
             while(i < sizeof(allVotes))
             {
-                PrintString(GenerateCredential1());
-                PrintString(allVotes[i].credential as StringType);
-                print "cred is";
-                if (allVotes[i].credential as StringType == GenerateCredential1() as StringType) {
-                    cred = 1775847362;
-                    print "cred 1";
-                } else {
-                    cred = 1861262373;
-                    print "cred 2";
-                }
                 send supervisor, TRUSTEDValidateCredential, (tabulationTellerMachine = this, credentialToCheck = allVotes[i].credential); //secure_send
                 receive {
                     case TRUSTEDValidCredential : {

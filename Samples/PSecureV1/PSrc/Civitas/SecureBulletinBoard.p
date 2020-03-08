@@ -30,9 +30,6 @@ secure_machine SecureBulletinBoardMachine
             countCandidate0 = 0;
             countCandidate1 = 0;
 
-            print "Kiratru";
-            PrintString(electionResultsKeys[i] as StringType);
-
             while (i < sizeof(electionResultsKeys)) {
                 if (DeclassifyInt(electionResults[electionResultsKeys[i]]) == 0) {
                     //Vote for Candidate0
