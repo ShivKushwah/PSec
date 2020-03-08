@@ -2527,6 +2527,7 @@ extern "C" void P_PrintMachineHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE***
 extern "C" PRT_VALUE* P_GenerateCredential1_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    memset(str, sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED), 0);
 	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "Credential1");
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
     
@@ -2535,6 +2536,7 @@ extern "C" PRT_VALUE* P_GenerateCredential1_IMPL(PRT_MACHINEINST* context, PRT_V
 extern "C" PRT_VALUE* P_GenerateCredential2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    memset(str, sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED), 0);
 	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "Credential2");
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
     
@@ -2590,7 +2592,8 @@ extern "C" PRT_STRING P_TOSTRING_StringType_IMPL(PRT_UINT64 frgnVal)
 
 extern "C" PRT_UINT32 P_GETHASHCODE_StringType_IMPL(PRT_UINT64 frgnVal)
 {
-	return (PRT_UINT32)frgnVal;
+    return 7;
+	// return (PRT_UINT32)frgnVal;
 }
 
 extern "C" PRT_UINT64 P_MKDEF_StringType_IMPL(void)
@@ -2636,7 +2639,9 @@ extern "C" PRT_STRING P_TOSTRING_secure_StringType_IMPL(PRT_UINT64 frgnVal)
 
 extern "C" PRT_UINT32 P_GETHASHCODE_secure_StringType_IMPL(PRT_UINT64 frgnVal)
 {
-	return (PRT_UINT32)frgnVal;
+    return 7;
+
+	// return (PRT_UINT32)frgnVal;
 }
 
 extern "C" PRT_UINT64 P_MKDEF_secure_StringType_IMPL(void)

@@ -46,10 +46,10 @@ secure_machine SecureVotingClientMachine
         entry {
             send bulletinBoard, TRUSTEDeGetElectionResults, this; //secure_send
         }
-        on TRUSTEDeRespElectionResults do (payload: (allVotes : map[secure_int, secure_int], whoWon : secure_int)) {
+        on TRUSTEDeRespElectionResults do (payload: (allVotes : map[secure_StringType, secure_int], whoWon : secure_int)) {
             var winner : int;
             var voteCounted : bool;
-            if(DeclassifyBool(!(temp_int_credential in payload.allVotes)))
+            if(DeclassifyBool(!(credential in payload.allVotes)))
             {
                 print "ERROR: Vote not found!";
                 raise halt;

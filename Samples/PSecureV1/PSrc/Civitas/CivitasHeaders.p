@@ -50,8 +50,8 @@ trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[(credential : secu
 trusted event TRUSTEDValidateCredential : (tabulationTellerMachine : secure_machine_handle, credentialToCheck : secure_StringType);
 trusted event TRUSTEDValidCredential;
 trusted event TRUSTEDInvalidCredential;
-trusted event TRUSTEDeElectionResults : map[secure_int, secure_int];
-trusted event TRUSTEDeRespElectionResults: (allVotes : map[secure_int, secure_int], whoWon : secure_int);
+trusted event TRUSTEDeElectionResults : map[secure_StringType, secure_int];
+trusted event TRUSTEDeRespElectionResults: (allVotes : map[secure_StringType, secure_int], whoWon : secure_int);
 trusted event TRUSTEDeGetElectionResults : secure_machine_handle;
 
 event UNTRUSTEDProvisionVotingUSM : (supervisor : machine_handle, credential : StringType);
