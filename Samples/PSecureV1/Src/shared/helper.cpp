@@ -1737,7 +1737,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     // ocall_print(sendRequest);
     // ocall_print_int(strlen(sendRequest) + 1);
     // ocall_print("KUUUURUT");
-    char* empty = (char*) malloc(100);
+    char* sendReturn = (char*) malloc(100);
     int ret_value;
 
     
@@ -1746,13 +1746,40 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     printPayload(sendRequest, requestSize);
 
     #ifdef ENCLAVE_STD_ALT
-        sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, empty, requestSize, 100);
+        sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, sendReturn, requestSize, 100);
     #else
-        ocall_network_request(sendRequest, empty, requestSize, 100); 
+        ocall_network_request(sendRequest, sendReturn, requestSize, 100); 
     #endif
     safe_free(sendRequest);
     ocall_print("Send/UntrustedSend Network call returned:");
-    ocall_print(empty);
+    ocall_print(sendReturn);
+
+    if (!NETWORK_DEBUG && isSecureSend) {
+        char* iv = (char*) malloc(SIZE_OF_IV);
+        char* mac = (char*) malloc(SIZE_OF_MAC);
+        memcpy(iv, sendReturn, SIZE_OF_IV);
+        memcpy(mac, sendReturn + SIZE_OF_IV + 1, SIZE_OF_MAC);
+        char* enc = sendReturn + SIZE_OF_IV + 1 + SIZE_OF_MAC + 1;
+        char* encryptedStringSizeString = strtok(enc, ":");
+        char* encryptedMessage = (char*)malloc(atoi(encryptedStringSizeString));
+        memcpy(encryptedMessage, enc + strlen(encryptedStringSizeString) + 1, atoi(encryptedStringSizeString));
+
+        string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
+        sgx_aes_ctr_128bit_key_t g_region_key;
+        sgx_aes_gcm_128bit_tag_t g_mac;
+        memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+        memcpy(g_mac, mac, SIZE_OF_MAC);
+
+        char* decryptedMessage = (char*) malloc(atoi(encryptedStringSizeString));
+        #ifdef ENCLAVE_STD_ALT
+        sgx_status_t status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) encryptedMessage, atoi(encryptedStringSizeString), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+        #endif
+
+        ocall_print(decryptedMessage);
+
+
+
+    }
 
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
     printStr = generateCStringFromFormat("%s machine has succesfully sent message", machineNameWrapper2, 1);
@@ -1985,6 +2012,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
 
 
     if (!NETWORK_DEBUG && isSecureSend) {
+        //Return Success Messag with encryption
         string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
         int nonce = ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)];
         char* nonceStr = (char*) malloc(10);
@@ -1999,13 +2027,35 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
 
         itoa(encryptedMessageLength, encryptedMessageLengthString, 10);
 
+        char* iv = generateIV();
+        char* mac = "1234567891234567";
 
+        char* concatStrings[] = {baseMessage, colon, nonceStr};
+        int concatLenghts[] = {strlen(baseMessage), strlen(colon), strlen(nonceStr)};
+        char* toBeEncryptedMessage = concatMutipleStringsWithLength(concatStrings, concatLenghts, 3);
+        int encryptedMessageSize = returnTotalSizeofLengthArray(concatLenghts, 3);
 
-        char* concatStrings[] = {encryptedMessageLengthString, colon, baseMessage, colon, nonceStr};
-        int concatLenghts[] = {strlen(encryptedMessageLengthString), strlen(colon), strlen(baseMessage), strlen(colon), strlen(nonceStr)};
-        char* returnString = concatMutipleStringsWithLength(concatStrings, concatLenghts, 5);
-        int requestSize = returnTotalSizeofLengthArray(concatLenghts, 5) + 1;
+        sgx_aes_ctr_128bit_key_t g_region_key;
+        sgx_aes_gcm_128bit_tag_t g_mac;
+        memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+
+        char* encryptedMessage = (char*) malloc(encryptedMessageSize);
+        #ifdef ENCLAVE_STD_ALT
+        sgx_status_t status = sgx_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) toBeEncryptedMessage, encryptedMessageSize, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+        #endif
+        // ocall_print("Encrypted Message is");
+        // ocall_print(encryptedMessage);
+        mac = (char*) malloc(SIZE_OF_MAC);
+        memcpy(mac, (char*)g_mac, SIZE_OF_MAC);
+
+        char* concatStrings2[] = {iv, colon, mac, colon, encryptedMessageLengthString, colon, encryptedMessage};
+        int concatLenghts2[] = {SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageLengthString), strlen(colon), encryptedMessageSize};
+        char* returnString = concatMutipleStringsWithLength(concatStrings2, concatLenghts2, 7);
+        int requestSize = returnTotalSizeofLengthArray(concatLenghts2, 7) + 1;
         memcpy(response, returnString, requestSize);
+
+        safe_free(encryptedMessage);
+        safe_free(returnString);
 
 
         // string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
