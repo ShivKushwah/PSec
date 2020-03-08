@@ -28,9 +28,11 @@ enclave {
                                             [in, size=12] char* iv,
                                             [in, size=16] char* mac,
                                             [in, size=MAX_ENCRYPTED_MESSAGE]char* encryptedMessage, 
+                                            [out, size=MAX_RESPONSE_SIZE]char* response,
                                             int isSecureSend,
                                             uint32_t ID_SIZE, 
-                                            uint32_t MAX_ENCRYPTED_MESSAGE);
+                                            uint32_t MAX_ENCRYPTED_MESSAGE,
+                                            uint32_t MAX_RESPONSE_SIZE);
 
         public int createMachineAPI(sgx_enclave_id_t currentEid,
                                     [in, size=ID_SIZE] char* machineName, 

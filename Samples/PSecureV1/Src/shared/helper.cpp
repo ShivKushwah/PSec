@@ -916,7 +916,9 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             int encryptedMessageSize = atoi(split) + strlen(split) + 1;
             printPayload(encryptedMessage, 9);
             encryptedMessage[strlen(split)] = ':'; //undoing effect of strtok
-            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, 0, SGX_RSA3072_KEY_SIZE, encryptedMessageSize);
+            int RESPONSE_SZ = 100;
+            char* responseBuffer = (char*) malloc(RESPONSE_SZ);
+            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, responseBuffer, 0, SGX_RSA3072_KEY_SIZE, encryptedMessageSize, RESPONSE_SZ);
             
 
             if (count == 0) {
@@ -977,7 +979,9 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             int encryptedMessageSize = atoi(split) + strlen(split) + 1;
             printPayload(encryptedMessage, 9);
             encryptedMessage[strlen(split)] = ':'; //undoing effect of strtok
-            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, 1, SGX_RSA3072_KEY_SIZE, encryptedMessageSize);
+            int RESPONSE_SZ = 100;
+            char* responseBuffer = (char*) malloc(RESPONSE_SZ);
+            sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, responseBuffer, 1, SGX_RSA3072_KEY_SIZE, encryptedMessageSize, RESPONSE_SZ);
             
 
             if (count == 0) {
@@ -986,7 +990,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             
             safe_free(requestCopy);
             temp = createStringLiteralMalloced("SecureSendReturn");
-            return temp;
+            return responseBuffer;
 
         } else {
             int count;
@@ -1763,7 +1767,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
 }
 
-void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, bool isSecureSend) {
+void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, bool isSecureSend) {
     ocall_print("entered decrypt fn");
     // ocall_print_int(MAX_ENCRYPTED_MESSAGE);
     printPayload(encryptedMessage, 9);
@@ -1978,6 +1982,43 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
     // sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
     #endif
     safe_free(decryptedMessage);
+
+
+    if (!NETWORK_DEBUG && isSecureSend) {
+        string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
+        int nonce = ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)];
+        char* nonceStr = (char*) malloc(10);
+        itoa(nonce, nonceStr, 10);
+
+        char* colon = ":";
+
+        char* baseMessage = "Success";
+
+        int encryptedMessageLength = strlen(baseMessage) + 1 + strlen(nonceStr);
+        char* encryptedMessageLengthString = (char*) malloc(10);
+
+        itoa(encryptedMessageLength, encryptedMessageLengthString, 10);
+
+
+
+        char* concatStrings[] = {encryptedMessageLengthString, colon, baseMessage, colon, nonceStr};
+        int concatLenghts[] = {strlen(encryptedMessageLengthString), strlen(colon), strlen(baseMessage), strlen(colon), strlen(nonceStr)};
+        char* returnString = concatMutipleStringsWithLength(concatStrings, concatLenghts, 5);
+        int requestSize = returnTotalSizeofLengthArray(concatLenghts, 5) + 1;
+        memcpy(response, returnString, requestSize);
+
+
+        // string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
+
+        // sgx_aes_ctr_128bit_key_t g_region_key;
+        // sgx_aes_gcm_128bit_tag_t g_mac;
+        // memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+        // memcpy(g_mac, mac, SIZE_OF_MAC);
+
+
+    }
+
+
 
 }
 
