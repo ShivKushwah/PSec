@@ -58,7 +58,7 @@ extern char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* r
 
 extern char* untrusted_enclave1_receiveNetworkRequest(char* request, size_t requestSize);
 
-extern char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage);
+extern char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response);
 
 extern char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey, char* requestedMachineTypeToCreate);
 extern char* send_network_request_API(char* request);
@@ -926,7 +926,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             }
             
             safe_free(requestCopy);
-            temp = createStringLiteralMalloced("TODO");
+            temp = responseBuffer;
             return temp;
 
         } else {
@@ -935,9 +935,11 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
             
             if (count > 0) {
-                char* ret = USMSendMessageAPI(machineSendingMessage, machineReceivingMessage, iv, mac, encryptedMessage);
+                int RESPONSE_SZ = 100;
+                char* responseBuffer = (char*) malloc(RESPONSE_SZ);
+                char* ret = USMSendMessageAPI(machineSendingMessage, machineReceivingMessage, iv, mac, encryptedMessage, responseBuffer);
                 safe_free(requestCopy);
-                ret = createStringLiteralMalloced("TODO");
+                ret = responseBuffer;
                 return ret;
                 
             } else {
@@ -1754,7 +1756,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     ocall_print("Send/UntrustedSend Network call returned:");
     ocall_print(sendReturn);
 
-    if (!NETWORK_DEBUG && isSecureSend) {
+    if (!NETWORK_DEBUG) {
         char* iv = (char*) malloc(SIZE_OF_IV);
         char* mac = (char*) malloc(SIZE_OF_MAC);
         memcpy(iv, sendReturn, SIZE_OF_IV);
@@ -1773,9 +1775,12 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         char* decryptedMessage = (char*) malloc(atoi(encryptedStringSizeString));
         #ifdef ENCLAVE_STD_ALT
         sgx_status_t status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) encryptedMessage, atoi(encryptedStringSizeString), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+        #else 
+        sample_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) encryptedMessage, atoi(encryptedStringSizeString), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
         #endif
 
         ocall_print(decryptedMessage);
+        decryptedMessage[atoi(encryptedStringSizeString)] = '\0';
 
         char* split = strtok(decryptedMessage, ":");
         char* msg = split;
@@ -2029,7 +2034,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
     safe_free(decryptedMessage);
 
 
-    if (!NETWORK_DEBUG && isSecureSend) {
+    if (!NETWORK_DEBUG) {
         //Return Success Messag with encryption
         string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
         int nonce = ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)];
@@ -2061,6 +2066,8 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         char* encryptedMessage = (char*) malloc(encryptedMessageSize);
         #ifdef ENCLAVE_STD_ALT
         sgx_status_t status = sgx_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) toBeEncryptedMessage, encryptedMessageSize, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+        #else 
+        sample_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) toBeEncryptedMessage, encryptedMessageSize, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
         #endif
         // ocall_print("Encrypted Message is");
         // ocall_print(encryptedMessage);
