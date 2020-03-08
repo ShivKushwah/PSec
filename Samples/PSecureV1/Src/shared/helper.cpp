@@ -2528,7 +2528,7 @@ extern "C" PRT_VALUE* P_GenerateCredential1_IMPL(PRT_MACHINEINST* context, PRT_V
 {
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
     memset(str, sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED), 0);
-	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "Credential1");
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "ZeaipvqyqBTpbebZKyWub9uVXVmiWt1bk7RZtzVl5dCVN0mdYB87iw9ggZBHYZKmkeg9uOVA4OPU4HtjlJXb4b6ZmXmdUbqoaRsOUNW6H43mCpmvM5KenYnASIWKTv8sFwDdjpeGynIYHKfh2M5yE2VjiM0XoJSD55MB8sdca9GYsHuDCD8M9Ha2vrKe7eNbFfcsfqei3GQmY98hgIWIXxHrO3HOxrHgvmdoj9FvYeOsewL3BhuKSyqI6YjSxbMermFldGL2Q7zyZi0ss6e7UIPYzG2iAvb1OZJt9q2xGhRPPMGXUmlz4kN7nyaiKkWQjKFKRFfYHDqhpxPPPticYetylRz9weh3ors9PvH7gm5qvMGANcwwWlOpQrFW4m1");
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
     
 }
@@ -2537,7 +2537,7 @@ extern "C" PRT_VALUE* P_GenerateCredential2_IMPL(PRT_MACHINEINST* context, PRT_V
 {
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
     memset(str, sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED), 0);
-	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "Credential2");
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "AZWmDUUegwGZsrJa9qMZ5YQVoJrRd7DySp5VNDzNr3dUise9Vh3lwbpiULug9AAf9Y4zlPXaLZouQXtrzEFh5C3iDzR9HJuQmTEhKIqBXrAPL0WOhxTJzrxCVbSrY3ftRCLuztlv4Kcsrq1Knp1MkYwzqf5sUBVAerHMHpd5z8SODEvbiF7KjSH6GzF2HrTeLUlnS64FCxIMnnpzo7zGEigHRJ5unOt3gwFm4MDEwu7UdiiN19tPGIgYJl1Ep23s4D37KOb2WoEj7AcIdL6w5nQdrmNGmWV8squ2kMApg57PT53risbj3Fw0Obvg7BqhIJ2DUfBiu5tC56PPe0r8VbIChaSGQ5QUTzbWxDtLxlKDiwmJDw08qp4HtABfsVg");
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
     
 }
