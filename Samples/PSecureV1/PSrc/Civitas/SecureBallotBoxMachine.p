@@ -62,7 +62,7 @@ secure_machine SecureBallotBoxMachine
         entry {
             send appendOnlyLog, TRUSTEDeGetLog; //secure_send
             receive{
-                case TRUSTEDeRespGetLog: (payload: seq[(credential : secure_int, vote : secure_int)])
+                case TRUSTEDeRespGetLog: (payload: seq[(credential : secure_StringType, vote : secure_int)])
                 {
                     print "Sending votes to Secure Tabulation Teller";
                     send tabulationTeller, TRUSTEDeAllVotes, (ballotID = 0, votes = payload); //secure_send

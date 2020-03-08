@@ -10,7 +10,7 @@ secure_machine SecureSupervisorMachine
     var bBoard : secure_machine_handle;
     var bBox : secure_machine_handle;
     var tTeller: machine_handle;
-    var valid_credentials : seq[secure_int];
+    var valid_credentials : seq[secure_StringType];
 
     fun generateRandomCredential() : int {
         return 3;
@@ -26,8 +26,8 @@ secure_machine SecureSupervisorMachine
 
             //These are the credentials of voters that have registered to vote
             //One credential per valid voter
-            valid_credentials += (sizeof(valid_credentials), 1775847362);
-            valid_credentials += (sizeof(valid_credentials), 1861262373);
+            valid_credentials += (sizeof(valid_credentials), ClassifyString(GenerateCredential1()));
+            valid_credentials += (sizeof(valid_credentials), ClassifyString(GenerateCredential2()));
 
             //We send 2 because this is how many votes we need to be submitted
             //before the election is considered finished
@@ -47,7 +47,7 @@ secure_machine SecureSupervisorMachine
             
             send requestingMachine, UNTRUSTEDReceiveVotingSSM, DeclassifyHandle(secureVotingClientMachine); //untrusted_send, CastHandle(secureVotingClientMachine)
         }
-        on TRUSTEDValidateCredential do (payload: (tabulationTellerMachine : secure_machine_handle, credentialToCheck : secure_int)) {
+        on TRUSTEDValidateCredential do (payload: (tabulationTellerMachine : secure_machine_handle, credentialToCheck : secure_StringType)) {
             var i : int;
             var found : bool;
 
@@ -55,7 +55,7 @@ secure_machine SecureSupervisorMachine
             found = false;
 
             while (i < sizeof(valid_credentials)) {
-                if (DeclassifyInt(valid_credentials[i]) == DeclassifyInt(payload.credentialToCheck)) {
+                if (valid_credentials[i] as StringType == payload.credentialToCheck as StringType) {
                     found = true;
                 }
                 i = i + 1;

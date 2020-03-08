@@ -4,7 +4,7 @@ Secure TamperEvidentLog Machine
 ***************************************/
 secure_machine SecureTamperEvidentLogMachine 
 {
-    var log: seq[(credential: secure_int, vote: secure_int)];
+    var log: seq[(credential: secure_StringType, vote: secure_int)];
     var parent: secure_machine_handle;
     start state Init {
          on TRUSTEDProvisionSecureTamperEvidentLogMachine do (payload: secure_machine_handle) {
@@ -15,13 +15,13 @@ secure_machine SecureTamperEvidentLogMachine
 
     state WaitForRequests {
         on TRUSTEDeAddItem do (payload: (credential : secure_StringType, vote: secure_int)){
-            var cred : secure_int;
-            if (payload.credential as StringType == GenerateCredential1()) {
-				cred = 1775847362;
-			} else {
-				cred = 1861262373;
-			}
-            log += (sizeof(log), (credential = cred, vote = payload.vote));
+            // var cred : secure_int;
+            // if (payload.credential as StringType == GenerateCredential1()) {
+			// 	cred = 1775847362;
+			// } else {
+			// 	cred = 1861262373;
+			// }
+            log += (sizeof(log), (credential = payload.credential, vote = payload.vote));
             send parent, TRUSTEDeRespAddItem, true; //secure_send
         }
         on TRUSTEDeGetLog do

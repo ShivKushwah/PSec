@@ -22,6 +22,8 @@ fun DeclassifyHandle(input : secure_machine_handle) : machine_handle;
 fun GenerateCredential1() : StringType;
 fun GenerateCredential2() : StringType;
 
+fun ClassifyString(input : StringType) : secure_StringType;
+
 // fun Declassify(input : secure_int) : int;
 // fun Declassify(input : secure_StringType) : StringType;
 
@@ -43,9 +45,9 @@ trusted event TRUSTEDeRespAddItem : bool;
 trusted event TRUSTEDeRespConfirmVote;
 event eCloseElection;
 trusted event TRUSTEDeGetLog;
-trusted event TRUSTEDeRespGetLog : seq[(credential : secure_int, vote : secure_int)];
-trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[(credential : secure_int, vote : secure_int)]);
-trusted event TRUSTEDValidateCredential : (tabulationTellerMachine : secure_machine_handle, credentialToCheck : secure_int);
+trusted event TRUSTEDeRespGetLog : seq[(credential : secure_StringType, vote : secure_int)];
+trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[(credential : secure_StringType, vote : secure_int)]);
+trusted event TRUSTEDValidateCredential : (tabulationTellerMachine : secure_machine_handle, credentialToCheck : secure_StringType);
 trusted event TRUSTEDValidCredential;
 trusted event TRUSTEDInvalidCredential;
 trusted event TRUSTEDeElectionResults : map[secure_int, secure_int];

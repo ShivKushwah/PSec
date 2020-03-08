@@ -8,7 +8,7 @@ secure_machine SecureTabulationTellerMachine
 {
     var bulletinBoard: secure_machine_handle;
     var supervisor: secure_machine_handle;
-    var allVotes: seq[(credential : secure_int, vote : secure_int)];
+    var allVotes: seq[(credential : secure_StringType, vote : secure_int)];
 
     start state Init {
 
@@ -20,7 +20,7 @@ secure_machine SecureTabulationTellerMachine
     }
 
     state ReceiveVotes {
-        on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[(credential : secure_int, vote : secure_int)])){
+        on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[(credential : secure_StringType, vote : secure_int)])){
             //allVotes are ordered by time
             allVotes = payload.votes;
             goto DoTally;
@@ -31,14 +31,25 @@ secure_machine SecureTabulationTellerMachine
         entry {
             var result: map[secure_int, secure_int];
             var i: int;
+            var cred : secure_int;
             i = 0;
             while(i < sizeof(allVotes))
             {
+                PrintString(GenerateCredential1());
+                PrintString(allVotes[i].credential as StringType);
+                print "cred is";
+                if (allVotes[i].credential as StringType == GenerateCredential1() as StringType) {
+                    cred = 1775847362;
+                    print "cred 1";
+                } else {
+                    cred = 1861262373;
+                    print "cred 2";
+                }
                 send supervisor, TRUSTEDValidateCredential, (tabulationTellerMachine = this, credentialToCheck = allVotes[i].credential); //secure_send
                 receive {
                     case TRUSTEDValidCredential : {
                         //map enables us to consider the latest vote
-                        result[allVotes[i].credential] = allVotes[i].vote; 
+                        result[cred] = allVotes[i].vote; 
                         
                     }
                     case TRUSTEDInvalidCredential : {
