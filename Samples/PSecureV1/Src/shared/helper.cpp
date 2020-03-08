@@ -281,7 +281,7 @@ int returnSizeOfForeignType(int type_tag) {
 char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
     //TODO code the rest of the types
     if (value->discriminator == PRT_VALUE_KIND_INT) {
-        char* integer = (char*) malloc(10);
+        char* integer = (char*) malloc(SIZE_OF_MAX_INTEGER_SERIALIZED);
         itoa(value->valueUnion.nt, integer, 10);
         final_size += strlen(integer);
         return integer;
