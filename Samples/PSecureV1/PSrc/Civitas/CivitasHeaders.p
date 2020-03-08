@@ -38,7 +38,7 @@ event UNTRUSTEDGetResults : (whoWon : int, myVoteCounted : bool);
 // event UNTRUSTEDGetResults : int;
 trusted event TRUSTEDeStartElection : int;
 trusted event TRUSTEDeVote : (credential : secure_StringType, vote : secure_int, requestingMachine: secure_machine_handle);
-trusted event TRUSTEDeAddItem : (credential: secure_int, vote: secure_int);
+trusted event TRUSTEDeAddItem : (credential: secure_StringType, vote: secure_int);
 trusted event TRUSTEDeRespAddItem : bool;
 trusted event TRUSTEDeRespConfirmVote;
 event eCloseElection;
