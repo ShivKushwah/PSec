@@ -2505,6 +2505,24 @@ extern "C" void P_PrintMachineHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE***
 
 }
 
+extern "C" PRT_VALUE* P_GenerateCredential1_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "Credential1");
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    
+}
+
+extern "C" PRT_VALUE* P_GenerateCredential2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "Credential2");
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    
+}
+
+
+
 extern "C" void P_Debug_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     

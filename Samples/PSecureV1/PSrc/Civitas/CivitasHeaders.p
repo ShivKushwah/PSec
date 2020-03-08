@@ -19,6 +19,9 @@ fun DeclassifyInt(input : secure_int) : int;
 fun DeclassifyBool(input : secure_bool) : bool;
 fun DeclassifyHandle(input : secure_machine_handle) : machine_handle;
 
+fun GenerateCredential1() : StringType;
+fun GenerateCredential2() : StringType;
+
 // fun Declassify(input : secure_int) : int;
 // fun Declassify(input : secure_StringType) : StringType;
 
@@ -49,7 +52,7 @@ trusted event TRUSTEDeElectionResults : map[secure_int, secure_int];
 trusted event TRUSTEDeRespElectionResults: (allVotes : map[secure_int, secure_int], whoWon : secure_int);
 trusted event TRUSTEDeGetElectionResults : secure_machine_handle;
 
-event UNTRUSTEDProvisionVotingUSM : (supervisor : machine_handle, credential : int);
+event UNTRUSTEDProvisionVotingUSM : (supervisor : machine_handle, credential : StringType);
 trusted event TRUSTEDProvisionSecureTamperEvidentLogMachine : secure_machine_handle;
 trusted event TRUSTEDProvisionSecureTabulationTellerMachine : (bBoard : secure_machine_handle, supervisor : secure_machine_handle);
 trusted event TRUSTEDProvisionSecureBallotBoxMachine : (bBoard : secure_machine_handle, supervisor : secure_machine_handle);

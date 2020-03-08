@@ -12,9 +12,9 @@ machine InitializerMachine {
 			supervisor = new SecureSupervisorMachine();
 			// supervisor2 = new SecureSupervisorMachine();
 			votingMachine = new VotingUSM(); 
-			send votingMachine, UNTRUSTEDProvisionVotingUSM, (supervisor = supervisor, credential = 1775847362); //untrusted_send
+			send votingMachine, UNTRUSTEDProvisionVotingUSM, (supervisor = supervisor, credential = GenerateCredential1()); //untrusted_send
 			votingMachine2 = new VotingUSM();
-			send votingMachine2, UNTRUSTEDProvisionVotingUSM, (supervisor = supervisor, credential = 1861262373); //untrusted_send
+			send votingMachine2, UNTRUSTEDProvisionVotingUSM, (supervisor = supervisor, credential = GenerateCredential2()); //untrusted_send
 			// votingMachine3 = new VotingUSM((supervisor = supervisor, credential = 98));
 			
 		}

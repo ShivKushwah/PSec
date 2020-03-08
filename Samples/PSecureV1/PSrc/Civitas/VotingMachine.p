@@ -13,9 +13,13 @@ machine VotingUSM {
 
 
 	start state Init {
-		on UNTRUSTEDProvisionVotingUSM do (payload: (supervisor: machine_handle, credential: int)) {
+		on UNTRUSTEDProvisionVotingUSM do (payload: (supervisor: machine_handle, credential: StringType)) {
 			supervisor = payload.supervisor;
-			credential = payload.credential;
+			if (payload.credential == GenerateCredential1()) {
+				credential = 1775847362;
+			} else {
+				credential = 1861262373;
+			}
 
 			send supervisor, UNTRUSTEDGetVotingSSM, this; //untrusted_send
 			
