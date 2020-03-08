@@ -35,9 +35,15 @@ secure_machine SecureBallotBoxMachine
             numberOfTotalVotesAllowed = payload;
             currentNumberOfVotes = 0;
         }
-        on TRUSTEDeVote do (payload: (credential : secure_int, vote : secure_int, requestingMachine : secure_machine_handle))
+        on TRUSTEDeVote do (payload: (credential : secure_StringType, vote : secure_int, requestingMachine : secure_machine_handle))
         {
-            send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote); //secure_send
+            var cred : secure_int;
+            if (payload.credential as StringType == GenerateCredential1()) {
+				cred = 1775847362;
+			} else {
+				cred = 1861262373;
+			}
+            send appendOnlyLog, TRUSTEDeAddItem, (credential = cred, vote = payload.vote); //secure_send
             receive {
                 case TRUSTEDeRespAddItem : (result: bool) {
                     if(result)

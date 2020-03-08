@@ -33,11 +33,11 @@ fun CreateUSMMachineRequest(): machine_handle;
 
 event UNTRUSTEDGetVotingSSM : machine_handle;
 event UNTRUSTEDReceiveVotingSSM : machine_handle;
-event UNTRUSTEDVoteRequest : (credential : int, vote : int, requestingMachine : machine_handle);
+event UNTRUSTEDVoteRequest : (credential : StringType, vote : int, requestingMachine : machine_handle);
 event UNTRUSTEDGetResults : (whoWon : int, myVoteCounted : bool);
 // event UNTRUSTEDGetResults : int;
 trusted event TRUSTEDeStartElection : int;
-trusted event TRUSTEDeVote : (credential : secure_int, vote : secure_int, requestingMachine: secure_machine_handle);
+trusted event TRUSTEDeVote : (credential : secure_StringType, vote : secure_int, requestingMachine: secure_machine_handle);
 trusted event TRUSTEDeAddItem : (credential: secure_int, vote: secure_int);
 trusted event TRUSTEDeRespAddItem : bool;
 trusted event TRUSTEDeRespConfirmVote;

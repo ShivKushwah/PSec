@@ -5,10 +5,12 @@ that enables them to vote anonymously and securely
 ***************************/
 secure_machine SecureVotingClientMachine
 {
-    var credential: secure_int;
+    var credential: secure_StringType;
     var ballotBox: secure_machine_handle;
     var bulletinBoard: secure_machine_handle;
     var requestingMachine : machine_handle;
+
+    var temp_int_credential : secure_int;
 
     start state Init {
         on TRUSTEDProvisionSecureVotingClientMachine do (payload: (ballotBox:secure_machine_handle, bulletinBoard:secure_machine_handle)) {
@@ -23,11 +25,16 @@ secure_machine SecureVotingClientMachine
     }
 
     state SubmitVote {
-        entry (payload: (credential : int, vote : int, requestingMachine : machine_handle)) {
+        entry (payload: (credential : StringType, vote : int, requestingMachine : machine_handle)) {
             var secure_vote: secure_int;
             requestingMachine = payload.requestingMachine;
             secure_vote = payload.vote;
             credential = payload.credential;
+            if (payload.credential == GenerateCredential1()) {
+				temp_int_credential = 1775847362;
+			} else {
+				temp_int_credential = 1861262373;
+			}
             send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = this); //secure_send
         }
         on TRUSTEDeRespConfirmVote goto ValidateResults with {
@@ -42,7 +49,7 @@ secure_machine SecureVotingClientMachine
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[secure_int, secure_int], whoWon : secure_int)) {
             var winner : int;
             var voteCounted : bool;
-            if(DeclassifyBool(!(credential in payload.allVotes)))
+            if(DeclassifyBool(!(temp_int_credential in payload.allVotes)))
             {
                 print "ERROR: Vote not found!";
                 raise halt;
