@@ -55,7 +55,7 @@ secure_machine SecureSupervisorMachine
             found = false;
 
             while (i < sizeof(valid_credentials)) {
-                if (valid_credentials[i] as StringType == payload.credentialToCheck as StringType) {
+                if (Declassify(valid_credentials[i]) as StringType == Declassify(payload.credentialToCheck) as StringType) {
                     found = true;
                 }
                 i = i + 1;
