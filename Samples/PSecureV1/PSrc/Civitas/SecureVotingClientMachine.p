@@ -42,7 +42,7 @@ secure_machine SecureVotingClientMachine
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[secure_StringType, secure_int], whoWon : secure_int)) {
             var winner : int;
             var voteCounted : bool;
-            if(DeclassifyBool(!(credential in payload.allVotes)))
+            if(Declassify(!(credential in payload.allVotes)) as bool)
             {
                 print "ERROR: Vote not found!";
                 raise halt;
@@ -52,7 +52,7 @@ secure_machine SecureVotingClientMachine
                 voteCounted = true;
             }
             
-            send requestingMachine, UNTRUSTEDGetResults, (whoWon = DeclassifyInt(payload.whoWon), myVoteCounted = voteCounted); //untrusted_send, whoWon = DeclassifyInt(payload.whoWon)
+            send requestingMachine, UNTRUSTEDGetResults, (whoWon = Declassify(payload.whoWon) as int, myVoteCounted = voteCounted); //untrusted_send, whoWon = DeclassifyInt(payload.whoWon)
             goto Done;
         }
     }

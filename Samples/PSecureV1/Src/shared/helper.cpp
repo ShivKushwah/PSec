@@ -2339,6 +2339,39 @@ extern "C" PRT_VALUE* P_DeclassifyHandle_IMPL(PRT_MACHINEINST* context, PRT_VALU
     
 }
 
+extern "C" PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+
+    if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_BOOL) {
+        return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
+
+    } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_INT) {
+        return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
+
+    } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_FOREIGN) {
+
+        if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex || (*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex) {
+            PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+            PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+            memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
+            return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+        } else if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex || (*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_machine_handle->typeUnion.foreignType->declIndex) {
+            PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+            PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
+            memcpy(str, (char*) val, SIZE_OF_MACHINE_HANDLE);
+            return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
+        } 
+
+    }
+
+    ocall_print("ERROR: Declassify not found");
+    return NULL;
+    
+    
+    
+}
+
 extern "C" PRT_VALUE* P_ClassifyString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE** P_VAR_payload = argRefs[0];
@@ -2499,8 +2532,6 @@ extern "C" void P_PrintRawSecureStringType_IMPL(PRT_MACHINEINST* context, PRT_VA
 extern "C" PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE** P_VAR_payload = argRefs[0];
-    // ocall_print("declassify int is returning");
-    // ocall_print_int((*P_VAR_payload)->valueUnion.nt);
     return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
 }
 

@@ -45,7 +45,7 @@ secure_machine SecureSupervisorMachine
             secureVotingClientMachine = new SecureVotingClientMachine();
             send secureVotingClientMachine, TRUSTEDProvisionSecureVotingClientMachine, (ballotBox = bBox, bulletinBoard = bBoard); //secure_send
             
-            send requestingMachine, UNTRUSTEDReceiveVotingSSM, DeclassifyHandle(secureVotingClientMachine); //untrusted_send, CastHandle(secureVotingClientMachine)
+            send requestingMachine, UNTRUSTEDReceiveVotingSSM, Declassify(secureVotingClientMachine) as machine_handle; //untrusted_send, CastHandle(secureVotingClientMachine)
         }
         on TRUSTEDValidateCredential do (payload: (tabulationTellerMachine : secure_machine_handle, credentialToCheck : secure_StringType)) {
             var i : int;
