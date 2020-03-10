@@ -24,7 +24,7 @@ fun Declassify(input : any) : any;
 fun GenerateCredential1() : StringType;
 fun GenerateCredential2() : StringType;
 
-fun ClassifyString(input : StringType) : secure_StringType;
+fun Classify(input : any) : any;
 
 // fun Declassify(input : secure_int) : int;
 // fun Declassify(input : secure_StringType) : StringType;

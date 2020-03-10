@@ -26,8 +26,8 @@ secure_machine SecureSupervisorMachine
 
             //These are the credentials of voters that have registered to vote
             //One credential per valid voter
-            valid_credentials += (sizeof(valid_credentials), ClassifyString(GenerateCredential1()));
-            valid_credentials += (sizeof(valid_credentials), ClassifyString(GenerateCredential2()));
+            valid_credentials += (sizeof(valid_credentials), Classify(GenerateCredential1()) as secure_StringType);
+            valid_credentials += (sizeof(valid_credentials), Classify(GenerateCredential2()) as secure_StringType);
 
             //We send 2 because this is how many votes we need to be submitted
             //before the election is considered finished
