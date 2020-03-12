@@ -426,17 +426,46 @@ void start_socket_attestation_network_handler() {
 }
 
 int main(int argc, char const *argv[]) {
+    bool kpsInSameProcess = false;
+    bool isKpsProcess = false;
+
+    if (argc == 1) {
+        kpsInSameProcess = true;
+    } else {
+        if (strcmp(argv[1], "isKPSProcess=True") == 0) {
+            isKpsProcess = true;
+        } else {
+            isKpsProcess = false;
+        }
+    }
+
+    
+
+    
     initNetwork();
     initKPS();
     initApp();
-    start_socket_network_handler();
-    start_socket_attestation_network_handler();
+    if (kpsInSameProcess || !isKpsProcess) {
+        start_socket_network_handler();
+    }
+    
+    if (kpsInSameProcess || isKpsProcess) {
+        start_socket_attestation_network_handler();
+        if (isKpsProcess) {
+            while (true) {
+
+            }
+        }
+    }
  
     // Place the measurement of the enclave into metadata_info.txt
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
 
-    char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "", 0);
-    safe_free(ret);
+    if (kpsInSameProcess || !isKpsProcess) {
+        char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "", 0);
+        safe_free(ret);
+    }
+    
 
     return 0;
 }
