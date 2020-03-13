@@ -33,6 +33,8 @@ static long perfEndTime = 0;
 static const char* parg = NULL;
 static const char* workspaceConfig;
 
+bool isVoterUSM;
+
 unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary; //USM Dictionary
 unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
 map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
@@ -428,7 +430,7 @@ void start_socket_attestation_network_handler() {
 int main(int argc, char const *argv[]) {
     bool kpsInSameProcess = false;
     bool isKpsProcess = false;
-    bool isVoterUSM = false;
+    isVoterUSM = false;
 
     if (argc == 1) {
         kpsInSameProcess = true;
@@ -439,8 +441,8 @@ int main(int argc, char const *argv[]) {
             isKpsProcess = false;
         }
 
-        if (argc == 2) {
-            if (strcmp(argv[1], "isVoterUSM=True") == 0) {
+        if (argc == 3) {
+            if (strcmp(argv[2], "isVoterUSM=True") == 0) {
                 isVoterUSM = true;
             } else {
                 isVoterUSM = false;
@@ -471,9 +473,15 @@ int main(int argc, char const *argv[]) {
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
 
     if (kpsInSameProcess || !isKpsProcess) {
-        if (argc < 2 || (argc == 2 && !isVoterUSM)) {
+        if (argc < 3 || (argc == 3 && !isVoterUSM)) {
             char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "", 0);
             safe_free(ret);
+        }
+
+        if (argc == 3 && isVoterUSM) {
+            while (true) {
+
+            }
         }
         
     }
