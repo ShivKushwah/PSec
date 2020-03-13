@@ -285,7 +285,7 @@ char* registerMachineWithNetwork(char* newMachineID) {
     char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
     int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
     char* returnValue = (char*) malloc(100);
-    ocall_network_request(networkRequest, returnValue, networkRequestSize, 100);
+    ocall_network_request(networkRequest, returnValue, networkRequestSize, 100, DEFAULT_PORT);
     safe_free(networkRequest);
 
     return returnValue;
@@ -428,6 +428,7 @@ void start_socket_attestation_network_handler() {
 int main(int argc, char const *argv[]) {
     bool kpsInSameProcess = false;
     bool isKpsProcess = false;
+    bool isVoterUSM = false;
 
     if (argc == 1) {
         kpsInSameProcess = true;
@@ -436,6 +437,14 @@ int main(int argc, char const *argv[]) {
             isKpsProcess = true;
         } else {
             isKpsProcess = false;
+        }
+
+        if (argc == 2) {
+            if (strcmp(argv[1], "isVoterUSM=True") == 0) {
+                isVoterUSM = true;
+            } else {
+                isVoterUSM = false;
+            }
         }
     }
 
@@ -462,8 +471,11 @@ int main(int argc, char const *argv[]) {
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
 
     if (kpsInSameProcess || !isKpsProcess) {
-        char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "", 0);
-        safe_free(ret);
+        if (argc < 2 || (argc == 2 && !isVoterUSM)) {
+            char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "", 0);
+            safe_free(ret);
+        }
+        
     }
     
 

@@ -4,6 +4,9 @@
 // #include "PingPongEnclave.h"
 // #include "OTPBankServerCode.h"
 
+const int DEFAULT_PORT = 8080;
+const int OTHER_PORT = 8070;
+
 const int SIZE_OF_IDENTITY_STRING = 385; //TODO figure out why i cant make this 384
 const int SIZE_OF_PUBLIC_CAPABILITY_KEY = 384 + 4;
 const int SIZE_OF_PRIVATE_CAPABILITY_KEY = 384 + 384 + 4;

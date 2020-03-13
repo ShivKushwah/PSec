@@ -1070,14 +1070,14 @@ int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* 
 
 }
 
-int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE) {
+int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE, int port) {
     // ocall_print("GUUUUGY");
     printf("Network Request is : %s\n", request);
     fflush(stdout);
 
 
     // char* result = network_socket_sender(request, REQUEST_SIZE, RESPONSE_SIZE);
-    char* result = network_socket_sender(request, REQUEST_SIZE);
+    char* result = network_socket_sender(request, REQUEST_SIZE, port);
 
 
     // char* result = send_network_request_API(request, REQUEST_SIZE);

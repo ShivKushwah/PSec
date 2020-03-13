@@ -187,6 +187,7 @@ typedef struct ms_ocall_network_request_t {
 	char* ms_response;
 	uint32_t ms_REQUEST_SIZE;
 	uint32_t ms_RESPONSE_SIZE;
+	int ms_port;
 } ms_ocall_network_request_t;
 
 typedef struct ms_ocall_add_identity_to_eid_dictionary_t {
@@ -291,7 +292,7 @@ static sgx_status_t SGX_CDECL enclave_ocall_pong_enclave_attestation_in_thread(v
 static sgx_status_t SGX_CDECL enclave_ocall_network_request(void* pms)
 {
 	ms_ocall_network_request_t* ms = SGX_CAST(ms_ocall_network_request_t*, pms);
-	ms->ms_retval = ocall_network_request(ms->ms_request, ms->ms_response, ms->ms_REQUEST_SIZE, ms->ms_RESPONSE_SIZE);
+	ms->ms_retval = ocall_network_request(ms->ms_request, ms->ms_response, ms->ms_REQUEST_SIZE, ms->ms_RESPONSE_SIZE, ms->ms_port);
 
 	return SGX_SUCCESS;
 }

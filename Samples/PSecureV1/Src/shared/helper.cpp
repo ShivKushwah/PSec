@@ -1019,6 +1019,8 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
 PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* createTypeCommand, bool isSecureCreate) {
     //If making changes here, make relevant changes in app.cpp
+    bool isVotingUSM = true;
+
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
 
@@ -1122,10 +1124,12 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     int response_size = SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST;//SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST;// + 1 + SIZE_OF_CAPABILITYKEY;
 
+    int port = DEFAULT_PORT;
+
     #ifdef ENCLAVE_STD_ALT   
-    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, requestLength, response_size);
+    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, requestLength, response_size, port);
     #else
-    ocall_network_request(createMachineRequest, newMachinePublicIDKey, requestLength, response_size);
+    ocall_network_request(createMachineRequest, newMachinePublicIDKey, requestLength, response_size, port);
     // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
     #endif
     safe_free(createMachineRequest);
@@ -1404,11 +1408,13 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 ocall_print(initComRequest);
                 char* returnMessage = (char*) malloc(100);
                 int ret_value;
+
+                int port = DEFAULT_PORT;
                 #ifdef ENCLAVE_STD_ALT
-                ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY);
+                ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, port);
                 #else
                 // ocall_print("Init comm untrusted! 1");
-                ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY); 
+                ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, port); 
                 #endif
                 safe_free(initComRequest);
                 char* machineNameWrapper2[] = {currentMachineIDPublicKey};
@@ -1747,10 +1753,12 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     ocall_print("-DEBUG- ENTIRE NETWORK REQUEST IS");
     printPayload(sendRequest, requestSize);
 
+    int port = DEFAULT_PORT;
+
     #ifdef ENCLAVE_STD_ALT
-        sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, sendReturn, requestSize, 100);
+        sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, sendReturn, requestSize, 100, port);
     #else
-        ocall_network_request(sendRequest, sendReturn, requestSize, 100); 
+        ocall_network_request(sendRequest, sendReturn, requestSize, 100, port); 
     #endif
     safe_free(sendRequest);
     ocall_print("Send/UntrustedSend Network call returned:");
