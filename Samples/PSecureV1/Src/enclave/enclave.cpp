@@ -613,6 +613,10 @@ char* generateSessionKeyTest() {
     return sessionKey;
 }
 
+void sgx_read_rand_ecall(char* rand_buffer, uint32_t NUM_BYTES_RAND) {
+    sgx_read_rand((unsigned char*)rand_buffer, NUM_BYTES_RAND);
+}
+
 //Responsibilty of caller to free return
 char* concatVoid(void* str1, size_t str1_size, void* str2, size_t str2_size) {
     char* returnString = (char*) malloc(str1_size + str2_size + 1);
@@ -835,9 +839,9 @@ void generateIdentity(sgx_rsa3072_public_key_t *public_key, sgx_rsa3072_key_t *p
 
 }
 
-void encryptMessageExternalPublicKeyEcall(char* message, size_t message_length_with_null_byte, char* other_party_public_key_raw, char* output_encrypted_message, uint32_t SIZE_OF_KEY) {
+void encryptMessageExternalPublicKeyEcall(char* message, size_t message_length_with_null_byte, char* other_party_public_key_raw, char* output_encrypted_message, char* other_party_public_key, uint32_t SIZE_OF_KEY_RAW, uint32_t SIZE_OF_KEY) {
     int len;
-    char* encryptedMessage = encryptMessageExternalPublicKey(message, message_length_with_null_byte, (void*)other_party_public_key_raw, len);
+    char* encryptedMessage = encryptMessageExternalPublicKey(message, message_length_with_null_byte, (void*)other_party_public_key_raw, len, (void*) other_party_public_key);
     memcpy(output_encrypted_message, encryptedMessage, SIZE_OF_KEY);
 }
 

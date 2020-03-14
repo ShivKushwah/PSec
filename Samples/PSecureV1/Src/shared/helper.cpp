@@ -1137,7 +1137,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     int port = DEFAULT_PORT;
 
-    if (creatingVoterUSM) {
+    if (creatingVoterUSM) { //TODO fix this so that we can call without parameters
         port = OTHER_PORT;
     }
 
@@ -1149,7 +1149,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     #endif
     safe_free(createMachineRequest);
 
-    if (creatingVoterUSM) {
+    if (creatingVoterUSM) { //TODO and here
         VoterUSMPublicIdentityIdentifiers.insert(string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE));
     }
     
@@ -1161,7 +1161,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     // if (NETWORK_DEBUG) {
     //     ocall_print(newMachinePublicIDKey);
     // } else {
-        printRSAKey(newMachinePublicIDKey);
+        printPayload(newMachinePublicIDKey, response_size);
     // }
     
     #ifdef ENCLAVE_STD_ALT
@@ -1279,13 +1279,16 @@ void generateSessionKey(string& newSessionKey) {
         char* sessionKey = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
         #ifdef ENCLAVE_STD_ALT
         sgx_read_rand((unsigned char*)sessionKey, SIZE_OF_REAL_SESSION_KEY);
+        #else
+        sgx_status_t status = enclave_sgx_read_rand_ecall(global_app_eid, sessionKey, SIZE_OF_REAL_SESSION_KEY);
+        // ocall_print("Generating random session key!");
         #endif
         newSessionKey = string(sessionKey, SIZE_OF_REAL_SESSION_KEY);
     }
     
 } 
 
-char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_null_byte, void* other_party_public_key_raw, int& output_encrypted_message_length) {
+char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_null_byte, void* other_party_public_key_raw, int& output_encrypted_message_length, void* other_party_public_key) {
     #ifdef ENCLAVE_STD_ALT
     // ocall_print("Pub key received is");
     // ocall_print((char*) other_party_public_key_raw);
@@ -1293,7 +1296,88 @@ char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_
     size_t encrypted_data_length;
     char* encrypted_data = (char*) malloc(SGX_RSA3072_KEY_SIZE); //TODO note if message is bigger than this size, then we can run into issues
     
-    sgx_status_t status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, NULL, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
+
+    ocall_print("encrypting with this key");
+    printPayload((char*) other_party_public_key_raw, SGX_RSA3072_KEY_SIZE);
+    ocall_print("message is");
+    printPayload(message, message_length_with_null_byte);
+
+    sgx_status_t status = SGX_ERROR_AE_SESSION_INVALID;
+    void* public_key_raw = NULL;
+    ocall_print("pk is");
+    printPayload((char*)other_party_public_key, sizeof(sgx_rsa3072_public_key_t));
+    sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*) other_party_public_key;
+    // status = sgx_create_rsa_pub1_key(
+    //                    SGX_RSA3072_KEY_SIZE,
+    //                    SGX_RSA3072_PUB_EXP_SIZE,
+    //                    (const unsigned char*)public_key->mod,
+    //                    (const unsigned char*)public_key->exp,
+    //                    &public_key_raw);
+    // if (status == SGX_SUCCESS) {
+    //     ocall_print("Yeet");
+    //     printPayload((char*) public_key_raw, SGX_RSA3072_KEY_SIZE);
+    // } else {
+    //     ocall_print("neep");
+    // }
+
+    const int n_byte_size = SGX_RSA3072_KEY_SIZE;
+
+
+
+    int e_byte_size = SGX_RSA3072_PUB_EXP_SIZE;
+    unsigned char *p_n = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_d = (unsigned char *)malloc(SGX_RSA3072_PRI_EXP_SIZE);
+    // unsigned char p_e[] = {0x01, 0x00, 0x01, 0x00}; //65537
+    unsigned char *p_p = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_q = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_dmp1 = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_dmq1 = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_iqmp = (unsigned char *)malloc(n_byte_size);
+    
+
+    status = SGX_SUCCESS;
+    status = sgx_create_rsa_key_pair(
+        n_byte_size,
+        e_byte_size,
+        p_n,
+        p_d,
+        public_key->exp,
+        p_p,
+        p_q,
+        p_dmp1,
+        p_dmq1,
+        p_iqmp
+    );
+    if (status != SGX_SUCCESS) {
+        ocall_print("Rsa Key Pair creation error!");
+    } else {
+        ocall_print("RSA Generated Succesfully!");
+    }
+
+    // memcpy(private_key->mod, p_n, n_byte_size);
+    // memcpy(private_key->d, p_d, n_byte_size);
+	// memcpy(private_key->e, p_e, e_byte_size);
+
+	// memcpy(public_key->mod, p_n, n_byte_size);
+	// memcpy(public_key->exp, p_e, e_byte_size);
+
+    status = sgx_create_rsa_pub1_key(
+                       SGX_RSA3072_KEY_SIZE,
+                       SGX_RSA3072_PUB_EXP_SIZE,
+                       (const unsigned char*)public_key->mod,
+                       (const unsigned char*)public_key->exp,
+                       &public_key_raw);
+    if (status == SGX_SUCCESS) {
+        ocall_print("Yeet");
+        printPayload((char*) public_key_raw, SGX_RSA3072_KEY_SIZE);
+    } else {
+        ocall_print("neep");
+    }
+
+
+
+
+    status = sgx_rsa_pub_encrypt_sha256(public_key_raw, NULL, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
 
     if (status != SGX_SUCCESS) {
         ocall_print("Error in encrypting using public key!");
@@ -1310,7 +1394,7 @@ char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_
 
     // encrypted_data_length = 384*2;
 
-    status = sgx_rsa_pub_encrypt_sha256(other_party_public_key_raw, (unsigned char*) encrypted_data, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
+    status = sgx_rsa_pub_encrypt_sha256(public_key_raw, (unsigned char*) encrypted_data, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
 
     if (status != SGX_SUCCESS) {
         ocall_print("Error in encrypting using public key!");
@@ -1401,9 +1485,9 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 char* encryptedSessionKeyMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
                 #ifdef ENCLAVE_STD_ALT
                 safe_free(encryptedSessionKeyMessage);
-                encryptedSessionKeyMessage = encryptMessageExternalPublicKey((char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedMessageSize);
+                encryptedSessionKeyMessage = encryptMessageExternalPublicKey((char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedMessageSize, sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1);
                 #else
-                sgx_status_t sgx_st = enclave_encryptMessageExternalPublicKeyEcall(global_app_eid ,(char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedSessionKeyMessage, SGX_RSA3072_KEY_SIZE);
+                sgx_status_t sgx_st = enclave_encryptMessageExternalPublicKeyEcall(global_app_eid ,(char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedSessionKeyMessage, sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE, sizeof(sgx_rsa3072_public_key_t));
                 #endif
                 // char* encryptedSessionKeyMessage = encryptMessageExternalPublicKey((char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, currentMachineIDPublicKey, encryptedMessageSize);
                 ocall_print("SS:Encrypted Message size is");

@@ -114,6 +114,8 @@ typedef struct ms_encryptMessageExternalPublicKeyEcall_t {
 	size_t ms_message_length_with_null_byte;
 	char* ms_other_party_public_key_raw;
 	char* ms_output_encrypted_message;
+	char* ms_other_party_public_key;
+	uint32_t ms_SIZE_OF_KEY_RAW;
 	uint32_t ms_SIZE_OF_KEY;
 } ms_encryptMessageExternalPublicKeyEcall_t;
 
@@ -136,6 +138,11 @@ typedef struct ms_createRsaKeyPairEcall_t {
 typedef struct ms_eprint_t {
 	char* ms_printStr;
 } ms_eprint_t;
+
+typedef struct ms_sgx_read_rand_ecall_t {
+	char* ms_rand_buffer;
+	uint32_t ms_NUM_BYTES_RAND;
+} ms_sgx_read_rand_ecall_t;
 
 typedef struct ms_sgx_ra_get_ga_t {
 	sgx_status_t ms_retval;
@@ -563,7 +570,7 @@ sgx_status_t enclave_UntrustedCreateMachineAPI(sgx_enclave_id_t eid, sgx_enclave
 	return status;
 }
 
-sgx_status_t enclave_encryptMessageExternalPublicKeyEcall(sgx_enclave_id_t eid, char* message, size_t message_length_with_null_byte, char* other_party_public_key_raw, char* output_encrypted_message, uint32_t SIZE_OF_KEY)
+sgx_status_t enclave_encryptMessageExternalPublicKeyEcall(sgx_enclave_id_t eid, char* message, size_t message_length_with_null_byte, char* other_party_public_key_raw, char* output_encrypted_message, char* other_party_public_key, uint32_t SIZE_OF_KEY_RAW, uint32_t SIZE_OF_KEY)
 {
 	sgx_status_t status;
 	ms_encryptMessageExternalPublicKeyEcall_t ms;
@@ -571,6 +578,8 @@ sgx_status_t enclave_encryptMessageExternalPublicKeyEcall(sgx_enclave_id_t eid, 
 	ms.ms_message_length_with_null_byte = message_length_with_null_byte;
 	ms.ms_other_party_public_key_raw = other_party_public_key_raw;
 	ms.ms_output_encrypted_message = output_encrypted_message;
+	ms.ms_other_party_public_key = other_party_public_key;
+	ms.ms_SIZE_OF_KEY_RAW = SIZE_OF_KEY_RAW;
 	ms.ms_SIZE_OF_KEY = SIZE_OF_KEY;
 	status = sgx_ecall(eid, 11, &ocall_table_enclave, &ms);
 	return status;
@@ -611,13 +620,23 @@ sgx_status_t enclave_eprint(sgx_enclave_id_t eid, char* printStr)
 	return status;
 }
 
+sgx_status_t enclave_sgx_read_rand_ecall(sgx_enclave_id_t eid, char* rand_buffer, uint32_t NUM_BYTES_RAND)
+{
+	sgx_status_t status;
+	ms_sgx_read_rand_ecall_t ms;
+	ms.ms_rand_buffer = rand_buffer;
+	ms.ms_NUM_BYTES_RAND = NUM_BYTES_RAND;
+	status = sgx_ecall(eid, 15, &ocall_table_enclave, &ms);
+	return status;
+}
+
 sgx_status_t enclave_sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a)
 {
 	sgx_status_t status;
 	ms_sgx_ra_get_ga_t ms;
 	ms.ms_context = context;
 	ms.ms_g_a = g_a;
-	status = sgx_ecall(eid, 15, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 16, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
@@ -631,7 +650,7 @@ sgx_status_t enclave_sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t
 	ms.ms_p_qe_target = p_qe_target;
 	ms.ms_p_report = p_report;
 	ms.ms_p_nonce = p_nonce;
-	status = sgx_ecall(eid, 16, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 17, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
@@ -645,7 +664,7 @@ sgx_status_t enclave_sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t*
 	ms.ms_qe_report = qe_report;
 	ms.ms_p_msg3 = p_msg3;
 	ms.ms_msg3_size = msg3_size;
-	status = sgx_ecall(eid, 17, &ocall_table_enclave, &ms);
+	status = sgx_ecall(eid, 18, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }

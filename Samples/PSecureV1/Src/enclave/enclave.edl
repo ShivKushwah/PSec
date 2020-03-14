@@ -78,8 +78,10 @@ enclave {
         public void encryptMessageExternalPublicKeyEcall(
                                                 [in, size=message_length_with_null_byte] char* message, 
                                                 size_t message_length_with_null_byte, 
-                                                [in, size=SIZE_OF_KEY]char* other_party_public_key_raw, 
-                                                [out, size=SIZE_OF_KEY]char* output_encrypted_message, 
+                                                [in, size=SIZE_OF_KEY_RAW]char* other_party_public_key_raw, 
+                                                [out, size=SIZE_OF_KEY_RAW]char* output_encrypted_message, 
+                                                [in, size=SIZE_OF_KEY]char* other_party_public_key,
+                                                uint32_t SIZE_OF_KEY_RAW,
                                                 uint32_t SIZE_OF_KEY);
         public void decryptMessageInteralPrivateKeyEcall(
                                                 [in, size=message_length_with_null_byte] char* message, 
@@ -93,6 +95,8 @@ enclave {
                                     [out, size=772]char* private_key_out,
                                     uint32_t KEY_SIZE);
         public void eprint([in, size=50]char* printStr);
+
+        public void sgx_read_rand_ecall([in, out, size=NUM_BYTES_RAND] char* rand_buffer, uint32_t NUM_BYTES_RAND);
 
 
     };

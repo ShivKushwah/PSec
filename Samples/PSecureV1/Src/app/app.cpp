@@ -152,6 +152,12 @@ void generateIdentity(string& publicID, string& privateID, string prefix, string
         privateID = string(private_identity_key_raw, SGX_RSA3072_KEY_SIZE);
         publicIDSigningKey = string(public_identity_key, sizeof(sgx_rsa3072_public_key_t));
         privateIDSigningKey = string(private_identity_key, sizeof(sgx_rsa3072_key_t));
+        ocall_print("APP: Generated following raw public key");
+        printPayload(public_identity_key_raw, SGX_RSA3072_KEY_SIZE);
+        ocall_print("APP: Generated following public key");
+        printPayload(public_identity_key, sizeof(sgx_rsa3072_public_key_t));
+
+
 
     } else {
         uint32_t randNum = rand() % 100;
@@ -331,6 +337,9 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     char* returnID = concatMutipleStringsWithLength(concatStrings, concatLenghts, 3);
     int requestSize = returnTotalSizeofLengthArray(concatLenghts, 3) + 1;
     safe_free(usmChildPublicIDKeyCopy2);
+
+    ocall_print("createUSMMachineAPI returning");
+    printPayload(returnID, requestSize);
 
     //Return the publicIDKey of the new machine
     return returnID;
