@@ -1088,10 +1088,10 @@ int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, 
     // }
 
     printf("Network Response is : %s\n", result);
-    if (result == NULL || result[0] == '\0') {
-        printf("ERROR. No Message Received!\n");
-        return 0;
-    }
+    // if (result == NULL || result[0] == '\0') {
+    //     printf("ERROR. No Message Received!\n");
+    //     return 0;
+    // }
     // else if (strlen(result) + 1 > RESPONSE_SIZE) {
     //     printf("ERROR. Message too big!\n");
     // }
