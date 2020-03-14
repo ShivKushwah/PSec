@@ -293,7 +293,8 @@ char* registerMachineWithNetwork(char* newMachineID) {
     char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
     int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
     char* returnValue = (char*) malloc(100);
-    ocall_network_request(networkRequest, returnValue, networkRequestSize, 100, DEFAULT_PORT);
+    // ocall_network_request(networkRequest, returnValue, networkRequestSize, 100, DEFAULT_PORT);
+    network_request_logic_ocall(networkRequest, networkRequestSize);
     safe_free(networkRequest);
 
     return returnValue;

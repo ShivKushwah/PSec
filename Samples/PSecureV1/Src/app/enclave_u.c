@@ -203,6 +203,11 @@ typedef struct ms_ocall_add_identity_to_eid_dictionary_t {
 	sgx_enclave_id_t ms_enclave_eid;
 } ms_ocall_add_identity_to_eid_dictionary_t;
 
+typedef struct ms_network_request_logic_ocall_t {
+	char* ms_request;
+	size_t ms_requestSize;
+} ms_network_request_logic_ocall_t;
+
 typedef struct ms_sgx_oc_cpuidex_t {
 	int* ms_cpuinfo;
 	int ms_leaf;
@@ -312,6 +317,14 @@ static sgx_status_t SGX_CDECL enclave_ocall_add_identity_to_eid_dictionary(void*
 	return SGX_SUCCESS;
 }
 
+static sgx_status_t SGX_CDECL enclave_network_request_logic_ocall(void* pms)
+{
+	ms_network_request_logic_ocall_t* ms = SGX_CAST(ms_network_request_logic_ocall_t*, pms);
+	network_request_logic_ocall(ms->ms_request, ms->ms_requestSize);
+
+	return SGX_SUCCESS;
+}
+
 static sgx_status_t SGX_CDECL enclave_sgx_oc_cpuidex(void* pms)
 {
 	ms_sgx_oc_cpuidex_t* ms = SGX_CAST(ms_sgx_oc_cpuidex_t*, pms);
@@ -386,9 +399,9 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[15];
+	void * table[16];
 } ocall_table_enclave = {
-	15,
+	16,
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_print_int,
@@ -396,6 +409,7 @@ static const struct {
 		(void*)enclave_ocall_pong_enclave_attestation_in_thread,
 		(void*)enclave_ocall_network_request,
 		(void*)enclave_ocall_add_identity_to_eid_dictionary,
+		(void*)enclave_network_request_logic_ocall,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
 		(void*)enclave_sgx_thread_set_untrusted_event_ocall,

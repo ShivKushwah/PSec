@@ -408,7 +408,8 @@ char* registerMachineWithNetwork(char* newMachineID) {
     int concatLenghts[] = {strlen(requestType), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(num)};
     char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
     int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
-    ocall_network_request(&ret_value, networkRequest, networkResult, networkRequestSize, 100, DEFAULT_PORT);
+    network_request_logic_ocall(networkRequest, networkRequestSize);
+    // ocall_network_request(&ret_value, networkRequest, networkResult, networkRequestSize, 100, DEFAULT_PORT);
     safe_free(networkRequest);
     safe_free(num);
     safe_free(networkResult);

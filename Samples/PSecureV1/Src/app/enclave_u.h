@@ -41,6 +41,10 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_network_request, (char* request, char* r
 #define OCALL_ADD_IDENTITY_TO_EID_DICTIONARY_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_add_identity_to_eid_dictionary, (char* newMachineID, uint32_t ID_SIZE, sgx_enclave_id_t enclave_eid));
 #endif
+#ifndef NETWORK_REQUEST_LOGIC_OCALL_DEFINED__
+#define NETWORK_REQUEST_LOGIC_OCALL_DEFINED__
+void SGX_UBRIDGE(SGX_NOCONVENTION, network_request_logic_ocall, (char* request, size_t requestSize));
+#endif
 #ifndef SGX_OC_CPUIDEX_DEFINED__
 #define SGX_OC_CPUIDEX_DEFINED__
 void SGX_UBRIDGE(SGX_CDECL, sgx_oc_cpuidex, (int cpuinfo[4], int leaf, int subleaf));

@@ -176,6 +176,11 @@ char* forward_request(char* request, size_t requestSize, int redirect) {
     }
 }
 
+void network_request_logic_ocall(char* request, size_t requestSize) {
+    //just for local RegisterMachine
+    network_request_logic(request, requestSize);
+}
+
 char* network_request_logic(char* request, size_t requestSize) { //TODO Make this function generalizable for multiple enclaves and machines
     printf("Network Request Received: %s\n", request);
 
@@ -276,6 +281,8 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
             // }
 
         } else {
+            ocall_print("Could not find in MachinePublicIDToEnclaveNum");
+            printPayload(machineReceivingComm, SGX_RSA3072_KEY_SIZE);
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         }
 
@@ -381,6 +388,8 @@ char* network_request_logic(char* request, size_t requestSize) { //TODO Make thi
             } else {
                 MachinePublicIDToEnclaveNum[string(publicIDRegister, SGX_RSA3072_KEY_SIZE)] = atoi(enclaveNumRegister);
             }
+            ocall_print("Registered machine in MachinePublicIDToEnclaveNum");
+            printPayload(publicIDRegister, SGX_RSA3072_KEY_SIZE);
             safe_free(publicIDRegister);
             safe_free(enclaveNumRegister);
         // }
