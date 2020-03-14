@@ -208,6 +208,17 @@ typedef struct ms_network_request_logic_ocall_t {
 	size_t ms_requestSize;
 } ms_network_request_logic_ocall_t;
 
+typedef struct ms_updateVoterUSMPublicIdentityIdentifiersOcall_t {
+	char* ms_addToSet;
+	uint32_t ms_SIZE_OF_NEW_KEY;
+} ms_updateVoterUSMPublicIdentityIdentifiersOcall_t;
+
+typedef struct ms_checkVoterUSMPublicIdentityIdentifiersOcall_t {
+	int ms_retval;
+	char* ms_checkInSet;
+	uint32_t ms_SIZE_OF_NEW_KEY;
+} ms_checkVoterUSMPublicIdentityIdentifiersOcall_t;
+
 typedef struct ms_sgx_oc_cpuidex_t {
 	int* ms_cpuinfo;
 	int ms_leaf;
@@ -325,6 +336,22 @@ static sgx_status_t SGX_CDECL enclave_network_request_logic_ocall(void* pms)
 	return SGX_SUCCESS;
 }
 
+static sgx_status_t SGX_CDECL enclave_updateVoterUSMPublicIdentityIdentifiersOcall(void* pms)
+{
+	ms_updateVoterUSMPublicIdentityIdentifiersOcall_t* ms = SGX_CAST(ms_updateVoterUSMPublicIdentityIdentifiersOcall_t*, pms);
+	updateVoterUSMPublicIdentityIdentifiersOcall(ms->ms_addToSet, ms->ms_SIZE_OF_NEW_KEY);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL enclave_checkVoterUSMPublicIdentityIdentifiersOcall(void* pms)
+{
+	ms_checkVoterUSMPublicIdentityIdentifiersOcall_t* ms = SGX_CAST(ms_checkVoterUSMPublicIdentityIdentifiersOcall_t*, pms);
+	ms->ms_retval = checkVoterUSMPublicIdentityIdentifiersOcall(ms->ms_checkInSet, ms->ms_SIZE_OF_NEW_KEY);
+
+	return SGX_SUCCESS;
+}
+
 static sgx_status_t SGX_CDECL enclave_sgx_oc_cpuidex(void* pms)
 {
 	ms_sgx_oc_cpuidex_t* ms = SGX_CAST(ms_sgx_oc_cpuidex_t*, pms);
@@ -399,9 +426,9 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[16];
+	void * table[18];
 } ocall_table_enclave = {
-	16,
+	18,
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_print_int,
@@ -410,6 +437,8 @@ static const struct {
 		(void*)enclave_ocall_network_request,
 		(void*)enclave_ocall_add_identity_to_eid_dictionary,
 		(void*)enclave_network_request_logic_ocall,
+		(void*)enclave_updateVoterUSMPublicIdentityIdentifiersOcall,
+		(void*)enclave_checkVoterUSMPublicIdentityIdentifiersOcall,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
 		(void*)enclave_sgx_thread_set_untrusted_event_ocall,

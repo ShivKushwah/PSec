@@ -44,7 +44,7 @@ map<tuple<string,string>, int> ChildSessionKeyToNonce;
 unordered_map<string, string> PublicIdentityKeyToPublicSigningKey;
 unordered_map<string, string> PrivateIdentityKeyToPrivateSigningKey;
 
-
+unordered_set<string> VoterUSMPublicIdentityIdentifiers;
 
 
 unordered_set<string> USMAuthorizedTypes; //TODO unhardcode
@@ -277,6 +277,19 @@ void ocall_request_user_input(char* user_input, uint32_t max_input_len) {
     fgets(user_input, max_input_len, stdin);
     strtok(user_input, "\n"); //To remove trailing new line in fgets
 }
+
+void updateVoterUSMPublicIdentityIdentifiersOcall(char* addToSet, uint32_t SIZE_OF_NEW_KEY) {
+    VoterUSMPublicIdentityIdentifiers.insert(string(addToSet, SIZE_OF_NEW_KEY));
+}
+
+int checkVoterUSMPublicIdentityIdentifiersOcall(char* checkInSet, uint32_t SIZE_OF_NEW_KEY) {
+    if (VoterUSMPublicIdentityIdentifiers.count(string(checkInSet, SIZE_OF_NEW_KEY)) > 0) {
+        ocall_print("found inside!");
+        return 1;
+    }
+    return 0;
+}
+
 
 char* registerMachineWithNetwork(char* newMachineID) {
     //TODO shividentity make compatible

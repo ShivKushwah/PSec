@@ -42,7 +42,7 @@ extern unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
 extern unordered_map<string, string> PublicIdentityKeyToPublicSigningKey;
 extern unordered_map<string, string> PrivateIdentityKeyToPrivateSigningKey;
 
-unordered_set<string> VoterUSMPublicIdentityIdentifiers;
+extern unordered_set<string> VoterUSMPublicIdentityIdentifiers;
 
 
 extern bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* signature, sgx_rsa3072_public_key_t* public_key);
@@ -1150,7 +1150,14 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     safe_free(createMachineRequest);
 
     if (creatingVoterUSM) { //TODO and here
+        #ifdef ENCLAVE_STD_ALT
+        updateVoterUSMPublicIdentityIdentifiersOcall(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+        #else 
         VoterUSMPublicIdentityIdentifiers.insert(string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE));
+        #endif
+
+        ocall_print("Added to VoterUSMPublicIdentityIdentifiers dictionary!");
+        printPayload(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
     }
     
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
@@ -1457,9 +1464,21 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     PRT_VALUE** P_ToMachine_Payload = argRefs[0];
     PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
     char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
-    if (VoterUSMPublicIdentityIdentifiers.count(string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE)) > 0) {
+    ocall_print("checking inside VoterUSMPublicIdentityIdentifiers for");
+    printPayload(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE);
+    #ifdef ENCLAVE_STD_ALT
+    int foundInSet = 0;
+    sgx_status_t stat = checkVoterUSMPublicIdentityIdentifiersOcall(&foundInSet, sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE);
+    if (foundInSet) {
         sendingToVoterUSM = true;
     }
+    #else
+    if (VoterUSMPublicIdentityIdentifiers.count(string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE)) > 0) {
+        ocall_print("found inside!");
+        sendingToVoterUSM = true;
+    }
+    #endif
+    
     PublicIdentityKeyToPublicSigningKey[string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE)] = string(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
 
     // ocall_print("saving following signing key:");
@@ -1548,6 +1567,10 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     PRT_VALUE** P_Event_Payload = argRefs[1];
     char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
     itoa((*P_Event_Payload)->valueUnion.ev , event, 10);
+
+    char* eventName = program->events[PrtPrimGetEvent((*P_Event_Payload))]->name;
+    ocall_print("About to send following event");
+    ocall_print(eventName);
 
     const int size_of_max_num_args = 10; //TODO if modififying this, modify it in app.cpp
 
@@ -1869,6 +1892,8 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     if (sendingToVoterUSM) {
         port = OTHER_PORT;
     }
+    ocall_print("Sending to port");
+    ocall_print_int(port);
 
     #ifdef ENCLAVE_STD_ALT
         sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, sendReturn, requestSize, 100, port);
