@@ -62,6 +62,8 @@ using namespace std;
 map<tuple<string, string>, string> capabilityKeyAccessDictionary;
 map<tuple<string, string>, string> capabilityKeyDictionary;
 
+map<string, list<string>> MachineTypeToValidIPAddresses;
+
 sgx_enclave_id_t kps_enclave_eid;
 
 
@@ -1163,6 +1165,18 @@ void initKPS() {
     if (initialize_enclave(&kps_enclave_eid, token, "enclave.signed.so") < 0) {
         ocall_print("Fail to initialize enclave.");
     }    
+}
+
+char* queryIPAddressForMachineType(char* machineTypeRequested, int& responseSize) {
+    char* response;
+    if (MachineTypeToValidIPAddresses.count(string(machineTypeRequested)) > 0) {
+        response = createStringLiteralMalloced((char*)MachineTypeToValidIPAddresses[string(machineTypeRequested)].front().c_str());
+    } else {
+        ocall_print("ERROR: KPS queried for invalid machine type!");
+        response = createStringLiteralMalloced("ERROR: Machine type not found!");
+    }
+    responseSize = strlen(response) + 1;
+    return response;
 }
 
 

@@ -551,6 +551,26 @@ char* handle_socket_attestation_request(char* serializedString, int& responseSiz
 
 }
 
+char* handle_socket_kps_generic_request(char* serializedString, int& responseSize) {
+    printf("KPS Network Request Received: %s\n", serializedString);
+
+    char* response;
+
+    char* split = strtok(serializedString, ":");
+    char* kps = split;
+    split = strtok(NULL, ":");
+    if (strcmp(split, "IPRequestMachineType") == 0) {
+        char* machineType = strtok(NULL, ":");
+        response = queryIPAddressForMachineType(machineType, responseSize);
+    } else {
+        response = createStringLiteralMalloced("ERROR: Kps unsupported operation!");
+        responseSize = strlen(response) + 1;
+    }
+
+    return response;
+    
+}
+
 char* createStringLiteralMalloced(char* stringLiteral) {
     //TODO if modifying here, modify in helper.cpp
     char* malloced = (char*) malloc(99999);//strlen(stringLiteral));

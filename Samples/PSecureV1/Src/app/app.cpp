@@ -450,6 +450,13 @@ void start_socket_attestation_network_handler() {
 
 }
 
+void start_socket_kps_generic_network_handler() {
+    pthread_t thread_id; 
+    printf("\n Creating Network KPS Generic Handler Thread\n"); 
+    pthread_create(&thread_id, NULL, handle_socket_network_kps_generic_requests, NULL);
+
+}
+
 int main(int argc, char const *argv[]) {
     bool kpsInSameProcess = false;
     bool isKpsProcess = false;
@@ -485,6 +492,7 @@ int main(int argc, char const *argv[]) {
     
     if (kpsInSameProcess || isKpsProcess) {
         start_socket_attestation_network_handler();
+        start_socket_kps_generic_network_handler();
         if (isKpsProcess) {
             while (true) {
 

@@ -118,6 +118,7 @@ void initNetwork();
 char* forward_request(char* request, int redirect);
 char* createStringLiteralMalloced(char* stringLiteral);
 char* handle_socket_attestation_request(char* serializedString, int& responseSize);
+char* handle_socket_kps_generic_request(char* serializedString, int& responseSize);
 
 #ifdef  __cplusplus
 }

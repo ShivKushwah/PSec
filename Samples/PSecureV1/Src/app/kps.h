@@ -41,6 +41,7 @@
 #include <tuple>
 #include <string>
 #include "app.h"
+#include <list>
 
 
 using namespace std;
@@ -153,6 +154,9 @@ char* retrieveCapabilityKey(char* currentMachineID, char* childMachineID, char* 
 ra_samp_response_header_t* kps_exchange_capability_key(uint8_t *p_secret,  
                                 uint32_t secret_size,
                                  uint8_t *p_gcm_mac);
+
+char* queryIPAddressForMachineType(char* machineTypeRequested, int& responseSize);
+
 
 // void initKPS();
 
