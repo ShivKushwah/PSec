@@ -460,7 +460,7 @@ void* handle_socket_network_kps_generic_requests(void* arg)
             printf("server acccept the client...\n"); 
 
 		pthread_t pid;
-		pthread_create(&pid, NULL, server_handle_attestation_connection_thread, &connfd);
+		pthread_create(&pid, NULL, server_handle_kps_generic_connection_thread, &connfd);
 
         // Function for chatting between client and server 
         // func(connfd); 

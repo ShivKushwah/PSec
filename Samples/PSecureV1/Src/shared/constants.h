@@ -9,6 +9,8 @@ const int OTHER_PORT = 8070;
 const int PORT_KPS_GENERIC = 8092;
 const int PORT_ATTESTATION = 8090;
 
+const int IP_ADDRESS_AND_PORT_STRING_SIZE = 50;
+
 const int SIZE_OF_IDENTITY_STRING = 385; //TODO figure out why i cant make this 384
 const int SIZE_OF_PUBLIC_CAPABILITY_KEY = 384 + 4;
 const int SIZE_OF_PRIVATE_CAPABILITY_KEY = 384 + 384 + 4;

@@ -1165,6 +1165,11 @@ void initKPS() {
     if (initialize_enclave(&kps_enclave_eid, token, "enclave.signed.so") < 0) {
         ocall_print("Fail to initialize enclave.");
     }    
+    list<string> lst;
+    lst.push_back(string("127.0.0.1:2000"));
+    MachineTypeToValidIPAddresses[string("VotingUSM")] = lst;
+
+
 }
 
 char* queryIPAddressForMachineType(char* machineTypeRequested, int& responseSize) {

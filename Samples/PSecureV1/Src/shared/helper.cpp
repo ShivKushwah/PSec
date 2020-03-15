@@ -1027,6 +1027,25 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
 
+    //Query the KPS to determine the target IP address of this type of machine
+    int port = PORT_KPS_GENERIC;
+    char* ipAddressOfRequestedMachine = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+
+    char* constructString[] = {"KPS", ":", "IPRequestMachineType", ":", requestedNewMachineTypeToCreate};
+    int constructStringLengths[] = {strlen("KPS"), 1, strlen("IPRequestMachineType"), 1, strlen(requestedNewMachineTypeToCreate)};
+    char* kpsIpRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 5);
+    int requestLength = returnTotalSizeofLengthArray(constructStringLengths, 5) + 1;
+    int ret_value; 
+
+    #ifdef ENCLAVE_STD_ALT   
+    ocall_network_request(&ret_value, kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, port);
+    #else
+    ocall_network_request(kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, port);
+    // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
+    #endif
+    ocall_print("Received IP Address of target machine from KPS:");
+    ocall_print(ipAddressOfRequestedMachine);
+
     ocall_print("KIRAT DEBUG");
     ocall_print(requestedNewMachineTypeToCreate);
 
@@ -1070,7 +1089,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     char* newMachinePublicIDKey = (char*) malloc(SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
     int requestSize = -1;
     char* createMachineRequest = (char*) malloc(requestSize);
-    int requestLength;
     char* numArgsString = (char*) argRefs[1];
     char* payloadTypeString = (char*) malloc(10);
     itoa(payloadType, payloadTypeString, 10);
@@ -1131,11 +1149,10 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     ocall_print(printStr); //TODO use this method for all future ocall_prints
     safe_free(printStr);
     ocall_print(createMachineRequest);
-    int ret_value; 
 
     int response_size = SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST;//SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST;// + 1 + SIZE_OF_CAPABILITYKEY;
 
-    int port = DEFAULT_PORT;
+    port = DEFAULT_PORT;
 
     if (creatingVoterUSM) { //TODO fix this so that we can call without parameters
         port = OTHER_PORT;
