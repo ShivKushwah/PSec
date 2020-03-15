@@ -54,6 +54,8 @@ extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context
 
 char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEnclaveUntrustedHost);
 
+void parseIPAddressPortString(char* serializedString, string& ipAddress, int& port);
+
 void safe_free(void* ptr);
 
 char* createStringLiteralMalloced(char* stringLiteral);

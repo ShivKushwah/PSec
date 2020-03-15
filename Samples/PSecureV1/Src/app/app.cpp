@@ -33,6 +33,9 @@ static long perfEndTime = 0;
 static const char* parg = NULL;
 static const char* workspaceConfig;
 
+char* host_machine_IP_address;
+int host_machine_port;
+
 bool isVoterUSM;
 
 unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary; //USM Dictionary
@@ -465,19 +468,35 @@ int main(int argc, char const *argv[]) {
     if (argc == 1) {
         kpsInSameProcess = true;
     } else {
+
         if (strcmp(argv[1], "isKPSProcess=True") == 0) {
             isKpsProcess = true;
         } else {
             isKpsProcess = false;
         }
 
-        if (argc == 3) {
-            if (strcmp(argv[2], "isVoterUSM=True") == 0) {
-                isVoterUSM = true;
-            } else {
-                isVoterUSM = false;
-            }
+        if (strcmp(argv[2], "127.0.0.1:8070") == 0) {
+            isVoterUSM = true;
+        } else {
+            isVoterUSM = false;
         }
+
+        string currIPAddress;
+
+        parseIPAddressPortString((char*)argv[2], currIPAddress, host_machine_port);
+        host_machine_IP_address = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+        memcpy(host_machine_IP_address, (char*)currIPAddress.c_str(), strlen((char*)currIPAddress.c_str()) + 1);
+
+
+        // if (argc == 3) {
+        //     if (strcmp(argv[2], "isVoterUSM=True") == 0) {
+        //         isVoterUSM = true;
+        //     } else {
+        //         isVoterUSM = false;
+        //     }
+        // }
+
+
     }
 
     

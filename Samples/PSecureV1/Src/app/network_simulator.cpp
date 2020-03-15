@@ -516,6 +516,11 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 	memcpy(ipAddressCopy, ipAddress, ipAddressSize);
 	ipAddressCopy[ipAddressSize] = '\0';
 
+	printf("Sending Message to IP Address:\n");
+	printf("%s\n", ipAddressCopy);
+	printf("Port:\n");
+	printf("%d\n", port);
+
 	// assign IP, PORT 
 	servaddr.sin_family = AF_INET; 
 	servaddr.sin_addr.s_addr = inet_addr(ipAddressCopy); 
