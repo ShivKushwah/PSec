@@ -1,8 +1,12 @@
 #ifndef CONSTANT_FILE
 #define CONSTANT_FILE
+
+#ifdef CIVITAS_EXAMPLE
 #include "CivitasHeaders.h"
+#elif OTP_EXAMPLE
+#include "OTPBankServerCode.h"
+#endif
 // #include "PingPongEnclave.h"
-// #include "OTPBankServerCode.h"
 
 const int DEFAULT_PORT = 8080;
 const int OTHER_PORT = 8070;

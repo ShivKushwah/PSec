@@ -1165,9 +1165,24 @@ void initKPS() {
     if (initialize_enclave(&kps_enclave_eid, token, "enclave.signed.so") < 0) {
         ocall_print("Fail to initialize enclave.");
     }    
+
+    #ifdef CIVITAS_EXAMPLE
     list<string> lst;
-    lst.push_back(string("127.0.0.1:2000"));
+    string local_host("127.0.0.1");
+    lst.push_back(local_host + string(":") + string("8070"));
     MachineTypeToValidIPAddresses[string("VotingUSM")] = lst;
+
+    list<string> lst2;
+    lst2.push_back(local_host + string(":") + string("8080"));
+    MachineTypeToValidIPAddresses[string("InitializerMachine")] = lst2;
+    MachineTypeToValidIPAddresses[string("SecureBallotBoxMachine")] = lst2;
+    MachineTypeToValidIPAddresses[string("SecureBulletinBoardMachine")] = lst2;
+    MachineTypeToValidIPAddresses[string("SecureSupervisorMachine")] = lst2;
+    MachineTypeToValidIPAddresses[string("SecureTabulationTellerMachine")] = lst2;
+    MachineTypeToValidIPAddresses[string("SecureTamperEvidentLogMachine")] = lst2;
+    MachineTypeToValidIPAddresses[string("SecureVotingClientMachine")] = lst2;
+
+    #endif
 
 
 }
