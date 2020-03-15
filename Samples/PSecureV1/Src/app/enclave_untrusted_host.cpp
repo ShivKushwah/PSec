@@ -242,7 +242,7 @@ char* make_socket_attestation_send_request(char* request, int requestSize) {
 
     char* copied_response;
     int responseSize;
-    return network_socket_sender(request, requestSize, 8090);
+    return network_socket_sender(request, requestSize, "127.0.0.1", strlen("127.0.0.1"), 8090);
     // char* net_response = handle_socket_attestation_request(net_request, responseSize);
     // copied_response = (char*) malloc(responseSize);
     // memcpy(copied_response, net_response, responseSize);
@@ -1070,14 +1070,14 @@ int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* 
 
 }
 
-int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE, int port) {
+int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE, char* ipAddress, uint32_t IP_ADDRESS_SIZE, int port) {
     // ocall_print("GUUUUGY");
     printf("Network Request is : %s\n", request);
     fflush(stdout);
 
 
     // char* result = network_socket_sender(request, REQUEST_SIZE, RESPONSE_SIZE);
-    char* result = network_socket_sender(request, REQUEST_SIZE, port);
+    char* result = network_socket_sender(request, REQUEST_SIZE, ipAddress, IP_ADDRESS_SIZE, port);
 
 
     // char* result = send_network_request_API(request, REQUEST_SIZE);

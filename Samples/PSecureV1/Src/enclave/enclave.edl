@@ -112,7 +112,7 @@ enclave {
                                                     [in,size=other_machine_name_size] char* other_machine_name, 
                                                     uint32_t other_machine_name_size);
                                  //below passes when i do string
-        int ocall_network_request([in, size=REQUEST_SIZE]char* request, [out, size=RESPONSE_SIZE]char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE, int port);
+        int ocall_network_request([in, size=REQUEST_SIZE]char* request, [out, size=RESPONSE_SIZE]char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE, [in, size=IP_ADDRESS_SIZE]char* ipAddress, uint32_t IP_ADDRESS_SIZE, int port);
         void ocall_add_identity_to_eid_dictionary([in, size=ID_SIZE]char* newMachineID, uint32_t ID_SIZE, sgx_enclave_id_t enclave_eid);
         void network_request_logic_ocall([in, size=requestSize]char* request, size_t requestSize);
         void updateVoterUSMPublicIdentityIdentifiersOcall([in, size=SIZE_OF_NEW_KEY] char* addToSet, uint32_t SIZE_OF_NEW_KEY);

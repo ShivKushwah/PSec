@@ -689,6 +689,14 @@ char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], i
     return returnString;
 
 }
+
+void parseIPAddressPortString(char* serializedString, string& ipAddress, int& port) {
+    char* split = strtok(serializedString, ":");
+    ipAddress = string(split);
+    split = strtok(NULL, ":");
+    port = atoi(split);
+}
+
 //Responbility of caller to free return
 char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEnclaveUntrustedHost) {
     // ocall_print("helllo");
@@ -1037,20 +1045,24 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     int requestLength = returnTotalSizeofLengthArray(constructStringLengths, 5) + 1;
     int ret_value; 
 
+    string ipAddress("127.0.0.1");
+
     #ifdef ENCLAVE_STD_ALT   
-    ocall_network_request(&ret_value, kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, port);
+    ocall_network_request(&ret_value, kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
     #else
-    ocall_network_request(kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, port);
+    ocall_network_request(kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
     // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
     #endif
     ocall_print("Received IP Address of target machine from KPS:");
     ocall_print(ipAddressOfRequestedMachine);
 
-    ocall_print("KIRAT DEBUG");
+    parseIPAddressPortString(ipAddressOfRequestedMachine, ipAddress, port);
+
+
+    ocall_print("Requesting to create this new type of machine");
     ocall_print(requestedNewMachineTypeToCreate);
 
     if (strcmp(requestedNewMachineTypeToCreate, "VotingUSM") == 0) {
-        ocall_print("YAYEEET");
         creatingVoterUSM = true;
     }
 
@@ -1159,9 +1171,9 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     }
 
     #ifdef ENCLAVE_STD_ALT   
-    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, requestLength, response_size, port);
+    ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, requestLength, response_size, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
     #else
-    ocall_network_request(createMachineRequest, newMachinePublicIDKey, requestLength, response_size, port);
+    ocall_network_request(createMachineRequest, newMachinePublicIDKey, requestLength, response_size, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
     // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
     #endif
     safe_free(createMachineRequest);
@@ -1471,6 +1483,8 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
  
     ocall_print("Entered Secure Send");
 
+    string ipAddress("127.0.0.1");
+
     char* currentMachineIDPublicKey;
     currentMachineIDPublicKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
     memcpy(currentMachineIDPublicKey, (char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()), SGX_RSA3072_KEY_SIZE);
@@ -1559,10 +1573,10 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 }
 
                 #ifdef ENCLAVE_STD_ALT
-                ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, port);
+                ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
                 #else
                 // ocall_print("Init comm untrusted! 1");
-                ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, port); 
+                ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port); 
                 #endif
                 safe_free(initComRequest);
                 char* machineNameWrapper2[] = {currentMachineIDPublicKey};
@@ -1913,9 +1927,9 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     ocall_print_int(port);
 
     #ifdef ENCLAVE_STD_ALT
-        sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, sendReturn, requestSize, 100, port);
+        sgx_status_t temppp = ocall_network_request(&ret_value, sendRequest, sendReturn, requestSize, 100, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
     #else
-        ocall_network_request(sendRequest, sendReturn, requestSize, 100, port); 
+        ocall_network_request(sendRequest, sendReturn, requestSize, 100, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port); 
     #endif
     safe_free(sendRequest);
     ocall_print("Send/UntrustedSend Network call returned:");

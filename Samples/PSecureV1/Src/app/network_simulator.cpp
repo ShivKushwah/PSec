@@ -496,7 +496,7 @@ void func_sender(int sockfd, char* request, int request_size, char* network_resp
 	memcpy(network_response, buff, MAX); 
 } 
 
-char* network_socket_sender(char* request, int request_size, int port) 
+char* network_socket_sender(char* request, int request_size, char* ipAddress, int ipAddressSize, int port) 
 { 
 	int sockfd, connfd; 
 	struct sockaddr_in servaddr, cli;
@@ -512,9 +512,13 @@ char* network_socket_sender(char* request, int request_size, int port)
 		printf("Client Socket successfully created..\n"); 
 	bzero(&servaddr, sizeof(servaddr)); 
 
+	char* ipAddressCopy = (char*) malloc(ipAddressSize + 1);
+	memcpy(ipAddressCopy, ipAddress, ipAddressSize);
+	ipAddressCopy[ipAddressSize] = '\0';
+
 	// assign IP, PORT 
 	servaddr.sin_family = AF_INET; 
-	servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+	servaddr.sin_addr.s_addr = inet_addr(ipAddressCopy); 
 	servaddr.sin_port = htons(port); 
 
 	//---------------------------

@@ -35,7 +35,7 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_pong_enclave_attestation_in_thread, (sgx
 #endif
 #ifndef OCALL_NETWORK_REQUEST_DEFINED__
 #define OCALL_NETWORK_REQUEST_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_network_request, (char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE, int port));
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_network_request, (char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE, char* ipAddress, uint32_t IP_ADDRESS_SIZE, int port));
 #endif
 #ifndef OCALL_ADD_IDENTITY_TO_EID_DICTIONARY_DEFINED__
 #define OCALL_ADD_IDENTITY_TO_EID_DICTIONARY_DEFINED__
