@@ -210,17 +210,6 @@ typedef struct ms_network_request_logic_ocall_t {
 	size_t ms_requestSize;
 } ms_network_request_logic_ocall_t;
 
-typedef struct ms_updateVoterUSMPublicIdentityIdentifiersOcall_t {
-	char* ms_addToSet;
-	uint32_t ms_SIZE_OF_NEW_KEY;
-} ms_updateVoterUSMPublicIdentityIdentifiersOcall_t;
-
-typedef struct ms_checkVoterUSMPublicIdentityIdentifiersOcall_t {
-	int ms_retval;
-	char* ms_checkInSet;
-	uint32_t ms_SIZE_OF_NEW_KEY;
-} ms_checkVoterUSMPublicIdentityIdentifiersOcall_t;
-
 typedef struct ms_ocall_get_ip_address_of_current_host_t {
 	char* ms_ipAddress;
 	int ms_MAX_IP_ADDRESS_SIZE;
@@ -347,22 +336,6 @@ static sgx_status_t SGX_CDECL enclave_network_request_logic_ocall(void* pms)
 	return SGX_SUCCESS;
 }
 
-static sgx_status_t SGX_CDECL enclave_updateVoterUSMPublicIdentityIdentifiersOcall(void* pms)
-{
-	ms_updateVoterUSMPublicIdentityIdentifiersOcall_t* ms = SGX_CAST(ms_updateVoterUSMPublicIdentityIdentifiersOcall_t*, pms);
-	updateVoterUSMPublicIdentityIdentifiersOcall(ms->ms_addToSet, ms->ms_SIZE_OF_NEW_KEY);
-
-	return SGX_SUCCESS;
-}
-
-static sgx_status_t SGX_CDECL enclave_checkVoterUSMPublicIdentityIdentifiersOcall(void* pms)
-{
-	ms_checkVoterUSMPublicIdentityIdentifiersOcall_t* ms = SGX_CAST(ms_checkVoterUSMPublicIdentityIdentifiersOcall_t*, pms);
-	ms->ms_retval = checkVoterUSMPublicIdentityIdentifiersOcall(ms->ms_checkInSet, ms->ms_SIZE_OF_NEW_KEY);
-
-	return SGX_SUCCESS;
-}
-
 static sgx_status_t SGX_CDECL enclave_ocall_get_ip_address_of_current_host(void* pms)
 {
 	ms_ocall_get_ip_address_of_current_host_t* ms = SGX_CAST(ms_ocall_get_ip_address_of_current_host_t*, pms);
@@ -453,9 +426,9 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[20];
+	void * table[18];
 } ocall_table_enclave = {
-	20,
+	18,
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_print_int,
@@ -464,8 +437,6 @@ static const struct {
 		(void*)enclave_ocall_network_request,
 		(void*)enclave_ocall_add_identity_to_eid_dictionary,
 		(void*)enclave_network_request_logic_ocall,
-		(void*)enclave_updateVoterUSMPublicIdentityIdentifiersOcall,
-		(void*)enclave_checkVoterUSMPublicIdentityIdentifiersOcall,
 		(void*)enclave_ocall_get_ip_address_of_current_host,
 		(void*)enclave_ocall_get_port_of_current_host,
 		(void*)enclave_sgx_oc_cpuidex,

@@ -45,14 +45,6 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_add_identity_to_eid_dictionary, (char* 
 #define NETWORK_REQUEST_LOGIC_OCALL_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, network_request_logic_ocall, (char* request, size_t requestSize));
 #endif
-#ifndef UPDATEVOTERUSMPUBLICIDENTITYIDENTIFIERSOCALL_DEFINED__
-#define UPDATEVOTERUSMPUBLICIDENTITYIDENTIFIERSOCALL_DEFINED__
-void SGX_UBRIDGE(SGX_NOCONVENTION, updateVoterUSMPublicIdentityIdentifiersOcall, (char* addToSet, uint32_t SIZE_OF_NEW_KEY));
-#endif
-#ifndef CHECKVOTERUSMPUBLICIDENTITYIDENTIFIERSOCALL_DEFINED__
-#define CHECKVOTERUSMPUBLICIDENTITYIDENTIFIERSOCALL_DEFINED__
-int SGX_UBRIDGE(SGX_NOCONVENTION, checkVoterUSMPublicIdentityIdentifiersOcall, (char* checkInSet, uint32_t SIZE_OF_NEW_KEY));
-#endif
 #ifndef OCALL_GET_IP_ADDRESS_OF_CURRENT_HOST_DEFINED__
 #define OCALL_GET_IP_ADDRESS_OF_CURRENT_HOST_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_get_ip_address_of_current_host, (char* ipAddress, int MAX_IP_ADDRESS_SIZE));

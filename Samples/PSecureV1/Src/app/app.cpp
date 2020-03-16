@@ -36,8 +36,6 @@ static const char* workspaceConfig;
 char* host_machine_IP_address;
 int host_machine_port;
 
-bool isVoterUSM;
-
 unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary; //USM Dictionary
 unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
 map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
@@ -46,8 +44,6 @@ map<tuple<string,string>, int> ChildSessionKeyToNonce;
 
 unordered_map<string, string> PublicIdentityKeyToPublicSigningKey;
 unordered_map<string, string> PrivateIdentityKeyToPrivateSigningKey;
-
-unordered_set<string> VoterUSMPublicIdentityIdentifiers;
 
 
 unordered_set<string> USMAuthorizedTypes; //TODO unhardcode
@@ -289,18 +285,6 @@ void ocall_request_user_input(char* user_input, uint32_t max_input_len) {
     strtok(user_input, "\n"); //To remove trailing new line in fgets
 }
 
-void updateVoterUSMPublicIdentityIdentifiersOcall(char* addToSet, uint32_t SIZE_OF_NEW_KEY) {
-    VoterUSMPublicIdentityIdentifiers.insert(string(addToSet, SIZE_OF_NEW_KEY));
-}
-
-int checkVoterUSMPublicIdentityIdentifiersOcall(char* checkInSet, uint32_t SIZE_OF_NEW_KEY) {
-    if (VoterUSMPublicIdentityIdentifiers.count(string(checkInSet, SIZE_OF_NEW_KEY)) > 0) {
-        ocall_print("found inside!");
-        return 1;
-    }
-    return 0;
-}
-
 
 char* registerMachineWithNetwork(char* newMachineID) {
     //TODO shividentity make compatible
@@ -471,7 +455,7 @@ void start_socket_kps_generic_network_handler() {
 int main(int argc, char const *argv[]) {
     bool kpsInSameProcess = false;
     bool isKpsProcess = false;
-    isVoterUSM = false;
+    bool isStartHostMachine = true;
 
     if (argc == 1) {
         kpsInSameProcess = true;
@@ -484,9 +468,9 @@ int main(int argc, char const *argv[]) {
         }
 
         if (strcmp(argv[2], "127.0.0.1:8070") == 0) {
-            isVoterUSM = true;
+            isStartHostMachine = false;
         } else {
-            isVoterUSM = false;
+            isStartHostMachine = true;
         }
 
         string currIPAddress;
@@ -494,15 +478,6 @@ int main(int argc, char const *argv[]) {
         parseIPAddressPortString((char*)argv[2], currIPAddress, host_machine_port);
         host_machine_IP_address = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
         memcpy(host_machine_IP_address, (char*)currIPAddress.c_str(), strlen((char*)currIPAddress.c_str()) + 1);
-
-
-        // if (argc == 3) {
-        //     if (strcmp(argv[2], "isVoterUSM=True") == 0) {
-        //         isVoterUSM = true;
-        //     } else {
-        //         isVoterUSM = false;
-        //     }
-        // }
 
 
     }
@@ -531,12 +506,12 @@ int main(int argc, char const *argv[]) {
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
 
     if (kpsInSameProcess || !isKpsProcess) {
-        if (argc < 3 || (argc == 3 && !isVoterUSM)) {
+        if (argc < 3 || (argc == 3 && isStartHostMachine)) {
             char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "", 0);
             safe_free(ret);
         }
 
-        if (argc == 3 && isVoterUSM) {
+        if (argc == 3 && !isStartHostMachine) {
             while (true) {
 
             }

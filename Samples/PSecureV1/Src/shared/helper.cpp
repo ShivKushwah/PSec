@@ -42,8 +42,6 @@ extern unordered_map<int, string> MachinePIDtoCapabilityKeyDictionary;
 extern unordered_map<string, string> PublicIdentityKeyToPublicSigningKey;
 extern unordered_map<string, string> PrivateIdentityKeyToPrivateSigningKey;
 
-extern unordered_set<string> VoterUSMPublicIdentityIdentifiers;
-
 
 extern bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* signature, sgx_rsa3072_public_key_t* public_key);
 extern int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize);
@@ -1030,8 +1028,6 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
 PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* createTypeCommand, bool isSecureCreate) {
     //If making changes here, make relevant changes in app.cpp
-    bool creatingVoterUSM = false;
-
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
 
@@ -1061,10 +1057,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     ocall_print("Requesting to create this new type of machine");
     ocall_print(requestedNewMachineTypeToCreate);
-
-    if (strcmp(requestedNewMachineTypeToCreate, "VotingUSM") == 0) {
-        creatingVoterUSM = true;
-    }
 
     char* currentMachineIDPublicKey;
 
@@ -1164,12 +1156,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     int response_size = SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST;//SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST;// + 1 + SIZE_OF_CAPABILITYKEY;
 
-    port = DEFAULT_PORT;
-
-    if (creatingVoterUSM) { //TODO fix this so that we can call without parameters
-        port = OTHER_PORT;
-    }
-
     #ifdef ENCLAVE_STD_ALT   
     ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, requestLength, response_size, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
     #else
@@ -1177,17 +1163,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
     #endif
     safe_free(createMachineRequest);
-
-    if (creatingVoterUSM) { //TODO and here
-        #ifdef ENCLAVE_STD_ALT
-        updateVoterUSMPublicIdentityIdentifiersOcall(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
-        #else 
-        VoterUSMPublicIdentityIdentifiers.insert(string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE));
-        #endif
-
-        ocall_print("Added to VoterUSMPublicIdentityIdentifiers dictionary!");
-        printPayload(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
-    }
     
     char* machineNameWrapper2[] = {currentMachineIDPublicKey};
     printStr = generateCStringFromFormat("%s machine has created a new machine with Identity Public Key as:", machineNameWrapper2, 1);
@@ -1513,8 +1488,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     //TODO if making changes in this protocol, make changes in app.cpp
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
 
-    bool sendingToVoterUSM = false;
- 
     ocall_print("Entered Secure Send");
 
     string ipAddress("127.0.0.1");
@@ -1532,8 +1505,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     PRT_VALUE** P_ToMachine_Payload = argRefs[0];
     PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
     char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
-    ocall_print("checking inside VoterUSMPublicIdentityIdentifiers for");
-    printPayload(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE);
 
     ocall_print("Parsed IP address/Port Info from handle as");
     if (isSecureSend) {
@@ -1546,20 +1517,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         parseIPAddressPortString(ipAddressAndPortFromSecureHandle, ipAddress, port);
     }
 
-
-
-    #ifdef ENCLAVE_STD_ALT
-    int foundInSet = 0;
-    sgx_status_t stat = checkVoterUSMPublicIdentityIdentifiersOcall(&foundInSet, sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE);
-    if (foundInSet) {
-        sendingToVoterUSM = true;
-    }
-    #else
-    if (VoterUSMPublicIdentityIdentifiers.count(string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE)) > 0) {
-        ocall_print("found inside!");
-        sendingToVoterUSM = true;
-    }
-    #endif
     
     PublicIdentityKeyToPublicSigningKey[string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE)] = string(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
 
@@ -1617,11 +1574,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 ocall_print(initComRequest);
                 char* returnMessage = (char*) malloc(100);
                 int ret_value;
-
-                // int port = DEFAULT_PORT;
-                // if (sendingToVoterUSM) {
-                //     port = OTHER_PORT;
-                // }
 
                 #ifdef ENCLAVE_STD_ALT
                 ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
@@ -1968,11 +1920,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
     ocall_print("-DEBUG- ENTIRE NETWORK REQUEST IS");
     printPayload(sendRequest, requestSize);
-
-    // int port = DEFAULT_PORT;
-    // if (sendingToVoterUSM) {
-    //     port = OTHER_PORT;
-    // }
+    
     ocall_print("Sending to ip address");
     ocall_print((char*)ipAddress.c_str());
     ocall_print("Sending to port");

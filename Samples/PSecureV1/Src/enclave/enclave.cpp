@@ -21,8 +21,6 @@ map<PMachineChildPair, string> PMachineToChildCapabilityKey;
 map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 map<tuple<string, string>, int> ChildSessionKeyToNonce;
 
-// unordered_set<string> VoterUSMPublicIdentityIdentifiers;
-
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
     if (status == PRT_STATUS_ASSERT)
@@ -619,10 +617,6 @@ char* generateSessionKeyTest() {
 void sgx_read_rand_ecall(char* rand_buffer, uint32_t NUM_BYTES_RAND) {
     sgx_read_rand((unsigned char*)rand_buffer, NUM_BYTES_RAND);
 }
-
-// void updateVoterUSMPublicIdentityIdentifiers(char* addToSet, uint32_t SIZE_OF_NEW_KEY) {
-//     VoterUSMPublicIdentityIdentifiers.insert(string(addToSet, SIZE_OF_NEW_KEY));
-// }
 
 //Responsibilty of caller to free return
 char* concatVoid(void* str1, size_t str1_size, void* str2, size_t str2_size) {
