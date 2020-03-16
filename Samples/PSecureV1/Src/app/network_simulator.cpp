@@ -12,7 +12,7 @@
 #define MAX 72400 
 #define SA struct sockaddr 
 
-extern bool isVoterUSM;
+extern int host_machine_port;
 
 // Function designed for chat between client and server. 
 void func(int sockfd) 
@@ -206,10 +206,8 @@ void* handle_socket_network_request(void* arg)
 	// assign IP, PORT 
 	servaddr.sin_family = AF_INET; 
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY); 
-	int port = DEFAULT_PORT;
-	if (isVoterUSM) {
-		port = OTHER_PORT;
-	}
+	int port = host_machine_port;
+
 	servaddr.sin_port = htons(port); 
 
 	// Binding newly created socket to given IP and verification 
