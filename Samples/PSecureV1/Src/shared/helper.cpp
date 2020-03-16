@@ -1518,19 +1518,36 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     ocall_print("Entered Secure Send");
 
     string ipAddress("127.0.0.1");
+    int port = 0;
 
     char* currentMachineIDPublicKey;
     currentMachineIDPublicKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
     memcpy(currentMachineIDPublicKey, (char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()), SGX_RSA3072_KEY_SIZE);
 
     ocall_print("Inside machine");
-    ocall_print(currentMachineIDPublicKey);
+    printRSAKey(currentMachineIDPublicKey);
+    // PRT_MACHINEINST* mch = PrtGetMachine((PRT_PROCESS*)program, context->id);
+    ocall_print(program->machines[context->id->valueUnion.mid->machineId]->name);
 
     PRT_VALUE** P_ToMachine_Payload = argRefs[0];
     PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
     char* sendingToMachinePublicID = (char*) sendingToMachinePublicIDPValue;
     ocall_print("checking inside VoterUSMPublicIdentityIdentifiers for");
     printPayload(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE);
+
+    ocall_print("Parsed IP address/Port Info from handle as");
+    if (isSecureSend) {
+        char* ipAddressAndPortFromSecureHandle = sendingToMachinePublicID + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1;
+        ocall_print(ipAddressAndPortFromSecureHandle);
+        parseIPAddressPortString(ipAddressAndPortFromSecureHandle, ipAddress, port);
+    } else {
+        char* ipAddressAndPortFromSecureHandle = sendingToMachinePublicID + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1;
+        ocall_print(ipAddressAndPortFromSecureHandle);
+        parseIPAddressPortString(ipAddressAndPortFromSecureHandle, ipAddress, port);
+    }
+
+
+
     #ifdef ENCLAVE_STD_ALT
     int foundInSet = 0;
     sgx_status_t stat = checkVoterUSMPublicIdentityIdentifiersOcall(&foundInSet, sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE);
@@ -1601,10 +1618,10 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 char* returnMessage = (char*) malloc(100);
                 int ret_value;
 
-                int port = DEFAULT_PORT;
-                if (sendingToVoterUSM) {
-                    port = OTHER_PORT;
-                }
+                // int port = DEFAULT_PORT;
+                // if (sendingToVoterUSM) {
+                //     port = OTHER_PORT;
+                // }
 
                 #ifdef ENCLAVE_STD_ALT
                 ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
@@ -1702,7 +1719,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
             if (!NETWORK_DEBUG) {
                 //add encryption logic here
-
                 string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
                 int nonce = ChildSessionKeyToNonce[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), sessionKey)];
                 ChildSessionKeyToNonce[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), sessionKey)] = ChildSessionKeyToNonce[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), sessionKey)] + 1;
@@ -1953,10 +1969,12 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     ocall_print("-DEBUG- ENTIRE NETWORK REQUEST IS");
     printPayload(sendRequest, requestSize);
 
-    int port = DEFAULT_PORT;
-    if (sendingToVoterUSM) {
-        port = OTHER_PORT;
-    }
+    // int port = DEFAULT_PORT;
+    // if (sendingToVoterUSM) {
+    //     port = OTHER_PORT;
+    // }
+    ocall_print("Sending to ip address");
+    ocall_print((char*)ipAddress.c_str());
     ocall_print("Sending to port");
     ocall_print_int(port);
 
@@ -2464,7 +2482,19 @@ extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRe
 
 extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
+    char* ipAddressOfHostMachine = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+    ocall_get_ip_address_of_current_host(ipAddressOfHostMachine, IP_ADDRESS_AND_PORT_STRING_SIZE);
     #ifdef ENCLAVE_STD_ALT
+    int port;
+    ocall_get_port_of_current_host(&port);
+    char* portString = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+    itoa(port, portString, 10);
+    char* concatStringss[] = {ipAddressOfHostMachine, ":", portString};
+    int concatLengthss[] = {strlen(ipAddressOfHostMachine), 1, strlen(portString)};
+    char* ipAddressAndPortSerialized = concatMutipleStringsWithLength(concatStringss, concatLengthss, 3);
+    int ipAddressAndPortSerializedSize = returnTotalSizeofLengthArray(concatLengthss, 3);
+    
+
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* currentMachineIDPublicKey;
  
@@ -2482,16 +2512,25 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 	char* finalString;
     int finalStringSize;
     char* currentMachinePublicSigningKey = (char*)PublicIdentityKeyToPublicSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str();
-    char* concatStrings[] = {(char*) currentMachineIDPublicKey, ":", currentMachinePublicSigningKey, ":", (char*)capabilityKeyPayload.c_str()};
-    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t), 1, SIZE_OF_CAPABILITYKEY};
-    finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
-    finalStringSize = returnTotalSizeofLengthArray(concatLengths, 5) + 1;
+    char* concatStrings[] = {(char*) currentMachineIDPublicKey, ":", currentMachinePublicSigningKey, ":", (char*)capabilityKeyPayload.c_str(), ":", ipAddressAndPortSerialized};
+    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t), 1, SIZE_OF_CAPABILITYKEY, 1, ipAddressAndPortSerializedSize};
+    finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 7);
+    finalStringSize = returnTotalSizeofLengthArray(concatLengths, 7) + 1;
 
     memcpy(str, finalString, finalStringSize);
     safe_free(finalString);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
     
     #else 
+    int port = ocall_get_port_of_current_host();
+    char* portString = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+    itoa(port, portString, 10);
+    char* concatStringss[] = {ipAddressOfHostMachine, ":", portString};
+    int concatLengthss[] = {strlen(ipAddressOfHostMachine), 1, strlen(portString)};
+    char* ipAddressAndPortSerialized = concatMutipleStringsWithLength(concatStringss, concatLengthss, 3);
+    int ipAddressAndPortSerializedSize = returnTotalSizeofLengthArray(concatLengthss, 3);
+    
+
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* currentMachineIDPublicKey;
  
@@ -2500,10 +2539,22 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     memcpy(currentMachineIDPublicKey + SGX_RSA3072_KEY_SIZE, ":", 1);
     memcpy(currentMachineIDPublicKey + SGX_RSA3072_KEY_SIZE + 1, (char*)PublicIdentityKeyToPublicSigningKey[get<0>(MachinePIDToIdentityDictionary[currentMachinePID])].c_str(), sizeof(sgx_rsa3072_public_key_t));
     //Return the currentMachineIDPublicKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
+    char* finalString;
+    int finalStringSize;
+    char* concatStrings[] = {currentMachineIDPublicKey, ":", ipAddressAndPortSerialized};
+    int concatLengths[] = {SIZE_OF_KEY_IDENTITY_IN_HANDLE, 1, ipAddressAndPortSerializedSize};
+    finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+    finalStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+
+    if (finalStringSize >= SIZE_OF_MACHINE_HANDLE) {
+        ocall_print("ERROR: Overwriting machine handle");
+    }
+
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-    memcpy(str, currentMachineIDPublicKey, SIZE_OF_MACHINE_HANDLE);
-	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, currentMachineIDPublicKey); //TODO shividentity
+    memcpy(str, finalString, finalStringSize);
     safe_free(currentMachineIDPublicKey);
+    safe_free(finalString);
+  
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
 
     #endif
@@ -2545,13 +2596,16 @@ extern "C" PRT_VALUE* P_DeclassifyHandle_IMPL(PRT_MACHINEINST* context, PRT_VALU
     PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-    memcpy(str, (char*) val, SIZE_OF_MACHINE_HANDLE);
+    memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
+    memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
     // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
     // ocall_print("checking temp fix");
     // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
     //     ocall_print("TEMP FIX WONT WORK");
     // }
     // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
+    ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
+    ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     
 }
@@ -2575,8 +2629,12 @@ extern "C" PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
             return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
         } else if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex || (*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_machine_handle->typeUnion.foreignType->declIndex) {
             PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+
             PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-            memcpy(str, (char*) val, SIZE_OF_MACHINE_HANDLE);
+            memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
+            memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
+            ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
+            ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
             return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
         } 
 
@@ -2627,13 +2685,16 @@ extern "C" PRT_VALUE* P_CastSecureMachineHandleToMachineHandle_IMPL(PRT_VALUE* v
     PRT_UINT64 val = value->valueUnion.frgn->value;
 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-    memcpy(str, (char*) val, SIZE_OF_MACHINE_HANDLE);
+    memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
+    memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
     // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
     // ocall_print("checking temp fix");
     // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
     //     ocall_print("TEMP FIX WONT WORK");
     // }
     // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
+    ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
+    ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     
 }

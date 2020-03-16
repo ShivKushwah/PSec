@@ -140,6 +140,14 @@ static void RunToIdle(void* process)
 	}
 }
 
+void ocall_get_ip_address_of_current_host(char* ipAddress, int MAX_IP_ADDRESS_SIZE) {
+    memcpy(ipAddress, host_machine_IP_address, strlen(host_machine_IP_address) + 1);
+}
+
+int ocall_get_port_of_current_host() {
+    return host_machine_port;
+}
+
 
 void generateIdentity(string& publicID, string& privateID, string prefix, string& publicIDSigningKey, string& privateIDSigningKey) {
     if (!NETWORK_DEBUG) {

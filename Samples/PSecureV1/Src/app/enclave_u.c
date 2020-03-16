@@ -221,6 +221,15 @@ typedef struct ms_checkVoterUSMPublicIdentityIdentifiersOcall_t {
 	uint32_t ms_SIZE_OF_NEW_KEY;
 } ms_checkVoterUSMPublicIdentityIdentifiersOcall_t;
 
+typedef struct ms_ocall_get_ip_address_of_current_host_t {
+	char* ms_ipAddress;
+	int ms_MAX_IP_ADDRESS_SIZE;
+} ms_ocall_get_ip_address_of_current_host_t;
+
+typedef struct ms_ocall_get_port_of_current_host_t {
+	int ms_retval;
+} ms_ocall_get_port_of_current_host_t;
+
 typedef struct ms_sgx_oc_cpuidex_t {
 	int* ms_cpuinfo;
 	int ms_leaf;
@@ -354,6 +363,22 @@ static sgx_status_t SGX_CDECL enclave_checkVoterUSMPublicIdentityIdentifiersOcal
 	return SGX_SUCCESS;
 }
 
+static sgx_status_t SGX_CDECL enclave_ocall_get_ip_address_of_current_host(void* pms)
+{
+	ms_ocall_get_ip_address_of_current_host_t* ms = SGX_CAST(ms_ocall_get_ip_address_of_current_host_t*, pms);
+	ocall_get_ip_address_of_current_host(ms->ms_ipAddress, ms->ms_MAX_IP_ADDRESS_SIZE);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL enclave_ocall_get_port_of_current_host(void* pms)
+{
+	ms_ocall_get_port_of_current_host_t* ms = SGX_CAST(ms_ocall_get_port_of_current_host_t*, pms);
+	ms->ms_retval = ocall_get_port_of_current_host();
+
+	return SGX_SUCCESS;
+}
+
 static sgx_status_t SGX_CDECL enclave_sgx_oc_cpuidex(void* pms)
 {
 	ms_sgx_oc_cpuidex_t* ms = SGX_CAST(ms_sgx_oc_cpuidex_t*, pms);
@@ -428,9 +453,9 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[18];
+	void * table[20];
 } ocall_table_enclave = {
-	18,
+	20,
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_print_int,
@@ -441,6 +466,8 @@ static const struct {
 		(void*)enclave_network_request_logic_ocall,
 		(void*)enclave_updateVoterUSMPublicIdentityIdentifiersOcall,
 		(void*)enclave_checkVoterUSMPublicIdentityIdentifiersOcall,
+		(void*)enclave_ocall_get_ip_address_of_current_host,
+		(void*)enclave_ocall_get_port_of_current_host,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
 		(void*)enclave_sgx_thread_set_untrusted_event_ocall,
