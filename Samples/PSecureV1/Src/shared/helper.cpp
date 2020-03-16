@@ -1248,6 +1248,14 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, newMachinePublicIDKey);
     // } else {
     // }
+
+    char* portString = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+    itoa(port, portString, 10);
+
+    char* concatStringss[] = {(char*)ipAddress.c_str(), ":", portString};
+    int concatLengthss[] = {strlen((char*)ipAddress.c_str()), 1, strlen(portString)};
+    char* ipAddressAndPortSerialized = concatMutipleStringsWithLength(concatStringss, concatLengthss, 3);
+    int ipAddressAndPortSerializedSize = returnTotalSizeofLengthArray(concatLengthss, 3);
     
 
 	
@@ -1258,10 +1266,10 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         char* finalString;
         int finalStringSize;
         char* newMachinePublicSigningKey = newMachinePublicIDKey + SGX_RSA3072_KEY_SIZE + 1;
-        char* concatStrings[] = {newMachinePublicIDKey, ":", newMachinePublicSigningKey, ":", (char*)capabilityKeyPayloadString.c_str()};
-        int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t), 1, SIZE_OF_CAPABILITYKEY};
-        finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 5);
-        finalStringSize = returnTotalSizeofLengthArray(concatLengths, 5) + 1;
+        char* concatStrings[] = {newMachinePublicIDKey, ":", newMachinePublicSigningKey, ":", (char*)capabilityKeyPayloadString.c_str(), ":", ipAddressAndPortSerialized};
+        int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t), 1, SIZE_OF_CAPABILITYKEY, 1, ipAddressAndPortSerializedSize};
+        finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 7);
+        finalStringSize = returnTotalSizeofLengthArray(concatLengths, 7) + 1;
 
         memcpy(str, finalString, finalStringSize);
         safe_free(finalString);
@@ -1270,21 +1278,47 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     } else {
         PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-        memcpy(str, newMachinePublicIDKey, SIZE_OF_MACHINE_HANDLE);
+        char* finalString;
+        int finalStringSize;
+        char* concatStrings[] = {newMachinePublicIDKey, ":", ipAddressAndPortSerialized};
+        int concatLengths[] = {SIZE_OF_KEY_IDENTITY_IN_HANDLE, 1, ipAddressAndPortSerializedSize};
+        finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+        finalStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+
+        if (finalStringSize >= SIZE_OF_MACHINE_HANDLE) {
+            ocall_print("ERROR: Overwriting machine handle");
+        }
+
+        memcpy(str, finalString, finalStringSize);
         safe_free(newMachinePublicIDKey);
+        safe_free(finalString);
         // ocall_print("check check");
         // printPayload((char*)str, SIZE_OF_MACHINE_HANDLE);
         return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     }
     
     #else 
+
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-    memcpy(str, newMachinePublicIDKey, SIZE_OF_MACHINE_HANDLE);
+    char* finalString;
+    int finalStringSize;
+    char* concatStrings[] = {newMachinePublicIDKey, ":", ipAddressAndPortSerialized};
+    int concatLengths[] = {SIZE_OF_KEY_IDENTITY_IN_HANDLE, 1, ipAddressAndPortSerializedSize};
+    finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+    finalStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+
+    if (finalStringSize >= SIZE_OF_MACHINE_HANDLE) {
+        ocall_print("ERROR: Overwriting machine handle");
+    }
+
+    memcpy(str, finalString, finalStringSize);
     safe_free(newMachinePublicIDKey);
+    safe_free(finalString);
     // ocall_print("check check");
     // printPayload((char*)str, SIZE_OF_MACHINE_HANDLE);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     #endif
+
 }
 
 //Responsibilty of caller to free return
@@ -2043,6 +2077,10 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         memcpy(checkMyPublicIdentity, decryptedMessage, SGX_RSA3072_KEY_SIZE);
         if (string(checkMyPublicIdentity, SGX_RSA3072_KEY_SIZE) != string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) {
             ocall_print("ERROR: Checking Public Identity Key inside Message FAILED in Secure Send");
+            ocall_print("Expected:");
+            printPayload(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+            ocall_print("Received:");
+            printPayload(checkMyPublicIdentity, SGX_RSA3072_KEY_SIZE);
             return;
         }
 
