@@ -1182,6 +1182,18 @@ void initKPS() {
     MachineTypeToValidIPAddresses[string("SecureTamperEvidentLogMachine")] = lst2;
     MachineTypeToValidIPAddresses[string("SecureVotingClientMachine")] = lst2;
 
+    #elif OTP_EXAMPLE
+    list<string> lst;
+    string local_host("127.0.0.1");
+    lst.push_back(local_host + string(":") + string("8070"));
+    MachineTypeToValidIPAddresses[string("BankEnclave")] = lst;
+
+    list<string> lst2;
+    lst2.push_back(local_host + string(":") + string("8080"));
+    MachineTypeToValidIPAddresses[string("TrustedInitializer")] = lst2;
+    MachineTypeToValidIPAddresses[string("UntrustedInitializer")] = lst2;
+    MachineTypeToValidIPAddresses[string("ClientWebBrowser")] = lst2;
+    MachineTypeToValidIPAddresses[string("ClientEnclave")] = lst2;
     #endif
 
 

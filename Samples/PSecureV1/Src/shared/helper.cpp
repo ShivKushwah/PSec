@@ -1632,7 +1632,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         memcpy(eventMessagePayload, temp, eventMessagePayloadSize + 1);
         eventMessagePayload[eventMessagePayloadSize] = '\0';
         ocall_print("EVENT MESSAGE PAYLOAD IS");
-        printRSAKey(eventMessagePayload);
+        printPayload(eventMessagePayload, eventMessagePayloadSize);
         ocall_print("Length is");
         ocall_print_int(eventMessagePayloadSize);
         // memcpy(eventMessagePayload, temp, strlen(temp) + 1); //TODO shividentity
@@ -1920,7 +1920,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
     ocall_print("-DEBUG- ENTIRE NETWORK REQUEST IS");
     printPayload(sendRequest, requestSize);
-    
+
     ocall_print("Sending to ip address");
     ocall_print((char*)ipAddress.c_str());
     ocall_print("Sending to port");
@@ -2733,7 +2733,8 @@ extern "C" void P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** arg
 extern "C" PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     char user_input[100];
-    ocall_request_user_input(user_input, 100);
+    // ocall_request_user_input(user_input, 100);
+    memcpy(user_input, "pword", 6);
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
 	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, user_input);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);

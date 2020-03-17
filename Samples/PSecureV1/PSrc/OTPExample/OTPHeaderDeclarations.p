@@ -10,6 +10,10 @@ fun PrintString(inputString : StringType);
 fun PrintRawStringType(inputString : StringType);
 fun PrintRawSecureStringType(inputString : secure_StringType);
 
+fun Declassify(input : any) : any;
+
+fun Classify(input : any) : any;
+
 
 // fun SecureSend(sendingToMachine : secure_machine_handle, eventToSend : event, numArgs : int, arg : int);
 fun GetThis() : machine_handle;
