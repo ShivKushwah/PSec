@@ -161,7 +161,6 @@ ra_samp_response_header_t* kps_exchange_capability_key(uint8_t *p_secret,
 
 char* queryIPAddressForMachineType(char* machineTypeRequested, int& responseSize);
 
-
 // void initKPS();
 
 // void printRSAKey(char* key);

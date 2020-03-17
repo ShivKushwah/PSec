@@ -475,6 +475,7 @@ int main(int argc, char const *argv[]) {
 
     if (argc == 1) {
         kpsInSameProcess = true;
+        isStartHostMachine = true;
     } else {
 
         if (strcmp(argv[1], "isKPSProcess=True") == 0) {
@@ -492,17 +493,28 @@ int main(int argc, char const *argv[]) {
 
         KPS_PORT_ATTESTATION = atoi((char*) argv[3]); //Attestation port of KPS
 
-        if (strcmp(argv[4], "127.0.0.1:8080") == 0) {
-            isStartHostMachine = true;
+        if (isKpsProcess) {
+
+            int i = 4;
+            while (i < argc) {
+                i++;
+            }
+
         } else {
-            isStartHostMachine = false;
+            if (strcmp(argv[4], "127.0.0.1:8080") == 0) {
+                isStartHostMachine = true;
+            } else {
+                isStartHostMachine = false;
+            }
+
+            string currIPAddress;
+
+            parseIPAddressPortString((char*)argv[4], currIPAddress, host_machine_port);
+            host_machine_IP_address = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+            memcpy(host_machine_IP_address, (char*)currIPAddress.c_str(), strlen((char*)currIPAddress.c_str()) + 1);
         }
 
-        string currIPAddress;
-
-        parseIPAddressPortString((char*)argv[4], currIPAddress, host_machine_port);
-        host_machine_IP_address = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
-        memcpy(host_machine_IP_address, (char*)currIPAddress.c_str(), strlen((char*)currIPAddress.c_str()) + 1);
+        
 
 
     }
@@ -515,6 +527,9 @@ int main(int argc, char const *argv[]) {
     }
     
     if (kpsInSameProcess || isKpsProcess) {
+        // Place the measurement of the enclave into metadata_info.txt
+        system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
+
         start_socket_attestation_network_handler();
         start_socket_kps_generic_network_handler();
         if (isKpsProcess) {
@@ -524,16 +539,11 @@ int main(int argc, char const *argv[]) {
         }
     }
  
-    // Place the measurement of the enclave into metadata_info.txt
-    system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
-
     if (kpsInSameProcess || !isKpsProcess) {
-        if (argc < 5 || (argc == 5 && isStartHostMachine)) {
+        if (isStartHostMachine) {
             char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "", 0);
             safe_free(ret);
-        }
-
-        if (argc == 5 && !isStartHostMachine) {
+        } else {
             while (true) {
 
             }

@@ -65,6 +65,7 @@ int returnTotalSizeofLengthArray(int lengths[], int size);
 void printRSAKey(char* key);
 
 extern void initKPS();
+extern void addRegisteredMachineToKPS(char* machineName, char* machineAddress);
 void printPayload(char* payload, int size);
 
 void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend, bool isEnclave);

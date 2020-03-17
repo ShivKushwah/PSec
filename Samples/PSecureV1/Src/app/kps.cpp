@@ -688,11 +688,8 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         }
 
         //If measurements differ, we need to abort this connection 
-        //TODO Uncomment below
         if (!(strcmp(expected_measurement, actual_measurement) == 0)) {
             printf("MEASUREMENT ERROR!");
-            //TODO uncommmet the below when you figure out why measurement check is failing now
-            //even though it wasn't failing before this commit
             ret = SP_QUOTE_VERIFICATION_FAILED;
             break;
         }    
@@ -1160,6 +1157,12 @@ ra_samp_response_header_t* kps_exchange_capability_key(uint8_t *p_secret,
 
         // strncpy((char*)p_resp_msg->body, "RETURNKIRAT", 12);
         return p_resp_msg;
+}
+
+void addRegisteredMachineToKPS(char* machineName, char* machineAddress) {
+    list<string> lst;
+    lst.push_back(string(machineAddress));
+    MachineTypeToValidIPAddresses[string(machineName)] = lst;
 }
 
 void initKPS() {
