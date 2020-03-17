@@ -1173,36 +1173,36 @@ void initKPS() {
         ocall_print("Fail to initialize enclave.");
     }    
 
-    #ifdef CIVITAS_EXAMPLE
-    list<string> lst;
-    string local_host("127.0.0.1");
-    lst.push_back(local_host + string(":") + string("8070"));
-    MachineTypeToValidIPAddresses[string("VotingUSM")] = lst;
+    // #ifdef CIVITAS_EXAMPLE
+    // list<string> lst;
+    // string local_host("127.0.0.1");
+    // lst.push_back(local_host + string(":") + string("8070"));
+    // MachineTypeToValidIPAddresses[string("VotingUSM")] = lst;
 
-    list<string> lst2;
-    lst2.push_back(local_host + string(":") + string("8080"));
-    MachineTypeToValidIPAddresses[string("InitializerMachine")] = lst2;
-    MachineTypeToValidIPAddresses[string("SecureBallotBoxMachine")] = lst2;
-    MachineTypeToValidIPAddresses[string("SecureBulletinBoardMachine")] = lst2;
-    MachineTypeToValidIPAddresses[string("SecureSupervisorMachine")] = lst2;
-    MachineTypeToValidIPAddresses[string("SecureTabulationTellerMachine")] = lst2;
-    MachineTypeToValidIPAddresses[string("SecureTamperEvidentLogMachine")] = lst2;
-    MachineTypeToValidIPAddresses[string("SecureVotingClientMachine")] = lst2;
+    // list<string> lst2;
+    // lst2.push_back(local_host + string(":") + string("8080"));
+    // MachineTypeToValidIPAddresses[string("InitializerMachine")] = lst2;
+    // MachineTypeToValidIPAddresses[string("SecureBallotBoxMachine")] = lst2;
+    // MachineTypeToValidIPAddresses[string("SecureBulletinBoardMachine")] = lst2;
+    // MachineTypeToValidIPAddresses[string("SecureSupervisorMachine")] = lst2;
+    // MachineTypeToValidIPAddresses[string("SecureTabulationTellerMachine")] = lst2;
+    // MachineTypeToValidIPAddresses[string("SecureTamperEvidentLogMachine")] = lst2;
+    // MachineTypeToValidIPAddresses[string("SecureVotingClientMachine")] = lst2;
 
-    #elif OTP_EXAMPLE
-    list<string> lst;
-    string local_host("127.0.0.1");
-    lst.push_back(local_host + string(":") + string("8070"));
-    MachineTypeToValidIPAddresses[string("BankEnclave")] = lst;
-    MachineTypeToValidIPAddresses[string("TrustedInitializer")] = lst;
-    MachineTypeToValidIPAddresses[string("UntrustedInitializer")] = lst;
+    // #elif OTP_EXAMPLE
+    // list<string> lst;
+    // string local_host("127.0.0.1");
+    // lst.push_back(local_host + string(":") + string("8070"));
+    // MachineTypeToValidIPAddresses[string("BankEnclave")] = lst;
+    // MachineTypeToValidIPAddresses[string("TrustedInitializer")] = lst;
+    // MachineTypeToValidIPAddresses[string("UntrustedInitializer")] = lst;
 
 
-    list<string> lst2;
-    lst2.push_back(local_host + string(":") + string("8080"));
-    MachineTypeToValidIPAddresses[string("ClientWebBrowser")] = lst2;
-    MachineTypeToValidIPAddresses[string("ClientEnclave")] = lst2;
-    #endif
+    // list<string> lst2;
+    // lst2.push_back(local_host + string(":") + string("8080"));
+    // MachineTypeToValidIPAddresses[string("ClientWebBrowser")] = lst2;
+    // MachineTypeToValidIPAddresses[string("ClientEnclave")] = lst2;
+    // #endif
 
 
 }

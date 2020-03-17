@@ -497,6 +497,24 @@ int main(int argc, char const *argv[]) {
 
             int i = 4;
             while (i < argc) {
+                split = strtok((char*) argv[i], "=");
+                char* machineAddress = split;
+
+                char delim[] = ",]";
+
+                split = split + strlen(split) + 2;
+
+                split = strtok(split, delim);
+
+                while (split != NULL) {
+                    char* parsedMachineType = split; 
+                    ocall_print(parsedMachineType);
+                    ocall_print(machineAddress);
+                    addRegisteredMachineToKPS(parsedMachineType, machineAddress);
+                    split = strtok(NULL, delim);
+                }
+
+
                 i++;
             }
 
