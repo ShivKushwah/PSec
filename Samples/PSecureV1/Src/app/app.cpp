@@ -36,6 +36,10 @@ static const char* workspaceConfig;
 char* host_machine_IP_address;
 int host_machine_port;
 
+extern char* KPS_IP_ADDRESS;
+extern int KPS_PORT_GENERIC;
+extern int KPS_PORT_ATTESTATION;
+
 unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary; //USM Dictionary
 unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
 map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
@@ -142,6 +146,18 @@ void ocall_get_ip_address_of_current_host(char* ipAddress, int MAX_IP_ADDRESS_SI
 
 int ocall_get_port_of_current_host() {
     return host_machine_port;
+}
+
+void ocall_get_ip_address_of_kps(char* ipAddress, int MAX_IP_ADDRESS_SIZE) {
+    memcpy(ipAddress, KPS_IP_ADDRESS, strlen(KPS_IP_ADDRESS) + 1);
+}
+
+int ocall_get_generic_port_of_kps() {
+    return KPS_PORT_GENERIC;
+}
+
+int ocall_get_attestation_port_of_kps() {
+    return KPS_PORT_ATTESTATION;
 }
 
 
@@ -467,10 +483,10 @@ int main(int argc, char const *argv[]) {
             isKpsProcess = false;
         }
 
-        if (strcmp(argv[2], "127.0.0.1:8070") == 0) {
-            isStartHostMachine = false;
-        } else {
+        if (strcmp(argv[2], "127.0.0.1:8080") == 0) {
             isStartHostMachine = true;
+        } else {
+            isStartHostMachine = false;
         }
 
         string currIPAddress;
@@ -482,8 +498,9 @@ int main(int argc, char const *argv[]) {
 
     }
 
-    
-
+    KPS_IP_ADDRESS = "127.0.0.1";
+    KPS_PORT_GENERIC = 8092;
+    KPS_PORT_ATTESTATION = 8090;
     
     initNetwork();
     initKPS();

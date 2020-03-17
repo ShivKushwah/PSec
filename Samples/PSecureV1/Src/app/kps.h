@@ -49,6 +49,10 @@ using namespace std;
 extern map<tuple<string, string>, string> capabilityKeyAccessDictionary;
 extern map<tuple<string, string>, string> capabilityKeyDictionary;
 
+extern char* KPS_IP_ADDRESS;
+extern int KPS_PORT_GENERIC;
+extern int KPS_PORT_ATTESTATION;
+
 
 #ifdef  __cplusplus
 extern "C" {

@@ -9,9 +9,6 @@
 // #include "PingPongEnclave.h"
 
 const int DEFAULT_PORT = 8080;
-const int OTHER_PORT = 8070;
-const int PORT_KPS_GENERIC = 8092;
-const int PORT_ATTESTATION = 8090;
 
 const int IP_ADDRESS_AND_PORT_STRING_SIZE = 50;
 

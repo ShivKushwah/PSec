@@ -13,6 +13,8 @@
 #define SA struct sockaddr 
 
 extern int host_machine_port;
+extern int KPS_PORT_ATTESTATION;
+extern int KPS_PORT_GENERIC;
 
 // Function designed for chat between client and server. 
 void func(int sockfd) 
@@ -313,7 +315,7 @@ void* handle_socket_network_request_attestation(void* arg)
 	// assign IP, PORT 
 	servaddr.sin_family = AF_INET; 
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY); 
-	servaddr.sin_port = htons(PORT_ATTESTATION); 
+	servaddr.sin_port = htons(KPS_PORT_ATTESTATION); 
 
 	// Binding newly created socket to given IP and verification 
 	if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) { 
@@ -419,7 +421,7 @@ void* handle_socket_network_kps_generic_requests(void* arg)
 	// assign IP, PORT 
 	servaddr.sin_family = AF_INET; 
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY); 
-	servaddr.sin_port = htons(PORT_KPS_GENERIC); 
+	servaddr.sin_port = htons(KPS_PORT_GENERIC); 
 
 	// Binding newly created socket to given IP and verification 
 	if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) { 

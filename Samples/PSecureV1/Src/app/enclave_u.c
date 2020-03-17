@@ -219,6 +219,19 @@ typedef struct ms_ocall_get_port_of_current_host_t {
 	int ms_retval;
 } ms_ocall_get_port_of_current_host_t;
 
+typedef struct ms_ocall_get_ip_address_of_kps_t {
+	char* ms_ipAddress;
+	int ms_MAX_IP_ADDRESS_SIZE;
+} ms_ocall_get_ip_address_of_kps_t;
+
+typedef struct ms_ocall_get_attestation_port_of_kps_t {
+	int ms_retval;
+} ms_ocall_get_attestation_port_of_kps_t;
+
+typedef struct ms_ocall_get_generic_port_of_kps_t {
+	int ms_retval;
+} ms_ocall_get_generic_port_of_kps_t;
+
 typedef struct ms_sgx_oc_cpuidex_t {
 	int* ms_cpuinfo;
 	int ms_leaf;
@@ -352,6 +365,30 @@ static sgx_status_t SGX_CDECL enclave_ocall_get_port_of_current_host(void* pms)
 	return SGX_SUCCESS;
 }
 
+static sgx_status_t SGX_CDECL enclave_ocall_get_ip_address_of_kps(void* pms)
+{
+	ms_ocall_get_ip_address_of_kps_t* ms = SGX_CAST(ms_ocall_get_ip_address_of_kps_t*, pms);
+	ocall_get_ip_address_of_kps(ms->ms_ipAddress, ms->ms_MAX_IP_ADDRESS_SIZE);
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL enclave_ocall_get_attestation_port_of_kps(void* pms)
+{
+	ms_ocall_get_attestation_port_of_kps_t* ms = SGX_CAST(ms_ocall_get_attestation_port_of_kps_t*, pms);
+	ms->ms_retval = ocall_get_attestation_port_of_kps();
+
+	return SGX_SUCCESS;
+}
+
+static sgx_status_t SGX_CDECL enclave_ocall_get_generic_port_of_kps(void* pms)
+{
+	ms_ocall_get_generic_port_of_kps_t* ms = SGX_CAST(ms_ocall_get_generic_port_of_kps_t*, pms);
+	ms->ms_retval = ocall_get_generic_port_of_kps();
+
+	return SGX_SUCCESS;
+}
+
 static sgx_status_t SGX_CDECL enclave_sgx_oc_cpuidex(void* pms)
 {
 	ms_sgx_oc_cpuidex_t* ms = SGX_CAST(ms_sgx_oc_cpuidex_t*, pms);
@@ -426,9 +463,9 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[18];
+	void * table[21];
 } ocall_table_enclave = {
-	18,
+	21,
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_print_int,
@@ -439,6 +476,9 @@ static const struct {
 		(void*)enclave_network_request_logic_ocall,
 		(void*)enclave_ocall_get_ip_address_of_current_host,
 		(void*)enclave_ocall_get_port_of_current_host,
+		(void*)enclave_ocall_get_ip_address_of_kps,
+		(void*)enclave_ocall_get_attestation_port_of_kps,
+		(void*)enclave_ocall_get_generic_port_of_kps,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
 		(void*)enclave_sgx_thread_set_untrusted_event_ocall,

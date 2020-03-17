@@ -1031,9 +1031,19 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
 
+    string ipAddress;
+    int port = 0;
+    
     //Query the KPS to determine the target IP address of this type of machine
-    int port = PORT_KPS_GENERIC;
     char* ipAddressOfRequestedMachine = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+    char* ipAddressOfKPSMachine = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+    ocall_get_ip_address_of_kps(ipAddressOfKPSMachine, IP_ADDRESS_AND_PORT_STRING_SIZE);
+    #ifdef ENCLAVE_STD_ALT
+    ocall_get_generic_port_of_kps(&port);
+    #else 
+    port = ocall_get_generic_port_of_kps();
+    #endif
+    
 
     char* constructString[] = {"KPS", ":", "IPRequestMachineType", ":", requestedNewMachineTypeToCreate};
     int constructStringLengths[] = {strlen("KPS"), 1, strlen("IPRequestMachineType"), 1, strlen(requestedNewMachineTypeToCreate)};
@@ -1041,12 +1051,12 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     int requestLength = returnTotalSizeofLengthArray(constructStringLengths, 5) + 1;
     int ret_value; 
 
-    string ipAddress("127.0.0.1");
+    
 
     #ifdef ENCLAVE_STD_ALT   
-    ocall_network_request(&ret_value, kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
+    ocall_network_request(&ret_value, kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, ipAddressOfKPSMachine, strlen(ipAddressOfKPSMachine) + 1, port);
     #else
-    ocall_network_request(kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
+    ocall_network_request(kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, ipAddressOfKPSMachine, strlen(ipAddressOfKPSMachine) + 1, port);
     // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
     #endif
     ocall_print("Received IP Address of target machine from KPS:");
@@ -1490,7 +1500,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
     ocall_print("Entered Secure Send");
 
-    string ipAddress("127.0.0.1");
+    string ipAddress;
     int port = 0;
 
     char* currentMachineIDPublicKey;

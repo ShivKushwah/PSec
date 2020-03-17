@@ -114,6 +114,9 @@ enclave {
         void network_request_logic_ocall([in, size=requestSize]char* request, size_t requestSize);
         void ocall_get_ip_address_of_current_host([out, size=MAX_IP_ADDRESS_SIZE]char* ipAddress, int MAX_IP_ADDRESS_SIZE);
         int ocall_get_port_of_current_host();
+        void ocall_get_ip_address_of_kps([out, size=MAX_IP_ADDRESS_SIZE]char* ipAddress, int MAX_IP_ADDRESS_SIZE);
+        int ocall_get_attestation_port_of_kps();
+        int ocall_get_generic_port_of_kps();
 
 
 

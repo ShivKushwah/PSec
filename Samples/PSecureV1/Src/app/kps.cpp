@@ -66,6 +66,10 @@ map<string, list<string>> MachineTypeToValidIPAddresses;
 
 sgx_enclave_id_t kps_enclave_eid;
 
+char* KPS_IP_ADDRESS;
+int KPS_PORT_GENERIC;
+int KPS_PORT_ATTESTATION;
+
 
 //This represents the payload we are going to send to the enclave after a succesful attestation
 //We write to this value in app.cpp before the ping machine initiates the attestation request with Pong enclave

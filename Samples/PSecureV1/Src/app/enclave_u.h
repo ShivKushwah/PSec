@@ -53,6 +53,18 @@ void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_get_ip_address_of_current_host, (char* 
 #define OCALL_GET_PORT_OF_CURRENT_HOST_DEFINED__
 int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_get_port_of_current_host, (void));
 #endif
+#ifndef OCALL_GET_IP_ADDRESS_OF_KPS_DEFINED__
+#define OCALL_GET_IP_ADDRESS_OF_KPS_DEFINED__
+void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_get_ip_address_of_kps, (char* ipAddress, int MAX_IP_ADDRESS_SIZE));
+#endif
+#ifndef OCALL_GET_ATTESTATION_PORT_OF_KPS_DEFINED__
+#define OCALL_GET_ATTESTATION_PORT_OF_KPS_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_get_attestation_port_of_kps, (void));
+#endif
+#ifndef OCALL_GET_GENERIC_PORT_OF_KPS_DEFINED__
+#define OCALL_GET_GENERIC_PORT_OF_KPS_DEFINED__
+int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_get_generic_port_of_kps, (void));
+#endif
 #ifndef SGX_OC_CPUIDEX_DEFINED__
 #define SGX_OC_CPUIDEX_DEFINED__
 void SGX_UBRIDGE(SGX_CDECL, sgx_oc_cpuidex, (int cpuinfo[4], int leaf, int subleaf));

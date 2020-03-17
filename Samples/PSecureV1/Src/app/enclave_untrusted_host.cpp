@@ -81,6 +81,11 @@ int CURRENT_ENCLAVE_EID_NUM = 0;
 
 unordered_map<string, sgx_enclave_id_t> PublicIdentityKeyToEidDictionary;
 
+extern char* KPS_IP_ADDRESS;
+extern int KPS_PORT_ATTESTATION;
+extern int KPS_PORT_GENERIC;
+
+
 #define ENCLAVE_PATH "isv_enclave.signed.so"
 
 // uint8_t* msg1_samples[] = { msg1_sample1, msg1_sample2 };
@@ -242,7 +247,7 @@ char* make_socket_attestation_send_request(char* request, int requestSize) {
 
     char* copied_response;
     int responseSize;
-    return network_socket_sender(request, requestSize, "127.0.0.1", strlen("127.0.0.1"), 8090);
+    return network_socket_sender(request, requestSize, KPS_IP_ADDRESS, strlen(KPS_IP_ADDRESS), KPS_PORT_ATTESTATION);
     // char* net_response = handle_socket_attestation_request(net_request, responseSize);
     // copied_response = (char*) malloc(responseSize);
     // memcpy(copied_response, net_response, responseSize);
