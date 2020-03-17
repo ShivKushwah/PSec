@@ -519,7 +519,10 @@ int main(int argc, char const *argv[]) {
             }
 
         } else {
-            if (strcmp(argv[4], "127.0.0.1:8080") == 0) {
+            char* split = strtok((char*) argv[4], "=");
+            char* currentHostMachineAddress = split + strlen(split) + 1;
+
+            if (strcmp(argv[5], "isStartMachine=True") == 0) {
                 isStartHostMachine = true;
             } else {
                 isStartHostMachine = false;
@@ -527,7 +530,7 @@ int main(int argc, char const *argv[]) {
 
             string currIPAddress;
 
-            parseIPAddressPortString((char*)argv[4], currIPAddress, host_machine_port);
+            parseIPAddressPortString(currentHostMachineAddress, currIPAddress, host_machine_port);
             host_machine_IP_address = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
             memcpy(host_machine_IP_address, (char*)currIPAddress.c_str(), strlen((char*)currIPAddress.c_str()) + 1);
         }
