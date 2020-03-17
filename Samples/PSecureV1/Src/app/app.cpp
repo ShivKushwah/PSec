@@ -483,7 +483,16 @@ int main(int argc, char const *argv[]) {
             isKpsProcess = false;
         }
 
-        if (strcmp(argv[2], "127.0.0.1:8080") == 0) {
+        char* split = strtok((char*) argv[2], "=");
+        split = strtok(NULL, "-"); //Get ip address and generic port of KPS
+        string kpsIPAddress;
+        parseIPAddressPortString(split, kpsIPAddress, KPS_PORT_GENERIC);
+        KPS_IP_ADDRESS = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+        memcpy(KPS_IP_ADDRESS, (char*)kpsIPAddress.c_str(), strlen((char*)kpsIPAddress.c_str()) + 1);
+
+        KPS_PORT_ATTESTATION = atoi((char*) argv[3]); //Attestation port of KPS
+
+        if (strcmp(argv[4], "127.0.0.1:8080") == 0) {
             isStartHostMachine = true;
         } else {
             isStartHostMachine = false;
@@ -491,16 +500,12 @@ int main(int argc, char const *argv[]) {
 
         string currIPAddress;
 
-        parseIPAddressPortString((char*)argv[2], currIPAddress, host_machine_port);
+        parseIPAddressPortString((char*)argv[4], currIPAddress, host_machine_port);
         host_machine_IP_address = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
         memcpy(host_machine_IP_address, (char*)currIPAddress.c_str(), strlen((char*)currIPAddress.c_str()) + 1);
 
 
     }
-
-    KPS_IP_ADDRESS = "127.0.0.1";
-    KPS_PORT_GENERIC = 8092;
-    KPS_PORT_ATTESTATION = 8090;
     
     initNetwork();
     initKPS();
@@ -523,12 +528,12 @@ int main(int argc, char const *argv[]) {
     system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
 
     if (kpsInSameProcess || !isKpsProcess) {
-        if (argc < 3 || (argc == 3 && isStartHostMachine)) {
+        if (argc < 5 || (argc == 5 && isStartHostMachine)) {
             char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "", 0);
             safe_free(ret);
         }
 
-        if (argc == 3 && !isStartHostMachine) {
+        if (argc == 5 && !isStartHostMachine) {
             while (true) {
 
             }
