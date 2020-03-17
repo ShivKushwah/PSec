@@ -404,25 +404,25 @@ void startPrtProcessIfNotStarted() {
         if (cooperative)
         {
 
-            PRT_VALUE *payload = PrtMkNullValue();
-            PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
-            // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
-            PRT_BOOLEAN foundMachine = PrtLookupMachineByName("UntrustedInitializer", &mainMachine);
-            PrtAssert(foundMachine, "No 'GodUntrusted' machine found!");
-            PRT_MACHINEINST* newMachine = PrtMkMachine(process, mainMachine, 1, &payload);  
+            // PRT_VALUE *payload = PrtMkNullValue();
+            // PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
+            // // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
+            // PRT_BOOLEAN foundMachine = PrtLookupMachineByName("UntrustedInitializer", &mainMachine);
+            // PrtAssert(foundMachine, "No 'GodUntrusted' machine found!");
+            // PRT_MACHINEINST* newMachine = PrtMkMachine(process, mainMachine, 1, &payload);  
 
-            // test some multithreading across state machines.
+            // // test some multithreading across state machines.
             
-            typedef void *(*start_routine) (void *);
-            pthread_t tid[threads];
-            for (int i = 0; i < threads; i++)
-            {
-                pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
-            }
-            for (int i = 0; i < threads; i++)
-            {
-                pthread_join(tid[i], NULL);
-            }
+            // typedef void *(*start_routine) (void *);
+            // pthread_t tid[threads];
+            // for (int i = 0; i < threads; i++)
+            // {
+            //     pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
+            // }
+            // for (int i = 0; i < threads; i++)
+            // {
+            //     pthread_join(tid[i], NULL);
+            // }
             
         }
 
@@ -472,6 +472,7 @@ int main(int argc, char const *argv[]) {
     bool kpsInSameProcess = false;
     bool isKpsProcess = false;
     bool isStartHostMachine = true;
+    char* startMachineName;
 
     if (argc == 1) {
         kpsInSameProcess = true;
@@ -528,6 +529,11 @@ int main(int argc, char const *argv[]) {
                 isStartHostMachine = false;
             }
 
+            if (isStartHostMachine) {
+                split = strtok((char*) argv[5], "=");
+                startMachineName = split + strlen(split) + 1;
+            }
+
             string currIPAddress;
 
             parseIPAddressPortString(currentHostMachineAddress, currIPAddress, host_machine_port);
@@ -562,7 +568,7 @@ int main(int argc, char const *argv[]) {
  
     if (kpsInSameProcess || !isKpsProcess) {
         if (isStartHostMachine) {
-            char* ret = createUSMMachineAPI("GodUntrusted", 0, 0, "", 0);
+            char* ret = createUSMMachineAPI(startMachineName, 0, 0, "", 0);
             safe_free(ret);
         } else {
             while (true) {
