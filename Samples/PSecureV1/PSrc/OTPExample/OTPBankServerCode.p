@@ -14,8 +14,6 @@ secure_machine TrustedInitializer {
     start state Initial {
         entry {
             clientUSM = new ClientWebBrowser();
-            print "created new client USM with key";
-            PrintKey(clientUSM);
             bankSSM = new BankEnclave();
             send bankSSM, TRUSTEDProvisionBankSSM, clientUSM; //secure_send
             send clientUSM, BankPublicIDEvent, Declassify(bankSSM) as machine_handle; //untrusted_send
@@ -39,21 +37,20 @@ secure_machine BankEnclave {
             clientUSM = payload;
             clientSSM = new ClientEnclave();
             send clientSSM, TRUSTEDProvisionClientSSM, clientUSM;
-
-            print "Bank: Creating New Bank Account. Enter Credentials below!";
-            userCredential = GetUserInput();
-            print "KIRAT-CRED";
-            // PrintString(userCredential);
-            PrintRawSecureStringType(userCredential);
+            goto RegisterNewBankAccount;
             
+        }
+    }
+
+    state RegisterNewBankAccount {
+        on UNTRUSTEDReceiveRegistrationCredentials do (payload: StringType) {
+            print "Bank: Creating new bank account!";
+            userCredential = payload;
             masterSecret = GenerateRandomMasterSecret();
-            print "Stuff";
-            PrintRawSecureStringType(masterSecret);
             send clientSSM, MasterSecretEvent, masterSecret; //secure_send
-            // print "Bank Enclave about to print clientSSM";
-            // PrintKey(clientSSM);
             send clientUSM, PublicIDEvent, Declassify(clientSSM) as machine_handle; //untrusted_send
             goto AuthCheck;
+
         }
     }
 
@@ -63,17 +60,6 @@ secure_machine BankEnclave {
 
     state Verify { 
         entry (payload : (usernamePW: StringType, OTPCode: StringType)) {
-            print "KIRAT2-CRED";
-            PrintString(payload.usernamePW);
-            PrintString(Declassify(userCredential) as StringType);
-            // PrintRawSecureStringType(userCredential);
-            // PrintRawStringType(Hash(masterSecret as StringType, userCredential as StringType));
-            if (Declassify(userCredential) == payload.usernamePW) {
-                print "YEETKIRAT";
-            }
-            if (Hash(masterSecret as StringType, userCredential as StringType) == payload.OTPCode) {
-                print "YEETKIRAT2";
-            }
             if (Declassify(userCredential) == payload.usernamePW && Hash(masterSecret as StringType, userCredential as StringType) == payload.OTPCode) {
                 send clientUSM, AuthSuccess; //untrusted_send
             } else {

@@ -1510,7 +1510,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     ocall_print("Inside machine");
     printRSAKey(currentMachineIDPublicKey);
     // PRT_MACHINEINST* mch = PrtGetMachine((PRT_PROCESS*)program, context->id);
-    ocall_print(program->machines[context->id->valueUnion.mid->machineId]->name);
+    // ocall_print(program->machines[context->id->valueUnion.mid->machineId]->name); //This gives incorrect machine name
 
     PRT_VALUE** P_ToMachine_Payload = argRefs[0];
     PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
@@ -2544,7 +2544,8 @@ extern "C" void P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE** P_VAR_payload = argRefs[0];
     PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
     ocall_print("FOREIGN PRINT KEY IS:");
-    printRSAKey((char*) val);
+    printPayload((char*) val, SIZE_OF_MACHINE_HANDLE);
+    // printRSAKey((char*) val);
     
 }
 

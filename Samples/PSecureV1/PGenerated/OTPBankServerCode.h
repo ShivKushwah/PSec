@@ -9,6 +9,7 @@ extern "C" {
     
     extern PRT_EVENTDECL P_EVENT_BankPublicIDEvent;
     extern PRT_EVENTDECL P_EVENT_PublicIDEvent;
+    extern PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveRegistrationCredentials;
     extern PRT_EVENTDECL P_EVENT_MasterSecretEvent;
     extern PRT_EVENTDECL P_EVENT_GenerateOTPCodeEvent;
     extern PRT_EVENTDECL P_EVENT_OTPCodeEvent;

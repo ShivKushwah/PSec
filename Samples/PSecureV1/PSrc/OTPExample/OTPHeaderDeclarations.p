@@ -31,6 +31,7 @@ fun GetUserInput() : StringType;
 
 event BankPublicIDEvent : machine_handle;
 event PublicIDEvent : machine_handle;
+event UNTRUSTEDReceiveRegistrationCredentials : StringType;
 trusted event MasterSecretEvent: secure_StringType;
 event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;

@@ -18,8 +18,6 @@ secure_machine ClientEnclave {
     state ProvisionEnclaveWithSecret {
         entry (payload : secure_StringType){
             masterSecret = payload;
-            print "Stuff2";
-            PrintRawSecureStringType(payload);
             goto WaitForGenerateOTP;
         }
     }
@@ -28,12 +26,6 @@ secure_machine ClientEnclave {
         on GenerateOTPCodeEvent do (usernamePassword: StringType) {
             var hashedString : StringType;          
             hashedString = Hash(masterSecret as StringType, usernamePassword);
-            print "KIRAT3-CRED";
-
-            PrintRawSecureStringType(masterSecret);
-            PrintRawStringType(masterSecret as StringType);
-
-            PrintRawStringType(hashedString);
             send clientUSM, OTPCodeEvent, hashedString; //untrusted_send
         }
     }
@@ -53,6 +45,15 @@ machine ClientWebBrowser {
     state SaveBankSSM {
         entry (payload: machine_handle) {
             bankSSM = payload;
+            goto RegisterAccountInBank;
+        }
+    }
+
+    state RegisterAccountInBank {
+        entry {
+            var credentials : StringType;
+            credentials = GetUserInput();
+            send bankSSM, UNTRUSTEDReceiveRegistrationCredentials, credentials;
         }
         on PublicIDEvent goto Authenticate;
     }
