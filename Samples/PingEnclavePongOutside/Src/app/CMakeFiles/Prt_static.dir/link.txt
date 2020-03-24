@@ -1,1 +1,0 @@
-/usr/bin/cc -fPIC  -DDEBUG -UNDEBUG -UEDEBUG -m64 -O0 -g -fPIC -Wno-attributes -g  -shared -Wl,-soname,libPrt_static.so -o ../../libPrt_static.so  
