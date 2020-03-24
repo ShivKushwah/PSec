@@ -287,12 +287,23 @@ char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKe
 
 // OCall implementations
 void ocall_print(const char* str) {
-    printf("[o] %s\n", str);
-    fflush(stdout);
+    if (ENABLE_OCALL_PRINT) {
+        printf("[o] %s\n", str);
+        fflush(stdout);
+    }
+    
 }
 
 void ocall_print_int(int intPrint) {
-    printf("OCALL_PRINT_INT:Value is %d\n", intPrint);
+    if (ENABLE_OCALL_PRINT) {
+        printf("OCALL_PRINT_INT:Value is %d\n", intPrint);
+        fflush(stdout);
+    }
+    
+}
+
+void ocall_enclave_print(const char* str) {
+    printf("[e] %s\n", str);
     fflush(stdout);
 }
 

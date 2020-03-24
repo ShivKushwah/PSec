@@ -21,6 +21,10 @@ extern "C" {
 #define OCALL_PRINT_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_print, (const char* str));
 #endif
+#ifndef OCALL_ENCLAVE_PRINT_DEFINED__
+#define OCALL_ENCLAVE_PRINT_DEFINED__
+void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_enclave_print, (const char* str));
+#endif
 #ifndef OCALL_PRINT_INT_DEFINED__
 #define OCALL_PRINT_INT_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_print_int, (int intPrint));
