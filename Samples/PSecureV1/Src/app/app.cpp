@@ -270,11 +270,11 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
         PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY);
         ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY))] = 0;
         char* successMessage = createStringLiteralMalloced("Success: Session Key Received");
-        printf("Received correct session key!\n");
+        ocall_print("Received correct session key!\n");
         return successMessage;
     } else {
         char* errorMsg = createStringLiteralMalloced("Already created!");
-        printf("ERROR:Session has already been initalized in the past!\n");
+        ocall_print("ERROR:Session has already been initalized in the past!\n");
         return errorMsg;
     }
     
@@ -449,21 +449,21 @@ void initApp() {
 
 void start_socket_network_handler() {
     pthread_t thread_id; 
-    printf("\n Creating Network Socket Handler Thread\n"); 
+    ocall_print("\n Creating Network Socket Handler Thread\n"); 
     pthread_create(&thread_id, NULL, handle_socket_network_request, NULL);
 
 }
 
 void start_socket_attestation_network_handler() {
     pthread_t thread_id; 
-    printf("\n Creating Network Socket Handler Thread\n"); 
+    ocall_print("\n Creating Network Socket Handler Thread\n"); 
     pthread_create(&thread_id, NULL, handle_socket_network_request_attestation, NULL);
 
 }
 
 void start_socket_kps_generic_network_handler() {
     pthread_t thread_id; 
-    printf("\n Creating Network KPS Generic Handler Thread\n"); 
+    ocall_print("\n Creating Network KPS Generic Handler Thread\n"); 
     pthread_create(&thread_id, NULL, handle_socket_network_kps_generic_requests, NULL);
 
 }

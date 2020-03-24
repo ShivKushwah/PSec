@@ -182,7 +182,8 @@ void network_request_logic_ocall(char* request, size_t requestSize) {
 }
 
 char* network_request_logic(char* request, size_t requestSize) { //TODO Make this function generalizable for multiple enclaves and machines
-    printf("Network Request Received: %s\n", request);
+    ocall_print("Network Request Received:");
+    ocall_print(request);
 
     char* requestCopy = (char*) malloc(requestSize);
     memcpy(requestCopy, request, requestSize); //NOTE Since I didn't update MAX_NETWORK_MESSAGE, this caused a weird memory bug last time when I increased size of public identity key
@@ -438,11 +439,11 @@ char* send_network_request_API(char* request, size_t requestSize) {
 
     void* thread_ret;
     pthread_t thread_id; 
-    printf("\n Calling Network Request Thread\n"); 
+    ocall_print("\n Calling Network Request Thread\n"); 
     pthread_create(&thread_id, NULL, network_request_thread_wrapper, (void*) &parameters);
     //TODO look into not calling pthread_join but actually let this run asynchoronous
     pthread_join(thread_id, &thread_ret); 
-    printf("\n Finished Network Request Thread\n"); 
+    ocall_print("\n Finished Network Request Thread\n"); 
     safe_free(requestCopy);
 
     return (char*) thread_ret;
@@ -552,7 +553,8 @@ char* handle_socket_attestation_request(char* serializedString, int& responseSiz
 }
 
 char* handle_socket_kps_generic_request(char* serializedString, int& responseSize) {
-    printf("KPS Network Request Received: %s\n", serializedString);
+    ocall_print("KPS Network Request Received:");
+    ocall_print(serializedString);
 
     char* response;
 
