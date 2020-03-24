@@ -1,5 +1,6 @@
 #include "constants.h"
 #include "network_ra.h"
+#include "enclave_u.h"
 
 void* handle_socket_network_request(void* arg);
 void* handle_socket_network_request_attestation(void* arg);

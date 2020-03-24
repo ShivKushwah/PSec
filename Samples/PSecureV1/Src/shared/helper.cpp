@@ -931,7 +931,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             
 
             if (count == 0) {
-                printf("\n No Enclave Eid Found!\n");
+                ocall_print("\n No Enclave Eid Found!");
             }
             
             safe_free(requestCopy);
@@ -996,7 +996,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             
 
             if (count == 0) {
-                printf("\n No Enclave Eid Found!\n");
+                ocall_print("\n No Enclave Eid Found!");
             }
             
             safe_free(requestCopy);

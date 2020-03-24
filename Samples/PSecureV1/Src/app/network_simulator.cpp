@@ -29,7 +29,7 @@ void func(int sockfd)
 		int actual_response_size = read(sockfd, buff, sizeof(buff)); 
 
 		if (actual_response_size >= sizeof(buff)) {
-			printf("NOTE: Server Network buffer full\n");
+			ocall_print("NOTE: Server Network buffer full\n");
 		}
 
 		char* retString = send_network_request_API(buff, actual_response_size);
@@ -37,13 +37,13 @@ void func(int sockfd)
 
 
 		// print buffer which contains the client contents 
-		// printf("From client: %s\t To client : ", buff); 
+		// ocall_print("From client: %s\t To client : ", buff); 
 		bzero(buff, MAX); 
 		n = 0; 
 		// copy server message in the buffer 
-		printf("Server: copying into return buffer\n");
+		ocall_print("Server: copying into return buffer\n");
 		printPayload(retString, 20);
-		printf("Server: about to memcpy\n");
+		ocall_print("Server: about to memcpy\n");
 		memcpy(buff, retString, 1000);  //TODO unhardcode 1000 and have make network request
 										//return values have size assoicated with them 
 		
@@ -53,10 +53,10 @@ void func(int sockfd)
 
 		// if msg contains "Exit" then server exit and chat ended. 
 		// if (strncmp("exit", buff, 4) == 0) { 
-		// 	printf("Server Exit...\n"); 
+		// 	ocall_print("Server Exit...\n"); 
 		// 	break; 
 		// } 
-		printf("Server sent message to client!\n");
+		ocall_print("Server sent message to client!\n");
         break;
 	} 
 } 
@@ -74,7 +74,7 @@ void func_attestation(int sockfd)
 		int actual_response_size = read(sockfd, buff, sizeof(buff)); 
 
 		if (actual_response_size >= sizeof(buff)) {
-			printf("NOTE: Server Network buffer full\n");
+			ocall_print("NOTE: Server Network buffer full\n");
 		}
 		
 		int responseSize;
@@ -82,18 +82,18 @@ void func_attestation(int sockfd)
 		// char* retString = "netreceive";
 
 		if (responseSize >= MAX) {
-			printf("ERROR: Server network buffer overflow\n");
+			ocall_print("ERROR: Server network buffer overflow\n");
 		}
 
 
 		// print buffer which contains the client contents 
-		// printf("From client: %s\t To client : ", buff); 
+		// ocall_print("From client: %s\t To client : ", buff); 
 		bzero(buff, MAX); 
 		n = 0; 
 		// copy server message in the buffer 
-		printf("Server: copying into return buffer\n");
+		ocall_print("Server: copying into return buffer\n");
 		printPayload(retString, 20);
-		printf("Server: about to memcpy\n");
+		ocall_print("Server: about to memcpy\n");
 		memcpy(buff, retString, responseSize);  //TODO unhardcode 1000 and have make network request
 										//return values have size assoicated with them 
 		
@@ -103,10 +103,10 @@ void func_attestation(int sockfd)
 
 		// if msg contains "Exit" then server exit and chat ended. 
 		// if (strncmp("exit", buff, 4) == 0) { 
-		// 	printf("Server Exit...\n"); 
+		// 	ocall_print("Server Exit...\n"); 
 		// 	break; 
 		// } 
-		printf("Server sent message to client!\n");
+		ocall_print("Server sent message to client!\n");
         break;
 	} 
 } 
@@ -124,7 +124,7 @@ void func_kps_generic(int sockfd)
 		int actual_response_size = read(sockfd, buff, sizeof(buff)); 
 
 		if (actual_response_size >= sizeof(buff)) {
-			printf("NOTE: Server Network buffer full\n");
+			ocall_print("NOTE: Server Network buffer full\n");
 		}
 		
 		int responseSize;
@@ -132,18 +132,18 @@ void func_kps_generic(int sockfd)
 		// char* retString = "netreceive";
 
 		if (responseSize >= MAX) {
-			printf("ERROR: Server network buffer overflow\n");
+			ocall_print("ERROR: Server network buffer overflow\n");
 		}
 
 
 		// print buffer which contains the client contents 
-		// printf("From client: %s\t To client : ", buff); 
+		// ocall_print("From client: %s\t To client : ", buff); 
 		bzero(buff, MAX); 
 		n = 0; 
 		// copy server message in the buffer 
-		printf("Server: copying into return buffer\n");
+		ocall_print("Server: copying into return buffer\n");
 		printPayload(retString, 20);
-		printf("Server: about to memcpy\n");
+		ocall_print("Server: about to memcpy\n");
 		memcpy(buff, retString, responseSize);  //TODO unhardcode 1000 and have make network request
 										//return values have size assoicated with them 
 		
@@ -153,10 +153,10 @@ void func_kps_generic(int sockfd)
 
 		// if msg contains "Exit" then server exit and chat ended. 
 		// if (strncmp("exit", buff, 4) == 0) { 
-		// 	printf("Server Exit...\n"); 
+		// 	ocall_print("Server Exit...\n"); 
 		// 	break; 
 		// } 
-		printf("Server sent message to client!\n");
+		ocall_print("Server sent message to client!\n");
         break;
 	} 
 } 
@@ -191,17 +191,17 @@ void* handle_socket_network_request(void* arg)
 	// socket create and verification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
 	if (sockfd == -1) { 
-		printf("Server Socket creation failed...\n"); 
+		ocall_print("Server Socket creation failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Server Socket successfully created..\n"); 
+		ocall_print("Server Socket successfully created..\n"); 
 	bzero(&servaddr, sizeof(servaddr)); 
 
 	int enable = 1;
 
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-		printf("server setsockopt(SO_REUSEADDR) failed\n");
+		ocall_print("server setsockopt(SO_REUSEADDR) failed\n");
 	}
     
 
@@ -215,13 +215,13 @@ void* handle_socket_network_request(void* arg)
 	// Binding newly created socket to given IP and verification 
 	if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) { 
 		if (errno == EADDRINUSE) {
-			printf("Error: Address already in use!\n");
+			ocall_print("Error: Address already in use!\n");
 		}
-		printf("Server Socket bind failed...\n"); 
+		ocall_print("Server Socket bind failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Server Socket successfully binded..\n"); 
+		ocall_print("Server Socket successfully binded..\n"); 
 
 	// -------------------------------------------------------
 	
@@ -231,11 +231,11 @@ void* handle_socket_network_request(void* arg)
 	// // socket create and verification 
 	// sockfd2 = socket(AF_INET, SOCK_STREAM, 0); 
 	// if (sockfd2 == -1) { 
-	// 	printf("socket2 creation failed...\n"); 
+	// 	ocall_print("socket2 creation failed...\n"); 
 	// 	exit(0); 
 	// } 
 	// else
-	// 	printf("Socket2 successfully created..\n"); 
+	// 	ocall_print("Socket2 successfully created..\n"); 
 	// bzero(&servaddr2, sizeof(servaddr2)); 
 
 	// // assign IP, PORT 
@@ -245,38 +245,38 @@ void* handle_socket_network_request(void* arg)
 
 	// // Binding newly created socket to given IP and verification 
 	// if ((bind(sockfd2, (SA*)&servaddr2, sizeof(servaddr2))) != 0) { 
-	// 	printf("socket2 bind failed...\n"); 
+	// 	ocall_print("socket2 bind failed...\n"); 
 	// 	exit(0); 
 	// } 
 	// else
-	// 	printf("Socket2 successfully binded..\n");
+	// 	ocall_print("Socket2 successfully binded..\n");
 	
 	// -----------------------------
 
 	// Now server is ready to listen and verification 
 	if ((listen(sockfd, 5)) != 0) { 
 		if (errno == EADDRINUSE) {
-			printf("ERROR: Server Address already in use!\n");
+			ocall_print("ERROR: Server Address already in use!\n");
 		} else if (errno == EBADF) {
-			printf("ERROR: Server sockfd is not valid for listen command!\n");
+			ocall_print("ERROR: Server sockfd is not valid for listen command!\n");
 
 		}
-		printf("Server listen failed...\n"); 
+		ocall_print("Server listen failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Server listening..\n"); 
+		ocall_print("Server listening..\n"); 
 	len = sizeof(cli);
 
     while (1) {
         // Accept the data packet from client and verification 
         connfd = accept(sockfd, (SA*)&cli, (socklen_t*)&len); 
         if (connfd < 0) { 
-            printf("server acccept failed...\n"); 
+            ocall_print("server acccept failed...\n"); 
             exit(0); 
         } 
         else
-            printf("server acccept the client...\n"); 
+            ocall_print("server acccept the client...\n"); 
 
 		pthread_t pid;
 		pthread_create(&pid, NULL, server_handle_connection_thread, &connfd);
@@ -298,17 +298,17 @@ void* handle_socket_network_request_attestation(void* arg)
 	// socket create and verification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
 	if (sockfd == -1) { 
-		printf("Server Socket creation failed...\n"); 
+		ocall_print("Server Socket creation failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Server Socket successfully created..\n"); 
+		ocall_print("Server Socket successfully created..\n"); 
 	bzero(&servaddr, sizeof(servaddr)); 
 
 	int enable = 1;
 
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-		printf("server setsockopt(SO_REUSEADDR) failed\n");
+		ocall_print("server setsockopt(SO_REUSEADDR) failed\n");
 	}
     
 
@@ -320,13 +320,13 @@ void* handle_socket_network_request_attestation(void* arg)
 	// Binding newly created socket to given IP and verification 
 	if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) { 
 		if (errno == EADDRINUSE) {
-			printf("Error: Address already in use!\n");
+			ocall_print("Error: Address already in use!\n");
 		}
-		printf("Server Socket bind failed...\n"); 
+		ocall_print("Server Socket bind failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Server Socket successfully binded..\n"); 
+		ocall_print("Server Socket successfully binded..\n"); 
 
 	// -------------------------------------------------------
 	
@@ -336,11 +336,11 @@ void* handle_socket_network_request_attestation(void* arg)
 	// // socket create and verification 
 	// sockfd2 = socket(AF_INET, SOCK_STREAM, 0); 
 	// if (sockfd2 == -1) { 
-	// 	printf("socket2 creation failed...\n"); 
+	// 	ocall_print("socket2 creation failed...\n"); 
 	// 	exit(0); 
 	// } 
 	// else
-	// 	printf("Socket2 successfully created..\n"); 
+	// 	ocall_print("Socket2 successfully created..\n"); 
 	// bzero(&servaddr2, sizeof(servaddr2)); 
 
 	// // assign IP, PORT 
@@ -350,38 +350,38 @@ void* handle_socket_network_request_attestation(void* arg)
 
 	// // Binding newly created socket to given IP and verification 
 	// if ((bind(sockfd2, (SA*)&servaddr2, sizeof(servaddr2))) != 0) { 
-	// 	printf("socket2 bind failed...\n"); 
+	// 	ocall_print("socket2 bind failed...\n"); 
 	// 	exit(0); 
 	// } 
 	// else
-	// 	printf("Socket2 successfully binded..\n");
+	// 	ocall_print("Socket2 successfully binded..\n");
 	
 	// -----------------------------
 
 	// Now server is ready to listen and verification 
 	if ((listen(sockfd, 5)) != 0) { 
 		if (errno == EADDRINUSE) {
-			printf("ERROR: Server Address already in use!\n");
+			ocall_print("ERROR: Server Address already in use!\n");
 		} else if (errno == EBADF) {
-			printf("ERROR: Server sockfd is not valid for listen command!\n");
+			ocall_print("ERROR: Server sockfd is not valid for listen command!\n");
 
 		}
-		printf("Server listen failed...\n"); 
+		ocall_print("Server listen failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Server listening..\n"); 
+		ocall_print("Server listening..\n"); 
 	len = sizeof(cli);
 
     while (1) {
         // Accept the data packet from client and verification 
         connfd = accept(sockfd, (SA*)&cli, (socklen_t*)&len); 
         if (connfd < 0) { 
-            printf("server acccept failed...\n"); 
+            ocall_print("server acccept failed...\n"); 
             exit(0); 
         } 
         else
-            printf("server acccept the client...\n"); 
+            ocall_print("server acccept the client...\n"); 
 
 		pthread_t pid;
 		pthread_create(&pid, NULL, server_handle_attestation_connection_thread, &connfd);
@@ -404,17 +404,17 @@ void* handle_socket_network_kps_generic_requests(void* arg)
 	// socket create and verification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
 	if (sockfd == -1) { 
-		printf("Server Socket creation failed...\n"); 
+		ocall_print("Server Socket creation failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Server Socket successfully created..\n"); 
+		ocall_print("Server Socket successfully created..\n"); 
 	bzero(&servaddr, sizeof(servaddr)); 
 
 	int enable = 1;
 
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-		printf("server setsockopt(SO_REUSEADDR) failed\n");
+		ocall_print("server setsockopt(SO_REUSEADDR) failed\n");
 	}
     
 
@@ -426,38 +426,38 @@ void* handle_socket_network_kps_generic_requests(void* arg)
 	// Binding newly created socket to given IP and verification 
 	if ((bind(sockfd, (SA*)&servaddr, sizeof(servaddr))) != 0) { 
 		if (errno == EADDRINUSE) {
-			printf("Error: Address already in use!\n");
+			ocall_print("Error: Address already in use!\n");
 		}
-		printf("Server Socket bind failed...\n"); 
+		ocall_print("Server Socket bind failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Server Socket successfully binded..\n"); 
+		ocall_print("Server Socket successfully binded..\n"); 
 
 	// Now server is ready to listen and verification 
 	if ((listen(sockfd, 5)) != 0) { 
 		if (errno == EADDRINUSE) {
-			printf("ERROR: Server Address already in use!\n");
+			ocall_print("ERROR: Server Address already in use!\n");
 		} else if (errno == EBADF) {
-			printf("ERROR: Server sockfd is not valid for listen command!\n");
+			ocall_print("ERROR: Server sockfd is not valid for listen command!\n");
 
 		}
-		printf("Server listen failed...\n"); 
+		ocall_print("Server listen failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Server listening..\n"); 
+		ocall_print("Server listening..\n"); 
 	len = sizeof(cli);
 
     while (1) {
         // Accept the data packet from client and verification 
         connfd = accept(sockfd, (SA*)&cli, (socklen_t*)&len); 
         if (connfd < 0) { 
-            printf("server acccept failed...\n"); 
+            ocall_print("server acccept failed...\n"); 
             exit(0); 
         } 
         else
-            printf("server acccept the client...\n"); 
+            ocall_print("server acccept the client...\n"); 
 
 		pthread_t pid;
 		pthread_create(&pid, NULL, server_handle_kps_generic_connection_thread, &connfd);
@@ -479,16 +479,17 @@ void func_sender(int sockfd, char* request, int request_size, char* network_resp
 	for (;;) { 
 		bzero(buff, sizeof(buff)); 
 		memcpy(buff, request, request_size);
-		// printf("Enter the string : "); 
+		// ocall_print("Enter the string : "); 
 		n = 0; 
 		// while ((buff[n++] = getchar()) != '\n') 
 		// 	; 
 		write(sockfd, buff, request_size); 
 		bzero(buff, sizeof(buff)); 
 		read(sockfd, buff, sizeof(buff)); 
-		printf("From Server : %s\n", buff); 
+		ocall_print("From Server :");
+		ocall_print(buff); 
 		if ((strncmp(buff, "exit", 4)) == 0) { 
-			printf("Client Exit...\n"); 
+			ocall_print("Client Exit...\n"); 
 			break; 
 		} 
 		break;
@@ -505,21 +506,21 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 	// socket create and varification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
 	if (sockfd == -1) { 
-		printf("client socket creation failed...\n"); 
+		ocall_print("client socket creation failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("Client Socket successfully created..\n"); 
+		ocall_print("Client Socket successfully created..\n"); 
 	bzero(&servaddr, sizeof(servaddr)); 
 
 	char* ipAddressCopy = (char*) malloc(ipAddressSize + 1);
 	memcpy(ipAddressCopy, ipAddress, ipAddressSize);
 	ipAddressCopy[ipAddressSize] = '\0';
 
-	printf("Sending Message to IP Address:\n");
-	printf("%s\n", ipAddressCopy);
-	printf("Port:\n");
-	printf("%d\n", port);
+	ocall_print("Sending Message to IP Address:");
+	ocall_print(ipAddressCopy);
+	ocall_print("Port:");
+	ocall_print_int(port);
 
 	// assign IP, PORT 
 	servaddr.sin_family = AF_INET; 
@@ -533,11 +534,11 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 	// // socket create and varification 
 	// sockfd2 = socket(AF_INET, SOCK_STREAM, 0); 
 	// if (sockfd2 == -1) { 
-	// 	printf("socket2 creation failed...\n"); 
+	// 	ocall_print("socket2 creation failed...\n"); 
 	// 	exit(0); 
 	// } 
 	// else
-	// 	printf("Socket2 successfully created..\n"); 
+	// 	ocall_print("Socket2 successfully created..\n"); 
 	// bzero(&servaddr2, sizeof(servaddr2)); 
 
 	// // assign IP, PORT 
@@ -548,11 +549,11 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 
 	// connect the client socket to server socket 
 	if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) != 0) { 
-		printf("client connection with the server failed...\n"); 
+		ocall_print("client connection with the server failed...\n"); 
 		exit(0); 
 	} 
 	else
-		printf("client connected to the server..\n"); 
+		ocall_print("client connected to the server..\n"); 
 
 	// function for chat 
 	func_sender(sockfd, request, request_size, network_response); 

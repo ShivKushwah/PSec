@@ -1063,13 +1063,13 @@ int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* 
     // printRSAKey(optional_message + SGX_RSA3072_KEY_SIZE + 1);
     void* thread_ret;
     pthread_t thread_id; 
-    printf("\n Calling Attestation Thread\n"); 
+    ocall_print("\n Calling Attestation Thread\n"); 
     // pthread_create(&thread_id, NULL, pong_enclave_attestation_thread, (void*) parameters);
     pthread_create(&thread_id, NULL, pong_enclave_attestation_thread, (void*) (&parameters));
 
     //TODO look into not calling pthread_join but actually let this run asynchoronous
     pthread_join(thread_id, &thread_ret); 
-    printf("\n Finished Attestation Thread\n");
+    ocall_print("\n Finished Attestation Thread\n");
 
     return 0;
 
@@ -1077,7 +1077,8 @@ int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* 
 
 int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE, char* ipAddress, uint32_t IP_ADDRESS_SIZE, int port) {
     // ocall_print("GUUUUGY");
-    printf("Network Request is : %s\n", request);
+    ocall_print("Network Request is :");
+    ocall_print(request);
     fflush(stdout);
 
 
@@ -1092,7 +1093,8 @@ int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, 
     //     return 1;
     // }
 
-    printf("Network Response is : %s\n", result);
+    ocall_print("Network Response is :");
+    ocall_print(result);
     // if (result == NULL || result[0] == '\0') {
     //     printf("ERROR. No Message Received!\n");
     //     return 0;

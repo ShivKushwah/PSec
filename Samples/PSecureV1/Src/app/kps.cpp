@@ -664,7 +664,7 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         FILE *fp1 = fopen("metadata_info.txt", "r"); 
         if (fp1 == NULL) 
         { 
-            printf("Error : File not open"); 
+            ocall_print("Error : File not open"); 
             exit(0); 
         } 
 
@@ -673,7 +673,8 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         char* ptr = actual_measurement;
 
         if (ENABLE_KPS_ATTESTATION_PRINT) {
-            printf("Expected Measurement is: %s\n", expected_measurement);
+            ocall_print("Expected Measurement is:");
+            ocall_print(expected_measurement);
         }
 
         for(i=0;i<sizeof(sample_measurement_t);i++)
@@ -684,12 +685,13 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         ptr[i] = '\0';
 
         if (ENABLE_KPS_ATTESTATION_PRINT) {
-            printf("Actual Measurement is: %s\n", actual_measurement);
+            ocall_print("Actual Measurement is: ");
+            ocall_print(actual_measurement);
         }
 
         //If measurements differ, we need to abort this connection 
         if (!(strcmp(expected_measurement, actual_measurement) == 0)) {
-            printf("MEASUREMENT ERROR!");
+            ocall_print("MEASUREMENT ERROR!");
             ret = SP_QUOTE_VERIFICATION_FAILED;
             break;
         }    
