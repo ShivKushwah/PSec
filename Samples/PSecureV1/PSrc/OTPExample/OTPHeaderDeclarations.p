@@ -29,6 +29,11 @@ fun GenerateRandomMasterSecret() : StringType;
 fun GetUserInput() : StringType;
 // fun CastHandle(input : secure_machine_handle) : machine_handle;
 
+fun MeasureStartTrustedSend();
+fun MeasureEndTrustedSend();
+fun MeasureStartTrustedSend2();
+fun MeasureEndTrustedSend2();
+
 event BankPublicIDEvent : machine_handle;
 event PublicIDEvent : machine_handle;
 event UNTRUSTEDReceiveRegistrationCredentials : StringType;

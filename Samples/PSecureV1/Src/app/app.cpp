@@ -307,6 +307,13 @@ void ocall_enclave_print(const char* str) {
     fflush(stdout);
 }
 
+void ocall_print_current_time() {
+    milliseconds ms = duration_cast< milliseconds >(
+        system_clock::now().time_since_epoch()
+    );
+    std::cout << ms.count() << std::endl;
+}
+
 void ocall_request_user_input(char* user_input, uint32_t max_input_len) {
     fgets(user_input, max_input_len, stdin);
     strtok(user_input, "\n"); //To remove trailing new line in fgets

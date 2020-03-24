@@ -3,8 +3,10 @@
 #include <assert.h>
 #include <unordered_map> 
 #include <map>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 char* itoa(int num, char* str, int base);
 int atoi(char *p);

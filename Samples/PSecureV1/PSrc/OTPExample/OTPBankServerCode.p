@@ -36,6 +36,7 @@ secure_machine BankEnclave {
         on TRUSTEDProvisionBankSSM do (payload: machine_handle) {
             clientUSM = payload;
             clientSSM = new ClientEnclave();
+            MeasureStartTrustedSend();
             send clientSSM, TRUSTEDProvisionClientSSM, clientUSM;
             goto RegisterNewBankAccount;
             
@@ -47,6 +48,7 @@ secure_machine BankEnclave {
             print "Bank: Creating new bank account!";
             userCredential = payload;
             masterSecret = GenerateRandomMasterSecret();
+            MeasureStartTrustedSend2();
             send clientSSM, MasterSecretEvent, masterSecret; //secure_send
             send clientUSM, PublicIDEvent, Declassify(clientSSM) as machine_handle; //untrusted_send
             goto AuthCheck;

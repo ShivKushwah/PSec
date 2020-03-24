@@ -313,6 +313,13 @@ static sgx_status_t SGX_CDECL enclave_ocall_enclave_print(void* pms)
 	return SGX_SUCCESS;
 }
 
+static sgx_status_t SGX_CDECL enclave_ocall_print_current_time(void* pms)
+{
+	if (pms != NULL) return SGX_ERROR_INVALID_PARAMETER;
+	ocall_print_current_time();
+	return SGX_SUCCESS;
+}
+
 static sgx_status_t SGX_CDECL enclave_ocall_print_int(void* pms)
 {
 	ms_ocall_print_int_t* ms = SGX_CAST(ms_ocall_print_int_t*, pms);
@@ -475,12 +482,13 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[22];
+	void * table[23];
 } ocall_table_enclave = {
-	22,
+	23,
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_enclave_print,
+		(void*)enclave_ocall_print_current_time,
 		(void*)enclave_ocall_print_int,
 		(void*)enclave_ocall_request_user_input,
 		(void*)enclave_ocall_pong_enclave_attestation_in_thread,

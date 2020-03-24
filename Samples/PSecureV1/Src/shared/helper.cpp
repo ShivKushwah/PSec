@@ -2741,6 +2741,41 @@ extern "C" void P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** arg
 }
 
 
+extern "C" void P_MeasureStartTrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+
+    ocall_enclave_print("MEASURE TRUSTED SEND START:");
+    ocall_print_current_time();
+    
+}
+
+
+extern "C" void P_MeasureEndTrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+
+    ocall_enclave_print("MEASURE TRUSTED SEND END:");
+    ocall_print_current_time();
+    
+}
+
+extern "C" void P_MeasureStartTrustedSend2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+
+    ocall_enclave_print("MEASURE TRUSTED SEND 2 START:");
+    ocall_print_current_time();
+    
+}
+
+
+extern "C" void P_MeasureEndTrustedSend2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+
+    ocall_enclave_print("MEASURE TRUSTED SEND 2 END:");
+    ocall_print_current_time();
+    
+}
+
+
 extern "C" PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     char user_input[100];

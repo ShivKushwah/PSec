@@ -122,6 +122,14 @@ PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context, PRT_VALUE
 
 PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
+PRT_VALUE* P_MeasureStartTrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_MeasureEndTrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_MeasureStartTrustedSend2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_MeasureEndTrustedSend2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
 
@@ -379,6 +387,38 @@ PRT_FUNDECL P_FUNCTION_GetUserInput =
 {
     "GetUserInput",
     &P_GetUserInput_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_MeasureStartTrustedSend =
+{
+    "MeasureStartTrustedSend",
+    &P_MeasureStartTrustedSend_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_MeasureEndTrustedSend =
+{
+    "MeasureEndTrustedSend",
+    &P_MeasureEndTrustedSend_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_MeasureStartTrustedSend2 =
+{
+    "MeasureStartTrustedSend2",
+    &P_MeasureStartTrustedSend2_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_MeasureEndTrustedSend2 =
+{
+    "MeasureEndTrustedSend2",
+    &P_MeasureEndTrustedSend2_IMPL,
     NULL
 };
 
@@ -1098,6 +1138,16 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         PTMP_tmp0_2 = NULL;
     }
     
+    PrtFreeValue(P_MeasureStartTrustedSend_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_3;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_3;
+    }
+    
     PRT_VALUE** P_LVALUE_17 = &(PTMP_tmp1_1);
     PrtFreeValue(*P_LVALUE_17);
     *P_LVALUE_17 = PrtCloneValue(p_this->varValues[0]);
@@ -1185,6 +1235,16 @@ PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         PrtFreeValue(*P_LVALUE_22);
         *P_LVALUE_22 = PTMP_tmp0_3;
         PTMP_tmp0_3 = NULL;
+    }
+    
+    PrtFreeValue(P_MeasureStartTrustedSend2_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_4;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_4;
     }
     
     PRT_VALUE** P_LVALUE_23 = &(PTMP_tmp1_2);
@@ -1670,6 +1730,16 @@ PRT_VALUE* P_Anon_IMPL_6(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE** P_VAR_payload_3 = argRefs[0];
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PrtFreeValue(P_MeasureEndTrustedSend_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_6;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_6;
+    }
+    
     PRT_VALUE** P_LVALUE_46 = &(p_this->varValues[1]);
     PrtFreeValue(*P_LVALUE_46);
     *P_LVALUE_46 = PrtCloneValue(*P_VAR_payload_3);
@@ -1696,6 +1766,16 @@ PRT_VALUE* P_Anon_IMPL_7(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE** P_VAR_payload_4 = argRefs[0];
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PrtFreeValue(P_MeasureEndTrustedSend2_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_7;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_7;
+    }
+    
     PRT_VALUE** P_LVALUE_47 = &(p_this->varValues[0]);
     PrtFreeValue(*P_LVALUE_47);
     *P_LVALUE_47 = PrtCloneValue(*P_VAR_payload_4);
