@@ -2,6 +2,8 @@ machine UntrustedInitializer {
     var handler: machine_handle;
     start state Initial {
         entry {
+            print "MEASURE UNTRUSTED CREATE START:";
+            MeasureTime();
             handler = new TrustedInitializer();
         }
     }
@@ -13,6 +15,8 @@ secure_machine TrustedInitializer {
     var bankSSM: secure_machine_handle;
     start state Initial {
         entry {
+            print "MEASURE UNTRUSTED CREATE END:";
+            MeasureTime();
             clientUSM = new ClientWebBrowser();
             bankSSM = new BankEnclave();
             send bankSSM, TRUSTEDProvisionBankSSM, clientUSM; //secure_send
@@ -48,6 +52,9 @@ secure_machine BankEnclave {
 
     state RegisterNewBankAccount {
         on UNTRUSTEDReceiveRegistrationCredentials do (payload: StringType) {
+            print "MEASURE UNTRUSTED SEND END:";
+            MeasureTime();
+
             print "Bank: Creating new bank account!";
             userCredential = payload;
             masterSecret = GenerateRandomMasterSecret();
@@ -66,6 +73,8 @@ secure_machine BankEnclave {
 
     state Verify { 
         entry (payload : (usernamePW: StringType, OTPCode: StringType)) {
+            print "MEASURE UNTRUSTED SEND 2 END:";
+            MeasureTime();
             if (Declassify(userCredential) == payload.usernamePW && Hash(masterSecret as StringType, userCredential as StringType) == payload.OTPCode) {
                 send clientUSM, AuthSuccess; //untrusted_send
             } else {

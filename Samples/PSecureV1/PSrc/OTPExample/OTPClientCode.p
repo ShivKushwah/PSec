@@ -61,6 +61,8 @@ machine ClientWebBrowser {
         entry {
             var credentials : StringType;
             credentials = GetUserInput();
+            print "MEASURE UNTRUSTED SEND START:";
+            MeasureTime();
             send bankSSM, UNTRUSTEDReceiveRegistrationCredentials, credentials;
         }
         on PublicIDEvent goto Authenticate;
@@ -99,6 +101,8 @@ machine ClientWebBrowser {
 
     state ValidateOTPCode {
         entry {
+            print "MEASURE UNTRUSTED SEND 2 START:";
+            MeasureTime();
             send bankSSM, AuthenticateRequest, (usernamePW = usernamePassword, OTPCode = OTPCode); //untrusted_send
             receive {
                 case AuthSuccess : {
