@@ -4,8 +4,13 @@ secure_machine ClientEnclave {
     
     start state Initial {
         defer GenerateOTPCodeEvent;
+        entry {
+            print "MEASURE TRUSTED CREATE END:";
+            MeasureTime();
+        }
         on TRUSTEDProvisionClientSSM do (payload : machine_handle) {
-            MeasureEndTrustedSend();
+            print "MEASURE TRUSTED SEND END:";
+            MeasureTime();
             clientUSM = payload;
             goto ReceiveMasterSecretEvent;
         }
@@ -18,7 +23,8 @@ secure_machine ClientEnclave {
 
     state ProvisionEnclaveWithSecret {
         entry (payload : secure_StringType){
-            MeasureEndTrustedSend2();
+            print "MEASURE TRUSTED SEND 2 END:";
+            MeasureTime();
             masterSecret = payload;
             goto WaitForGenerateOTP;
         }
