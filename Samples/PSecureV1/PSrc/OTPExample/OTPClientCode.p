@@ -203,7 +203,7 @@ machine ClientWebBrowser {
             print "MEASURE UNTRUSTED SEND START:";
             MeasureTime();
             send bankSSM, MeasureEvent1, (fst = 1, snd = GetHelloWorld());
-            print "MEASURE UNTRUSTED SEND START:";
+            print "MEASURE UNTRUSTED SEND 2 START:";
             MeasureTime();
             send bankSSM, MeasureEvent2, (fst = 1, snd = GetHelloWorld());
 

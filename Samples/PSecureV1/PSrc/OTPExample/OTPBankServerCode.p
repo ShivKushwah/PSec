@@ -157,8 +157,8 @@ secure_machine BankEnclave {
             MeasureTime();
         }
         on UNTRUSTEDReceiveRegistrationCredentials do (payload: StringType) {
-            print "MEASURE UNTRUSTED SEND END:";
-            MeasureTime();
+            // print "MEASURE UNTRUSTED SEND END:";
+            // MeasureTime();
 
             print "Bank: Creating new bank account!";
             userCredential = payload;
