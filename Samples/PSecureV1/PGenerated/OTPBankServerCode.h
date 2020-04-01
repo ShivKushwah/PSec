@@ -7,6 +7,10 @@
 extern "C" {
 #endif
     
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDMeasureEvent1;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDMeasureEvent2;
+    extern PRT_EVENTDECL P_EVENT_MeasureEvent1;
+    extern PRT_EVENTDECL P_EVENT_MeasureEvent2;
     extern PRT_EVENTDECL P_EVENT_BankPublicIDEvent;
     extern PRT_EVENTDECL P_EVENT_PublicIDEvent;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveRegistrationCredentials;
