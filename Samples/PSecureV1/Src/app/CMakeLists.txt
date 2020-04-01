@@ -60,6 +60,7 @@ target_link_libraries(app
         #~/Research/PSecuredLang/ProgrammingEnclaves/Samples/PSecureV1/Src/app/libPrt_static.a #TODO Unhardcode this
         Prt_static2
         ${LIBHANDLERLIB_PATH}
+        -lsgx_capable -Wl,-rpath=$(SGX_LIBRARY_PATH)
         -Wl,-rpath -Wl,/usr/local/lib
         -Wl,-rpath -Wl,${SGX_LIBRARY_PATH}
         -lpthread)

@@ -8,6 +8,8 @@
 #endif
 // #include "PingPongEnclave.h"
 
+// #define HW_MODE_ENABLED
+
 const int DEFAULT_PORT = 8080;
 
 const int IP_ADDRESS_AND_PORT_STRING_SIZE = 50;
