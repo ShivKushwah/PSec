@@ -16,8 +16,8 @@ set(P_LIB_LINK_PATH ${P_BUILT_LIB_PATH}/lib)
 if (SGX)
     set(SGX_SDK $ENV{SGX_SDK})
     set(SGX_ARCH x64)
-    set(SGX_MODE SIM CACHE STRING "SGX mode: SIM or HW") # SGX mode: sim, hw
-    # set(SGX_MODE HW CACHE STRING "SGX mode: SIM or HW") # SGX mode: sim, hw
+    # set(SGX_MODE SIM CACHE STRING "SGX mode: SIM or HW") # SGX mode: sim, hw
+    set(SGX_MODE HW CACHE STRING "SGX mode: SIM or HW") # SGX mode: sim, hw
     set(COMPILE_EXAMPLES NO CACHE BOOL "Build examples")
     set(SGX_BUILD DEBUG CACHE STRING "Build: DEBUG, PRERELEASE or RELEASE")
 
