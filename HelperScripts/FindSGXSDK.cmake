@@ -5,7 +5,7 @@
 #
 
 FIND_PATH(SGXSDK_INCLUDE_DIRS sgx.h "${SGX_SDK}/include")
-FIND_LIBRARY(SGXSDK_LIBRARIES libsgx_urts.so "${SGX_SDK}/lib64")
+FIND_LIBRARY(SGXSDK_LIBRARIES libsgx_urts.so "/usr/lib/x86_64-linux-gnu")
 
 # handle the QUIETLY and REQUIRED arguments and set LibODB_FOUND to TRUE
 # if all listed variables are TRUE, hide their existence from configuration view
