@@ -644,6 +644,18 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         PTMP_tmp0 = NULL;
     }
     
+    PrtPrintf("MEASURE UNTRUSTED CREATE SSM START:");
+    
+    PrtFreeValue(P_MeasureTime_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
     _P_GEN_funargs[0] = "TrustedInitializer";
     _P_GEN_funargs[1] = "0";
     PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp1);
@@ -888,6 +900,18 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
+    PrtPrintf("MEASURE UNTRUSTED CREATE SSM END:");
+    
+    PrtFreeValue(P_MeasureTime_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_2;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_2;
+    }
+    
     _P_GEN_funargs[0] = "ClientWebBrowser";
     _P_GEN_funargs[1] = "0";
     PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp0_1);

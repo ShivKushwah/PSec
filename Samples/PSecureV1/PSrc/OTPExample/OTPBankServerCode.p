@@ -96,6 +96,8 @@ machine UntrustedInitializer {
             print "MEASURE UNTRUSTED CREATE START:";
             MeasureTime();
             handler = new MeasureMachine();
+            print "MEASURE UNTRUSTED CREATE SSM START:";
+            MeasureTime();
             handler = new TrustedInitializer();
         }
     }
@@ -116,8 +118,8 @@ secure_machine TrustedInitializer {
     var bankSSM: secure_machine_handle;
     start state Initial {
         entry {
-            // print "MEASURE UNTRUSTED CREATE END:";
-            // MeasureTime();
+            print "MEASURE UNTRUSTED CREATE SSM END:";
+            MeasureTime();
             clientUSM = new ClientWebBrowser();
             bankSSM = new BankEnclave();
             send bankSSM, TRUSTEDProvisionBankSSM, clientUSM; //secure_send
