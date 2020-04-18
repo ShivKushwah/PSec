@@ -265,7 +265,7 @@ PRT_TYPE_KIND convertKindToType(int kind) {
 }
 
 int returnSizeOfForeignType(int type_tag) {
-    if (type_tag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex) { 
+    if (type_tag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex || type_tag == P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex) { 
         return SIZE_OF_PRT_STRING_SERIALIZED;
     }  else if (type_tag == P_TYPEDEF_machine_handle->typeUnion.foreignType->declIndex) {        
         return SIZE_OF_MACHINE_HANDLE;
@@ -2682,6 +2682,7 @@ extern "C" PRT_VALUE* P_CastMachineHandleToSecureMachineHandle_IMPL(PRT_VALUE* v
 
 extern "C" PRT_VALUE* P_CastSecureStringTypeToStringType_IMPL(PRT_VALUE* value)
 {
+    
     value->valueUnion.frgn->typeTag = P_TYPEDEF_StringType->typeUnion.foreignType->declIndex;
     return value;
     // // ocall_print("debug inside");
@@ -2706,7 +2707,7 @@ extern "C" PRT_VALUE* P_CastStringTypeToSecureStringType_IMPL(PRT_VALUE* value)
 {
     value->valueUnion.frgn->typeTag = P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex;
     return value;
-    // // ocall_print("debug inside");
+    // ocall_print("debug inside");
     // PRT_UINT64 val = value->valueUnion.frgn->value;
 
     // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
