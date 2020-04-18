@@ -2682,41 +2682,45 @@ extern "C" PRT_VALUE* P_CastMachineHandleToSecureMachineHandle_IMPL(PRT_VALUE* v
 
 extern "C" PRT_VALUE* P_CastSecureStringTypeToStringType_IMPL(PRT_VALUE* value)
 {
-    // ocall_print("debug inside");
-    PRT_UINT64 val = value->valueUnion.frgn->value;
+    value->valueUnion.frgn->typeTag = P_TYPEDEF_StringType->typeUnion.foreignType->declIndex;
+    return value;
+    // // ocall_print("debug inside");
+    // PRT_UINT64 val = value->valueUnion.frgn->value;
 
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-    // ocall_print((char*)val);
-    memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
-    // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
-    // ocall_print("checking temp fix");
-    // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
-    //     ocall_print("TEMP FIX WONT WORK");
-    // }
-    // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
-    PRT_VALUE* ret = PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_StringType);
-    // ocall_print_int(ret->discriminator);
-    return ret;
+    // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    // // ocall_print((char*)val);
+    // memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
+    // // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
+    // // ocall_print("checking temp fix");
+    // // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
+    // //     ocall_print("TEMP FIX WONT WORK");
+    // // }
+    // // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
+    // PRT_VALUE* ret = PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_StringType);
+    // // ocall_print_int(ret->discriminator);
+    // return ret;
     
 }
 
 extern "C" PRT_VALUE* P_CastStringTypeToSecureStringType_IMPL(PRT_VALUE* value)
 {
-    // ocall_print("debug inside");
-    PRT_UINT64 val = value->valueUnion.frgn->value;
+    value->valueUnion.frgn->typeTag = P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex;
+    return value;
+    // // ocall_print("debug inside");
+    // PRT_UINT64 val = value->valueUnion.frgn->value;
 
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-    // ocall_print((char*)val);
-    memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
-    // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
-    // ocall_print("checking temp fix");
-    // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
-    //     ocall_print("TEMP FIX WONT WORK");
-    // }
-    // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
-    PRT_VALUE* ret = PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-    // ocall_print_int(ret->discriminator);
-    return ret;
+    // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    // // ocall_print((char*)val);
+    // memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
+    // // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
+    // // ocall_print("checking temp fix");
+    // // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
+    // //     ocall_print("TEMP FIX WONT WORK");
+    // // }
+    // // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
+    // PRT_VALUE* ret = PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    // // ocall_print_int(ret->discriminator);
+    // return ret;
     
 }
 
