@@ -122,7 +122,9 @@ secure_machine TrustedInitializer {
             MeasureTime();
             clientUSM = new ClientWebBrowser();
             bankSSM = new BankEnclave();
-            send bankSSM, TRUSTEDProvisionBankSSM, clientUSM; //secure_send
+            print "About to cast 1";
+            send bankSSM, TRUSTEDProvisionBankSSM, clientUSM as secure_machine_handle; //secure_send
+            print "About to declassify";
             send clientUSM, BankPublicIDEvent, Declassify(bankSSM) as machine_handle; //untrusted_send
         }
     }
@@ -140,20 +142,20 @@ secure_machine BankEnclave {
     }
 
     state ReceiveClientUSM {
-        on TRUSTEDProvisionBankSSM do (payload: machine_handle) {
-            clientUSM = payload;
+        on TRUSTEDProvisionBankSSM do (payload: secure_machine_handle) {
             print "MEASURE TRUSTED CREATE START:";
             MeasureTime();
             clientSSM = new ClientEnclave();
             print "MEASURE TRUSTED SEND START:";
             MeasureTime();
-            send clientSSM, TRUSTEDMeasureEvent1, (fst = 1, snd = GetHelloWorld());
+            send clientSSM, TRUSTEDMeasureEvent1, (fst = 1 as secure_int, snd = GetHelloWorld() as secure_StringType);
             print "MEASURE TRUSTED SEND 2 START:";
             MeasureTime();
-            send clientSSM, TRUSTEDMeasureEvent2, (fst = 1, snd = GetHelloWorld());
+            send clientSSM, TRUSTEDMeasureEvent2, (fst = 1 as secure_int, snd = GetHelloWorld() as secure_StringType);
 
-
-            send clientSSM, TRUSTEDProvisionClientSSM, clientUSM;
+            print "About to declassify 2";
+            clientUSM = Declassify(payload) as machine_handle;
+            send clientSSM, TRUSTEDProvisionClientSSM, clientUSM as secure_machine_handle;
             goto RegisterNewBankAccount;
             
         }

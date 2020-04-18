@@ -2652,9 +2652,31 @@ extern "C" PRT_VALUE* P_CastSecureMachineHandleToMachineHandle_IMPL(PRT_VALUE* v
     //     ocall_print("TEMP FIX WONT WORK");
     // }
     // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
-    ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
+    ocall_print("Cast Secure Machine Handle to Regular preserves ip address and port information as");
     ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
+    
+}
+
+extern "C" PRT_VALUE* P_CastMachineHandleToSecureMachineHandle_IMPL(PRT_VALUE* value)
+{
+    PRT_UINT64 val = value->valueUnion.frgn->value;
+
+    ocall_print("Cast Machine Handle to Secure initial port info");
+    ocall_print(((char*)val) + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
+
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
+    memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
+    memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
+    // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
+    // ocall_print("checking temp fix");
+    // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
+    //     ocall_print("TEMP FIX WONT WORK");
+    // }
+    // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
+    ocall_print("Cast Machine Handle to Secure preserves ip address and port information as");
+    ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
     
 }
 
@@ -2673,6 +2695,26 @@ extern "C" PRT_VALUE* P_CastSecureStringTypeToStringType_IMPL(PRT_VALUE* value)
     // }
     // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
     PRT_VALUE* ret = PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_StringType);
+    // ocall_print_int(ret->discriminator);
+    return ret;
+    
+}
+
+extern "C" PRT_VALUE* P_CastStringTypeToSecureStringType_IMPL(PRT_VALUE* value)
+{
+    // ocall_print("debug inside");
+    PRT_UINT64 val = value->valueUnion.frgn->value;
+
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    // ocall_print((char*)val);
+    memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
+    // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
+    // ocall_print("checking temp fix");
+    // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
+    //     ocall_print("TEMP FIX WONT WORK");
+    // }
+    // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
+    PRT_VALUE* ret = PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
     // ocall_print_int(ret->discriminator);
     return ret;
     

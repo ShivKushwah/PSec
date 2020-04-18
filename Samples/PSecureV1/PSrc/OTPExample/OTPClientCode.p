@@ -139,18 +139,18 @@ secure_machine ClientEnclave {
             print "MEASURE TRUSTED CREATE END:";
             MeasureTime();
         }
-        on TRUSTEDMeasureEvent1 do (payload: (fst:int, snd:StringType)) {
+        on TRUSTEDMeasureEvent1 do (payload: (fst:secure_int, snd:secure_StringType)) {
             print "MEASURE TRUSTED SEND END:";
             MeasureTime();
         }
-        on TRUSTEDMeasureEvent2 do (payload: (fst:int, snd:StringType)) {
+        on TRUSTEDMeasureEvent2 do (payload: (fst:secure_int, snd:secure_StringType)) {
             print "MEASURE TRUSTED SEND 2 END:";
             MeasureTime();
         }
-        on TRUSTEDProvisionClientSSM do (payload : machine_handle) {
+        on TRUSTEDProvisionClientSSM do (payload : secure_machine_handle) {
             // print "MEASURE TRUSTED SEND END:";
             // MeasureTime();
-            clientUSM = payload;
+            clientUSM = Declassify(payload) as machine_handle;
             goto ReceiveMasterSecretEvent;
         }
     }
