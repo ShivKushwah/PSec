@@ -31,16 +31,16 @@ secure_machine SecureBallotBoxMachine
     }
 
     state WaitForVotes {
-        entry (payload: int) {
-            numberOfTotalVotesAllowed = payload;
+        entry (payload: secure_int) {
+            numberOfTotalVotesAllowed = Declassify(payload) as int;
             currentNumberOfVotes = 0;
         }
         on TRUSTEDeVote do (payload: (credential : secure_StringType, vote : secure_int, requestingMachine : secure_machine_handle))
         {
             send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote); //secure_send
             receive {
-                case TRUSTEDeRespAddItem : (result: bool) {
-                    if(result)
+                case TRUSTEDeRespAddItem : (result: secure_bool) {
+                    if(Declassify(result) as bool)
                     {
                         send payload.requestingMachine, TRUSTEDeRespConfirmVote; //secure_send
                         currentNumberOfVotes = currentNumberOfVotes + 1;
@@ -65,7 +65,7 @@ secure_machine SecureBallotBoxMachine
                 case TRUSTEDeRespGetLog: (payload: seq[(credential : secure_StringType, vote : secure_int)])
                 {
                     print "Sending votes to Secure Tabulation Teller";
-                    send tabulationTeller, TRUSTEDeAllVotes, (ballotID = 0, votes = payload); //secure_send
+                    send tabulationTeller, TRUSTEDeAllVotes, (ballotID = 0 as secure_int, votes = payload); //secure_send
                 }
             }
 

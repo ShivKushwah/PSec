@@ -14,6 +14,7 @@ machine VotingUSM {
 
 	start state Init {
 		on UNTRUSTEDProvisionVotingUSM do (payload: (supervisor: machine_handle, credential: StringType)) {
+			print "VotingUSM ready!";
 			supervisor = payload.supervisor;
 			credential = payload.credential;
 

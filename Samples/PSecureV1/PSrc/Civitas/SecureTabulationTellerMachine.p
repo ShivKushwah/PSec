@@ -20,7 +20,7 @@ secure_machine SecureTabulationTellerMachine
     }
 
     state ReceiveVotes {
-        on TRUSTEDeAllVotes do (payload: (ballotID : int, votes : seq[(credential : secure_StringType, vote : secure_int)])){
+        on TRUSTEDeAllVotes do (payload: (ballotID : secure_int, votes : seq[(credential : secure_StringType, vote : secure_int)])){
             //allVotes are ordered by time
             allVotes = payload.votes;
             goto DoTally;

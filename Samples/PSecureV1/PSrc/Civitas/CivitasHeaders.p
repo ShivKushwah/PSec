@@ -40,15 +40,17 @@ event UNTRUSTEDReceiveVotingSSM : machine_handle;
 event UNTRUSTEDVoteRequest : (credential : StringType, vote : int, requestingMachine : machine_handle);
 event UNTRUSTEDGetResults : (whoWon : int, myVoteCounted : bool);
 // event UNTRUSTEDGetResults : int;
-trusted event TRUSTEDeStartElection : int;
+trusted event TRUSTEDeStartElection : secure_int;
 trusted event TRUSTEDeVote : (credential : secure_StringType, vote : secure_int, requestingMachine: secure_machine_handle);
 trusted event TRUSTEDeAddItem : (credential: secure_StringType, vote: secure_int);
-trusted event TRUSTEDeRespAddItem : bool;
+trusted event TRUSTEDeRespAddItem : secure_bool;
+
 trusted event TRUSTEDeRespConfirmVote;
+
 event eCloseElection;
 trusted event TRUSTEDeGetLog;
 trusted event TRUSTEDeRespGetLog : seq[(credential : secure_StringType, vote : secure_int)];
-trusted event TRUSTEDeAllVotes : (ballotID : int, votes : seq[(credential : secure_StringType, vote : secure_int)]);
+trusted event TRUSTEDeAllVotes : (ballotID : secure_int, votes : seq[(credential : secure_StringType, vote : secure_int)]);
 trusted event TRUSTEDValidateCredential : (tabulationTellerMachine : secure_machine_handle, credentialToCheck : secure_StringType);
 trusted event TRUSTEDValidCredential;
 trusted event TRUSTEDInvalidCredential;
