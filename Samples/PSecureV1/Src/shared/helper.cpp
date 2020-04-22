@@ -304,7 +304,7 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
         }
         final_size += strlen(foreignTypeTagString) + 1 + size_of_type_tag_foreign_type;
         return string;
-    } else if (value->discriminator == PRT_VALUE_KIND_BOOL) {
+    } else if (value->discriminator == PRT_VALUE_KIND_BOOL || value->discriminator == PRT_VALUE_KIND_SECURE_BOOL) {
         if (value->valueUnion.bl == PRT_TRUE) {
             final_size += 4;
             return createStringLiteralMalloced("true");
@@ -475,7 +475,7 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
         memcpy(prtStr, str, size_of_foreign_type);
         newPrtValue->valueUnion.frgn->value = (PRT_UINT64) prtStr; //TODO do we need to memcpy?
         *numCharactersProcessed = strlen(payloadTypeString) + 1 + strlen(typeTagString) + 1 + size_of_foreign_type;
-    } else if (payloadType == PRT_VALUE_KIND_BOOL) {
+    } else if (payloadType == PRT_VALUE_KIND_BOOL || payloadType == PRT_VALUE_KIND_SECURE_BOOL) {
         if (strcmp(str, "true") == 0) {
             newPrtValue->valueUnion.bl = PRT_TRUE;
         } else if (strcmp(str, "false") == 0){
@@ -511,7 +511,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
     int payloadType = atoi(split);
     for (int i = 0; i < numArgs; i++) {
         
-        if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_SECURE_INT || payloadType == PRT_VALUE_KIND_FOREIGN || payloadType == PRT_VALUE_KIND_BOOL) {
+        if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_SECURE_INT || payloadType == PRT_VALUE_KIND_FOREIGN || payloadType == PRT_VALUE_KIND_BOOL || payloadType == PRT_VALUE_KIND_SECURE_BOOL) {
             ocall_print("Processing Native Type String:");
             printRSAKey(strOriginal);
             int numProcessedInHelper;
@@ -2697,8 +2697,10 @@ extern "C" PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     PRT_VALUE** P_VAR_payload = argRefs[0];
     PRT_VALUE* prtValue = *P_VAR_payload;
 
-    if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_BOOL) { //TODO change to PRT_VALUE_KIND_BOOL
-        return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
+    if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_BOOL) {
+        PRT_VALUE* temp = PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
+		temp->discriminator = PRT_VALUE_KIND_SECURE_BOOL;
+		return temp;
 
     } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_INT) {
         PRT_VALUE* temp = PrtMkIntValue(prtValue->valueUnion.nt);

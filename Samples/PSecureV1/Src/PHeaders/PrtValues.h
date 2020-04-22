@@ -73,6 +73,8 @@ typedef enum PRT_VALUE_KIND
 	/**< The number of value kinds               */
 	PRT_VALUE_KIND_SECURE_INT = 11,
 	/**< The number of value kinds               */
+	PRT_VALUE_KIND_SECURE_BOOL = 13,
+	/**< The number of value kinds               */
 } PRT_VALUE_KIND;
 
 /** A Union type to discriminate the Prt value */
