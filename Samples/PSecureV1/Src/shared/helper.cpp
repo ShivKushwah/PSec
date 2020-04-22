@@ -281,7 +281,7 @@ int returnSizeOfForeignType(int type_tag) {
 //Responsibility of Caller to free return
 char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
     //TODO code the rest of the types
-    if (value->discriminator == PRT_VALUE_KIND_INT) {
+    if (value->discriminator == PRT_VALUE_KIND_INT || value->discriminator == PRT_VALUE_KIND_SECURE_INT) {
         char* integer = (char*) malloc(SIZE_OF_MAX_INTEGER_SERIALIZED);
         itoa(value->valueUnion.nt, integer, 10);
         final_size += strlen(integer);
@@ -455,7 +455,7 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
     *numCharactersProcessed = strlen(payloadTypeString) + 1 + strlen(str);
     PRT_VALUE* newPrtValue = (PRT_VALUE*)PrtMalloc(sizeof(PRT_VALUE));
     newPrtValue->discriminator = (PRT_VALUE_KIND) payloadType;
-    if (payloadType == PRT_VALUE_KIND_INT) {
+    if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_SECURE_INT) {
         ocall_print("Make Prt Int with Value:");
         ocall_print(str);
         newPrtValue->valueUnion.nt = atoi(str);
@@ -511,7 +511,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
     int payloadType = atoi(split);
     for (int i = 0; i < numArgs; i++) {
         
-        if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_FOREIGN || payloadType == PRT_VALUE_KIND_BOOL) {
+        if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_SECURE_INT || payloadType == PRT_VALUE_KIND_FOREIGN || payloadType == PRT_VALUE_KIND_BOOL) {
             ocall_print("Processing Native Type String:");
             printRSAKey(strOriginal);
             int numProcessedInHelper;
@@ -2549,96 +2549,6 @@ extern "C" void P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
 }
 
-extern "C" PRT_VALUE* P_DeclassifyHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-    memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
-    memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
-    // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
-    // ocall_print("checking temp fix");
-    // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
-    //     ocall_print("TEMP FIX WONT WORK");
-    // }
-    // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
-    ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
-    ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
-    
-}
-
-extern "C" PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-
-    if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_BOOL) {
-        return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
-
-    } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_INT) {
-        return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
-
-    } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_FOREIGN) {
-
-        if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex || (*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex) {
-            PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-            PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-            memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
-            return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-        } else if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex || (*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_machine_handle->typeUnion.foreignType->declIndex) {
-            PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-
-            PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-            memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
-            memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
-            ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
-            ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
-            return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
-        } 
-
-    }
-
-    ocall_print("ERROR: Declassify not found");
-    return NULL;
-    
-    
-    
-}
-
-extern "C" PRT_VALUE* P_Classify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-
-    // if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_BOOL) {
-    //     return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
-
-    // } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_INT) {
-    //     return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
-
-    // } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_FOREIGN) {
-    if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_FOREIGN) {
-
-        if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex || (*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex) {
-            PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-            PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-            memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
-            return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_StringType);
-        } else if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex || (*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_machine_handle->typeUnion.foreignType->declIndex) {
-            PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-            PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-            memcpy(str, (char*) val, SIZE_OF_MACHINE_HANDLE);
-            return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
-        } 
-
-    }
-
-    ocall_print("ERROR: Declassify not found");
-    return NULL;
-}
-
-
-
 extern "C" PRT_VALUE* P_CastSecureMachineHandleToMachineHandle_IMPL(PRT_VALUE* value)
 {
     PRT_UINT64 val = value->valueUnion.frgn->value;
@@ -2723,6 +2633,134 @@ extern "C" PRT_VALUE* P_CastStringTypeToSecureStringType_IMPL(PRT_VALUE* value)
     // // ocall_print_int(ret->discriminator);
     // return ret;
     
+}
+
+extern "C" PRT_VALUE* P_DeclassifyHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
+    memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
+    memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
+    // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
+    // ocall_print("checking temp fix");
+    // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
+    //     ocall_print("TEMP FIX WONT WORK");
+    // }
+    // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
+    ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
+    ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
+    
+}
+
+extern "C" PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+
+    if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_BOOL) {
+        return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
+
+    } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_INT) {
+        return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
+
+    } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_FOREIGN) {
+
+        if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex) {
+            return P_CastSecureStringTypeToStringType_IMPL((*P_VAR_payload));
+            // PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+            // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+            // memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
+            // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+        } else if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex) {
+            return P_CastSecureMachineHandleToMachineHandle_IMPL((*P_VAR_payload));
+            // PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+            // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
+            // memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
+            // memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
+            // ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
+            // ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
+            // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
+        } 
+
+    }
+
+    ocall_print("ERROR: Declassify not found");
+    return NULL;
+
+}
+
+
+extern "C" PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_VALUE* prtValue = *P_VAR_payload;
+
+    if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_BOOL) { //TODO change to PRT_VALUE_KIND_BOOL
+        return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
+
+    } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_INT) {
+        PRT_VALUE* temp = PrtMkIntValue(prtValue->valueUnion.nt);
+		temp->discriminator = PRT_VALUE_KIND_SECURE_INT;
+		return temp;
+
+    } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_FOREIGN) {
+
+        if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex) {
+            return P_CastStringTypeToSecureStringType_IMPL(prtValue);
+            // PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+            // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+            // memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
+            // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+        } else if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_machine_handle->typeUnion.foreignType->declIndex) {
+            return P_CastMachineHandleToSecureMachineHandle_IMPL(prtValue);
+            // PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+
+            // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
+            // memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
+            // memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
+            // ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
+            // ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
+            // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
+        } 
+
+    }
+
+    ocall_print("ERROR: Declassify not found");
+    return NULL;
+
+}
+
+extern "C" PRT_VALUE* P_Classify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+
+    // if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_BOOL) {
+    //     return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
+
+    // } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_INT) {
+    //     return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
+
+    // } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_FOREIGN) {
+    if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_FOREIGN) {
+
+        if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex || (*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex) {
+            PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+            PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+            memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
+            return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_StringType);
+        } else if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex || (*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_machine_handle->typeUnion.foreignType->declIndex) {
+            PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+            PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
+            memcpy(str, (char*) val, SIZE_OF_MACHINE_HANDLE);
+            return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
+        } 
+
+    }
+
+    ocall_print("ERROR: Declassify not found");
+    return NULL;
 }
 
 extern "C" void P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -2822,7 +2860,7 @@ extern "C" PRT_VALUE* P_GenerateRandomMasterSecret_IMPL(PRT_MACHINEINST* context
 {
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
 	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, "MasterSecret");
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_StringType);
     
 }
 

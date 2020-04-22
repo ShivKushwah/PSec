@@ -59,6 +59,7 @@ fun PrintRawStringType(inputString : StringType);
 fun PrintRawSecureStringType(inputString : secure_StringType);
 
 fun Declassify(input : any) : any;
+fun Endorse(input : any) : any;
 
 fun Classify(input : any) : any;
 

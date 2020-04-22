@@ -69,7 +69,9 @@ typedef enum PRT_VALUE_KIND
 	/**< The kind of all set values         */
 	PRT_VALUE_KIND_MAP = 10,
 	/**< The kind of all map values              */
-	PRT_VALUE_KIND_COUNT = 11,
+	PRT_VALUE_KIND_COUNT = 12,
+	/**< The number of value kinds               */
+	PRT_VALUE_KIND_SECURE_INT = 11,
 	/**< The number of value kinds               */
 } PRT_VALUE_KIND;
 

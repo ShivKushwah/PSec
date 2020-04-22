@@ -124,7 +124,7 @@ secure_machine TrustedInitializer {
             MeasureTime();
             clientUSM = new ClientWebBrowser();
             bankSSM = new BankEnclave();
-            send bankSSM, TRUSTEDProvisionBankSSM, clientUSM as secure_machine_handle; //secure_send
+            send bankSSM, TRUSTEDProvisionBankSSM, Endorse(clientUSM) as secure_machine_handle; //secure_send
             send clientUSM, BankPublicIDEvent, Declassify(bankSSM) as machine_handle; //untrusted_send
         }
     }
@@ -148,13 +148,13 @@ secure_machine BankEnclave {
             clientSSM = new ClientEnclave();
             print "MEASURE TRUSTED SEND START:";
             MeasureTime();
-            send clientSSM, TRUSTEDMeasureEvent1, (fst = 1 as secure_int, snd = GetHelloWorld() as secure_StringType);
+            send clientSSM, TRUSTEDMeasureEvent1, (fst = Endorse(1) as secure_int, snd = Endorse(GetHelloWorld()) as secure_StringType);
             print "MEASURE TRUSTED SEND 2 START:";
             MeasureTime();
-            send clientSSM, TRUSTEDMeasureEvent2, (fst = 1 as secure_int, snd = GetHelloWorld() as secure_StringType);
+            send clientSSM, TRUSTEDMeasureEvent2, (fst = Endorse(1) as secure_int, snd = Endorse(GetHelloWorld()) as secure_StringType);
 
             clientUSM = Declassify(payload) as machine_handle;
-            send clientSSM, TRUSTEDProvisionClientSSM, clientUSM as secure_machine_handle;
+            send clientSSM, TRUSTEDProvisionClientSSM, Endorse(clientUSM) as secure_machine_handle;
             goto RegisterNewBankAccount;
             
         }
@@ -174,7 +174,7 @@ secure_machine BankEnclave {
             // MeasureTime();
 
             print "Bank: Creating new bank account!";
-            userCredential = payload;
+            userCredential = Endorse(payload) as secure_StringType;
             masterSecret = GenerateRandomMasterSecret();
             // print "MEASURE TRUSTED SEND 2 START:";
             // MeasureTime();
@@ -195,9 +195,9 @@ secure_machine BankEnclave {
             // MeasureTime();
             PrintRawStringType(Declassify(userCredential) as StringType);
             PrintRawStringType(payload.usernamePW as StringType);
-            PrintRawStringType(Hash(masterSecret as StringType, userCredential as StringType));
+            PrintRawStringType(Hash(Declassify(masterSecret) as StringType, Declassify(userCredential) as StringType));
             PrintRawStringType(payload.OTPCode);
-            if (Declassify(userCredential) as StringType == payload.usernamePW as StringType && Hash(masterSecret as StringType, userCredential as StringType) == payload.OTPCode) {
+            if (Declassify(userCredential) as StringType == payload.usernamePW as StringType && Hash(Declassify(masterSecret) as StringType, Declassify(userCredential) as StringType) == payload.OTPCode) {
                 send clientUSM, AuthSuccess; //untrusted_send
             } else {
                 send clientUSM, AuthFailure; //untrusted_send
