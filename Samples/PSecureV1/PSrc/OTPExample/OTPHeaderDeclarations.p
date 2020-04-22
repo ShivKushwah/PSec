@@ -26,7 +26,7 @@ fun Hash(input1:StringType, input2:StringType) : StringType;
 fun CreateSecureMachineRequest(): secure_machine_handle;
 fun CreateUSMMachineRequest(): machine_handle;
 fun PrintKey(input : machine_handle);
-fun GenerateRandomMasterSecret() : StringType;
+fun GenerateRandomMasterSecret() : secure_StringType;
 fun GetUserInput() : StringType;
 // fun CastHandle(input : secure_machine_handle) : machine_handle;
 
@@ -75,7 +75,7 @@ trusted event TRUSTEDProvisionClientSSM : secure_machine_handle;
 // fun CreateSecureMachineRequest(): secure_machine_handle;
 // fun CreateUSMMachineRequest(): machine_handle;
 // fun PrintKey(input : machine_handle);
-// fun GenerateRandomMasterSecret() : StringType;
+// fun GenerateRandomMasterSecret() : secure_StringType;
 // fun GetUserInput() : StringType;
 // // fun CastHandle(input : secure_machine_handle) : machine_handle;
 // fun GetHelloWorld() : StringType;

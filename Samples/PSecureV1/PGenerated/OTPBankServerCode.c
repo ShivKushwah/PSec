@@ -555,7 +555,7 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     _P_GEN_funargs[1] = "0";
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
-    *P_LVALUE = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE = ((_P_GEN_funval = P_CreateUSMMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return;
     }
