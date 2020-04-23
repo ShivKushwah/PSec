@@ -2463,7 +2463,7 @@ PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
             
             PRT_VALUE** P_LVALUE_109 = &(PTMP_tmp16_2);
             PrtFreeValue(*P_LVALUE_109);
-            *P_LVALUE_109 = PrtMkIntValue(PrtPrimGetInt(P_VAR_countCandidate0) + PrtPrimGetInt(PTMP_tmp15_2));
+            *P_LVALUE_109 = PrtMkSecureIntValue(PrtPrimGetSecureInt(P_VAR_countCandidate0) + PrtPrimGetSecureInt(PTMP_tmp15_2));
             
             {
                 PRT_VALUE** P_LVALUE_110 = &(P_VAR_countCandidate0);
@@ -2498,7 +2498,7 @@ PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
             
             PRT_VALUE** P_LVALUE_114 = &(PTMP_tmp20);
             PrtFreeValue(*P_LVALUE_114);
-            *P_LVALUE_114 = PrtMkIntValue(PrtPrimGetInt(P_VAR_countCandidate1) + PrtPrimGetInt(PTMP_tmp19_1));
+            *P_LVALUE_114 = PrtMkSecureIntValue(PrtPrimGetSecureInt(P_VAR_countCandidate1) + PrtPrimGetSecureInt(PTMP_tmp19_1));
             
             {
                 PRT_VALUE** P_LVALUE_115 = &(P_VAR_countCandidate1);
@@ -2526,7 +2526,7 @@ PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_118 = &(PTMP_tmp22);
     PrtFreeValue(*P_LVALUE_118);
-    *P_LVALUE_118 = PrtMkSecureBoolValue(PrtPrimGetInt(P_VAR_countCandidate0) > PrtPrimGetInt(P_VAR_countCandidate1));
+    *P_LVALUE_118 = PrtMkSecureBoolValue(PrtPrimGetSecureInt(P_VAR_countCandidate0) > PrtPrimGetSecureInt(P_VAR_countCandidate1));
     
     if (PrtPrimGetBool(PTMP_tmp22))
     {
@@ -2559,7 +2559,7 @@ PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     {
         PRT_VALUE** P_LVALUE_122 = &(PTMP_tmp25);
         PrtFreeValue(*P_LVALUE_122);
-        *P_LVALUE_122 = PrtMkSecureBoolValue(PrtPrimGetInt(P_VAR_countCandidate1) > PrtPrimGetInt(P_VAR_countCandidate0));
+        *P_LVALUE_122 = PrtMkSecureBoolValue(PrtPrimGetSecureInt(P_VAR_countCandidate1) > PrtPrimGetSecureInt(P_VAR_countCandidate0));
         
         if (PrtPrimGetBool(PTMP_tmp25))
         {

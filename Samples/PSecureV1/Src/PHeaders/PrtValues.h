@@ -264,6 +264,8 @@ PRT_API PRT_UINT32 PRT_CALL_CONV PrtSetCapacity(_In_ PRT_VALUE* set);
 	*/
 	PRT_API PRT_VALUE* PRT_CALL_CONV PrtMkIntValue(_In_ PRT_INT value);
 
+	PRT_API PRT_VALUE* PRT_CALL_CONV PrtMkSecureIntValue(_In_ PRT_INT value);
+
 	/** Makes an float value.
 	* @param[in] value A float value.
 	* @returns A proper float value. Caller is responsible for freeing.
