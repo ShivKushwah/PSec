@@ -31,7 +31,7 @@ secure_machine SecureSupervisorMachine
 
             //We send 2 because this is how many votes we need to be submitted
             //before the election is considered finished
-            send bBox, TRUSTEDeStartElection, 2 as secure_int; //secure_send
+            send bBox, TRUSTEDeStartElection, Endorse(2) as secure_int; //secure_send
 
             goto SendVotingClientMachinesOrValidateCredentials;
         }

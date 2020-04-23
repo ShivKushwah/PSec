@@ -456,6 +456,9 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
     PRT_VALUE* newPrtValue = (PRT_VALUE*)PrtMalloc(sizeof(PRT_VALUE));
     newPrtValue->discriminator = (PRT_VALUE_KIND) payloadType;
     if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_SECURE_INT) {
+        if (payloadType == PRT_VALUE_KIND_SECURE_INT) {
+            ocall_print("Creating secure int!");
+        }
         ocall_print("Make Prt Int with Value:");
         ocall_print(str);
         newPrtValue->valueUnion.nt = atoi(str);
@@ -512,7 +515,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
     for (int i = 0; i < numArgs; i++) {
         
         if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_SECURE_INT || payloadType == PRT_VALUE_KIND_FOREIGN || payloadType == PRT_VALUE_KIND_BOOL || payloadType == PRT_VALUE_KIND_SECURE_BOOL) {
-            ocall_print("Processing Native Type String:");
+            ocall_print("Processing Primitative Type:");
             printRSAKey(strOriginal);
             int numProcessedInHelper;
             values[i] = deserializeHelper(strOriginal, &numProcessedInHelper);
@@ -2659,10 +2662,10 @@ extern "C" PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 {
     PRT_VALUE** P_VAR_payload = argRefs[0];
 
-    if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_BOOL) {
+    if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_SECURE_BOOL) {
         return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
 
-    } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_INT) {
+    } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_SECURE_INT) {
         return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
 
     } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_FOREIGN) {

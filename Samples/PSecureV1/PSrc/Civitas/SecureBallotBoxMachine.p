@@ -65,7 +65,7 @@ secure_machine SecureBallotBoxMachine
                 case TRUSTEDeRespGetLog: (payload: seq[(credential : secure_StringType, vote : secure_int)])
                 {
                     print "Sending votes to Secure Tabulation Teller";
-                    send tabulationTeller, TRUSTEDeAllVotes, (ballotID = 0 as secure_int, votes = payload); //secure_send
+                    send tabulationTeller, TRUSTEDeAllVotes, (ballotID = Endorse(0) as secure_int, votes = payload); //secure_send
                 }
             }
 

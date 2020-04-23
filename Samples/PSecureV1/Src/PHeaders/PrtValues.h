@@ -248,6 +248,8 @@ PRT_API PRT_UINT32 PRT_CALL_CONV PrtSetCapacity(_In_ PRT_VALUE* set);
 	*/
 	PRT_API PRT_VALUE* PRT_CALL_CONV PrtMkBoolValue(_In_ PRT_BOOLEAN value);
 
+	PRT_API PRT_VALUE* PRT_CALL_CONV PrtMkSecureBoolValue(_In_ PRT_BOOLEAN value);
+
 	/** Makes an event value.
 	* @param[in] value An event id.
 	* @returns A proper event value. Caller is responsible for freeing.

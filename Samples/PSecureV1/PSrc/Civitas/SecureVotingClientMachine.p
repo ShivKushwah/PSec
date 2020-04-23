@@ -27,8 +27,8 @@ secure_machine SecureVotingClientMachine
             var secure_vote: secure_int;
             requestingMachine = payload.requestingMachine;
             secure_vote = payload.vote;
-            credential = payload.credential;
-            send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = this); //secure_send
+            credential = Endorse(payload.credential) as secure_StringType;
+            send ballotBox, TRUSTEDeVote, (credential = credential, vote = Endorse(payload.vote) as secure_int, requestingMachine = this); //secure_send
         }
         on TRUSTEDeRespConfirmVote goto ValidateResults with {
             print "Vote successfully submitted to the ballot box";
@@ -42,6 +42,14 @@ secure_machine SecureVotingClientMachine
         on TRUSTEDeRespElectionResults do (payload: (allVotes : map[secure_StringType, secure_int], whoWon : secure_int)) {
             var winner : int;
             var voteCounted : bool;
+            var temp : bool;
+            print "Hello";
+            temp = Declassify(credential in payload.allVotes) as bool;
+            print "Yello";
+            temp = !temp;
+            print "Zello";
+            temp = Declassify(!(credential in payload.allVotes)) as bool;
+            print "Qello";
             if(Declassify(!(credential in payload.allVotes)) as bool)
             {
                 print "ERROR: Vote not found!";

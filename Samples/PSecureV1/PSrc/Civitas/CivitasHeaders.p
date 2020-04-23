@@ -20,6 +20,7 @@ fun GetThis() : machine_handle; //Should be "this"
 // fun DeclassifyHandle(input : secure_machine_handle) : machine_handle;
 
 fun Declassify(input : any) : any;
+fun Endorse(input : any) : any;
 
 fun GenerateCredential1() : StringType;
 fun GenerateCredential2() : StringType;

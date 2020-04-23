@@ -16,7 +16,7 @@ secure_machine SecureTamperEvidentLogMachine
     state WaitForRequests {
         on TRUSTEDeAddItem do (payload: (credential : secure_StringType, vote: secure_int)){
             log += (sizeof(log), (credential = payload.credential, vote = payload.vote));
-            send parent, TRUSTEDeRespAddItem, true as secure_bool; //secure_send
+            send parent, TRUSTEDeRespAddItem, Endorse(true) as secure_bool; //secure_send
         }
         on TRUSTEDeGetLog do
         {

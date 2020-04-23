@@ -27,27 +27,27 @@ secure_machine SecureBulletinBoardMachine
 
             electionResultsKeys = keys(electionResults);
             i = 0;
-            countCandidate0 = 0;
-            countCandidate1 = 0;
+            countCandidate0 = Endorse(0);
+            countCandidate1 = Endorse(0);
 
             while (i < sizeof(electionResultsKeys)) {
                 if (Declassify(electionResults[electionResultsKeys[i]]) as int == 0) {
                     //Vote for Candidate0
-                    countCandidate0 = countCandidate0 + 1;
+                    countCandidate0 = countCandidate0 + (Endorse(1) as secure_int);
                 } else {
                     //Vote for Candidate1
-                    countCandidate1 = countCandidate1 + 1;
+                    countCandidate1 = countCandidate1 + (Endorse(1) as secure_int);
                 }
                 i = i + 1;
             }
             // print "Count 0 - {0}", countCandidate0;
             // print "Count 1 - {0}", countCandidate1;
             if (countCandidate0 > countCandidate1) {
-                winner = 0;
+                winner = Endorse(0);
             } else if (countCandidate1 > countCandidate0) {
-                winner = 1;
+                winner = Endorse(1);
             } else {
-                winner = 2; //Tie
+                winner = Endorse(2); //Tie
             }
             send requestingMachine, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = winner); //secure_send
         }
