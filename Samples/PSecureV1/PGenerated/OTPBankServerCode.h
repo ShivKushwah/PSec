@@ -7,6 +7,10 @@
 extern "C" {
 #endif
     
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDMeasureEvent1;
+    extern PRT_EVENTDECL P_EVENT_TRUSTEDMeasureEvent2;
+    extern PRT_EVENTDECL P_EVENT_MeasureEvent1;
+    extern PRT_EVENTDECL P_EVENT_MeasureEvent2;
     extern PRT_EVENTDECL P_EVENT_BankPublicIDEvent;
     extern PRT_EVENTDECL P_EVENT_PublicIDEvent;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveRegistrationCredentials;
@@ -20,11 +24,13 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionBankSSM;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionClientSSM;
     extern PRT_INTERFACEDECL P_I_UntrustedInitializer;
+    extern PRT_INTERFACEDECL P_I_MeasureMachine;
     extern PRT_INTERFACEDECL P_I_TrustedInitializer;
     extern PRT_INTERFACEDECL P_I_BankEnclave;
     extern PRT_INTERFACEDECL P_I_ClientEnclave;
     extern PRT_INTERFACEDECL P_I_ClientWebBrowser;
     extern PRT_MACHINEDECL P_MACHINE_UntrustedInitializer;
+    extern PRT_MACHINEDECL P_MACHINE_MeasureMachine;
     extern PRT_MACHINEDECL P_MACHINE_TrustedInitializer;
     extern PRT_MACHINEDECL P_MACHINE_BankEnclave;
     extern PRT_MACHINEDECL P_MACHINE_ClientEnclave;
