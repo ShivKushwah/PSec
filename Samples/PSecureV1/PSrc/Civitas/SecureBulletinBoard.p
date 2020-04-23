@@ -27,8 +27,8 @@ secure_machine SecureBulletinBoardMachine
 
             electionResultsKeys = keys(electionResults);
             i = 0;
-            countCandidate0 = Endorse(0);
-            countCandidate1 = Endorse(0);
+            countCandidate0 = Endorse(0) as secure_int;
+            countCandidate1 = Endorse(0) as secure_int;
 
             while (i < sizeof(electionResultsKeys)) {
                 if (Declassify(electionResults[electionResultsKeys[i]]) as int == 0) {
@@ -43,11 +43,11 @@ secure_machine SecureBulletinBoardMachine
             // print "Count 0 - {0}", countCandidate0;
             // print "Count 1 - {0}", countCandidate1;
             if (countCandidate0 > countCandidate1) {
-                winner = Endorse(0);
+                winner = Endorse(0) as secure_int;
             } else if (countCandidate1 > countCandidate0) {
-                winner = Endorse(1);
+                winner = Endorse(1) as secure_int;
             } else {
-                winner = Endorse(2); //Tie
+                winner = Endorse(2) as secure_int; //Tie
             }
             send requestingMachine, TRUSTEDeRespElectionResults, (allVotes = electionResults, whoWon = winner); //secure_send
         }
