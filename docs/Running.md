@@ -1,0 +1,98 @@
+# PSec Running Instructions
+### Choose which Sample to Run
+Go to `ProgrammingEnclaves/Samples/PSecureV1/CMakeLists.txt`
+Uncomment the example that needs to be run. For example, in order to run the OTP sample, do the following:
+
+```shell
+# set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas/CivitasHeaders.p  ...
+# set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/CivitasHeaders.c) ...
+# add_definitions(-DCIVITAS_EXAMPLE)
+
+set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPBankServerCode.p  ...
+set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/OTPBankServerCode.c) ...
+add_definitions(-DOTP_EXAMPLE)
+```
+
+### Choose SIM mode or HW mode
+To run the sample in simulation mode, 
+1. Go to file `HelperScripts/CMakeLists.txt` and comment out `set(SGX_MODE HW)` and uncomment `set(SGX_MODE SIM)`
+2. Run the custom source command for the Intel SGX environment: `source /home/shivendra/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment`
+
+To run the sample in hardware mode,
+1. Go to file `HelperScripts/CMakeLists.txt` and comment out `set(SGX_MODE SIM)` and uncomment `set(SGX_MODE HW)`
+2. Run the custom source command for the Intel SGX environment: `source /home/shivendra/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment`
+3. Run `unset LD_LIBRARY_PATH`
+4. Run `export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:/opt/intel/sgxpsw/lib64`
+
+### Running the sample
+##### Command Line Arguments
+PSec requires the deploying the executable with different commandline arguments in order to specify different contexts for the executuable to run in. In the PSec paper, we outline that the system requires 1 Key Provisioning Server (KPS) and potentially multiple distributed hosts.
+
+The executable produced (`./app`) takes in the following arguments for KPS deployment:
+`./app isKPSProcess=True KpsIPAddress={KPSIPAddress:GeneralPort} {KPSAttestationPort} {DistributedHost1IPAddress:DistributedHost1Port}=[PSecMachine1,PSecMachine2,...] {DistributedHost2IPAddress:DistributedHost2Port}=[PSecMachine3,PSecMachine4,...]`
+As seen above, which distributed hosts are responsible for hosting which PSec machines must be specified in the KPS executable
+
+The executable takes in the following arguments for the deployment of a distributed host:
+`./app isKPSProcess=False KpsIPAddress={KPSIPAddress:GeneralPort} {KPSAttestationPort} currentHostMachineAddress={DistributedHost1IPAddress:DistributedHost1Port} isStartMachine=False`
+If the distributed host contains the PSecMachine that is to be the first created machine in the system, then
+`./app isKPSProcess=False KpsIPAddress={KPSIPAddress:GeneralPort} {KPSAttestationPort} currentHostMachineAddress={DistributedHost1IPAddress:DistributedHost1Port} isStartMachine=True startMachine={PSecMachineFirst}`
+
+For all commands above, replace `{...}` with the requested value
+
+##### Example Deployments
+Before running any of the samples below, open terminal and create 3 tabs. 
+
+In each tab, if you wish to run in simulation mode, do the following:
+1. Run the custom source command for the Intel SGX environment: `source /home/shivendra/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment`
+
+If you instead want to run in hardware mode, do the following in each tab:
+1. Run the custom source command for the Intel SGX environment: `source /home/shivendra/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment`
+2. Run `unset LD_LIBRARY_PATH`
+3. Run `export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:/opt/intel/sgxpsw/lib64`
+
+If running the distributed setting, follow these instructions above in all terminal tabs across both physical machines.
+
+If running any of these samples for the first time, remove the `make clean` command from the provided instructions below.
+
+###### Civitas (Local)
+In this, we will deploy the Civitas example with the KPS, Distributed Host 1, and Distributed Host 2 all running within the same physical machine. 
+Need to run the following in different terminal tabs (and in this order):
+
+1. KPS: `cd Submodule/P && ./Bld/build-compiler.sh && cd .. && cd .. && cd build && make clean && cmake .. && make && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=127.0.0.1:8092 8090 127.0.0.1:8070=[VotingUSM,SecureVotingClientMachine] 127.0.0.1:8080=[InitializerMachine,SecureBallotBoxMachine,SecureBulletinBoardMachine,SecureSupervisorMachine,SecureTabulationTellerMachine,SecureTamperEvidentLogMachine] > kpsOutput.txt ;cd ~/Research/PSecuredLang/ProgrammingEnclaves`
+2. Host 1: `cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 currentHostMachineAddress=127.0.0.1:8070 isStartMachine=False > host1Output.txt ;cd ~/Research/PSecuredLang/ProgrammingEnclaves/`
+3. Host2: `cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 currentHostMachineAddress=127.0.0.1:8080 isStartMachine=True startMachine=InitializerMachine > host2Output.txt ;cd ~/Research/PSecuredLang/ProgrammingEnclaves/`
+
+###### OTP (Local)
+In this, we will deploy the OTP example with the KPS, Distributed Host 1, and Distributed Host 2 all running within the same physical machine. 
+Need to run the following in different terminal tabs (and in this order):
+
+1. KPS: `cd Submodule/P && ./Bld/build-compiler.sh && cd .. && cd .. && cd build && make clean && cmake .. && make && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=127.0.0.1:8092 8090 127.0.0.1:8070=[ClientWebBrowser,ClientEnclave] 127.0.0.1:8080=[BankEnclave,TrustedInitializer,UntrustedInitializer] > kpsOutput.txt ;cd ~/Research/ProgrammingEnclaves`
+2. Host 1: `cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 currentHostMachineAddress=127.0.0.1:8070 isStartMachine=False > host1Output.txt ;cd ~/Research/ProgrammingEnclaves/`
+3. Host 2: `cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 currentHostMachineAddress=127.0.0.1:8080 isStartMachine=True startMachine=UntrustedInitializer > host2Output.txt ;cd ~/Research/ProgrammingEnclaves/`
+
+###### OTP Measurement (Local)
+In this, we will deploy the OTP Measurement example with the KPS, Distributed Host 1, and Distributed Host 2 all running within the same physical machine. 
+Need to run the following in different terminal tabs (and in this order):
+
+1. KPS: `cd Submodule/P && ./Bld/build-compiler.sh && cd .. && cd .. && cd build  && make clean && cmake .. && make && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=127.0.0.1:8092 8090 127.0.0.1:8070=[ClientWebBrowser,ClientEnclave,UntrustedInitializer] 127.0.0.1:8080=[BankEnclave,TrustedInitializer,MeasureMachine] > kpsOutput.txt ;cd ~/Research/ProgrammingEnclaves`
+2. Host 1: `cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 currentHostMachineAddress=127.0.0.1:8080 isStartMachine=False > machine2Output.txt ;cd ~/Research/ProgrammingEnclaves`
+3. Host 2: `cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 currentHostMachineAddress=127.0.0.1:8070 isStartMachine=True startMachine=UntrustedInitializer > machine1Output.txt ;cd ~/Research/ProgrammingEnclaves`
+
+###### OTP Measurement (Distributed)
+In this, we will deploy the OTP measurement example with the KPS and Distributed Host 1 in the same physical machine, and Distributed Host 2 in a different physical machine. We are assuming physical machine 1 has IP address 10.0.0.4 and physical machine 2 has IP address 10.0.0.5.
+Need to run the following in this order:
+
+1. KPS (IP address: 10.0.0.4): `cd Submodule/P && ./Bld/build-compiler.sh && cd .. && cd .. && cd build  && make clean && cmake .. && make && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=10.0.0.4:8092 8090 10.0.0.5:8070=[ClientWebBrowser,ClientEnclave,UntrustedInitializer] 10.0.0.4:8080=[BankEnclave,TrustedInitializer,MeasureMachine] > kpsOutput.txt ;cd ~/Research/ProgrammingEnclaves`
+2. Host 1 (IP address: 10.0.0.4): `cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=10.0.0.4:8092 8090 currentHostMachineAddress=10.0.0.4:8080 isStartMachine=False > machine2Output.txt ;cd ~/Research/ProgrammingEnclaves`
+3. Host 2 (IP address: 10.0.0.5): `cd Submodule/P && ./Bld/build-compiler.sh && cd .. && cd .. && cd build  && make clean && cmake .. && make && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=10.0.0.4:8092 8090 currentHostMachineAddress=10.0.0.5:8070 isStartMachine=True startMachine=UntrustedInitializer > machine1Output.txt ;cd ~/Research/ProgrammingEnclaves`
+
+###### Additional Notes
+To end the PSec instance, press `control-z` on the KPS instance and run `killall -9 app` to kill all instances of the application. If across 2 distributed machines, run this command across both.
+
+In order to determine the current machine's IP address, run `ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'`
+
+In order to run the debugger, 
+1. Run the custom source command for the Intel SGX environment: `source /home/shivendra/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment`
+2. `cd build && cd Samples && cd PSecureV1 && sgx-gdb ./app ;cd ~/Research/PSecuredLang/ProgrammingEnclaves`
+3. `(sgx-gdb) r {command-line arguments}`
+

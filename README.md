@@ -1,29 +1,15 @@
-# PSec Repo Installation
+# PSec
 
-Build Instructions Below:
+A programming language for writing secure distributed systems by leveraging Intel SGX.
 
-```shell
-git clone https://github.com/ankushdesai/ProgrammingEnclaves.git
-cd ProgrammingEnclaves/
-git fetch --all
-git checkout psecure
-git submodule init
-git submodule update --recursive
-cd Submodule/P/
-git submodule init
-git submodule update --recursive
-# if dotnet and JRE are not installed, do below steps to install
-wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
-sudo dpkg -i packages-microsoft-prod.deb
-sudo add-apt-repository universe
-sudo apt-get install apt-transport-https
-sudo apt-get update
-sudo apt-get install dotnet-sdk-2.2
-sudo apt-get install default-jre
-# endif
-./Bld/build-compiler.sh
-cd .. && cd ..
-mkdir build
-```
+Associated Paper [TODO DATE]:
 
-In order to run sample programs, follow [this](docs/Running.md) next.
+[Presentation](https://docs.google.com/presentation/d/1Paf3SXun9uCw4QMuHtezIfzKtVLJAu1-0ZgFQ4BKVM4/edit?usp=sharing) [4-14-2020]:
+
+[Presentation Video](https://youtu.be/QS-BgX-e180) [3-20-2020]:
+
+Build Instructions:
+Follow [this](docs/SGXInstallation.md) if Intel SGX is not installed [Recommended for compatibility].
+Follow [this](docs/RepoInstallation.md) if building this project on a pre-existing Intel SGX installation.
+
+In order to run sample programs, follow [this](docs/Running.md).
