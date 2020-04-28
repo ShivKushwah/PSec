@@ -3,8 +3,8 @@
 Build Instructions Below:
 
 ```shell
-git clone https://github.com/ankushdesai/ProgrammingEnclaves.git
-cd ProgrammingEnclaves/
+git clone https://github.com/ShivKushwah/PSec.git
+cd PSec/
 git fetch --all
 git submodule init
 git submodule update --recursive
