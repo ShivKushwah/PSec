@@ -6,7 +6,6 @@ Build Instructions Below:
 git clone https://github.com/ankushdesai/ProgrammingEnclaves.git
 cd ProgrammingEnclaves/
 git fetch --all
-git checkout psecure
 git submodule init
 git submodule update --recursive
 cd Submodule/P/
