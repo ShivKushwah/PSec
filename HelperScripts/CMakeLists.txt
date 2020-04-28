@@ -6,7 +6,7 @@ SET(CMAKE_VERBOSE_MAKEFILE true)
 ###########################################################################
 
 ## Compile P source
-set(P_COMPILER_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Release/AnyCPU/Binaries/Pc.dll)
+set(P_COMPILER_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Release/Binaries/Pc.dll)
 set(P_BUILT_LIB_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Bld/Drops/Prt)
 set(P_LIBHANDLER_PATH ${CMAKE_SOURCE_DIR}/Submodule/P/Ext/libhandler)
 set(P_LIB_INCLUDE_PATH ${P_BUILT_LIB_PATH}/include)
@@ -16,7 +16,8 @@ set(P_LIB_LINK_PATH ${P_BUILT_LIB_PATH}/lib)
 if (SGX)
     set(SGX_SDK $ENV{SGX_SDK})
     set(SGX_ARCH x64)
-    set(SGX_MODE SIM CACHE STRING "SGX mode: SIM or HW") # SGX mode: sim, hw
+    set(SGX_MODE HW)
+    # set(SGX_MODE SIM)
     set(COMPILE_EXAMPLES NO CACHE BOOL "Build examples")
     set(SGX_BUILD DEBUG CACHE STRING "Build: DEBUG, PRERELEASE or RELEASE")
 

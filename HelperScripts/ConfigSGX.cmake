@@ -15,7 +15,9 @@ else()
     set(SGX_EDGER8R ${SGX_SDK}/bin/x64/sgx_edger8r)
 endif()
 
+
 if (SGX_MODE STREQUAL HW)
+    add_definitions(-DHW_MODE_ENABLED)
     set(SGX_URTS_LIB sgx_urts)
     set(SGX_USVC_LIB sgx_uae_service)
     set(SGX_TRTS_LIB sgx_trts)
