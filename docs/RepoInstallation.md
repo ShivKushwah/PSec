@@ -25,4 +25,4 @@ cd .. && cd ..
 mkdir build
 ```
 
-In order to run sample programs, follow [this](docs/Running.md) next.
+In order to run sample programs, follow [this](Running.md) next.

@@ -195,4 +195,4 @@ Running `ldd app` should yield the following output:
 ```
 
 ### Next Steps
-In order to build the repo, follow [this](docs/RepoInstallation.md) next.
+In order to build the repo, follow [this](RepoInstallation.md) next.
