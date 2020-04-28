@@ -9,7 +9,9 @@ Associated Paper [TODO DATE]:
 [Presentation Video](https://youtu.be/QS-BgX-e180) [3-20-2020]:
 
 Build Instructions:
+
 Follow [this](docs/SGXInstallation.md) if Intel SGX is not installed [Recommended for compatibility].
+
 Follow [this](docs/RepoInstallation.md) if building this project on a pre-existing Intel SGX installation.
 
 In order to run sample programs, follow [this](docs/Running.md).
