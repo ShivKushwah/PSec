@@ -7,6 +7,8 @@ The distributed host machine runs the `main` method in app.cpp first. This spawn
 
 Network_simulator.cpp contains all of the functions for handling network socket requests and sending out network socket requests to other distributed host machines. Incoming requests are forwarded to the `send_network_request_API` in network_ra.cpp.
 
+Network_ra.cpp contains the first layer of network processing logic. The `send_network_request_API` method creates a thread and executes the `network_request_logic` method. This method TODO
+
 
 ### KPS
 
