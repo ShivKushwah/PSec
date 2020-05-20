@@ -17,7 +17,13 @@ typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPu
 typedef tuple <string,string> identityKeyPair; //public, private
 typedef tuple <uint32_t,string> PMachineChildPair; //parentMachineID, childPublicKey
 
+void initApp();
 
+void start_socket_network_handler();
+
+void start_socket_attestation_network_handler();
+
+void start_socket_kps_generic_network_handler();
 
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize);
 char* serializePrtValueToString(PRT_VALUE* value, int& final_size);
@@ -50,7 +56,7 @@ char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKe
 
 PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* createTypeCommand, bool isSecureCreate);
 
-extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+extern "C" PRT_VALUE* P_UntrustedCreateRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 

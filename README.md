@@ -19,3 +19,4 @@ TODO:
 * Sync with Learn&Verify repo
 * Include examples where information flow fails
 * Change OTP Measurement build instructions to just OTP and Measurement
+* Fix Civitas build instructions cd command (cd ~/Research/PSecuredLang/PSec vs cd ~/Research/PSec)

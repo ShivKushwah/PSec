@@ -146,7 +146,7 @@ extern "C" PRT_VALUE* P_CreateMachineSecureChild_IMPL(PRT_MACHINEINST* context, 
 
 extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    return P_UntrustedCreateCoordinator_IMPL(context, argRefs);
+    return P_UntrustedCreateRequest_IMPL(context, argRefs);
 }
 
 extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -896,7 +896,7 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
     decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, isSecureSend);
 }
 
-extern "C" PRT_VALUE* P_UntrustedCreateCoordinator_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" PRT_VALUE* P_UntrustedCreateRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
    return sendCreateMachineNetworkRequest(context, argRefs, "UntrustedCreate", false);
 }
@@ -906,10 +906,5 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 {
 
     sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, true);
-   
-}
-
-extern "C" void P_InitializeUntrustedMachine_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
    
 }
