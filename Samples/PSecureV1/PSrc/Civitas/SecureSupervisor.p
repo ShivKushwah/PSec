@@ -11,10 +11,6 @@ secure_machine SecureSupervisorMachine
     var bBox : secure_machine_handle;
     var tTeller: machine_handle;
     var valid_credentials : seq[secure_StringType];
-
-    fun generateRandomCredential() : int {
-        return 3;
-    }
     
     start state Registration {
         entry {
