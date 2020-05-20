@@ -11,9 +11,6 @@ fun PrintRawSecureStringType(inputString : secure_StringType);
 fun Declassify(input : any) : any;
 fun Endorse(input : any) : any;
 
-fun Classify(input : any) : any;
-
-
 fun GetThis() : machine_handle;
 fun Concat(input1:StringType, input2:StringType) : StringType;
 fun Hash(input1:StringType, input2:StringType) : StringType;

@@ -45,8 +45,13 @@ static PRT_TYPE P_GEND_TYPE_b = { PRT_KIND_BOOL, { NULL } };
 static PRT_TYPE* P_NMDTUP_T_1[] = { &P_GEND_TYPE_i, &P_GEND_TYPE_b };
 static PRT_NMDTUPTYPE P_NMDTUP_1 = { 2U, P_NMDTUP_N_1, P_NMDTUP_T_1 };
 static PRT_TYPE P_GEND_TYPE_T2ib = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_1 } };
+static PRT_STRING P_NMDTUP_N_2[] = { "supervisor", "credential" };
+static PRT_TYPE* P_NMDTUP_T_2[] = { &P_GEND_TYPE_machine_handle, &P_GEND_TYPE_StringType };
+static PRT_NMDTUPTYPE P_NMDTUP_2 = { 2U, P_NMDTUP_N_2, P_NMDTUP_T_2 };
+static PRT_TYPE P_GEND_TYPE_T2machine_handleStringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_2 } };
+static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
 static PRT_TYPE P_GEND_TYPE_s = { PRT_KIND_SECURE_INT, { NULL } };
-static PRT_STRING P_NMDTUP_N_2[] = { "credential", "vote", "requestingMachine" };
+static PRT_STRING P_NMDTUP_N_3[] = { "credential", "vote", "requestingMachine" };
 extern PRT_UINT64 P_MKDEF_secure_StringType_IMPL(void);
 extern PRT_UINT64 P_CLONE_secure_StringType_IMPL(PRT_UINT64);
 extern void P_FREE_secure_StringType_IMPL(PRT_UINT64);
@@ -81,35 +86,30 @@ static PRT_FOREIGNTYPEDECL P_secure_machine_handle = {
     P_TOSTRING_secure_machine_handle_IMPL,
 };
 PRT_TYPE P_GEND_TYPE_secure_machine_handle = { PRT_KIND_FOREIGN, { .foreignType = &P_secure_machine_handle } };
-static PRT_TYPE* P_NMDTUP_T_2[] = { &P_GEND_TYPE_secure_StringType, &P_GEND_TYPE_s, &P_GEND_TYPE_secure_machine_handle };
-static PRT_NMDTUPTYPE P_NMDTUP_2 = { 3U, P_NMDTUP_N_2, P_NMDTUP_T_2 };
-static PRT_TYPE P_GEND_TYPE_T3secure_StringTypessecure_machine_handle = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_2 } };
-static PRT_STRING P_NMDTUP_N_3[] = { "credential", "vote" };
-static PRT_TYPE* P_NMDTUP_T_3[] = { &P_GEND_TYPE_secure_StringType, &P_GEND_TYPE_s };
-static PRT_NMDTUPTYPE P_NMDTUP_3 = { 2U, P_NMDTUP_N_3, P_NMDTUP_T_3 };
-static PRT_TYPE P_GEND_TYPE_T2secure_StringTypes = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_3 } };
+static PRT_TYPE* P_NMDTUP_T_3[] = { &P_GEND_TYPE_secure_StringType, &P_GEND_TYPE_s, &P_GEND_TYPE_secure_machine_handle };
+static PRT_NMDTUPTYPE P_NMDTUP_3 = { 3U, P_NMDTUP_N_3, P_NMDTUP_T_3 };
+static PRT_TYPE P_GEND_TYPE_T3secure_StringTypessecure_machine_handle = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_3 } };
+static PRT_STRING P_NMDTUP_N_4[] = { "credential", "vote" };
+static PRT_TYPE* P_NMDTUP_T_4[] = { &P_GEND_TYPE_secure_StringType, &P_GEND_TYPE_s };
+static PRT_NMDTUPTYPE P_NMDTUP_4 = { 2U, P_NMDTUP_N_4, P_NMDTUP_T_4 };
+static PRT_TYPE P_GEND_TYPE_T2secure_StringTypes = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_4 } };
 static PRT_TYPE P_GEND_TYPE_sb = { PRT_KIND_SECURE_BOOL, { NULL } };
-static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
 static PRT_SEQTYPE P_SEQTYPE = { &P_GEND_TYPE_T2secure_StringTypes };
 static PRT_TYPE P_GEND_TYPE_ST2secure_StringTypes = { PRT_KIND_SEQ, { .seq = &P_SEQTYPE } };
-static PRT_STRING P_NMDTUP_N_4[] = { "ballotID", "votes" };
-static PRT_TYPE* P_NMDTUP_T_4[] = { &P_GEND_TYPE_s, &P_GEND_TYPE_ST2secure_StringTypes };
-static PRT_NMDTUPTYPE P_NMDTUP_4 = { 2U, P_NMDTUP_N_4, P_NMDTUP_T_4 };
-static PRT_TYPE P_GEND_TYPE_T2sST2secure_StringTypes = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_4 } };
-static PRT_STRING P_NMDTUP_N_5[] = { "tabulationTellerMachine", "credentialToCheck" };
-static PRT_TYPE* P_NMDTUP_T_5[] = { &P_GEND_TYPE_secure_machine_handle, &P_GEND_TYPE_secure_StringType };
+static PRT_STRING P_NMDTUP_N_5[] = { "ballotID", "votes" };
+static PRT_TYPE* P_NMDTUP_T_5[] = { &P_GEND_TYPE_s, &P_GEND_TYPE_ST2secure_StringTypes };
 static PRT_NMDTUPTYPE P_NMDTUP_5 = { 2U, P_NMDTUP_N_5, P_NMDTUP_T_5 };
-static PRT_TYPE P_GEND_TYPE_T2secure_machine_handlesecure_StringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_5 } };
+static PRT_TYPE P_GEND_TYPE_T2sST2secure_StringTypes = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_5 } };
+static PRT_STRING P_NMDTUP_N_6[] = { "tabulationTellerMachine", "credentialToCheck" };
+static PRT_TYPE* P_NMDTUP_T_6[] = { &P_GEND_TYPE_secure_machine_handle, &P_GEND_TYPE_secure_StringType };
+static PRT_NMDTUPTYPE P_NMDTUP_6 = { 2U, P_NMDTUP_N_6, P_NMDTUP_T_6 };
+static PRT_TYPE P_GEND_TYPE_T2secure_machine_handlesecure_StringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_6 } };
 static PRT_MAPTYPE P_MAPTYPE = { &P_GEND_TYPE_secure_StringType, &P_GEND_TYPE_s };
 static PRT_TYPE P_GEND_TYPE_MKsecure_StringTypeVs = { PRT_KIND_MAP, { .map = &P_MAPTYPE } };
-static PRT_STRING P_NMDTUP_N_6[] = { "allVotes", "whoWon" };
-static PRT_TYPE* P_NMDTUP_T_6[] = { &P_GEND_TYPE_MKsecure_StringTypeVs, &P_GEND_TYPE_s };
-static PRT_NMDTUPTYPE P_NMDTUP_6 = { 2U, P_NMDTUP_N_6, P_NMDTUP_T_6 };
-static PRT_TYPE P_GEND_TYPE_T2MKsecure_StringTypeVss = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_6 } };
-static PRT_STRING P_NMDTUP_N_7[] = { "supervisor", "credential" };
-static PRT_TYPE* P_NMDTUP_T_7[] = { &P_GEND_TYPE_machine_handle, &P_GEND_TYPE_StringType };
+static PRT_STRING P_NMDTUP_N_7[] = { "allVotes", "whoWon" };
+static PRT_TYPE* P_NMDTUP_T_7[] = { &P_GEND_TYPE_MKsecure_StringTypeVs, &P_GEND_TYPE_s };
 static PRT_NMDTUPTYPE P_NMDTUP_7 = { 2U, P_NMDTUP_N_7, P_NMDTUP_T_7 };
-static PRT_TYPE P_GEND_TYPE_T2machine_handleStringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_7 } };
+static PRT_TYPE P_GEND_TYPE_T2MKsecure_StringTypeVss = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_7 } };
 static PRT_STRING P_NMDTUP_N_8[] = { "bBoard", "supervisor" };
 static PRT_TYPE* P_NMDTUP_T_8[] = { &P_GEND_TYPE_secure_machine_handle, &P_GEND_TYPE_secure_machine_handle };
 static PRT_NMDTUPTYPE P_NMDTUP_8 = { 2U, P_NMDTUP_N_8, P_NMDTUP_T_8 };
@@ -139,6 +139,10 @@ static PRT_FOREIGNTYPEDECL P_capability = {
 PRT_TYPE P_GEND_TYPE_capability = { PRT_KIND_FOREIGN, { .foreignType = &P_capability } };
 
 // Function implementation prototypes:
+PRT_VALUE* P_GenerateCredential1_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_GenerateCredential2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -147,21 +151,11 @@ PRT_VALUE* P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_PrintMachineHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_GetCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_GenerateCredential1_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_GenerateCredential2_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_Classify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
@@ -282,6 +276,24 @@ PRT_EVENTDECL P_EVENT_UNTRUSTEDGetResults =
     0
 };
 
+PRT_EVENTDECL P_EVENT_UNTRUSTEDProvisionVotingUSM = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
+    "UNTRUSTEDProvisionVotingUSM",
+    4294967295U,
+    &P_GEND_TYPE_T2machine_handleStringType,
+    0
+};
+
+PRT_EVENTDECL P_EVENT_eCloseElection = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
+    "eCloseElection",
+    4294967295U,
+    &P_GEND_TYPE_n,
+    0
+};
+
 PRT_EVENTDECL P_EVENT_TRUSTEDeStartElection = 
 {
     { PRT_VALUE_KIND_EVENT, 0U },
@@ -325,15 +337,6 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeRespConfirmVote =
     4294967295U,
     &P_GEND_TYPE_n,
     1
-};
-
-PRT_EVENTDECL P_EVENT_eCloseElection = 
-{
-    { PRT_VALUE_KIND_EVENT, 0U },
-    "eCloseElection",
-    4294967295U,
-    &P_GEND_TYPE_n,
-    0
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDeGetLog = 
@@ -417,15 +420,6 @@ PRT_EVENTDECL P_EVENT_TRUSTEDeGetElectionResults =
     1
 };
 
-PRT_EVENTDECL P_EVENT_UNTRUSTEDProvisionVotingUSM = 
-{
-    { PRT_VALUE_KIND_EVENT, 0U },
-    "UNTRUSTEDProvisionVotingUSM",
-    4294967295U,
-    &P_GEND_TYPE_T2machine_handleStringType,
-    0
-};
-
 PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureTamperEvidentLogMachine = 
 {
     { PRT_VALUE_KIND_EVENT, 0U },
@@ -462,6 +456,22 @@ PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureVotingClientMachine =
     1
 };
 
+PRT_FUNDECL P_FUNCTION_GenerateCredential1 =
+{
+    "GenerateCredential1",
+    &P_GenerateCredential1_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_GenerateCredential2 =
+{
+    "GenerateCredential2",
+    &P_GenerateCredential2_IMPL,
+    NULL
+};
+
+
 PRT_FUNDECL P_FUNCTION_PrintKey =
 {
     "PrintKey",
@@ -494,30 +504,6 @@ PRT_FUNDECL P_FUNCTION_PrintMachineHandle =
 };
 
 
-PRT_FUNDECL P_FUNCTION_GetCapability =
-{
-    "GetCapability",
-    &P_GetCapability_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_SaveCapability =
-{
-    "SaveCapability",
-    &P_SaveCapability_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_GetThis =
-{
-    "GetThis",
-    &P_GetThis_IMPL,
-    NULL
-};
-
-
 PRT_FUNDECL P_FUNCTION_Declassify =
 {
     "Declassify",
@@ -534,26 +520,10 @@ PRT_FUNDECL P_FUNCTION_Endorse =
 };
 
 
-PRT_FUNDECL P_FUNCTION_GenerateCredential1 =
+PRT_FUNDECL P_FUNCTION_GetThis =
 {
-    "GenerateCredential1",
-    &P_GenerateCredential1_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_GenerateCredential2 =
-{
-    "GenerateCredential2",
-    &P_GenerateCredential2_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_Classify =
-{
-    "Classify",
-    &P_Classify_IMPL,
+    "GetThis",
+    &P_GetThis_IMPL,
     NULL
 };
 
@@ -1223,7 +1193,7 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_27 = &(PTMP_tmp9_1);
     PrtFreeValue(*P_LVALUE_27);
-    *P_LVALUE_27 = ((_P_GEN_funargs[0] = &(PTMP_tmp8_1)), (_P_GEN_funval = P_Classify_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp8_1), PTMP_tmp8_1 = NULL), (_P_GEN_funval));
+    *P_LVALUE_27 = ((_P_GEN_funargs[0] = &(PTMP_tmp8_1)), (_P_GEN_funval = P_Endorse_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp8_1), PTMP_tmp8_1 = NULL), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_2;
     }
@@ -1258,7 +1228,7 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE** P_LVALUE_31 = &(PTMP_tmp13);
     PrtFreeValue(*P_LVALUE_31);
-    *P_LVALUE_31 = ((_P_GEN_funargs[0] = &(PTMP_tmp12_1)), (_P_GEN_funval = P_Classify_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp12_1), PTMP_tmp12_1 = NULL), (_P_GEN_funval));
+    *P_LVALUE_31 = ((_P_GEN_funargs[0] = &(PTMP_tmp12_1)), (_P_GEN_funval = P_Endorse_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp12_1), PTMP_tmp12_1 = NULL), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_2;
     }
@@ -5074,7 +5044,7 @@ PRT_TYPE* P_TYPEDEF_machine_handle = &P_GEND_TYPE_machine_handle;
 PRT_TYPE* P_TYPEDEF_capability = &P_GEND_TYPE_capability;
 PRT_TYPE* P_TYPEDEF_secure_machine_handle = &P_GEND_TYPE_secure_machine_handle;
 PRT_TYPE* P_TYPEDEF_secure_StringType = &P_GEND_TYPE_secure_StringType;
-PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDInvalidCredential, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_UNTRUSTEDGetResults, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_eCloseElection, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDValidateCredential, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeGetElectionResults, &P_EVENT_UNTRUSTEDProvisionVotingUSM, &P_EVENT_TRUSTEDProvisionSecureTamperEvidentLogMachine, &P_EVENT_TRUSTEDProvisionSecureTabulationTellerMachine, &P_EVENT_TRUSTEDProvisionSecureBallotBoxMachine, &P_EVENT_TRUSTEDProvisionSecureVotingClientMachine };
+PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_TRUSTEDeRespAddItem, &P_EVENT_TRUSTEDeRespGetLog, &P_EVENT_TRUSTEDValidCredential, &P_EVENT_TRUSTEDInvalidCredential, &P_EVENT_UNTRUSTEDGetVotingSSM, &P_EVENT_UNTRUSTEDReceiveVotingSSM, &P_EVENT_UNTRUSTEDVoteRequest, &P_EVENT_UNTRUSTEDGetResults, &P_EVENT_UNTRUSTEDProvisionVotingUSM, &P_EVENT_eCloseElection, &P_EVENT_TRUSTEDeStartElection, &P_EVENT_TRUSTEDeVote, &P_EVENT_TRUSTEDeAddItem, &P_EVENT_TRUSTEDeRespConfirmVote, &P_EVENT_TRUSTEDeGetLog, &P_EVENT_TRUSTEDeAllVotes, &P_EVENT_TRUSTEDValidateCredential, &P_EVENT_TRUSTEDeElectionResults, &P_EVENT_TRUSTEDeRespElectionResults, &P_EVENT_TRUSTEDeGetElectionResults, &P_EVENT_TRUSTEDProvisionSecureTamperEvidentLogMachine, &P_EVENT_TRUSTEDProvisionSecureTabulationTellerMachine, &P_EVENT_TRUSTEDProvisionSecureBallotBoxMachine, &P_EVENT_TRUSTEDProvisionSecureVotingClientMachine };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_InitializerMachine, &P_MACHINE_SecureSupervisorMachine, &P_MACHINE_VotingUSM, &P_MACHINE_SecureBulletinBoardMachine, &P_MACHINE_SecureBallotBoxMachine, &P_MACHINE_SecureTamperEvidentLogMachine, &P_MACHINE_SecureTabulationTellerMachine, &P_MACHINE_SecureVotingClientMachine };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_InitializerMachine, &P_I_SecureSupervisorMachine, &P_I_VotingUSM, &P_I_SecureBulletinBoardMachine, &P_I_SecureBallotBoxMachine, &P_I_SecureTamperEvidentLogMachine, &P_I_SecureTabulationTellerMachine, &P_I_SecureVotingClientMachine };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };

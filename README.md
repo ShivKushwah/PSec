@@ -18,3 +18,4 @@ TODO:
 * Go over OTP example and explanation in README
 * Sync with Learn&Verify repo
 * Include examples where information flow fails
+* Change OTP Measurement build instructions to just OTP and Measurement

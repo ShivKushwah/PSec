@@ -2737,37 +2737,6 @@ extern "C" PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 
 }
 
-extern "C" PRT_VALUE* P_Classify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-
-    // if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_BOOL) {
-    //     return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
-
-    // } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_INT) {
-    //     return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
-
-    // } else if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_FOREIGN) {
-    if ((*P_VAR_payload)->discriminator == PRT_VALUE_KIND_FOREIGN) {
-
-        if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex || (*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex) {
-            PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-            PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-            memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
-            return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_StringType);
-        } else if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex || (*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_machine_handle->typeUnion.foreignType->declIndex) {
-            PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-            PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-            memcpy(str, (char*) val, SIZE_OF_MACHINE_HANDLE);
-            return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
-        } 
-
-    }
-
-    ocall_print("ERROR: Declassify not found");
-    return NULL;
-}
-
 extern "C" void P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE** P_VAR_payload = argRefs[0];
@@ -2779,54 +2748,6 @@ extern "C" void P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
     printPublicCapabilityKey(retrievePublicCapabilityKey(capabilityPayload));
     ocall_print("Private Capability:");
     printPrivateCapabilityKey(retrievePrivateCapabilityKey(capabilityPayload));
-    
-}
-
-extern "C" PRT_VALUE* P_GetCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    #ifdef ENCLAVE_STD_ALT
-
-    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-    // ocall_print("Machine handle in get capability is:");
-    // printRSAKey((char*) val);
-    //TODO put check here before obtaining the value
-    if ( PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string((char*) val, SGX_RSA3072_KEY_SIZE))) == 0){
-        ocall_print("ERROR IN GETTING CAPABILITY FROM GETCAPABILITY P METHOD");
-    }
-    string capabilityKeyPayload = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string((char*) val, SGX_RSA3072_KEY_SIZE))];
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_P_CAPABILITY_FOREIGN_TYPE));
-	char* finalString;
-    int finalStringSize;
-    char* concatStrings[] = {(char*) val, ":", (char*)capabilityKeyPayload.c_str()};
-    int concatLengths[] = {SGX_RSA3072_KEY_SIZE, 1, SIZE_OF_CAPABILITYKEY};
-    finalString = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
-    finalStringSize = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
-
-    memcpy(str, finalString, finalStringSize);
-    safe_free(finalString);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_capability);
-
-    #endif
-    
-}
-
-extern "C" void P_SaveCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    #ifdef ENCLAVE_STD_ALT
-
-    uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-    char* machine_handle = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-    memcpy(machine_handle, (char*)val, SGX_RSA3072_KEY_SIZE);
-    char* capabilityToSave = (char*) malloc(SIZE_OF_CAPABILITYKEY);
-    memcpy(capabilityToSave, ((char*)val) + SGX_RSA3072_KEY_SIZE + 1, SIZE_OF_CAPABILITYKEY);
-    PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(machine_handle, SGX_RSA3072_KEY_SIZE))] = string(capabilityToSave, SIZE_OF_CAPABILITYKEY);
-    safe_free(machine_handle);
-    safe_free(capabilityToSave);
-    #endif
     
 }
 

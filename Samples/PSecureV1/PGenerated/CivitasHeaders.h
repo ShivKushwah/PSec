@@ -11,12 +11,13 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveVotingSSM;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDVoteRequest;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDGetResults;
+    extern PRT_EVENTDECL P_EVENT_UNTRUSTEDProvisionVotingUSM;
+    extern PRT_EVENTDECL P_EVENT_eCloseElection;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeStartElection;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeVote;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeAddItem;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeRespAddItem;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeRespConfirmVote;
-    extern PRT_EVENTDECL P_EVENT_eCloseElection;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeGetLog;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeRespGetLog;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeAllVotes;
@@ -26,7 +27,6 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeElectionResults;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeRespElectionResults;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeGetElectionResults;
-    extern PRT_EVENTDECL P_EVENT_UNTRUSTEDProvisionVotingUSM;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureTamperEvidentLogMachine;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureTabulationTellerMachine;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureBallotBoxMachine;
