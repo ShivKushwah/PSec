@@ -56,7 +56,6 @@ void safe_free(void* ptr);
 
 int sendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize);
 
-char* registerMachineWithNetwork(char* newMachineID);
 int sendMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* event, int numArgs, int payloadType, char* payload, int payloadSize);
 
 char* generateCStringFromFormat(char* format_string, char** strings_to_print, int num_strings);

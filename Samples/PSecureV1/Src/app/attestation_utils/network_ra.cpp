@@ -46,7 +46,7 @@ extern sgx_enclave_id_t global_eid;
 
 
 unordered_map<string, int> MachineTypeToSecurityStatusOfMachine; //Map that contains all valid machines types as well as whether the machine type is SSM or USM
-unordered_map<string, int> MachinePublicIDToEnclaveNum; //Maps SSM identity -> the enclave on this machine in which it is hosted
+// unordered_map<string, int> MachinePublicIDToEnclaveNum; //Maps SSM identity -> the enclave on this machine in which it is hosted
 
 //This method takes in a network payload and creates a thread to process the request
 char* send_network_request_API(char* request, size_t requestSize) {
@@ -103,7 +103,7 @@ char* network_request_logic(char* request, size_t requestSize) {
         //If this is a valid machine type
         if (MachineTypeToSecurityStatusOfMachine.count(string(machineType)) == 1) {
 
-            return forward_request(request, requestSize, MachineTypeToSecurityStatusOfMachine[machineType]);
+            return forward_request(request, requestSize);
 
         } else {
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
@@ -118,7 +118,7 @@ char* network_request_logic(char* request, size_t requestSize) {
         ocall_print(machineType);
         if (MachineTypeToSecurityStatusOfMachine.count(string(machineType)) == 1) {
 
-            return forward_request(request, requestSize, MachineTypeToSecurityStatusOfMachine[machineType]);
+            return forward_request(request, requestSize);
 
         } else {
             return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
@@ -152,26 +152,26 @@ char* network_request_logic(char* request, size_t requestSize) {
         // }
 
         
-        int count;
-        // if (NETWORK_DEBUG) {
-        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingComm));
-        // } else {
-            count = MachinePublicIDToEnclaveNum.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE));
-        // }
+        // int count;
+        // // if (NETWORK_DEBUG) {
+        // //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingComm));
+        // // } else {
+        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE));
+        // // }
 
 
-        if (count == 1) {
+        // if (count == 1) {
             // if (NETWORK_DEBUG)  {
             //     return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingComm)]);
             // } else {
-                return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)]);
+                return forward_request(request, requestSize);
             // }
 
-        } else {
-            ocall_print("Could not find in MachinePublicIDToEnclaveNum");
-            printPayload(machineReceivingComm, SGX_RSA3072_KEY_SIZE);
-            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
-        }
+        // } else {
+        //     ocall_print("Could not find in MachinePublicIDToEnclaveNum");
+        //     printPayload(machineReceivingComm, SGX_RSA3072_KEY_SIZE);
+        //     return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
+        // }
 
     
     }  else if (strcmp(split, "UntrustedSend") == 0) {
@@ -200,25 +200,25 @@ char* network_request_logic(char* request, size_t requestSize) {
         //     printRSAKey(machineReceivingMessage);
         // }
 
-        int count;
-        // if (NETWORK_DEBUG) {
-        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage));
-        // } else {
-            count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
-        // }
+        // int count;
+        // // if (NETWORK_DEBUG) {
+        // //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage));
+        // // } else {
+        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
+        // // }
         
 
-        if (count == 1) {
+        // if (count == 1) {
             // if (NETWORK_DEBUG) {
             //     return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage)]);
             // } else {
 
-                return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)]);
+                return forward_request(request, requestSize);
             // }
 
-        } else {
-            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
-        }
+        // } else {
+        //     return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
+        // }
 
     } else if (strcmp(split, "Send") == 0) {
 
@@ -233,57 +233,24 @@ char* network_request_logic(char* request, size_t requestSize) {
             printRSAKey(machineReceivingMessage);
         // }
 
-        int count;
-        // if (NETWORK_DEBUG) {
-        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage));
-        // } else {
-            count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
-        // }
+        // int count;
+        // // if (NETWORK_DEBUG) {
+        // //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage));
+        // // } else {
+        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
+        // // }
         
 
-        if (count == 1) {
+        // if (count == 1) {
             // if (NETWORK_DEBUG) {
             //     return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage)]);
             // } else {
-                return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)]);
+                return forward_request(request, requestSize);
             // }
 
-        } else {
-            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
-        }
-
-    } else if (strcmp(split, "RegisterMachine") == 0) { //When a new machine is created, its public ID key should be registered with network_ra so that network knows who to forward the message to
-        //TODO allow USMs to be registered as well, maybe make them be -1 ?
-        char* publicIDRegister = NULL;
-        char* enclaveNumRegister = NULL;
-        // if (NETWORK_DEBUG) {
-        //     split = strtok(NULL, ":");
-        //     publicIDRegister = split;
-        //     split = strtok(NULL, ":");
-        //     enclaveNumRegister = split;
-        //     if (enclaveNumRegister != NULL && enclaveNumRegister[0] != '\0' && enclaveNumRegister[0] == '-') {
-        //         MachinePublicIDToEnclaveNum[string(publicIDRegister)] = -1;
-        //     } else {
-        //         MachinePublicIDToEnclaveNum[string(publicIDRegister)] = atoi(enclaveNumRegister);
-        //     }
         // } else {
-            publicIDRegister = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(publicIDRegister, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
-            enclaveNumRegister = (char*) malloc(10);
-            strncpy(enclaveNumRegister, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, 10);
-            if (enclaveNumRegister != NULL && enclaveNumRegister[0] != '\0' && enclaveNumRegister[0] == '-') {
-                MachinePublicIDToEnclaveNum[string(publicIDRegister, SGX_RSA3072_KEY_SIZE)] = -1;
-            } else {
-                MachinePublicIDToEnclaveNum[string(publicIDRegister, SGX_RSA3072_KEY_SIZE)] = atoi(enclaveNumRegister);
-            }
-            ocall_print("Registered machine in MachinePublicIDToEnclaveNum");
-            printPayload(publicIDRegister, SGX_RSA3072_KEY_SIZE);
-            safe_free(publicIDRegister);
-            safe_free(enclaveNumRegister);
+        //     return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
         // }
-
-        return createStringLiteralMalloced("Success!");
-
 
     } else {
         return createStringLiteralMalloced("Command Not Found");
@@ -404,12 +371,13 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
     }
 }
 
-char* forward_request(char* request, size_t requestSize, int redirect) {
-    if (redirect == 0 || redirect == -1) { //if it is a USM or a valid SSM
-        return receiveNetworkRequest(request, requestSize);
-    } else {
-        return createStringLiteralMalloced("ERROR:Request not forwarded!");
-    }
+char* forward_request(char* request, size_t requestSize) {
+    return receiveNetworkRequest(request, requestSize);
+    // if (redirect == 0 || redirect == -1) { //if it is a USM or a valid SSM
+    //     return receiveNetworkRequest(request, requestSize);
+    // } else {
+    //     return createStringLiteralMalloced("ERROR:Request not forwarded!");
+    // }
 }
 
 void network_request_logic_ocall(char* request, size_t requestSize) {

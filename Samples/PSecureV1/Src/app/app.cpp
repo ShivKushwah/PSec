@@ -508,28 +508,6 @@ char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKe
     decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, false);
 }
 
-// Register newly created USM with current distributed host machine so that current distributed host machine knows to forward messages that have this public identity key to this USM
-char* registerMachineWithNetwork(char* newMachineID) {
-    ocall_print("ChildPublicIDKey size is");
-    ocall_print_int(strlen(newMachineID));
-
-    int ret_value;
-    char* num = "-1";
-
-    char* requestType = "RegisterMachine:";
-    char* colon = ":";
-    char* concatStrings[] = {requestType, newMachineID, colon, num};
-    int concatLenghts[] = {strlen(requestType), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(num)};
-    char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
-    int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
-    char* returnValue = (char*) malloc(100);
-
-    network_request_logic_ocall(networkRequest, networkRequestSize);
-    safe_free(networkRequest);
-
-    return returnValue;
-}
-
 // USM create state machine API [other SM is trying to create a new USM hosted by this distributed host]
 // Responbility of caller to free return value
 char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize) {
@@ -550,11 +528,13 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     PublicIdentityKeyToPublicSigningKey[usmChildPublicIDKey] = usmChildPublicSigningKey;
     PrivateIdentityKeyToPrivateSigningKey[usmChildPrivateIDKey] = usmChildPrivateSigningKey;
     MachinePIDToIdentityDictionary[newMachinePID] = make_tuple(string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE), string(usmChildPrivateIDKey.c_str(), SGX_RSA3072_KEY_SIZE));
-    USMPublicIdentityKeyToMachinePIDDictionary[string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE)] = newMachinePID;
+    
+    //Associate newly created USM's identity with its P ID so that untrusted distributed host machine knows which USM to forward messages to when receiving a network message
+    USMPublicIdentityKeyToMachinePIDDictionary[string(usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE)] = newMachinePID; 
+
     
     char* usmChildPublicIDKeyCopy = (char*) malloc(usmChildPublicIDKey.size() + 1);
     memcpy(usmChildPublicIDKeyCopy, usmChildPublicIDKey.c_str(), usmChildPublicIDKey.size() + 1);
-    registerMachineWithNetwork(usmChildPublicIDKeyCopy);
     safe_free(usmChildPublicIDKeyCopy);
 
     char* usmChildPublicIDKeyCopy2 = (char*) malloc(SGX_RSA3072_KEY_SIZE);

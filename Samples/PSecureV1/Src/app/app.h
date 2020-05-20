@@ -44,8 +44,6 @@ int machineTypeIsSecure(char* machineType);
 
 char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize);
 
-char* registerMachineWithNetwork(char* newMachineID);
-
 char* generateCStringFromFormat(char* format_string, char* strings_to_print[], int num_strings);
 
 char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey);

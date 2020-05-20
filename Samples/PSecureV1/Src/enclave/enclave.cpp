@@ -283,7 +283,8 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     memcpy(publicIdKeyCopy, (char*)secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length());
     publicIdKeyCopy[secureChildPublicIDKey.length()] = '\0';
     
-    ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, SGX_RSA3072_KEY_SIZE, enclaveEid);
+    //Associate newly created SSM's identity with this enclave so that untrusted distributed host machine knows which enclave to forward messages to when receiving a network message
+    ocall_add_identity_to_eid_dictionary((char*)publicIdKeyCopy, SGX_RSA3072_KEY_SIZE, enclaveEid); 
     
     safe_free(publicIdKeyCopy);
     int newMachinePID = getNextPID(); 
@@ -312,7 +313,6 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     char* secureChildPublicIDKeyCopy = (char*) malloc(secureChildPublicIDKey.size() + 1);
     memcpy(secureChildPublicIDKeyCopy, secureChildPublicIDKey.c_str(), secureChildPublicIDKey.length());
     secureChildPublicIDKeyCopy[secureChildPublicIDKey.length()] = '\0';
-    registerMachineWithNetwork(secureChildPublicIDKeyCopy);
     safe_free(secureChildPublicIDKeyCopy);
 
     if (isSecureCreate) {
@@ -393,27 +393,6 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);
     return capabilityKey;
     
-}
-
-char* registerMachineWithNetwork(char* newMachineID) {
-    int ret_value;
-    char* num = (char*) malloc(10);
-    itoa(ENCLAVE_NUMBER, num, 10);
-    char* machineKeyWrapper[] = {newMachineID, num};
-    
-    char* networkResult = (char*) malloc(100);
-    char* requestType = "RegisterMachine:";
-    char* colon = ":";
-    char* concatStrings[] = {requestType, newMachineID, colon, num};
-    int concatLenghts[] = {strlen(requestType), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(num)};
-    char* networkRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 4);
-    int networkRequestSize = returnTotalSizeofLengthArray(concatLenghts, 4) + 1; // +1 for null terminated byte
-    network_request_logic_ocall(networkRequest, networkRequestSize);
-    // ocall_network_request(&ret_value, networkRequest, networkResult, networkRequestSize, 100, DEFAULT_PORT);
-    safe_free(networkRequest);
-    safe_free(num);
-    safe_free(networkResult);
-
 }
 
 void createRsaKeyPairEcall(char* public_key_raw_out, char* private_key_raw_out, char* public_key_out, char* private_key_out, uint32_t KEY_SIZE) {
