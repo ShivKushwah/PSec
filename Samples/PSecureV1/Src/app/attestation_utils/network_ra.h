@@ -114,8 +114,6 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp);
 char* send_network_request_API(char* request, size_t requestSize);
 void* network_request_thread_wrapper(void* request);
 char* network_request_logic(char* request, size_t requestSize);
-void initNetwork();
-char* forward_request(char* request, size_t requestSize);
 char* createStringLiteralMalloced(char* stringLiteral);
 char* handle_socket_attestation_request(char* serializedString, int& responseSize);
 char* handle_socket_kps_generic_request(char* serializedString, int& responseSize);

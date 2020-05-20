@@ -44,10 +44,6 @@
 
 extern sgx_enclave_id_t global_eid;
 
-
-unordered_map<string, int> MachineTypeToSecurityStatusOfMachine; //Map that contains all valid machines types as well as whether the machine type is SSM or USM
-// unordered_map<string, int> MachinePublicIDToEnclaveNum; //Maps SSM identity -> the enclave on this machine in which it is hosted
-
 //This method takes in a network payload and creates a thread to process the request
 char* send_network_request_API(char* request, size_t requestSize) {
     char* requestCopy = (char*) malloc(requestSize);
@@ -72,7 +68,7 @@ void* network_request_thread_wrapper(void* parameters) {
     return (void*) network_request_logic(p->request, p->requestSize);
 }
 
-// 
+// Forwards network request to receiveNetworkRequest
 char* network_request_logic(char* request, size_t requestSize) { 
     ocall_print("Network Request Received:");
     ocall_print(request);
@@ -81,180 +77,7 @@ char* network_request_logic(char* request, size_t requestSize) {
     memcpy(requestCopy, request, requestSize); 
     //NOTE Since I didn't update MAX_NETWORK_MESSAGE, this caused a weird memory bug last time when I increased size of public identity key
 
-    char* split = strtok(requestCopy, ":");
-
-    //if the incoming message is a "Create" message
-    if (strcmp(split, "Create") == 0) {
-
-        char* machineType;
-        char* parentTrustedMachinePublicIDKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
-        char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1;
-
-        char* newTokenizerString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
-        memcpy(newTokenizerString, nextIndex, SIZE_OF_MAX_EVENT_PAYLOAD);
-
-        split = strtok(newTokenizerString, ":");
-        machineType = split;
-        
-        ocall_print("machine type requested is :");
-        ocall_print(machineType);
-        
-        //If this is a valid machine type
-        if (MachineTypeToSecurityStatusOfMachine.count(string(machineType)) == 1) {
-
-            return forward_request(request, requestSize);
-
-        } else {
-            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
-        }
-
-    
-    }  else if (strcmp(split, "UntrustedCreate") == 0) {
-
-        split = strtok(NULL, ":");
-        char* machineType = split;
-        ocall_print("machine type requested is :");
-        ocall_print(machineType);
-        if (MachineTypeToSecurityStatusOfMachine.count(string(machineType)) == 1) {
-
-            return forward_request(request, requestSize);
-
-        } else {
-            return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
-        }
-    
-    } else if (strcmp(split, "InitComm") == 0) {
-
-        char* machineInitializingComm;
-        char* machineReceivingComm;
-
-        // if (NETWORK_DEBUG) {
-        //     split = strtok(NULL, ":");
-        //     machineInitializingComm = split;
-        //     split = strtok(NULL, ":");
-        //     machineReceivingComm = split;
-        //     ocall_print("machine Receiving comm is :");
-        //     ocall_print(machineReceivingComm);
-        // } else {
-            // machineInitializingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            // memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
-            // machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            // memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
-            // ocall_print("machine Receiving comm is :");
-            // printRSAKey(machineReceivingComm);
-            machineInitializingComm = (char*) malloc(SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
-            memcpy(machineInitializingComm, request + strlen(split) + 1, SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
-            machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(machineReceivingComm, request + strlen(split) + 1 + SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST + 1, SGX_RSA3072_KEY_SIZE);
-            ocall_print("machine Receiving comm is :");
-            printRSAKey(machineReceivingComm);
-        // }
-
-        
-        // int count;
-        // // if (NETWORK_DEBUG) {
-        // //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingComm));
-        // // } else {
-        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE));
-        // // }
-
-
-        // if (count == 1) {
-            // if (NETWORK_DEBUG)  {
-            //     return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingComm)]);
-            // } else {
-                return forward_request(request, requestSize);
-            // }
-
-        // } else {
-        //     ocall_print("Could not find in MachinePublicIDToEnclaveNum");
-        //     printPayload(machineReceivingComm, SGX_RSA3072_KEY_SIZE);
-        //     return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
-        // }
-
-    
-    }  else if (strcmp(split, "UntrustedSend") == 0) {
-
-        char* machineSendingMessage;
-        char* machineReceivingMessage;
-        
-            machineSendingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(machineSendingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
-            machineReceivingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(machineReceivingMessage, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
-            ocall_print("machine Receiving message is :");
-            printRSAKey(machineReceivingMessage);
-
-        // char* machineReceivingMessage;
-
-        // // if (NETWORK_DEBUG) {
-        // //     split = strtok(NULL, ":");
-        // //     machineReceivingMessage = split;
-        // //     ocall_print("machine Receiving message is :");
-        // //     ocall_print(machineReceivingMessage);
-        // // } else {
-        //     machineReceivingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        //     memcpy(machineReceivingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
-        //     ocall_print("machine Receiving message is :");
-        //     printRSAKey(machineReceivingMessage);
-        // }
-
-        // int count;
-        // // if (NETWORK_DEBUG) {
-        // //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage));
-        // // } else {
-        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
-        // // }
-        
-
-        // if (count == 1) {
-            // if (NETWORK_DEBUG) {
-            //     return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage)]);
-            // } else {
-
-                return forward_request(request, requestSize);
-            // }
-
-        // } else {
-        //     return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
-        // }
-
-    } else if (strcmp(split, "Send") == 0) {
-
-        char* machineSendingMessage;
-        char* machineReceivingMessage;
-
-            machineSendingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(machineSendingMessage, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
-            machineReceivingMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-            memcpy(machineReceivingMessage, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
-            ocall_print("machine Receiving message is :");
-            printRSAKey(machineReceivingMessage);
-        // }
-
-        // int count;
-        // // if (NETWORK_DEBUG) {
-        // //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage));
-        // // } else {
-        //     count = MachinePublicIDToEnclaveNum.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
-        // // }
-        
-
-        // if (count == 1) {
-            // if (NETWORK_DEBUG) {
-            //     return forward_request(request, requestSize, MachinePublicIDToEnclaveNum[string(machineReceivingMessage)]);
-            // } else {
-                return forward_request(request, requestSize);
-            // }
-
-        // } else {
-        //     return createStringLiteralMalloced("ERROR:Machine Type Not Found!");
-        // }
-
-    } else {
-        return createStringLiteralMalloced("Command Not Found");
-    }
+    return receiveNetworkRequest(request, requestSize);
 }
 
 // Used to send requests to the service provider sample.  It
@@ -370,34 +193,6 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
         safe_free(resp);
     }
 }
-
-char* forward_request(char* request, size_t requestSize) {
-    return receiveNetworkRequest(request, requestSize);
-    // if (redirect == 0 || redirect == -1) { //if it is a USM or a valid SSM
-    //     return receiveNetworkRequest(request, requestSize);
-    // } else {
-    //     return createStringLiteralMalloced("ERROR:Request not forwarded!");
-    // }
-}
-
-void network_request_logic_ocall(char* request, size_t requestSize) {
-    //just for local RegisterMachine
-    network_request_logic(request, requestSize);
-}
-
-// Initialize MachineTypeToSecurityStatusOfMachine map and start P Process if not started 
-void initNetwork() {
-    startPrtProcessIfNotStarted();
-
-    for (int i = 0; i < program->nMachines; i++) {
-        if (program->machines[i]->isSecure) {
-            MachineTypeToSecurityStatusOfMachine[createString(program->machines[i]->name)] = 0;
-        } else {
-            MachineTypeToSecurityStatusOfMachine[createString(program->machines[i]->name)] = -1;
-        }
-    }
-}
-
 
 //TODO prevent memory leaks
 struct RA_network_serialization_headers* deserialize_ra_network_headers(char* serialized_string) {

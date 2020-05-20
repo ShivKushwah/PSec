@@ -159,7 +159,7 @@ int main(int argc, char const *argv[]) {
         memcpy(host_machine_IP_address, (char*)currIPAddress.c_str(), strlen((char*)currIPAddress.c_str()) + 1);
     }
     
-    initNetwork();
+    startPrtProcessIfNotStarted();
     initKPS();
     initApp();
     if (!isKpsProcess) {

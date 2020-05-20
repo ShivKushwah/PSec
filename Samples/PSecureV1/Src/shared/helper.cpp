@@ -698,7 +698,9 @@ void parseIPAddressPortString(char* serializedString, string& ipAddress, int& po
     port = atoi(split);
 }
 
-//Responbility of caller to free return
+// Method that parses the incoming network request and calls the appropiate API method for corresponding SSM or USM
+// Since helper.cpp is shared by both enclave and untrusted host, we have a flag (isEnclaveUntrustedHost) that indicates whether this function is running in the context of the untrusted host machine
+// Responsibility of caller to free return value
 char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEnclaveUntrustedHost) {
     // ocall_print("helllo");
     // ocall_print_int(strlen(request));

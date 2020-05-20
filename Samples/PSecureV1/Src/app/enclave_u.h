@@ -49,10 +49,6 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_network_request, (char* request, char* r
 #define OCALL_ADD_IDENTITY_TO_EID_DICTIONARY_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_add_identity_to_eid_dictionary, (char* newMachineID, uint32_t ID_SIZE, sgx_enclave_id_t enclave_eid));
 #endif
-#ifndef NETWORK_REQUEST_LOGIC_OCALL_DEFINED__
-#define NETWORK_REQUEST_LOGIC_OCALL_DEFINED__
-void SGX_UBRIDGE(SGX_NOCONVENTION, network_request_logic_ocall, (char* request, size_t requestSize));
-#endif
 #ifndef OCALL_GET_IP_ADDRESS_OF_CURRENT_HOST_DEFINED__
 #define OCALL_GET_IP_ADDRESS_OF_CURRENT_HOST_DEFINED__
 void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_get_ip_address_of_current_host, (char* ipAddress, int MAX_IP_ADDRESS_SIZE));
