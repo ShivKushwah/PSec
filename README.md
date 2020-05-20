@@ -13,3 +13,8 @@ Follow [this](docs/SGXInstallation.md) if Intel SGX is not installed [Recommende
 Follow [this](docs/RepoInstallation.md) if building this project on a pre-existing Intel SGX installation.
 
 In order to run sample programs, follow [this](docs/Running.md).
+
+TODO:
+* Go over OTP example and explanation in README
+* Sync with Learn&Verify repo
+* Include examples where information flow fails

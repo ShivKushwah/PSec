@@ -5,6 +5,8 @@
 #include "CivitasHeaders.h"
 #elif OTP_EXAMPLE
 #include "OTPBankServerCode.h"
+#elif PERFORMANCE_METRICS_EXAMPLE
+#include "PerformanceMachines1.h"
 #endif
 // #include "PingPongEnclave.h"
 
