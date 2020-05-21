@@ -35,6 +35,11 @@ static PRT_FOREIGNTYPEDECL P_StringType = {
     P_TOSTRING_StringType_IMPL,
 };
 PRT_TYPE P_GEND_TYPE_StringType = { PRT_KIND_FOREIGN, { .foreignType = &P_StringType } };
+static PRT_STRING P_NMDTUP_N[] = { "usernamePW", "OTPCode" };
+static PRT_TYPE* P_NMDTUP_T[] = { &P_GEND_TYPE_StringType, &P_GEND_TYPE_StringType };
+static PRT_NMDTUPTYPE P_NMDTUP = { 2U, P_NMDTUP_N, P_NMDTUP_T };
+static PRT_TYPE P_GEND_TYPE_T2StringTypeStringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP } };
+static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
 extern PRT_UINT64 P_MKDEF_secure_StringType_IMPL(void);
 extern PRT_UINT64 P_CLONE_secure_StringType_IMPL(PRT_UINT64);
 extern void P_FREE_secure_StringType_IMPL(PRT_UINT64);
@@ -55,11 +60,6 @@ PRT_TYPE P_GEND_TYPE_secure_StringType = { PRT_KIND_FOREIGN, { .foreignType = &P
 static PRT_TYPE P_GEND_TYPE_s = { PRT_KIND_SECURE_INT, { NULL } };
 static PRT_MAPTYPE P_MAPTYPE = { &P_GEND_TYPE_s, &P_GEND_TYPE_s };
 static PRT_TYPE P_GEND_TYPE_MKsVs = { PRT_KIND_MAP, { .map = &P_MAPTYPE } };
-static PRT_STRING P_NMDTUP_N[] = { "usernamePW", "OTPCode" };
-static PRT_TYPE* P_NMDTUP_T[] = { &P_GEND_TYPE_StringType, &P_GEND_TYPE_StringType };
-static PRT_NMDTUPTYPE P_NMDTUP = { 2U, P_NMDTUP_N, P_NMDTUP_T };
-static PRT_TYPE P_GEND_TYPE_T2StringTypeStringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP } };
-static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
 extern PRT_UINT64 P_MKDEF_secure_machine_handle_IMPL(void);
 extern PRT_UINT64 P_CLONE_secure_machine_handle_IMPL(PRT_UINT64);
 extern void P_FREE_secure_machine_handle_IMPL(PRT_UINT64);
@@ -198,15 +198,6 @@ PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveRegistrationCredentials =
     0
 };
 
-PRT_EVENTDECL P_EVENT_MasterSecretEvent = 
-{
-    { PRT_VALUE_KIND_EVENT, 0U },
-    "MasterSecretEvent",
-    4294967295U,
-    &P_GEND_TYPE_secure_StringType,
-    1
-};
-
 PRT_EVENTDECL P_EVENT_GenerateOTPCodeEvent = 
 {
     { PRT_VALUE_KIND_EVENT, 0U },
@@ -223,15 +214,6 @@ PRT_EVENTDECL P_EVENT_OTPCodeEvent =
     4294967295U,
     &P_GEND_TYPE_StringType,
     0
-};
-
-PRT_EVENTDECL P_EVENT_MapEvent = 
-{
-    { PRT_VALUE_KIND_EVENT, 0U },
-    "MapEvent",
-    4294967295U,
-    &P_GEND_TYPE_MKsVs,
-    1
 };
 
 PRT_EVENTDECL P_EVENT_AuthenticateRequest = 
@@ -259,6 +241,24 @@ PRT_EVENTDECL P_EVENT_AuthFailure =
     4294967295U,
     &P_GEND_TYPE_n,
     0
+};
+
+PRT_EVENTDECL P_EVENT_MasterSecretEvent = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
+    "MasterSecretEvent",
+    4294967295U,
+    &P_GEND_TYPE_secure_StringType,
+    1
+};
+
+PRT_EVENTDECL P_EVENT_MapEvent = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
+    "MapEvent",
+    4294967295U,
+    &P_GEND_TYPE_MKsVs,
+    1
 };
 
 PRT_EVENTDECL P_EVENT_TRUSTEDProvisionBankSSM = 
@@ -2831,7 +2831,7 @@ PRT_TYPE* P_TYPEDEF_machine_handle = &P_GEND_TYPE_machine_handle;
 PRT_TYPE* P_TYPEDEF_capability = &P_GEND_TYPE_capability;
 PRT_TYPE* P_TYPEDEF_secure_machine_handle = &P_GEND_TYPE_secure_machine_handle;
 PRT_TYPE* P_TYPEDEF_secure_StringType = &P_GEND_TYPE_secure_StringType;
-PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_OTPCodeEvent, &P_EVENT_AuthSuccess, &P_EVENT_AuthFailure, &P_EVENT_BankPublicIDEvent, &P_EVENT_PublicIDEvent, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_AuthenticateRequest, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM };
+PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_OTPCodeEvent, &P_EVENT_AuthSuccess, &P_EVENT_AuthFailure, &P_EVENT_BankPublicIDEvent, &P_EVENT_PublicIDEvent, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_AuthenticateRequest, &P_EVENT_MasterSecretEvent, &P_EVENT_MapEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_UntrustedInitializer, &P_MACHINE_TrustedInitializer, &P_MACHINE_BankEnclave, &P_MACHINE_ClientEnclave, &P_MACHINE_ClientWebBrowser };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_UntrustedInitializer, &P_I_TrustedInitializer, &P_I_BankEnclave, &P_I_ClientEnclave, &P_I_ClientWebBrowser };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };

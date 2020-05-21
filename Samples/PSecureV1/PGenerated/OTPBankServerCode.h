@@ -10,13 +10,13 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_BankPublicIDEvent;
     extern PRT_EVENTDECL P_EVENT_PublicIDEvent;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveRegistrationCredentials;
-    extern PRT_EVENTDECL P_EVENT_MasterSecretEvent;
     extern PRT_EVENTDECL P_EVENT_GenerateOTPCodeEvent;
     extern PRT_EVENTDECL P_EVENT_OTPCodeEvent;
-    extern PRT_EVENTDECL P_EVENT_MapEvent;
     extern PRT_EVENTDECL P_EVENT_AuthenticateRequest;
     extern PRT_EVENTDECL P_EVENT_AuthSuccess;
     extern PRT_EVENTDECL P_EVENT_AuthFailure;
+    extern PRT_EVENTDECL P_EVENT_MasterSecretEvent;
+    extern PRT_EVENTDECL P_EVENT_MapEvent;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionBankSSM;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionClientSSM;
     extern PRT_INTERFACEDECL P_I_UntrustedInitializer;

@@ -196,3 +196,4 @@ Running `ldd app` should yield the following output:
 
 ### Next Steps
 In order to build the repo, follow [this](RepoInstallation.md) next. For consistency, clone the repo into the Research folder created in the previous section.
+

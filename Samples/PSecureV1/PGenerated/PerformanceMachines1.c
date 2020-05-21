@@ -2,28 +2,6 @@
 
 // Type universe for program:
 static PRT_STRING P_NMDTUP_N[] = { "fst", "snd" };
-static PRT_TYPE P_GEND_TYPE_s = { PRT_KIND_SECURE_INT, { NULL } };
-extern PRT_UINT64 P_MKDEF_secure_StringType_IMPL(void);
-extern PRT_UINT64 P_CLONE_secure_StringType_IMPL(PRT_UINT64);
-extern void P_FREE_secure_StringType_IMPL(PRT_UINT64);
-extern PRT_UINT32 P_GETHASHCODE_secure_StringType_IMPL(PRT_UINT64);
-extern PRT_BOOLEAN P_ISEQUAL_secure_StringType_IMPL(PRT_UINT64, PRT_UINT64);
-extern PRT_STRING P_TOSTRING_secure_StringType_IMPL(PRT_UINT64);
-static PRT_FOREIGNTYPEDECL P_secure_StringType = {
-    0U,
-    "secure_StringType",
-    P_MKDEF_secure_StringType_IMPL,
-    P_CLONE_secure_StringType_IMPL,
-    P_FREE_secure_StringType_IMPL,
-    P_GETHASHCODE_secure_StringType_IMPL,
-    P_ISEQUAL_secure_StringType_IMPL,
-    P_TOSTRING_secure_StringType_IMPL,
-};
-PRT_TYPE P_GEND_TYPE_secure_StringType = { PRT_KIND_FOREIGN, { .foreignType = &P_secure_StringType } };
-static PRT_TYPE* P_NMDTUP_T[] = { &P_GEND_TYPE_s, &P_GEND_TYPE_secure_StringType };
-static PRT_NMDTUPTYPE P_NMDTUP = { 2U, P_NMDTUP_N, P_NMDTUP_T };
-static PRT_TYPE P_GEND_TYPE_T2ssecure_StringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP } };
-static PRT_STRING P_NMDTUP_N_1[] = { "fst", "snd" };
 static PRT_TYPE P_GEND_TYPE_i = { PRT_KIND_INT, { NULL } };
 extern PRT_UINT64 P_MKDEF_StringType_IMPL(void);
 extern PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64);
@@ -42,9 +20,9 @@ static PRT_FOREIGNTYPEDECL P_StringType = {
     P_TOSTRING_StringType_IMPL,
 };
 PRT_TYPE P_GEND_TYPE_StringType = { PRT_KIND_FOREIGN, { .foreignType = &P_StringType } };
-static PRT_TYPE* P_NMDTUP_T_1[] = { &P_GEND_TYPE_i, &P_GEND_TYPE_StringType };
-static PRT_NMDTUPTYPE P_NMDTUP_1 = { 2U, P_NMDTUP_N_1, P_NMDTUP_T_1 };
-static PRT_TYPE P_GEND_TYPE_T2iStringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_1 } };
+static PRT_TYPE* P_NMDTUP_T[] = { &P_GEND_TYPE_i, &P_GEND_TYPE_StringType };
+static PRT_NMDTUPTYPE P_NMDTUP = { 2U, P_NMDTUP_N, P_NMDTUP_T };
+static PRT_TYPE P_GEND_TYPE_T2iStringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP } };
 extern PRT_UINT64 P_MKDEF_machine_handle_IMPL(void);
 extern PRT_UINT64 P_CLONE_machine_handle_IMPL(PRT_UINT64);
 extern void P_FREE_machine_handle_IMPL(PRT_UINT64);
@@ -62,12 +40,10 @@ static PRT_FOREIGNTYPEDECL P_machine_handle = {
     P_TOSTRING_machine_handle_IMPL,
 };
 PRT_TYPE P_GEND_TYPE_machine_handle = { PRT_KIND_FOREIGN, { .foreignType = &P_machine_handle } };
-static PRT_MAPTYPE P_MAPTYPE = { &P_GEND_TYPE_s, &P_GEND_TYPE_s };
-static PRT_TYPE P_GEND_TYPE_MKsVs = { PRT_KIND_MAP, { .map = &P_MAPTYPE } };
-static PRT_STRING P_NMDTUP_N_2[] = { "usernamePW", "OTPCode" };
-static PRT_TYPE* P_NMDTUP_T_2[] = { &P_GEND_TYPE_StringType, &P_GEND_TYPE_StringType };
-static PRT_NMDTUPTYPE P_NMDTUP_2 = { 2U, P_NMDTUP_N_2, P_NMDTUP_T_2 };
-static PRT_TYPE P_GEND_TYPE_T2StringTypeStringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_2 } };
+static PRT_STRING P_NMDTUP_N_1[] = { "usernamePW", "OTPCode" };
+static PRT_TYPE* P_NMDTUP_T_1[] = { &P_GEND_TYPE_StringType, &P_GEND_TYPE_StringType };
+static PRT_NMDTUPTYPE P_NMDTUP_1 = { 2U, P_NMDTUP_N_1, P_NMDTUP_T_1 };
+static PRT_TYPE P_GEND_TYPE_T2StringTypeStringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_1 } };
 static PRT_TYPE P_GEND_TYPE_n = { PRT_KIND_NULL, { NULL } };
 extern PRT_UINT64 P_MKDEF_secure_machine_handle_IMPL(void);
 extern PRT_UINT64 P_CLONE_secure_machine_handle_IMPL(PRT_UINT64);
@@ -86,6 +62,30 @@ static PRT_FOREIGNTYPEDECL P_secure_machine_handle = {
     P_TOSTRING_secure_machine_handle_IMPL,
 };
 PRT_TYPE P_GEND_TYPE_secure_machine_handle = { PRT_KIND_FOREIGN, { .foreignType = &P_secure_machine_handle } };
+static PRT_STRING P_NMDTUP_N_2[] = { "fst", "snd" };
+static PRT_TYPE P_GEND_TYPE_s = { PRT_KIND_SECURE_INT, { NULL } };
+extern PRT_UINT64 P_MKDEF_secure_StringType_IMPL(void);
+extern PRT_UINT64 P_CLONE_secure_StringType_IMPL(PRT_UINT64);
+extern void P_FREE_secure_StringType_IMPL(PRT_UINT64);
+extern PRT_UINT32 P_GETHASHCODE_secure_StringType_IMPL(PRT_UINT64);
+extern PRT_BOOLEAN P_ISEQUAL_secure_StringType_IMPL(PRT_UINT64, PRT_UINT64);
+extern PRT_STRING P_TOSTRING_secure_StringType_IMPL(PRT_UINT64);
+static PRT_FOREIGNTYPEDECL P_secure_StringType = {
+    0U,
+    "secure_StringType",
+    P_MKDEF_secure_StringType_IMPL,
+    P_CLONE_secure_StringType_IMPL,
+    P_FREE_secure_StringType_IMPL,
+    P_GETHASHCODE_secure_StringType_IMPL,
+    P_ISEQUAL_secure_StringType_IMPL,
+    P_TOSTRING_secure_StringType_IMPL,
+};
+PRT_TYPE P_GEND_TYPE_secure_StringType = { PRT_KIND_FOREIGN, { .foreignType = &P_secure_StringType } };
+static PRT_TYPE* P_NMDTUP_T_2[] = { &P_GEND_TYPE_s, &P_GEND_TYPE_secure_StringType };
+static PRT_NMDTUPTYPE P_NMDTUP_2 = { 2U, P_NMDTUP_N_2, P_NMDTUP_T_2 };
+static PRT_TYPE P_GEND_TYPE_T2ssecure_StringType = { PRT_KIND_NMDTUP, { .nmTuple = &P_NMDTUP_2 } };
+static PRT_MAPTYPE P_MAPTYPE = { &P_GEND_TYPE_s, &P_GEND_TYPE_s };
+static PRT_TYPE P_GEND_TYPE_MKsVs = { PRT_KIND_MAP, { .map = &P_MAPTYPE } };
 extern PRT_UINT64 P_MKDEF_capability_IMPL(void);
 extern PRT_UINT64 P_CLONE_capability_IMPL(PRT_UINT64);
 extern void P_FREE_capability_IMPL(PRT_UINT64);
@@ -111,19 +111,9 @@ PRT_VALUE* P_PrintRawStringType_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 
 PRT_VALUE* P_PrintRawSecureStringType_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
-PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
@@ -134,6 +124,16 @@ PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 PRT_VALUE* P_GetHelloWorld_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_MeasureTime_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon;
@@ -202,24 +202,6 @@ PRT_VALUE* P_Anon_IMPL_21(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 extern PRT_FUNDECL P_FUNCTION_Anon_21;
 
 
-PRT_EVENTDECL P_EVENT_TRUSTEDMeasureEvent1 = 
-{
-    { PRT_VALUE_KIND_EVENT, 0U },
-    "TRUSTEDMeasureEvent1",
-    4294967295U,
-    &P_GEND_TYPE_T2ssecure_StringType,
-    1
-};
-
-PRT_EVENTDECL P_EVENT_TRUSTEDMeasureEvent2 = 
-{
-    { PRT_VALUE_KIND_EVENT, 0U },
-    "TRUSTEDMeasureEvent2",
-    4294967295U,
-    &P_GEND_TYPE_T2ssecure_StringType,
-    1
-};
-
 PRT_EVENTDECL P_EVENT_MeasureEvent1 = 
 {
     { PRT_VALUE_KIND_EVENT, 0U },
@@ -265,15 +247,6 @@ PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveRegistrationCredentials =
     0
 };
 
-PRT_EVENTDECL P_EVENT_MasterSecretEvent = 
-{
-    { PRT_VALUE_KIND_EVENT, 0U },
-    "MasterSecretEvent",
-    4294967295U,
-    &P_GEND_TYPE_secure_StringType,
-    1
-};
-
 PRT_EVENTDECL P_EVENT_GenerateOTPCodeEvent = 
 {
     { PRT_VALUE_KIND_EVENT, 0U },
@@ -290,15 +263,6 @@ PRT_EVENTDECL P_EVENT_OTPCodeEvent =
     4294967295U,
     &P_GEND_TYPE_StringType,
     0
-};
-
-PRT_EVENTDECL P_EVENT_MapEvent = 
-{
-    { PRT_VALUE_KIND_EVENT, 0U },
-    "MapEvent",
-    4294967295U,
-    &P_GEND_TYPE_MKsVs,
-    1
 };
 
 PRT_EVENTDECL P_EVENT_AuthenticateRequest = 
@@ -346,6 +310,42 @@ PRT_EVENTDECL P_EVENT_TRUSTEDProvisionClientSSM =
     1
 };
 
+PRT_EVENTDECL P_EVENT_TRUSTEDMeasureEvent1 = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
+    "TRUSTEDMeasureEvent1",
+    4294967295U,
+    &P_GEND_TYPE_T2ssecure_StringType,
+    1
+};
+
+PRT_EVENTDECL P_EVENT_TRUSTEDMeasureEvent2 = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
+    "TRUSTEDMeasureEvent2",
+    4294967295U,
+    &P_GEND_TYPE_T2ssecure_StringType,
+    1
+};
+
+PRT_EVENTDECL P_EVENT_MasterSecretEvent = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
+    "MasterSecretEvent",
+    4294967295U,
+    &P_GEND_TYPE_secure_StringType,
+    1
+};
+
+PRT_EVENTDECL P_EVENT_MapEvent = 
+{
+    { PRT_VALUE_KIND_EVENT, 0U },
+    "MapEvent",
+    4294967295U,
+    &P_GEND_TYPE_MKsVs,
+    1
+};
+
 PRT_FUNDECL P_FUNCTION_PrintString =
 {
     "PrintString",
@@ -370,30 +370,6 @@ PRT_FUNDECL P_FUNCTION_PrintRawSecureStringType =
 };
 
 
-PRT_FUNDECL P_FUNCTION_Declassify =
-{
-    "Declassify",
-    &P_Declassify_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_Endorse =
-{
-    "Endorse",
-    &P_Endorse_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_GetThis =
-{
-    "GetThis",
-    &P_GetThis_IMPL,
-    NULL
-};
-
-
 PRT_FUNDECL P_FUNCTION_Concat =
 {
     "Concat",
@@ -406,22 +382,6 @@ PRT_FUNDECL P_FUNCTION_Hash =
 {
     "Hash",
     &P_Hash_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_CreateSecureMachineRequest =
-{
-    "CreateSecureMachineRequest",
-    &P_CreateSecureMachineRequest_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_CreateUSMMachineRequest =
-{
-    "CreateUSMMachineRequest",
-    &P_CreateUSMMachineRequest_IMPL,
     NULL
 };
 
@@ -462,6 +422,46 @@ PRT_FUNDECL P_FUNCTION_MeasureTime =
 {
     "MeasureTime",
     &P_MeasureTime_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_Declassify =
+{
+    "Declassify",
+    &P_Declassify_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_Endorse =
+{
+    "Endorse",
+    &P_Endorse_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_GetThis =
+{
+    "GetThis",
+    &P_GetThis_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_CreateSecureMachineRequest =
+{
+    "CreateSecureMachineRequest",
+    &P_CreateSecureMachineRequest_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_CreateUSMMachineRequest =
+{
+    "CreateUSMMachineRequest",
+    &P_CreateUSMMachineRequest_IMPL,
     NULL
 };
 
@@ -3775,11 +3775,11 @@ PRT_TYPE* P_TYPEDEF_machine_handle = &P_GEND_TYPE_machine_handle;
 PRT_TYPE* P_TYPEDEF_capability = &P_GEND_TYPE_capability;
 PRT_TYPE* P_TYPEDEF_secure_machine_handle = &P_GEND_TYPE_secure_machine_handle;
 PRT_TYPE* P_TYPEDEF_secure_StringType = &P_GEND_TYPE_secure_StringType;
-PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_OTPCodeEvent, &P_EVENT_AuthSuccess, &P_EVENT_AuthFailure, &P_EVENT_TRUSTEDMeasureEvent1, &P_EVENT_TRUSTEDMeasureEvent2, &P_EVENT_MeasureEvent1, &P_EVENT_MeasureEvent2, &P_EVENT_BankPublicIDEvent, &P_EVENT_PublicIDEvent, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &P_EVENT_MasterSecretEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_AuthenticateRequest, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM };
+PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_OTPCodeEvent, &P_EVENT_AuthSuccess, &P_EVENT_AuthFailure, &P_EVENT_MeasureEvent1, &P_EVENT_MeasureEvent2, &P_EVENT_BankPublicIDEvent, &P_EVENT_PublicIDEvent, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_AuthenticateRequest, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_TRUSTEDMeasureEvent1, &P_EVENT_TRUSTEDMeasureEvent2, &P_EVENT_MasterSecretEvent, &P_EVENT_MapEvent };
 PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_UntrustedInitializer, &P_MACHINE_MeasureMachine, &P_MACHINE_TrustedInitializer, &P_MACHINE_BankEnclave, &P_MACHINE_ClientEnclave, &P_MACHINE_ClientWebBrowser };
 PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_UntrustedInitializer, &P_I_MeasureMachine, &P_I_TrustedInitializer, &P_I_BankEnclave, &P_I_ClientEnclave, &P_I_ClientWebBrowser };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
-PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_secure_StringType, &P_StringType, &P_machine_handle, &P_secure_machine_handle, &P_capability };
+PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_StringType, &P_machine_handle, &P_secure_machine_handle, &P_secure_StringType, &P_capability };
 int P_DefaultImpl_LME_0[] = { -1,1,2,-1,-1,-1 };
 int P_DefaultImpl_LME_1[] = { -1,-1,-1,-1,-1,-1 };
 int P_DefaultImpl_LME_2[] = { -1,-1,-1,3,-1,5 };
