@@ -397,10 +397,10 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     safe_free(secureChildPublicIDKeyCopy);
 
     if (isSecureCreate) {
-        createMachine(machineType, numArgs, payloadType, payload, payloadSize);
+        createPMachine(machineType, numArgs, payloadType, payload, payloadSize);
 
     } else {
-        createMachine(machineType, 0, PRT_VALUE_KIND_INT, "", 0);
+        createPMachine(machineType, 0, PRT_VALUE_KIND_INT, "", 0);
     }
 
     char* returnNewMachinePublicIDKey = (char*) malloc(secureChildPublicIDKey.length() + 1);

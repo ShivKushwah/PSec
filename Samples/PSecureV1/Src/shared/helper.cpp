@@ -71,6 +71,8 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
 
 extern sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_key_t *private_key);
 
+//Generic Helper Functions*******************
+
 void safe_free(void* ptr) {
     if (ptr != NULL) {
         free(ptr);
@@ -255,6 +257,256 @@ char* concat(char* str1, char* str2) {
     return retString;
 }
 
+//Responsbility of caller to free return
+char* generateCStringFromFormat(char* format_string, char* strings_to_print[], int num_strings) {
+    if (num_strings > 5) {
+        ocall_print("Too many strings passed to generateCStringFromFormat!");
+        return "ERROR!";
+    }
+    char* returnString = (char*) malloc(1600);
+
+    char* str1 = strings_to_print[0];
+    char* str2 = strings_to_print[1];
+    char* str3 = strings_to_print[2];
+    char* str4 = strings_to_print[3];
+    char* str5 = strings_to_print[4];
+
+    snprintf(returnString, 1600, format_string, str1, str2, str3, str4, str5);
+    return returnString;
+
+}
+
+int returnTotalSizeofLengthArray(int lengths[], int length){
+    int total_size = 0;
+    for (int i = 0; i < length; i++) {
+        total_size += lengths[i];
+    }
+    return total_size;
+}
+
+//Responsbility of caller to free return
+char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], int size_array) {
+        //NOTE make changes in app.cpp as well
+    int total_size = returnTotalSizeofLengthArray(lengths, size_array);
+    ocall_print("Total size of concat is ");
+    ocall_print_int(total_size);
+    
+
+    char* returnString = (char*) malloc(total_size + 1);
+    char* ptr = returnString;
+    for (int i = 0; i < size_array; i++) {
+        memcpy(ptr, strings_to_concat[i], lengths[i]);
+        ptr = ptr + lengths[i];
+    }
+    returnString[total_size] = '\0';
+
+    ocall_print("Concat return string is");
+    ocall_print(returnString);
+    return returnString;
+
+}
+
+void parseIPAddressPortString(char* serializedString, string& ipAddress, int& port) {
+    char* split = strtok(serializedString, ":");
+    ipAddress = string(split);
+    split = strtok(NULL, ":");
+    port = atoi(split);
+}
+
+//Responsibilty of caller to free return
+char* generateIV() {
+    char* ivKey = (char*) malloc(SIZE_OF_IV);
+    #ifdef ENCLAVE_STD_ALT
+    sgx_read_rand((unsigned char*)ivKey, SIZE_OF_IV);
+    #endif
+    return ivKey;
+}
+
+void generateSessionKey(string& newSessionKey) {
+    //TODO Make this generate a random key
+    if (NETWORK_DEBUG) {
+        uint32_t val; 
+        #ifdef ENCLAVE_STD_ALT
+        sgx_read_rand((unsigned char *) &val, 4);
+        #endif
+        newSessionKey = string("GenSessionKeyREA", SIZE_OF_REAL_SESSION_KEY);
+    } else {
+        char* sessionKey = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
+        #ifdef ENCLAVE_STD_ALT
+        sgx_read_rand((unsigned char*)sessionKey, SIZE_OF_REAL_SESSION_KEY);
+        #else
+        sgx_status_t status = enclave_sgx_read_rand_ecall(global_app_eid, sessionKey, SIZE_OF_REAL_SESSION_KEY);
+        // ocall_print("Generating random session key!");
+        #endif
+        newSessionKey = string(sessionKey, SIZE_OF_REAL_SESSION_KEY);
+    }
+    
+} 
+
+char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_null_byte, void* other_party_public_key_raw, int& output_encrypted_message_length, void* other_party_public_key) {
+    #ifdef ENCLAVE_STD_ALT
+    // ocall_print("Pub key received is");
+    // ocall_print((char*) other_party_public_key_raw);
+
+    size_t encrypted_data_length;
+    char* encrypted_data = (char*) malloc(SGX_RSA3072_KEY_SIZE); //TODO note if message is bigger than this size, then we can run into issues
+    
+
+    ocall_print("encrypting with this key");
+    printPayload((char*) other_party_public_key_raw, SGX_RSA3072_KEY_SIZE);
+    ocall_print("message is");
+    printPayload(message, message_length_with_null_byte);
+
+    sgx_status_t status = SGX_ERROR_AE_SESSION_INVALID;
+    void* public_key_raw = NULL;
+    ocall_print("pk is");
+    printPayload((char*)other_party_public_key, sizeof(sgx_rsa3072_public_key_t));
+    sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*) other_party_public_key;
+
+    const int n_byte_size = SGX_RSA3072_KEY_SIZE;
+
+
+
+    int e_byte_size = SGX_RSA3072_PUB_EXP_SIZE;
+    unsigned char *p_n = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_d = (unsigned char *)malloc(SGX_RSA3072_PRI_EXP_SIZE);
+    // unsigned char p_e[] = {0x01, 0x00, 0x01, 0x00}; //65537
+    unsigned char *p_p = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_q = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_dmp1 = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_dmq1 = (unsigned char *)malloc(n_byte_size);
+    unsigned char *p_iqmp = (unsigned char *)malloc(n_byte_size);
+    
+
+    status = SGX_SUCCESS;
+    status = sgx_create_rsa_key_pair(
+        n_byte_size,
+        e_byte_size,
+        p_n,
+        p_d,
+        public_key->exp,
+        p_p,
+        p_q,
+        p_dmp1,
+        p_dmq1,
+        p_iqmp
+    );
+    if (status != SGX_SUCCESS) {
+        ocall_print("Rsa Key Pair creation error!");
+    } else {
+        ocall_print("RSA Generated Succesfully!");
+    }
+
+    status = sgx_create_rsa_pub1_key(
+                       SGX_RSA3072_KEY_SIZE,
+                       SGX_RSA3072_PUB_EXP_SIZE,
+                       (const unsigned char*)public_key->mod,
+                       (const unsigned char*)public_key->exp,
+                       &public_key_raw);
+    if (status == SGX_SUCCESS) {
+        printPayload((char*) public_key_raw, SGX_RSA3072_KEY_SIZE);
+    } else {
+        ocall_print("ERROR: Failed to create public key!");
+    }
+
+
+
+
+    status = sgx_rsa_pub_encrypt_sha256(public_key_raw, NULL, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
+
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error in encrypting using public key!");
+        if (status == SGX_ERROR_UNEXPECTED) {
+            ocall_print("unexpected error :(");
+        } else if (status == SGX_ERROR_INVALID_PARAMETER) {
+            ocall_print("invalid parameters");
+        }
+    } else {
+        ocall_print("Encrypted data length will be");
+        ocall_print_int(encrypted_data_length);
+    }
+
+
+    status = sgx_rsa_pub_encrypt_sha256(public_key_raw, (unsigned char*) encrypted_data, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
+
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error in encrypting using public key!");
+        if (status == SGX_ERROR_UNEXPECTED) {
+            ocall_print("unexpected error :(");
+        } else if (status == SGX_ERROR_INVALID_PARAMETER) {
+            ocall_print("invalid parameters");
+        }
+    } else {
+        ocall_print("Able to encrypt using public key!");
+    }
+    output_encrypted_message_length = encrypted_data_length;
+    return encrypted_data;
+    #endif
+}
+
+char* decryptMessageInteralPrivateKey(char* encryptedData, size_t encryptedDataSize, void* private_key) {
+    #ifdef ENCLAVE_STD_ALT
+    size_t decrypted_data_length;
+    char* decrypted_data = (char*) malloc(MAX_NETWORK_MESSAGE); //TODO note if message is bigger than this size, then we can run into issues
+
+    sgx_status_t status = sgx_rsa_priv_decrypt_sha256(private_key, NULL, &decrypted_data_length, (unsigned char*) encryptedData, encryptedDataSize);
+
+    status = sgx_rsa_priv_decrypt_sha256(private_key, (unsigned char*)decrypted_data, &decrypted_data_length, (unsigned char*) encryptedData, encryptedDataSize);
+
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error in decrypting using private key!");
+    } else {
+        ocall_print("Able to decrytp using private key!");
+    }
+    return decrypted_data;
+    #endif
+}
+
+int getNextPID() {
+    return ((PRT_PROCESS_PRIV*)process)->numMachines + 1;
+}
+
+void PrintTuple(PRT_VALUE* tuple){
+    ocall_print("Printing Tuple:");
+    PRT_TUPVALUE* tupPtr = tuple->valueUnion.tuple;
+    ocall_print("Tuple size:");
+    ocall_print_int(tupPtr->size);
+    for (int i = 0; i < tupPtr->size; i++) {
+        PRT_VALUE* currValue = tupPtr->values[i];
+        int currValueType = tupPtr->values[i]->discriminator;
+        if (currValueType == PRT_VALUE_KIND_INT) {
+            ocall_print("Int Value:");
+            ocall_print_int(currValue->valueUnion.nt);
+        } else if (currValueType == PRT_VALUE_KIND_FOREIGN) {
+            ocall_print("String Value:");
+            ocall_print( (char*)currValue->valueUnion.frgn->value);
+        } else if (currValueType == PRT_VALUE_KIND_BOOL) {
+            ocall_print("Bool Value:");
+            ocall_print_int((int)currValue->valueUnion.bl);
+        }
+    }
+
+}
+
+int machineTypeIsSecure(char* machineType) {
+    PRT_UINT32 interfaceName;  
+	PrtLookupMachineByName(machineType, &interfaceName);
+    PRT_UINT32 instanceOf = program->interfaceDefMap[interfaceName];
+    PRT_MACHINEDECL* curMachineDecl = program->machines[instanceOf];
+    return curMachineDecl->isSecure;
+}
+
+//responsibility of caller to free string
+string createString(char* str) {
+    char* strCopy = (char*) malloc(strlen(str) + 1); //TODO shivfree
+    memcpy(strCopy, str, strlen(str) + 1);
+    return string(strCopy);
+}
+
+//*******************
+
+//P Value Serialization and Deserialization Methods*******************
+
 PRT_TYPE_KIND convertKindToType(int kind) {
     if (kind == PRT_VALUE_KIND_INT) {
         return PRT_KIND_INT;
@@ -342,7 +594,6 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
                 currIndex++;
             }
         }
-        // strncat(tupleString, ":END_TUP", 10);
         memcpy(tupleString + currIndex, ":END_TUP", 8);
         currIndex += 8;
         tupleString[currIndex] = '\0';
@@ -392,7 +643,6 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
                 currIndex++;
             }
         }
-        // strncat(mapString, ":END_MAP", 10);
         memcpy(mapString + currIndex, ":END_MAP", 8);
         currIndex += 8;
         mapString[currIndex] = '\0';
@@ -427,7 +677,6 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
                 currIndex++;
             }
         }
-        // strncat(seqString, ":END_SEQ", 10);
         ocall_print("sequence so far");
         ocall_print(seqString);
         ocall_print("checking location of currIndex");
@@ -439,10 +688,7 @@ char* serializePrtValueToString(PRT_VALUE* value, int& final_size) {
         seqString[currIndex] = '\0';
         final_size = currIndex;
         return seqString;
-    }
-    
-    
-     else {
+    } else {
         return createStringLiteralMalloced("UNSUPPORTED_TYPE");
     }
 
@@ -467,13 +713,10 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
         newPrtValue->valueUnion.nt = atoi(str);
     } else if (payloadType == PRT_VALUE_KIND_FOREIGN) {
         ocall_print("Make Prt String with Value:");
-        // ocall_print(str);
         char* typeTagString = str;
         int size_of_foreign_type = returnSizeOfForeignType(atoi(typeTagString));
         newPrtValue->valueUnion.frgn = (PRT_FOREIGNVALUE*) PrtMalloc(sizeof(PRT_FOREIGNVALUE));
-       //  = 0; //TODO hardcoded for StringType
         PRT_STRING prtStr = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (size_of_foreign_type));
-        // sprintf_s(prtStr, size_of_foreign_type, str);
         
         newPrtValue->valueUnion.frgn->typeTag = atoi(typeTagString);
         str = payloadOriginal + strlen(payloadTypeString) + 1 + strlen(typeTagString) + 1;
@@ -494,7 +737,7 @@ PRT_VALUE* deserializeHelper(char* payloadOriginal, int* numCharactersProcessed)
 }
 
 PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payloadSize, int* numCharactersProcessed) { //TODO shiv add string size (payload size) here
-    //TODO code the rest of the types (only int is coded for now)
+    //TODO code the rest of the types
     ocall_print("Deserialized called!");
     ocall_print(strOriginal);
     ocall_print_int(payloadSize + 2);
@@ -530,7 +773,6 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
             char* nextTupleElementToProcessOriginal = nextTupleElementToProcess;
             tupPtr->values = (PRT_VALUE **)PrtCalloc(MAX_TUPLE_ELEMENT_LENGTH, sizeof(PRT_VALUE*));
             while (strncmp(nextTupleElementToProcess, "END_TUP", 7) != 0) {
-                //char* payload = strtok_r(NULL, ":", &reentrant); //TODO make this safe?
                 ocall_print("Processing Element String:");
                 ocall_print(nextTupleElementToProcess);
                 int i = tupPtr->size;
@@ -540,7 +782,6 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
                 ocall_print("Element Processed.");
                 ocall_print("Number of characters in helper is ");
                 ocall_print_int(numProcessedInHelper);
-                // *numCharactersProcessed =  *numCharactersProcessed + numProcessedInHelper + 1; //+1 for ":"
                 nextTupleElementToProcess = nextTupleElementToProcess + numProcessedInHelper + 1;
             }
             *numCharactersProcessed =  *numCharactersProcessed + (nextTupleElementToProcess - nextTupleElementToProcessOriginal) + 7; //+7 for "END_TUP"
@@ -549,17 +790,6 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
 
             char* nextMapKeyValuePairToProcess = strCopy + strlen(split) + 1; // + 1 for ":"
             char* nextMapKeyValuePairToProcessOriginal = nextMapKeyValuePairToProcess;
-
-           
-            // PrtMkDefaultValue()
-            // values[i]->discriminator = PRT_VALUE_KIND_MAP;
-            // values[i]->valueUnion.map = map;
-
-            // map->size = 0;
-            // map->capNum = 0;
-            // map->buckets = (PRT_MAPNODE **)PrtCalloc(PrtHashtableCapacities[0], sizeof(PRT_MAPNODE *));
-            // map->first = NULL;
-            // map->last = NULL;
 
             while (strncmp(nextMapKeyValuePairToProcess, "END_MAP", 7) != 0) {
                 int numProcessedInHelper;
@@ -583,10 +813,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
 
                 if (values[i] == NULL) {
 
-                    PRT_TYPE* mapType = PrtMkMapType(PrtMkPrimitiveType(convertKindToType(dType)), PrtMkPrimitiveType(convertKindToType(dType2)));
-                    // PRT_TYPE* mapType = (PRT_TYPE*) PrtMalloc(sizeof(PRT_TYPE));
-                    // mapType->typeKind = PRT_KIND_MAP;
-                    // mapType->typeUnion.map = 
+                    PRT_TYPE* mapType = PrtMkMapType(PrtMkPrimitiveType(convertKindToType(dType)), PrtMkPrimitiveType(convertKindToType(dType2))); 
                     values[i] = PrtMkDefaultValue(mapType);
 
                 }
@@ -605,11 +832,8 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
 
             int index = 0;
             while (strncmp(nextSeqElementToProcess, "END_SEQ", 7) != 0) {
-                // char* payload = strtok_r(NULL, ":", &reentrant); //TODO make this safe?
-                // int dType = atoi(dataType);
                 int numProcessedInHelper;
                 PRT_VALUE* value = *deserializeStringToPrtValue(1, nextSeqElementToProcess, payloadSize - (nextSeqElementToProcess - strCopy), &numProcessedInHelper);
-                //*numCharactersProcessed =  *numCharactersProcessed + numProcessedInHelper + 1; //+1 for ":"
 
                 char* dataType = (char*) malloc(strlen(nextSeqElementToProcess) + 1);
                 strncpy(dataType, nextSeqElementToProcess, strlen(nextSeqElementToProcess) + 1);
@@ -638,63 +862,12 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
     safe_free(strCopy);
     return values;
 }
-//Responsbility of caller to free return
-char* generateCStringFromFormat(char* format_string, char* strings_to_print[], int num_strings) {
-    if (num_strings > 5) {
-        ocall_print("Too many strings passed to generateCStringFromFormat!");
-        return "ERROR!";
-    }
-    char* returnString = (char*) malloc(1600);
 
-    char* str1 = strings_to_print[0];
-    char* str2 = strings_to_print[1];
-    char* str3 = strings_to_print[2];
-    char* str4 = strings_to_print[3];
-    char* str5 = strings_to_print[4];
+//*******************
 
-    snprintf(returnString, 1600, format_string, str1, str2, str3, str4, str5);
-    //ocall_print("Return string is");
-    //ocall_print(returnString);
-    return returnString;
 
-}
+//Important Helper Functions *******************
 
-int returnTotalSizeofLengthArray(int lengths[], int length){
-    int total_size = 0;
-    for (int i = 0; i < length; i++) {
-        total_size += lengths[i];
-    }
-    return total_size;
-}
-
-//Responsbility of caller to free return
-char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], int size_array) {
-        //NOTE make changes in app.cpp as well
-    int total_size = returnTotalSizeofLengthArray(lengths, size_array);
-    ocall_print("Total size of concat is ");
-    ocall_print_int(total_size);
-    
-
-    char* returnString = (char*) malloc(total_size + 1);
-    char* ptr = returnString;
-    for (int i = 0; i < size_array; i++) {
-        memcpy(ptr, strings_to_concat[i], lengths[i]);
-        ptr = ptr + lengths[i];
-    }
-    returnString[total_size] = '\0';
-
-    ocall_print("Concat return string is");
-    ocall_print(returnString);
-    return returnString;
-
-}
-
-void parseIPAddressPortString(char* serializedString, string& ipAddress, int& port) {
-    char* split = strtok(serializedString, ":");
-    ipAddress = string(split);
-    split = strtok(NULL, ":");
-    port = atoi(split);
-}
 
 // Method that parses the incoming network request and calls the appropiate API method for corresponding SSM or USM
 // We have a flag (isEnclaveUntrustedHost) that indicates whether this function is running in the context of app.cpp (USMs) or enclave_untrusted_host (SSM bridge)
@@ -769,16 +942,8 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             return newMachineID;
 
         } else {
-            // if (USMAuthorizedTypes.count(machineType) > 0) {
-            //     char* ret = createUSMMachineAPI(machineType, numArgs, payloadType, payload, payloadSize);
-            //     safe_free(requestCopy);
-            //     return ret;
-            // } else {
-            //     safe_free(requestCopy);
-
             //Forward to untrusted_enclave_host to process this since trusted create always involves SSMs
             return untrusted_enclave_host_receiveNetworkRequest(request, requestSize);
-            // }
         }
     
     }  else if (strcmp(split, "UntrustedCreate") == 0) {
@@ -993,21 +1158,9 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             return responseBuffer;
 
         } else {
-            //
-            // int count;
-            // count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
-
-            // if (count > 0) {
-            //     safe_free(requestCopy);
-            //     //TODO need to implement
-            //     return createStringLiteralMalloced("TODO");
-                
-            // } else {
-                
-                //Forward to untrusted_enclave_host to process this since Trusted Send always invovles SSMs
-                safe_free(requestCopy);
-                return untrusted_enclave_host_receiveNetworkRequest(request, requestSize);
-            // }
+            //Forward to untrusted_enclave_host to process this since Trusted Send always invovles SSMs
+            safe_free(requestCopy);
+            return untrusted_enclave_host_receiveNetworkRequest(request, requestSize);
         }
 
 
@@ -1049,7 +1202,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     ocall_network_request(&ret_value, kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, ipAddressOfKPSMachine, strlen(ipAddressOfKPSMachine) + 1, port);
     #else
     ocall_network_request(kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, ipAddressOfKPSMachine, strlen(ipAddressOfKPSMachine) + 1, port);
-    // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
     #endif
     ocall_print("Received IP Address of target machine from KPS:");
     ocall_print(ipAddressOfRequestedMachine);
@@ -1119,7 +1271,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
                 requestLength = returnTotalSizeofLengthArray(constructStringLengths, 13) + 1;
                 safe_free(payloadTypeString);
 
-                ocall_print("KURUT");
                 ocall_print(createMachineRequest);
             }
         
@@ -1131,19 +1282,13 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
                 createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 4);
                 requestLength = returnTotalSizeofLengthArray(constructStringLengths, 4) + 1;
 
-                // snprintf(createMachineRequest, requestSize, "%s:%s:0", createTypeCommand, requestedNewMachineTypeToCreate);
             } else {
                 char* constructString[] = {createTypeCommand, ":", requestedNewMachineTypeToCreate, ":", numArgsString, ":", payloadTypeString, ":", payloadStringSizeString, ":", payloadString};
                 int constructStringLengths[] = {strlen(createTypeCommand), 1, strlen(requestedNewMachineTypeToCreate), 1, strlen(numArgsString), 1, strlen(payloadTypeString), 1, strlen(payloadStringSizeString), 1, payloadStringSize};
                 safe_free(createMachineRequest);
                 createMachineRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 11);
                 requestLength = returnTotalSizeofLengthArray(constructStringLengths, 11) + 1;
-
-                // snprintf(createMachineRequest, requestSize, "%s:%s:%d:%d:", createTypeCommand, requestedNewMachineTypeToCreate, numArgs, payloadType);
-                // memcpy(createMachineRequest + strlen(createMachineRequest), payloadString, payloadStringSize);
-
             }
-            // requestLength = strlen(createMachineRequest) + 1;
         }
     
    
@@ -1162,7 +1307,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     ocall_network_request(&ret_value, createMachineRequest, newMachinePublicIDKey, requestLength, response_size, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
     #else
     ocall_network_request(createMachineRequest, newMachinePublicIDKey, requestLength, response_size, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
-    // newMachinePublicIDKey = send_network_request_API(createMachineRequest);
     #endif
     safe_free(createMachineRequest);
     
@@ -1171,11 +1315,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     ocall_print(printStr); //TODO use this method for all future ocall_prints
     safe_free(printStr);
 
-    // if (NETWORK_DEBUG) {
-    //     ocall_print(newMachinePublicIDKey);
-    // } else {
-        printPayload(newMachinePublicIDKey, response_size);
-    // }
+    printPayload(newMachinePublicIDKey, response_size);
     
     #ifdef ENCLAVE_STD_ALT
 
@@ -1185,16 +1325,9 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
         //Now, need to retrieve capabilityKey for this newMachinePublicIDKey and store (thisMachineID, newMachinePublicIDKey) -> capabilityKey
         string request;
-        // if (NETWORK_DEBUG) {
-        //     request = "GetKey:" + string(currentMachineIDPublicKey) + ":" + string(newMachinePublicIDKey);//TODO unhardcode current Machine name
-        // } else {
-            request = "GetKey:" + string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE) + ":" + string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);//TODO unhardcode current Machine name
-        // }
-        //TODO replace above line with snprintf as did with createMachineRequest, and do this everywhere in code
+        request = "GetKey:" + string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE) + ":" + string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
         char* getChildMachineIDRequest = (char*) request.c_str(); 
-        char* capabilityKeyPayload = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey, requestedNewMachineTypeToCreate);//(char*) malloc(SIZE_OF_CAPABILITYKEY); 
-        //ocall_network_request(&ret_value, getChildMachineIDRequest, capabilityKeyPayload, SIZE_OF_CAPABILITYKEY);        
-        
+        char* capabilityKeyPayload = retrieveCapabilityKeyForChildFromKPS(currentMachineIDPublicKey, newMachinePublicIDKey, requestedNewMachineTypeToCreate);         
 
         char* machineNameWrapper3[] = {currentMachineIDPublicKey};
         printStr = generateCStringFromFormat("%s machine has received capability key for secure child:", machineNameWrapper3, 1);
@@ -1202,8 +1335,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         safe_free(printStr);
         char* publicCapabilityKey = retrievePublicCapabilityKey(capabilityKeyPayload);
         char* privateCapabilityKey = retrievePrivateCapabilityKey(capabilityKeyPayload);
-        // printRSAKey(publicCapabilityKey);
-        // printRSAKey(privateCapabilityKey);
 
         capabilityKeyPayloadString =  string(capabilityKeyPayload, SIZE_OF_CAPABILITYKEY);
         ocall_print("Saving capability as");
@@ -1221,10 +1352,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     safe_free(currentMachineIDPublicKey);
 
     //Return the newMachinePublicIDKey and it is the responsibility of the P Secure machine to save it and use it to send messages later
-    // if (NETWORK_DEBUG) {
-    //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, newMachinePublicIDKey);
-    // } else {
-    // }
 
     char* portString = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
     itoa(port, portString, 10);
@@ -1234,11 +1361,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     char* ipAddressAndPortSerialized = concatMutipleStringsWithLength(concatStringss, concatLengthss, 3);
     int ipAddressAndPortSerializedSize = returnTotalSizeofLengthArray(concatLengthss, 3);
     
-
-	
     #ifdef ENCLAVE_STD_ALT
     if (isSecureCreate) {
-        // string capabilityKeyPayloadString = PMachineToChildCapabilityKey[make_tuple(currentMachinePID, string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE))];
         PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
         char* finalString;
         int finalStringSize;
@@ -1269,8 +1393,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
         memcpy(str, finalString, finalStringSize);
         safe_free(newMachinePublicIDKey);
         safe_free(finalString);
-        // ocall_print("check check");
-        // printPayload((char*)str, SIZE_OF_MACHINE_HANDLE);
         return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     }
     
@@ -1291,199 +1413,33 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     memcpy(str, finalString, finalStringSize);
     safe_free(newMachinePublicIDKey);
     safe_free(finalString);
-    // ocall_print("check check");
-    // printPayload((char*)str, SIZE_OF_MACHINE_HANDLE);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
     #endif
 
 }
 
-//Responsibilty of caller to free return
-char* generateIV() {
-    char* ivKey = (char*) malloc(SIZE_OF_IV);
-    #ifdef ENCLAVE_STD_ALT
-    sgx_read_rand((unsigned char*)ivKey, SIZE_OF_IV);
-    #endif
-    // sessionKey[98] = '!';
-    // sessionKey[99] = '\0';
-    // for (int i = 0; i < 99; i ++) {
-    //     if (sessionKey[i] == '\0') {
-    //         sessionKey[i] ='0';
-    //     }
-    // }
-    return ivKey;
-}
-
-void generateSessionKey(string& newSessionKey) {
-    //TODO Make this generate a random key
-    if (NETWORK_DEBUG) {
-        uint32_t val; 
-        #ifdef ENCLAVE_STD_ALT
-        sgx_read_rand((unsigned char *) &val, 4);
-        #endif
-        newSessionKey = string("GenSessionKeyREA", SIZE_OF_REAL_SESSION_KEY);
+int createPMachine(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize) {
+    PRT_VALUE* prtPayload;
+    if (numArgs > 0) {
+        ocall_print("Serialized the following payload");
+        char* payloadConcat = (char*) malloc(SIZE_OF_MAX_MESSAGE);
+        itoa(payloadType, payloadConcat, 10);
+        strncat(payloadConcat, ":", SIZE_OF_MAX_MESSAGE + 1);
+        int sizeSoFar = strlen(payloadConcat);
+        memcpy(payloadConcat + sizeSoFar, payload, payloadSize);
+        payloadConcat[sizeSoFar + payloadSize] = '\0';
+        ocall_print(payloadConcat);
+        int numCharactersProcessed;
+        prtPayload = *(deserializeStringToPrtValue(numArgs, payloadConcat, payloadSize, &numCharactersProcessed));
+        safe_free(payloadConcat);
     } else {
-        char* sessionKey = (char*) malloc(SIZE_OF_REAL_SESSION_KEY);
-        #ifdef ENCLAVE_STD_ALT
-        sgx_read_rand((unsigned char*)sessionKey, SIZE_OF_REAL_SESSION_KEY);
-        #else
-        sgx_status_t status = enclave_sgx_read_rand_ecall(global_app_eid, sessionKey, SIZE_OF_REAL_SESSION_KEY);
-        // ocall_print("Generating random session key!");
-        #endif
-        newSessionKey = string(sessionKey, SIZE_OF_REAL_SESSION_KEY);
+        prtPayload = PrtMkNullValue();
     }
-    
-} 
-
-char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_null_byte, void* other_party_public_key_raw, int& output_encrypted_message_length, void* other_party_public_key) {
-    #ifdef ENCLAVE_STD_ALT
-    // ocall_print("Pub key received is");
-    // ocall_print((char*) other_party_public_key_raw);
-
-    size_t encrypted_data_length;
-    char* encrypted_data = (char*) malloc(SGX_RSA3072_KEY_SIZE); //TODO note if message is bigger than this size, then we can run into issues
-    
-
-    ocall_print("encrypting with this key");
-    printPayload((char*) other_party_public_key_raw, SGX_RSA3072_KEY_SIZE);
-    ocall_print("message is");
-    printPayload(message, message_length_with_null_byte);
-
-    sgx_status_t status = SGX_ERROR_AE_SESSION_INVALID;
-    void* public_key_raw = NULL;
-    ocall_print("pk is");
-    printPayload((char*)other_party_public_key, sizeof(sgx_rsa3072_public_key_t));
-    sgx_rsa3072_public_key_t *public_key = (sgx_rsa3072_public_key_t*) other_party_public_key;
-    // status = sgx_create_rsa_pub1_key(
-    //                    SGX_RSA3072_KEY_SIZE,
-    //                    SGX_RSA3072_PUB_EXP_SIZE,
-    //                    (const unsigned char*)public_key->mod,
-    //                    (const unsigned char*)public_key->exp,
-    //                    &public_key_raw);
-    // if (status == SGX_SUCCESS) {
-    //     ocall_print("Yeet");
-    //     printPayload((char*) public_key_raw, SGX_RSA3072_KEY_SIZE);
-    // } else {
-    //     ocall_print("neep");
-    // }
-
-    const int n_byte_size = SGX_RSA3072_KEY_SIZE;
-
-
-
-    int e_byte_size = SGX_RSA3072_PUB_EXP_SIZE;
-    unsigned char *p_n = (unsigned char *)malloc(n_byte_size);
-    unsigned char *p_d = (unsigned char *)malloc(SGX_RSA3072_PRI_EXP_SIZE);
-    // unsigned char p_e[] = {0x01, 0x00, 0x01, 0x00}; //65537
-    unsigned char *p_p = (unsigned char *)malloc(n_byte_size);
-    unsigned char *p_q = (unsigned char *)malloc(n_byte_size);
-    unsigned char *p_dmp1 = (unsigned char *)malloc(n_byte_size);
-    unsigned char *p_dmq1 = (unsigned char *)malloc(n_byte_size);
-    unsigned char *p_iqmp = (unsigned char *)malloc(n_byte_size);
-    
-
-    status = SGX_SUCCESS;
-    status = sgx_create_rsa_key_pair(
-        n_byte_size,
-        e_byte_size,
-        p_n,
-        p_d,
-        public_key->exp,
-        p_p,
-        p_q,
-        p_dmp1,
-        p_dmq1,
-        p_iqmp
-    );
-    if (status != SGX_SUCCESS) {
-        ocall_print("Rsa Key Pair creation error!");
-    } else {
-        ocall_print("RSA Generated Succesfully!");
-    }
-
-    // memcpy(private_key->mod, p_n, n_byte_size);
-    // memcpy(private_key->d, p_d, n_byte_size);
-	// memcpy(private_key->e, p_e, e_byte_size);
-
-	// memcpy(public_key->mod, p_n, n_byte_size);
-	// memcpy(public_key->exp, p_e, e_byte_size);
-
-    status = sgx_create_rsa_pub1_key(
-                       SGX_RSA3072_KEY_SIZE,
-                       SGX_RSA3072_PUB_EXP_SIZE,
-                       (const unsigned char*)public_key->mod,
-                       (const unsigned char*)public_key->exp,
-                       &public_key_raw);
-    if (status == SGX_SUCCESS) {
-        ocall_print("Yeet");
-        printPayload((char*) public_key_raw, SGX_RSA3072_KEY_SIZE);
-    } else {
-        ocall_print("neep");
-    }
-
-
-
-
-    status = sgx_rsa_pub_encrypt_sha256(public_key_raw, NULL, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
-
-    if (status != SGX_SUCCESS) {
-        ocall_print("Error in encrypting using public key!");
-        // ocall_print((char*)**other_party_public_key_raw);
-        if (status == SGX_ERROR_UNEXPECTED) {
-            ocall_print("unexpected error :(");
-        } else if (status == SGX_ERROR_INVALID_PARAMETER) {
-            ocall_print("invalid parameters");
-        }
-    } else {
-        ocall_print("Encrypted data length will be");
-        ocall_print_int(encrypted_data_length);
-    }
-
-    // encrypted_data_length = 384*2;
-
-    status = sgx_rsa_pub_encrypt_sha256(public_key_raw, (unsigned char*) encrypted_data, &encrypted_data_length, (unsigned char*) message, message_length_with_null_byte);
-
-    if (status != SGX_SUCCESS) {
-        ocall_print("Error in encrypting using public key!");
-        // ocall_print((char*)**other_party_public_key_raw);
-        if (status == SGX_ERROR_UNEXPECTED) {
-            ocall_print("unexpected error :(");
-        } else if (status == SGX_ERROR_INVALID_PARAMETER) {
-            ocall_print("invalid parameters");
-        }
-    } else {
-        ocall_print("Able to encrypt using public key!");
-    }
-    // ocall_print_int(strlen(message) + 1);
-    // ocall_print_int(encrypted_data_length);
-    // encrypted_data[encrypted_data_length] = '\0';
-    output_encrypted_message_length = encrypted_data_length;
-    return encrypted_data;
-    #endif
-}
-
-char* decryptMessageInteralPrivateKey(char* encryptedData, size_t encryptedDataSize, void* private_key) {
-    #ifdef ENCLAVE_STD_ALT
-    size_t decrypted_data_length;
-    char* decrypted_data = (char*) malloc(MAX_NETWORK_MESSAGE); //TODO note if message is bigger than this size, then we can run into issues
-
-    sgx_status_t status = sgx_rsa_priv_decrypt_sha256(private_key, NULL, &decrypted_data_length, (unsigned char*) encryptedData, encryptedDataSize);
-
-    status = sgx_rsa_priv_decrypt_sha256(private_key, (unsigned char*)decrypted_data, &decrypted_data_length, (unsigned char*) encryptedData, encryptedDataSize);
-
-    if (status != SGX_SUCCESS) {
-        ocall_print("Error in decrypting using private key!");
-        // ocall_print((char*)**other_party_public_key_raw);
-    } else {
-        ocall_print("Able to decrytp using private key!");
-    }
-    // ocall_print_int(strlen(message) + 1);
-    // ocall_print_int(encrypted_data_length);
-    //decrypted_data[decrypted_data_length] = '\0';
-    // ocall_print("Decrypted data is");
-    // ocall_print(decrypted_data);
-    return decrypted_data;
-    #endif
+    PRT_UINT32 newMachinePID;
+	PRT_BOOLEAN foundMachine = PrtLookupMachineByName(machineType, &newMachinePID);
+	PrtAssert(foundMachine, "No machine found!");
+	PRT_MACHINEINST* newMachine = PrtMkMachine(process, newMachinePID, 1, &prtPayload);
+    return newMachine->id->valueUnion.mid->machineId;
 }
 
 void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend, bool isEnclave) {
@@ -1501,8 +1457,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
     ocall_print("Inside machine");
     printRSAKey(currentMachineIDPublicKey);
-    // PRT_MACHINEINST* mch = PrtGetMachine((PRT_PROCESS*)program, context->id);
-    // ocall_print(program->machines[context->id->valueUnion.mid->machineId]->name); //This gives incorrect machine name
 
     PRT_VALUE** P_ToMachine_Payload = argRefs[0];
     PRT_UINT64 sendingToMachinePublicIDPValue = (*P_ToMachine_Payload)->valueUnion.frgn->value;
@@ -1522,84 +1476,62 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     
     PublicIdentityKeyToPublicSigningKey[string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE)] = string(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
 
-    // ocall_print("saving following signing key:");
-    // printPayload(sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
-    // ocall_print("for public identity");
-    // printPayload(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE);
-
     ocall_print("Need to send to machine (received via P argument)");
     printRSAKey(sendingToMachinePublicID);
     
 
-    // if (isSecureSend) {
-        //Check if we don't have a pre-existing session key with the other machine, if so 
-        //we need to intialize communications and establish a session key
-       
-        if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
-                string newSessionKey;
-                generateSessionKey(newSessionKey);
+  
+    //Check if we don't have a pre-existing session key with the other machine, if so 
+    //we need to intialize communications and establish a session key
+    if (PublicIdentityKeyToChildSessionKey.count(make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))) == 0) {
+            string newSessionKey;
+            generateSessionKey(newSessionKey);
 
-                printSessionKey((char*)newSessionKey.c_str());
+            printSessionKey((char*)newSessionKey.c_str());
 
-                int encryptedMessageSize;
-                char* encryptedSessionKeyMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-                #ifdef ENCLAVE_STD_ALT
-                safe_free(encryptedSessionKeyMessage);
-                encryptedSessionKeyMessage = encryptMessageExternalPublicKey((char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedMessageSize, sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1);
-                #else
-                sgx_status_t sgx_st = enclave_encryptMessageExternalPublicKeyEcall(global_app_eid ,(char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedSessionKeyMessage, sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE, sizeof(sgx_rsa3072_public_key_t));
-                #endif
-                // char* encryptedSessionKeyMessage = encryptMessageExternalPublicKey((char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, currentMachineIDPublicKey, encryptedMessageSize);
-                ocall_print("SS:Encrypted Message size is");
-                ocall_print_int(encryptedMessageSize);
-                printPayload(encryptedSessionKeyMessage, SGX_RSA3072_KEY_SIZE);
+            int encryptedMessageSize;
+            char* encryptedSessionKeyMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+            #ifdef ENCLAVE_STD_ALT
+            safe_free(encryptedSessionKeyMessage);
+            encryptedSessionKeyMessage = encryptMessageExternalPublicKey((char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedMessageSize, sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1);
+            #else
+            sgx_status_t sgx_st = enclave_encryptMessageExternalPublicKeyEcall(global_app_eid ,(char*)newSessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY, sendingToMachinePublicID, encryptedSessionKeyMessage, sendingToMachinePublicID + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE, sizeof(sgx_rsa3072_public_key_t));
+            #endif
+            ocall_print("SS:Encrypted Message size is");
+            ocall_print_int(encryptedMessageSize);
+            printPayload(encryptedSessionKeyMessage, SGX_RSA3072_KEY_SIZE);
 
-                // char* receivingMachinePrivateID = (char*)get<1>(MachinePIDToIdentityDictionary[PublicIdentityKeyToMachinePIDDictionary[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
-                // char* decryptedMessage = decryptMessageInteralPrivateKey(encryptedSessionKeyMessage, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID);
-                // ocall_print("Decrypted message is");
-                // printSessionKey(decryptedMessage);
-
-                char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", (char*)PublicIdentityKeyToPublicSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str(), ":", sendingToMachinePublicID, ":", encryptedSessionKeyMessage};
-                int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t), 1, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
-                char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 8);
-                int requestSize = returnTotalSizeofLengthArray(concatLenghts, 8) + 1;
-
-                // char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ";", sendingToMachinePublicID, ":", encryptedSessionKeyMessage};
-                // int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
-                // char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 6);
-                // int requestSize = returnTotalSizeofLengthArray(concatLenghts, 6) + 1;
-                
-                char* machineNameWrapper[] = {currentMachineIDPublicKey};
-                char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
-                ocall_print(printStr);
-                safe_free(printStr);
-                ocall_print(initComRequest);
-                char* returnMessage = (char*) malloc(100);
-                int ret_value;
-
-                #ifdef ENCLAVE_STD_ALT
-                ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
-                #else
-                // ocall_print("Init comm untrusted! 1");
-                ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port); 
-                #endif
-                safe_free(initComRequest);
-                char* machineNameWrapper2[] = {currentMachineIDPublicKey};
-                printStr = generateCStringFromFormat("%s machine has received session key request message:", machineNameWrapper2, 1);
-                ocall_print(printStr);
-                safe_free(printStr);       
-                ocall_print(returnMessage);
-                PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
-                ChildSessionKeyToNonce[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), newSessionKey)] = 0;
-                // safe_free(newSessionKey);
-                safe_free(returnMessage);
+            char* concatStrings[] = {"InitComm:", currentMachineIDPublicKey, ":", (char*)PublicIdentityKeyToPublicSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str(), ":", sendingToMachinePublicID, ":", encryptedSessionKeyMessage};
+            int concatLenghts[] = {9, SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t), 1, SGX_RSA3072_KEY_SIZE, 1, SGX_RSA3072_KEY_SIZE};
+            char* initComRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 8);
+            int requestSize = returnTotalSizeofLengthArray(concatLenghts, 8) + 1;
             
+            char* machineNameWrapper[] = {currentMachineIDPublicKey};
+            char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
+            ocall_print(printStr);
+            safe_free(printStr);
+            ocall_print(initComRequest);
+            char* returnMessage = (char*) malloc(100);
+            int ret_value;
 
-        }  else {
-            ocall_print("Already have session key!");
-            printPayload((char*)PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))].c_str(), 16);
-        }      
-    // }
+            #ifdef ENCLAVE_STD_ALT
+            ocall_network_request(&ret_value, initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port);
+            #else
+            ocall_network_request(initComRequest, returnMessage, requestSize, SIZE_OF_SESSION_KEY, (char*)ipAddress.c_str(), strlen((char*)ipAddress.c_str()) + 1, port); 
+            #endif
+            safe_free(initComRequest);
+            char* machineNameWrapper2[] = {currentMachineIDPublicKey};
+            printStr = generateCStringFromFormat("%s machine has received session key request message:", machineNameWrapper2, 1);
+            ocall_print(printStr);
+            safe_free(printStr);       
+            ocall_print(returnMessage);
+            PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))] = newSessionKey;
+            ChildSessionKeyToNonce[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), newSessionKey)] = 0;
+            safe_free(returnMessage);
+    } else {
+        ocall_print("Already have session key!");
+        printPayload((char*)PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))].c_str(), 16);
+    }      
     PRT_VALUE** P_Event_Payload = argRefs[1];
     char* event = (char*) malloc(SIZE_OF_MAX_EVENT_NAME);
     itoa((*P_Event_Payload)->valueUnion.ev , event, 10);
@@ -1637,7 +1569,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         printPayload(eventMessagePayload, eventMessagePayloadSize);
         ocall_print("Length is");
         ocall_print_int(eventMessagePayloadSize);
-        // memcpy(eventMessagePayload, temp, strlen(temp) + 1); //TODO shividentity
         safe_free(temp);
 
         eventMessagePayloadSizeString = (char*) malloc(10);
@@ -1692,7 +1623,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 ocall_print("currentMachinePID");
                 ocall_print_int(currentMachinePID);
                 printRSAKey(sendingToMachinePublicID);
-                // ocall_print("capabilityKey");
                 printPublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
                 printPrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
                 sgx_rsa3072_signature_t* signatureM;
@@ -1716,14 +1646,8 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 ocall_print("actual key is");
                 printRSAKey(retrievePublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
 
-                // char* trustedPayload = M;
-                // int trustedPayloadLength = MSize;
-
                 ocall_print("Printing Generated Signature again");
                 printRSAKey(trustedPayload + MSize + strlen(colon));
-                // ocall_print("Printing length of encrypted message");
-                // ocall_print(trustedPayloadLength);
-
 
                 sgx_aes_ctr_128bit_key_t g_region_key;
                 sgx_aes_gcm_128bit_tag_t g_mac;
@@ -1734,8 +1658,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 #ifdef ENCLAVE_STD_ALT
                 sgx_status_t status = sgx_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) trustedPayload, trustedPayloadLength, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
                 #endif
-                // ocall_print("Encrypted Message is");
-                // ocall_print(encryptedMessage);
                 mac = (char*) malloc(SIZE_OF_MAC);
                 memcpy(mac, (char*)g_mac, SIZE_OF_MAC);
 
@@ -1804,16 +1726,10 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 #else 
                 currentMachineIDPrivateKey = (char*)get<1>(MachinePIDToIdentityDictionary[PublicIdentityKeyToMachinePIDDictionary[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
                 #endif
-                sgx_rsa3072_key_t* private_identity_key = (sgx_rsa3072_key_t*)PrivateIdentityKeyToPrivateSigningKey[string(currentMachineIDPrivateKey, SGX_RSA3072_KEY_SIZE)].c_str();//(sgx_rsa3072_key_t*) malloc(sizeof(sgx_rsa3072_key_t));
-                // ocall_print("TEMPER: Signing the following key pair");
-                // ocall_print("public signing");
-                // printPayload((char*)PublicIdentityKeyToPublicSigningKey[string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE)].c_str(), sizeof(sgx_rsa3072_public_key_t));
-                // ocall_print("public identity");
-                // printPayload(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE);
-                // printPayload();
+                sgx_rsa3072_key_t* private_identity_key = (sgx_rsa3072_key_t*)PrivateIdentityKeyToPrivateSigningKey[string(currentMachineIDPrivateKey, SGX_RSA3072_KEY_SIZE)].c_str();
                 sgx_rsa3072_signature_t* signatureM;
                 #ifdef ENCLAVE_STD_ALT
-                signatureM = signStringMessage(M, MSize, (sgx_rsa3072_key_t*) private_identity_key);//(sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));//
+                signatureM = signStringMessage(M, MSize, (sgx_rsa3072_key_t*) private_identity_key);
                 #else
                 signatureM = (sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));
                 sgx_status_t status = enclave_signStringMessageEcall(global_app_eid, M, MSize, (char*) private_identity_key, (char*)signatureM, sizeof(sgx_rsa3072_key_t), sizeof(sgx_rsa3072_signature_t));
@@ -1825,16 +1741,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 int trustedPayloadLength = returnTotalSizeofLengthArray(sigLengths, 3);
                 ocall_print("Printing Untrusted Payload after public key");
                 ocall_print(trustedPayload + SGX_RSA3072_KEY_SIZE);
-                // ocall_print("Printing Generated Signature");
-                // printRSAKey((char*)signatureM);
-                // ocall_print("Signature is over message");
-                // printRSAKey(M);
-                // ocall_print_int(MSize);
-                // ocall_print("Key needed to verify signature is");
-                // ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
-                // ocall_print("actual key is");
-                // printRSAKey(retrievePublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
-
+              
                 sgx_aes_ctr_128bit_key_t g_region_key;
                 sgx_aes_gcm_128bit_tag_t g_mac;
                 memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
@@ -1881,40 +1788,16 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             if (!NETWORK_DEBUG) {
                 safe_free(mac);    
             }
-
-                
-            // requestSize = 130 + 1 + SIZE_OF_IDENTITY_STRING + 1 + SIZE_OF_MAX_MESSAGE + 1 + SIZE_OF_MAX_EVENT_PAYLOAD + 1;
-            // sendRequest = (char*) malloc(requestSize);
-            // if (numArgs > 0) {
-            //     char* colon = ":";
-            //     char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, numArgsPayload, colon, eventPayloadTypeString, colon, eventMessagePayloadSizeString, colon, eventMessagePayload};
-            //     int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(numArgsPayload), strlen(colon), strlen(eventPayloadTypeString), strlen(colon), strlen(eventMessagePayloadSizeString), strlen(colon), eventMessagePayloadSize};
-            //     sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 13);
-            //     requestSize = returnTotalSizeofLengthArray(concatLenghts, 13) + 1;
-            //     // snprintf(sendRequest, requestSize, "%s:%s:%s:%d:%d:%s", sendTypeCommand, sendingToMachinePublicID, event, numArgs, eventPayloadType, eventMessagePayload);
-            // } else {
-            //     char* colon = ":";
-            //     char* zero = "0";
-            //     char* concatStrings[] = {sendTypeCommand, colon, sendingToMachinePublicID, colon, event, colon, zero};
-            //     int concatLenghts[] = {strlen(sendTypeCommand), strlen(colon), SGX_RSA3072_KEY_SIZE, strlen(colon), strlen(event), strlen(colon), strlen(zero)};
-            //     sendRequest = concatMutipleStringsWithLength(concatStrings, concatLenghts, 7);
-            //     requestSize = returnTotalSizeofLengthArray(concatLenghts, 7) + 1;
-            //     // snprintf(sendRequest, requestSize, "%s:%s:%s:0", sendTypeCommand, sendingToMachinePublicID, event);
-            // }
             
         }
 
     safe_free(eventPayloadTypeString);
-    // safe_free(eventMessageSizeStr);
     
     
     char* machineNameWrapper[] = {currentMachineIDPublicKey};
     char* printStr = generateCStringFromFormat("%s machine is sending out following network request:", machineNameWrapper, 1);
     ocall_print(printStr);
     safe_free(printStr);      
-    // ocall_print(sendRequest);
-    // ocall_print_int(strlen(sendRequest) + 1);
-    // ocall_print("KUUUURUT");
     char* sendReturn = (char*) malloc(100);
     int ret_value;
 
@@ -2053,13 +1936,9 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         }
 
         sgx_rsa3072_signature_t* decryptedSignature = (sgx_rsa3072_signature_t*) malloc(SGX_RSA3072_KEY_SIZE);
-        // char* message = (char*) malloc(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1); 
-        // memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
         char* messageSignedOver = (char*) malloc(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
         memcpy(messageSignedOver, decryptedMessage, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
         memcpy(decryptedSignature, decryptedMessage + atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
-        // ocall_print("Lenght of encrypted message is ");
-        // ocall_print(encryptedMessageSize);
         if (isSecureSend) {
             ocall_print("Received Signature:");
             printRSAKey((char*)decryptedSignature);
@@ -2070,7 +1949,6 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
             ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
             ocall_print("actual key is");
             printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
-            // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
             #ifdef ENCLAVE_STD_ALT
 
             if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
@@ -2083,38 +1961,14 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
             #endif
 
         } else {
-            // ocall_print("Received Signature:");
-            // printRSAKey((char*)decryptedSignature);
-            // ocall_print("Signature is over message");
-            // printRSAKey(messageSignedOver);
-            // ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-            // ocall_print("Key needed to verify signature is");
-            // ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
-            // ocall_print("actual key is");
-            // printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
-            // printPrivateCapabilityKey(retrievePrivateCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str()));
             if (PublicIdentityKeyToPublicSigningKey.count(string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
                 ocall_print("ERROR: Cannot find signing key!");
-                // ocall_print("cannot find init comm between");
-                // printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
-                // printPayload(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+               
             }
             sgx_rsa3072_public_key_t* publicSigningKeyRequestingMachine = (sgx_rsa3072_public_key_t*) PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)].c_str();
-            // ocall_print("TEMPER:verifying signature using this public signing key");
-            // printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
-            // ocall_print("public identity key");
-            // printPayload(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE);
 
             #ifndef ENCLAVE_STD_ALT
             int success;
-            // ocall_print("OUTSIDE:");
-            // ocall_print("message is");
-            // printPayload(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-            // ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-            // ocall_print("signature is");
-            // printPayload((char*)decryptedSignature, SGX_RSA3072_KEY_SIZE);
-            // ocall_print("signing key is");
-            // printPayload((char*)publicSigningKeyRequestingMachine, sizeof(sgx_rsa3072_public_key_t));
 
             sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
             if (status != SGX_SUCCESS) {
@@ -2171,8 +2025,6 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
     }
     
     payloadType = -1;
-    // ocall_print("MAC IS");
-    // ocall_print(mac);
     payload = (char*) malloc(10);
     payloadSize;
     payload[0] = '\0';
@@ -2214,7 +2066,6 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
     
     handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize, isSecureSend); //TODO update to untrusted send api
 
-    // sendMessageAPI(requestingMachineIDKey, receivingMachineIDKey, eventNum, numArgs, payloadType, payload, payloadSize);
     #endif
     safe_free(decryptedMessage);
 
@@ -2254,8 +2105,6 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         #else 
         sample_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) toBeEncryptedMessage, encryptedMessageSize, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
         #endif
-        // ocall_print("Encrypted Message is");
-        // ocall_print(encryptedMessage);
         mac = (char*) malloc(SIZE_OF_MAC);
         memcpy(mac, (char*)g_mac, SIZE_OF_MAC);
 
@@ -2268,43 +2117,6 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         safe_free(encryptedMessage);
         safe_free(returnString);
 
-
-        // string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
-
-        // sgx_aes_ctr_128bit_key_t g_region_key;
-        // sgx_aes_gcm_128bit_tag_t g_mac;
-        // memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
-        // memcpy(g_mac, mac, SIZE_OF_MAC);
-
-
-    }
-
-
-
-}
-
-int getNextPID() {
-    return ((PRT_PROCESS_PRIV*)process)->numMachines + 1;
-}
-
-void PrintTuple(PRT_VALUE* tuple){
-    ocall_print("Printing Tuple:");
-    PRT_TUPVALUE* tupPtr = tuple->valueUnion.tuple;
-    ocall_print("Tuple size:");
-    ocall_print_int(tupPtr->size);
-    for (int i = 0; i < tupPtr->size; i++) {
-        PRT_VALUE* currValue = tupPtr->values[i];
-        int currValueType = tupPtr->values[i]->discriminator;
-        if (currValueType == PRT_VALUE_KIND_INT) {
-            ocall_print("Int Value:");
-            ocall_print_int(currValue->valueUnion.nt);
-        } else if (currValueType == PRT_VALUE_KIND_FOREIGN) {
-            ocall_print("String Value:");
-            ocall_print( (char*)currValue->valueUnion.frgn->value);
-        } else if (currValueType == PRT_VALUE_KIND_BOOL) {
-            ocall_print("Bool Value:");
-            ocall_print_int((int)currValue->valueUnion.bl);
-        }
     }
 
 }
@@ -2336,11 +2148,7 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
         int sizeSoFar = strlen(payloadConcat);
         memcpy(payloadConcat + sizeSoFar, payload, payloadSize);
         payloadConcat[sizeSoFar + payloadSize] = '\0';
-        // strncat(payloadConcat, payload, SIZE_OF_MAX_MESSAGE + 1);
         int numCharactersProcessed;
-        //print out what is being passed to the below method
-        // ocall_print("payload key is ");
-        // printRSAKey(payload);
         ocall_print("Passing In String To Deserialize:");
         ocall_print(payloadConcat);
         PRT_VALUE** prtPayload =  deserializeStringToPrtValue(numArgs, payloadConcat, payloadSize, &numCharactersProcessed);
@@ -2356,79 +2164,12 @@ int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMac
     return 0;
 }
 
-int createMachine(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize) {
-    PRT_VALUE* prtPayload;
-    if (numArgs > 0) {
-        ocall_print("Serialized the following payload");
-        char* payloadConcat = (char*) malloc(SIZE_OF_MAX_MESSAGE);
-        itoa(payloadType, payloadConcat, 10);
-        strncat(payloadConcat, ":", SIZE_OF_MAX_MESSAGE + 1);
-        int sizeSoFar = strlen(payloadConcat);
-        memcpy(payloadConcat + sizeSoFar, payload, payloadSize);
-        payloadConcat[sizeSoFar + payloadSize] = '\0';
-        ocall_print(payloadConcat);
-        int numCharactersProcessed;
-        prtPayload = *(deserializeStringToPrtValue(numArgs, payloadConcat, payloadSize, &numCharactersProcessed));
-        safe_free(payloadConcat);
-    } else {
-        prtPayload = PrtMkNullValue();
-    }
-    PRT_UINT32 newMachinePID;
-	PRT_BOOLEAN foundMachine = PrtLookupMachineByName(machineType, &newMachinePID);
-    // ocall_print_int(newMachinePID);
-	PrtAssert(foundMachine, "No machine found!");
-	PRT_MACHINEINST* pongMachine = PrtMkMachine(process, newMachinePID, 1, &prtPayload);
-    return pongMachine->id->valueUnion.mid->machineId;
-}
+//*******************
 
-int machineTypeIsSecure(char* machineType) {
-    PRT_UINT32 interfaceName;  
-	PrtLookupMachineByName(machineType, &interfaceName);
-    PRT_UINT32 instanceOf = program->interfaceDefMap[interfaceName];
-    PRT_MACHINEDECL* curMachineDecl = program->machines[instanceOf];
-    return curMachineDecl->isSecure;
-}
 
-//responsibility of caller to free string
-string createString(char* str) {
-    char* strCopy = (char*) malloc(strlen(str) + 1); //TODO shivfree
-    memcpy(strCopy, str, strlen(str) + 1);
-    return string(strCopy);
-}
 
-extern "C" PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
 
-    PRT_VALUE** P_VAR_payload2 = argRefs[1];
-    PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
-
-    strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
-    strncat((char*) val, "hash", strlen("hash") + 1);
-    // memcpy((char*)val, "HashedOutput", strlen("HashedOutput") + 1);
-
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-    memcpy(str, (char*)val, SIZE_OF_PRT_STRING_SERIALIZED);
-	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (char*)val);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-}
-
-extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-
-    PRT_VALUE** P_VAR_payload2 = argRefs[1];
-    PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
-
-    strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
-
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-    memcpy(str, (char*)val, SIZE_OF_PRT_STRING_SERIALIZED);
-	// sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (char*)val);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-}
+//P Foreign Library Function Implementations*******************
 
 extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
@@ -2451,8 +2192,6 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     currentMachineIDPublicKey = (char*) malloc(SIZE_OF_IDENTITY_STRING);
     memcpy(currentMachineIDPublicKey,(char*)get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str(), SIZE_OF_IDENTITY_STRING);
 
-    // ocall_print("Machine handle in get capability is:");
-    // printRSAKey((char*) val);
     //TODO put check here before obtaining the value
     if ( PMachineToChildCapabilityKey.count(make_tuple(currentMachinePID, string((char*) currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE))) == 0){
         ocall_print("ERROR IN GETTING CAPABILITY FROM GetThis Secure P METHOD");
@@ -2510,37 +2249,6 @@ extern "C" PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     #endif
 }
 
-// extern "C" PRT_VALUE* P_GetThisSecure_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-// {
-//     return P_GetThis_IMPL(context, argRefs);
-// }
-
-extern "C" void P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-    ocall_print("String P value is:");
-    ocall_print((char*) val);
-    if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex) {
-        ocall_print("secure StringType");
-    } 
-    if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex) {
-        ocall_print("StringType");
-    } 
-    (*P_VAR_payload)->valueUnion.frgn->typeTag = P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex;
-    
-}
-
-extern "C" void P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-    ocall_print("FOREIGN PRINT KEY IS:");
-    printPayload((char*) val, SIZE_OF_MACHINE_HANDLE);
-    // printRSAKey((char*) val);
-    
-}
-
 extern "C" PRT_VALUE* P_CastSecureMachineHandleToMachineHandle_IMPL(PRT_VALUE* value)
 {
     PRT_UINT64 val = value->valueUnion.frgn->value;
@@ -2548,12 +2256,6 @@ extern "C" PRT_VALUE* P_CastSecureMachineHandleToMachineHandle_IMPL(PRT_VALUE* v
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
     memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
     memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
-    // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
-    // ocall_print("checking temp fix");
-    // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
-    //     ocall_print("TEMP FIX WONT WORK");
-    // }
-    // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
     ocall_print("Cast Secure Machine Handle to Regular preserves ip address and port information as");
     ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
@@ -2570,12 +2272,6 @@ extern "C" PRT_VALUE* P_CastMachineHandleToSecureMachineHandle_IMPL(PRT_VALUE* v
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
     memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
     memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
-    // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
-    // ocall_print("checking temp fix");
-    // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
-    //     ocall_print("TEMP FIX WONT WORK");
-    // }
-    // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
     ocall_print("Cast Machine Handle to Secure preserves ip address and port information as");
     ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_machine_handle);
@@ -2584,47 +2280,26 @@ extern "C" PRT_VALUE* P_CastMachineHandleToSecureMachineHandle_IMPL(PRT_VALUE* v
 
 extern "C" PRT_VALUE* P_CastSecureStringTypeToStringType_IMPL(PRT_VALUE* value)
 {
-    
     value->valueUnion.frgn->typeTag = P_TYPEDEF_StringType->typeUnion.foreignType->declIndex;
     return value;
-    // // ocall_print("debug inside");
-    // PRT_UINT64 val = value->valueUnion.frgn->value;
-
-    // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-    // // ocall_print((char*)val);
-    // memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
-    // // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
-    // // ocall_print("checking temp fix");
-    // // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
-    // //     ocall_print("TEMP FIX WONT WORK");
-    // // }
-    // // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
-    // PRT_VALUE* ret = PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_secure_StringType);
-    // // ocall_print_int(ret->discriminator);
-    // return ret;
-    
 }
 
 extern "C" PRT_VALUE* P_CastStringTypeToSecureStringType_IMPL(PRT_VALUE* value)
 {
     value->valueUnion.frgn->typeTag = P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex;
     return value;
-    // ocall_print("debug inside");
-    // PRT_UINT64 val = value->valueUnion.frgn->value;
+}
 
-    // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-    // // ocall_print((char*)val);
-    // memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
-    // // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
-    // // ocall_print("checking temp fix");
-    // // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
-    // //     ocall_print("TEMP FIX WONT WORK");
-    // // }
-    // // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
-    // PRT_VALUE* ret = PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
-    // // ocall_print_int(ret->discriminator);
-    // return ret;
-    
+extern "C" PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
+}
+
+extern "C" PRT_VALUE* P_DeclassifyBool_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
 }
 
 extern "C" PRT_VALUE* P_DeclassifyHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -2635,12 +2310,6 @@ extern "C" PRT_VALUE* P_DeclassifyHandle_IMPL(PRT_MACHINEINST* context, PRT_VALU
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
     memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
     memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
-    // memcpy(str + SGX_RSA3072_KEY_SIZE, ":", 1);
-    // ocall_print("checking temp fix");
-    // if (PublicIdentityKeyToPublicSigningKey.count(string((char*)val, SGX_RSA3072_KEY_SIZE)) == 0) {
-    //     ocall_print("TEMP FIX WONT WORK");
-    // }
-    // memcpy(str + SGX_RSA3072_KEY_SIZE + 1, (char*) , sizeof(sgx_rsa3072_public_key_t));
     ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
     ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
@@ -2661,19 +2330,8 @@ extern "C" PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 
         if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex) {
             return P_CastSecureStringTypeToStringType_IMPL((*P_VAR_payload));
-            // PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-            // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-            // memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
-            // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
         } else if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex) {
             return P_CastSecureMachineHandleToMachineHandle_IMPL((*P_VAR_payload));
-            // PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-            // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-            // memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
-            // memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
-            // ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
-            // ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
-            // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
         } 
 
     }
@@ -2703,20 +2361,8 @@ extern "C" PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 
         if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex) {
             return P_CastStringTypeToSecureStringType_IMPL(prtValue);
-            // PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-            // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-            // memcpy(str, (char*) val, SIZE_OF_PRT_STRING_SERIALIZED);
-            // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
         } else if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_machine_handle->typeUnion.foreignType->declIndex) {
             return P_CastMachineHandleToSecureMachineHandle_IMPL(prtValue);
-            // PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
-
-            // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-            // memcpy(str, (char*) val, SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
-            // memcpy(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, (char*) val + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1 + SIZE_OF_CAPABILITYKEY + 1, IP_ADDRESS_AND_PORT_STRING_SIZE);
-            // ocall_print("Cast Secure Machine Handle preserves ip address and port information as");
-            // ocall_print(str + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1);
-            // return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_machine_handle);
         } 
 
     }
@@ -2724,6 +2370,66 @@ extern "C" PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     ocall_print("ERROR: Declassify not found");
     return NULL;
 
+}
+
+//*******************
+
+//P Foreign Function Implementations for example code*******************
+
+extern "C" PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+
+    PRT_VALUE** P_VAR_payload2 = argRefs[1];
+    PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
+
+    strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
+    strncat((char*) val, "hash", strlen("hash") + 1);
+
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    memcpy(str, (char*)val, SIZE_OF_PRT_STRING_SERIALIZED);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+}
+
+extern "C" PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+
+    PRT_VALUE** P_VAR_payload2 = argRefs[1];
+    PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
+
+    strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
+
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+    memcpy(str, (char*)val, SIZE_OF_PRT_STRING_SERIALIZED);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+}
+
+extern "C" void P_PrintString_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    ocall_print("String P value is:");
+    ocall_print((char*) val);
+    if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex) {
+        ocall_print("secure StringType");
+    } 
+    if ((*P_VAR_payload)->valueUnion.frgn->typeTag == P_TYPEDEF_StringType->typeUnion.foreignType->declIndex) {
+        ocall_print("StringType");
+    } 
+    (*P_VAR_payload)->valueUnion.frgn->typeTag = P_TYPEDEF_secure_StringType->typeUnion.foreignType->declIndex;
+    
+}
+
+extern "C" void P_PrintKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE** P_VAR_payload = argRefs[0];
+    PRT_UINT64 val = (*P_VAR_payload)->valueUnion.frgn->value;
+    ocall_print("FOREIGN PRINT KEY IS:");
+    printPayload((char*) val, SIZE_OF_MACHINE_HANDLE);
+    
 }
 
 extern "C" void P_PrintPCapability_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -2799,21 +2505,6 @@ extern "C" void P_PrintRawSecureStringType_IMPL(PRT_MACHINEINST* context, PRT_VA
     
 }
 
-
-extern "C" PRT_VALUE* P_DeclassifyInt_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    return PrtMkIntValue((*P_VAR_payload)->valueUnion.nt);
-}
-
-extern "C" PRT_VALUE* P_DeclassifyBool_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_VALUE** P_VAR_payload = argRefs[0];
-    return PrtMkBoolValue((*P_VAR_payload)->valueUnion.bl);
-}
-
-
-
 extern "C" void P_PrintMachineHandle_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE** P_VAR_payload = argRefs[0];
@@ -2870,6 +2561,10 @@ extern "C" void P_Debug_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     #endif
 }
 
+//*******************
+
+//P ForeignType Library Types*******************
+
 //StringType Class
 
 extern "C" void P_FREE_StringType_IMPL(PRT_UINT64 frgnVal)
@@ -2895,7 +2590,6 @@ extern "C" PRT_STRING P_TOSTRING_StringType_IMPL(PRT_UINT64 frgnVal)
 extern "C" PRT_UINT32 P_GETHASHCODE_StringType_IMPL(PRT_UINT64 frgnVal)
 {
     return 7;
-	// return (PRT_UINT32)frgnVal;
 }
 
 extern "C" PRT_UINT64 P_MKDEF_StringType_IMPL(void)
@@ -2908,12 +2602,7 @@ extern "C" PRT_UINT64 P_MKDEF_StringType_IMPL(void)
 extern "C" PRT_UINT64 P_CLONE_StringType_IMPL(PRT_UINT64 frgnVal)
 {
 	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-    // if (NETWORK_DEBUG) {
-    //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
-    // } else {
-        memcpy(str, (void*)frgnVal, SIZE_OF_PRT_STRING_SERIALIZED);
-    // }
-	
+    memcpy(str, (void*)frgnVal, SIZE_OF_PRT_STRING_SERIALIZED);
 	return (PRT_UINT64)str;
 }
 
@@ -2942,8 +2631,6 @@ extern "C" PRT_STRING P_TOSTRING_secure_StringType_IMPL(PRT_UINT64 frgnVal)
 extern "C" PRT_UINT32 P_GETHASHCODE_secure_StringType_IMPL(PRT_UINT64 frgnVal)
 {
     return 7;
-
-	// return (PRT_UINT32)frgnVal;
 }
 
 extern "C" PRT_UINT64 P_MKDEF_secure_StringType_IMPL(void)
@@ -2956,12 +2643,7 @@ extern "C" PRT_UINT64 P_MKDEF_secure_StringType_IMPL(void)
 extern "C" PRT_UINT64 P_CLONE_secure_StringType_IMPL(PRT_UINT64 frgnVal)
 {
 	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-    // if (NETWORK_DEBUG) {
-    //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
-    // } else {
-        memcpy(str, (void*)frgnVal, SIZE_OF_PRT_STRING_SERIALIZED);
-    // }
-	
+    memcpy(str, (void*)frgnVal, SIZE_OF_PRT_STRING_SERIALIZED);
 	return (PRT_UINT64)str;
 }
 
@@ -2999,12 +2681,7 @@ extern "C" PRT_UINT64 P_MKDEF_machine_handle_IMPL(void)
 extern "C" PRT_UINT64 P_CLONE_machine_handle_IMPL(PRT_UINT64 frgnVal)
 {
 	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_MACHINE_HANDLE));
-    // if (NETWORK_DEBUG) {
-    //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
-    // } else {
-        memcpy(str, (void*)frgnVal, SIZE_OF_MACHINE_HANDLE);
-    // }
-	
+    memcpy(str, (void*)frgnVal, SIZE_OF_MACHINE_HANDLE);	
 	return (PRT_UINT64)str;
 }
 
@@ -3042,12 +2719,7 @@ extern "C" PRT_UINT64 P_MKDEF_capability_IMPL(void)
 extern "C" PRT_UINT64 P_CLONE_capability_IMPL(PRT_UINT64 frgnVal)
 {
 	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_P_CAPABILITY_FOREIGN_TYPE));
-    // if (NETWORK_DEBUG) {
-    //     sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, (PRT_STRING)frgnVal);
-    // } else {
-        memcpy(str, (void*)frgnVal, SIZE_OF_P_CAPABILITY_FOREIGN_TYPE);
-    // }
-	
+    memcpy(str, (void*)frgnVal, SIZE_OF_P_CAPABILITY_FOREIGN_TYPE);	
 	return (PRT_UINT64)str;
 }
 
@@ -3085,11 +2757,8 @@ extern "C" PRT_UINT64 P_MKDEF_secure_machine_handle_IMPL(void)
 extern "C" PRT_UINT64 P_CLONE_secure_machine_handle_IMPL(PRT_UINT64 frgnVal)
 {
 	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SECURE_MACHINE_HANDLE));
-    // if (NETWORK_DEBUG) {
-    //     sprintf_s(str, SIZE_OF_SECURE_MACHINE_HANDLE, (PRT_STRING)frgnVal);
-    // } else {
-        memcpy(str, (void*)frgnVal, SIZE_OF_SECURE_MACHINE_HANDLE);
-    // }
-	
+    memcpy(str, (void*)frgnVal, SIZE_OF_SECURE_MACHINE_HANDLE);
 	return (PRT_UINT64)str;
 }
+
+//*******************

@@ -16,6 +16,7 @@ Provided the message is for an SSM, `untrusted_enclave_host_receiveNetworkReques
 
 ###### SSM and USM APIs
 TODO, if time, list out SSM and USM APIs
+Go through each one and describe how exaclty it works and clean up code futher and add comments
 
 
 ### KPS

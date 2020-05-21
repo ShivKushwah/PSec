@@ -451,7 +451,7 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     char* usmChildPublicIDKeyCopy2 = (char*) malloc(SGX_RSA3072_KEY_SIZE);
     memcpy(usmChildPublicIDKeyCopy2, usmChildPublicIDKey.c_str(), SGX_RSA3072_KEY_SIZE);
 
-    createMachine(machineType, numArgs, payloadType, payload, payloadSize);
+    createPMachine(machineType, numArgs, payloadType, payload, payloadSize);
 
     char* concatStrings[] = {usmChildPublicIDKeyCopy2, ":", (char*) usmChildPublicSigningKey.c_str()};
     int concatLenghts[] = {SGX_RSA3072_KEY_SIZE, 1, sizeof(sgx_rsa3072_public_key_t)};

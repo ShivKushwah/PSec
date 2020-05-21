@@ -38,7 +38,7 @@ int getNextPID();
 
 string createString(char* str);
 
-int createMachine(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize);
+int createPMachine(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize);
 
 int machineTypeIsSecure(char* machineType);
 
