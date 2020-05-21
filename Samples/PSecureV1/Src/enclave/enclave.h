@@ -79,3 +79,5 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
 char* decryptMessageInteralPrivateKey(char* encryptedData, size_t encryptedDataSize, void* private_key);
 char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_null_byte, void* other_party_public_key_raw, int& output_encrypted_message_length, void* other_party_public_key);
 void printSessionKey(char* key);
+bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* signature, sgx_rsa3072_public_key_t* public_key);
+sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_key_t *private_key);

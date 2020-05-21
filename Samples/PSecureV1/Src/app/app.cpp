@@ -417,96 +417,7 @@ void ocall_request_user_input(char* user_input, uint32_t max_input_len) {
 
 //*******************
 
-
-//USM Function Implementations*******************
-
-extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    return P_UntrustedCreateRequest_IMPL(context, argRefs);
-}
-
-extern "C" PRT_VALUE* P_UntrustedCreateRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
-{
-    return sendCreateMachineNetworkRequest(context, argRefs, "UntrustedCreate", false);
-}
-
-extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
-{   
-    sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, false);
-}
-
-
-extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
-    //USMs can only make untrusted requests to create machines
-    return P_UntrustedCreateRequest_IMPL(context, argRefs);
-}
-
-//Generate public/private identity encryption and signing keys
-void generateIdentity(string& publicID, string& privateID, string prefix, string& publicIDSigningKey, string& privateIDSigningKey) {
-    if (!NETWORK_DEBUG) {
-        char* private_identity_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        char* public_identity_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        char* private_identity_key = (char*) malloc(sizeof(sgx_rsa3072_key_t));
-        char* public_identity_key = (char*) malloc(sizeof(sgx_rsa3072_public_key_t));
-        sgx_status_t status = enclave_createRsaKeyPairEcall(global_app_eid, public_identity_key_raw, private_identity_key_raw, public_identity_key, private_identity_key, SGX_RSA3072_KEY_SIZE); 
-        if (status != SGX_SUCCESS) {
-            ocall_print("APP Error in generating identity keys!");
-        }
-        publicID = string(public_identity_key_raw, SGX_RSA3072_KEY_SIZE);
-        privateID = string(private_identity_key_raw, SGX_RSA3072_KEY_SIZE);
-        publicIDSigningKey = string(public_identity_key, sizeof(sgx_rsa3072_public_key_t));
-        privateIDSigningKey = string(private_identity_key, sizeof(sgx_rsa3072_key_t));
-        ocall_print("APP: Generated following raw public key");
-        printPayload(public_identity_key_raw, SGX_RSA3072_KEY_SIZE);
-        ocall_print("APP: Generated following public key");
-        printPayload(public_identity_key, sizeof(sgx_rsa3072_public_key_t));
-    } else {
-        //if debug mode, output a fixed identity
-        uint32_t randNum = rand() % 100;
-        randNum = (randNum + 10) % 100;
-        if (randNum < 10) {
-            randNum = 39;
-        }
-        publicID = prefix.substr(0, 1) + "UPub" + to_string(randNum) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
-        privateID = prefix.substr(0, 1) + "UPri" + to_string(randNum) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
-
-    }
-} 
-
-// USM initialize communication API [other SM is trying to initialize encrypted channel with USM hosted by this distributed host]
-// Responsibility of Caller to free return value
-char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey) {
-    ocall_print("USM Initialize Communication API Called!");
-
-    string requestingMachinePublicSigningKey = string(requestingMachineIDKey + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
-    PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)] = requestingMachinePublicSigningKey;
-
-    char* receivingMachinePrivateID = (char*)get<1>(MachinePIDToIdentityDictionary[USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
-    char* decryptedMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-    enclave_decryptMessageInteralPrivateKeyEcall(global_app_eid ,newSessionKey, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID, decryptedMessage, SGX_RSA3072_KEY_SIZE);
-    printPayload(newSessionKey, SGX_RSA3072_KEY_SIZE);
-
-    int count;
-    count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)));
-    
-    if (count == 0) {
-        PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY);
-        ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY))] = 0;
-        char* successMessage = createStringLiteralMalloced("Success: Session Key Received");
-        ocall_print("Received correct session key!\n");
-        return successMessage;
-    } else {
-        char* errorMsg = createStringLiteralMalloced("Already created!");
-        ocall_print("ERROR:Session has already been initalized in the past!\n");
-        return errorMsg;
-    }
-    
-}
-
-// USM send message API [other SM is trying to send a message through an encrypted channel to USM hosted by this distributed host]
-char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response) {
-    decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, false);
-}
+//USM API Functions*******************
 
 // USM create state machine API [other SM is trying to create a new USM hosted by this distributed host]
 // Responbility of caller to free return value
@@ -555,10 +466,65 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
     return returnID;
 }
 
-char* receiveNetworkRequest(char* request, size_t requestSize) {
+// USM initialize communication API [other SM is trying to initialize encrypted channel with USM hosted by this distributed host]
+// Responsibility of Caller to free return value
+char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey) {
+    ocall_print("USM Initialize Communication API Called!");
 
-    return receiveNetworkRequestHelper(request, requestSize, false);
+    string requestingMachinePublicSigningKey = string(requestingMachineIDKey + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
+    PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)] = requestingMachinePublicSigningKey;
 
+    char* receivingMachinePrivateID = (char*)get<1>(MachinePIDToIdentityDictionary[USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
+    char* decryptedMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    enclave_decryptMessageInteralPrivateKeyEcall(global_app_eid ,newSessionKey, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID, decryptedMessage, SGX_RSA3072_KEY_SIZE);
+    printPayload(newSessionKey, SGX_RSA3072_KEY_SIZE);
+
+    int count;
+    count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)));
+    
+    if (count == 0) {
+        PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))] = string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY);
+        ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(decryptedMessage, SIZE_OF_REAL_SESSION_KEY))] = 0;
+        char* successMessage = createStringLiteralMalloced("Success: Session Key Received");
+        ocall_print("Received correct session key!\n");
+        return successMessage;
+    } else {
+        char* errorMsg = createStringLiteralMalloced("Already created!");
+        ocall_print("ERROR:Session has already been initalized in the past!\n");
+        return errorMsg;
+    }
+    
+}
+
+// USM send message API [other SM is trying to send a message through an encrypted channel to USM hosted by this distributed host]
+char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response) {
+    decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, false);
+}
+
+//*******************
+
+
+//USM P Foreign Functions*******************
+
+extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    return P_UntrustedCreateRequest_IMPL(context, argRefs);
+}
+
+extern "C" PRT_VALUE* P_UntrustedCreateRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
+{
+    return sendCreateMachineNetworkRequest(context, argRefs, "UntrustedCreate", false);
+}
+
+extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
+{   
+    sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, false);
+}
+
+
+extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
+    //USMs can only make untrusted requests to create machines
+    return P_UntrustedCreateRequest_IMPL(context, argRefs);
 }
 
 //Needs to be empty for compilation with Helper.cpp
@@ -572,5 +538,47 @@ extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** a
 {
 
 }
+
+//*******************
+
+
+//USM Other Functions*******************
+
+//Handle incoming network messages
+char* receiveNetworkRequest(char* request, size_t requestSize) {
+    return receiveNetworkRequestHelper(request, requestSize, false);
+}
+
+//Generate public/private identity encryption and signing keys
+void generateIdentity(string& publicID, string& privateID, string prefix, string& publicIDSigningKey, string& privateIDSigningKey) {
+    if (!NETWORK_DEBUG) {
+        char* private_identity_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        char* public_identity_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+        char* private_identity_key = (char*) malloc(sizeof(sgx_rsa3072_key_t));
+        char* public_identity_key = (char*) malloc(sizeof(sgx_rsa3072_public_key_t));
+        sgx_status_t status = enclave_createRsaKeyPairEcall(global_app_eid, public_identity_key_raw, private_identity_key_raw, public_identity_key, private_identity_key, SGX_RSA3072_KEY_SIZE); 
+        if (status != SGX_SUCCESS) {
+            ocall_print("APP Error in generating identity keys!");
+        }
+        publicID = string(public_identity_key_raw, SGX_RSA3072_KEY_SIZE);
+        privateID = string(private_identity_key_raw, SGX_RSA3072_KEY_SIZE);
+        publicIDSigningKey = string(public_identity_key, sizeof(sgx_rsa3072_public_key_t));
+        privateIDSigningKey = string(private_identity_key, sizeof(sgx_rsa3072_key_t));
+        ocall_print("APP: Generated following raw public key");
+        printPayload(public_identity_key_raw, SGX_RSA3072_KEY_SIZE);
+        ocall_print("APP: Generated following public key");
+        printPayload(public_identity_key, sizeof(sgx_rsa3072_public_key_t));
+    } else {
+        //if debug mode, output a fixed identity
+        uint32_t randNum = rand() % 100;
+        randNum = (randNum + 10) % 100;
+        if (randNum < 10) {
+            randNum = 39;
+        }
+        publicID = prefix.substr(0, 1) + "UPub" + to_string(randNum) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
+        privateID = prefix.substr(0, 1) + "UPri" + to_string(randNum) + "ddQMiiDh5wwA4zFBV3VOazgxZ3d3gnD40rQ2g6yrR8MDFdbJUGhm3ozq2hkYZdF0lWOc0EXBlE8bwwlL6VYoQYLAobQMRIqtS5Ytst1zrhq9YiubRypiP6xNS9UcS9dSBryXmdKAAcpke4ri2Ikx4tDUh1TbHr76WCqmOuwXMA9DqphJEdwIPjiOMr3pwYWt12dfVyFEGL5KcVeYajwgCTiQEmbZ7v5eZfZaBf95Ezh2cxPiI4Z1HfjBGmtYuO1aCdV8yKX0bZRNip3Ycmh8LkIhjHTtF3kchbFRVmhz0zdIOHG0HNSuI8x6ga0vSvSReI7hlrEPfrmm6rEVLPQcwtNAgNdMYQtK1qv4igoOErnwFaWMSqKLkkvAF";
+
+    }
+} 
 
 //*******************

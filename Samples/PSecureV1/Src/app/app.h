@@ -28,7 +28,7 @@ void start_socket_kps_generic_network_handler();
 int handle_incoming_event(PRT_UINT32 eventIdentifier, PRT_MACHINEID receivingMachinePID, int numArgs, int payloadType, char* payload, int payloadSize);
 char* serializePrtValueToString(PRT_VALUE* value, int& final_size);
 
-void generateIdentity(string& publicID, string& privateID, string prefix);
+void generateIdentity(string& publicID, string& privateID, string prefix, string& publicIDSigningKey, string& privateIDSigningKey);
 
 char* receiveNetworkRequest(char* request, size_t requestSize);
 
