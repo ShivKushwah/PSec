@@ -444,6 +444,7 @@ char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_
     #endif
 }
 
+//Decrypts a message encrypted by a public key
 char* decryptMessageInteralPrivateKey(char* encryptedData, size_t encryptedDataSize, void* private_key) {
     #ifdef ENCLAVE_STD_ALT
     size_t decrypted_data_length;
@@ -1418,6 +1419,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
 }
 
+//Creates the actual P machine using P API functions
 int createPMachine(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize) {
     PRT_VALUE* prtPayload;
     if (numArgs > 0) {
@@ -1883,7 +1885,6 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
 void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, bool isSecureSend) {
     ocall_print("entered decrypt fn");
-    // ocall_print_int(MAX_ENCRYPTED_MESSAGE);
     printPayload(encryptedMessage, 9);
     char* split = strtok(encryptedMessage, ":");
     char* encryptedMessageSize = split;

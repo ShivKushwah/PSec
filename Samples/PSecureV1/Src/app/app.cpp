@@ -468,7 +468,7 @@ char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType, char*
 
 // USM initialize communication API [other SM is trying to initialize encrypted channel with USM hosted by this distributed host]
 // Responsibility of Caller to free return value
-char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey) {
+char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* encryptedNewSessionKey) {
     ocall_print("USM Initialize Communication API Called!");
 
     string requestingMachinePublicSigningKey = string(requestingMachineIDKey + SGX_RSA3072_KEY_SIZE + 1, sizeof(sgx_rsa3072_public_key_t));
@@ -476,8 +476,8 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
 
     char* receivingMachinePrivateID = (char*)get<1>(MachinePIDToIdentityDictionary[USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]]).c_str();
     char* decryptedMessage = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-    enclave_decryptMessageInteralPrivateKeyEcall(global_app_eid ,newSessionKey, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID, decryptedMessage, SGX_RSA3072_KEY_SIZE);
-    printPayload(newSessionKey, SGX_RSA3072_KEY_SIZE);
+    enclave_decryptMessageInteralPrivateKeyEcall(global_app_eid ,encryptedNewSessionKey, SGX_RSA3072_KEY_SIZE, receivingMachinePrivateID, decryptedMessage, SGX_RSA3072_KEY_SIZE);
+    printPayload(encryptedNewSessionKey, SGX_RSA3072_KEY_SIZE);
 
     int count;
     count = PublicIdentityKeyToChildSessionKey.count(make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)));
@@ -506,25 +506,28 @@ char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKe
 
 //USM P Foreign Functions*******************
 
+// Method for USM to send "Untrusted Create" request across the network
 extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     return P_UntrustedCreateRequest_IMPL(context, argRefs);
 }
 
+// Method for USM to send "Untrusted Create" request across the network
 extern "C" PRT_VALUE* P_UntrustedCreateRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
 {
     return sendCreateMachineNetworkRequest(context, argRefs, "UntrustedCreate", false);
 }
 
+// Method for USM to send "Untrusted Send" request across the network
 extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
 {   
     sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, false);
 }
 
-
+//Needs to be empty for compilation with Helper.cpp
 extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
-    //USMs can only make untrusted requests to create machines
-    return P_UntrustedCreateRequest_IMPL(context, argRefs);
+    // //USMs can only make untrusted requests to create machines
+    // return P_UntrustedCreateRequest_IMPL(context, argRefs);
 }
 
 //Needs to be empty for compilation with Helper.cpp
