@@ -11,6 +11,10 @@ Uncomment the example that needs to be run. For example, in order to run the OTP
 set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPBankServerCode.p  ...
 set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/OTPBankServerCode.c) ...
 add_definitions(-DOTP_EXAMPLE)
+
+# set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/PerformanceMetricsExample/ ... 
+# set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/PerformanceMachines1.c) ...
+# add_definitions(-DPERFORMANCE_METRICS_EXAMPLE)
 ```
 
 ### Choose SIM mode or HW mode
@@ -70,16 +74,16 @@ Need to run the following in different terminal tabs (and in this order):
 2. Host 1: `cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 currentHostMachineAddress=127.0.0.1:8070 isStartMachine=False > host1Output.txt ;cd ~/Research/PSec/`
 3. Host 2: `cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 currentHostMachineAddress=127.0.0.1:8080 isStartMachine=True startMachine=UntrustedInitializer > host2Output.txt ;cd ~/Research/PSec/`
 
-###### OTP Measurement (Local)
-In this, we will deploy the OTP Measurement example with the KPS, Distributed Host 1, and Distributed Host 2 all running within the same physical machine. 
+###### Performance Metrics Measurement (Local)
+In this, we will deploy the Performance Metrics example with the KPS, Distributed Host 1, and Distributed Host 2 all running within the same physical machine. 
 Need to run the following in different terminal tabs (and in this order):
 
 1. KPS: `cd Submodule/P && ./Bld/build-compiler.sh && cd .. && cd .. && cd build  && make clean && cmake .. && make && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=127.0.0.1:8092 8090 127.0.0.1:8070=[ClientWebBrowser,ClientEnclave,UntrustedInitializer] 127.0.0.1:8080=[BankEnclave,TrustedInitializer,MeasureMachine] > kpsOutput.txt ;cd ~/Research/PSec`
 2. Host 1: `cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 currentHostMachineAddress=127.0.0.1:8080 isStartMachine=False > host1Output.txt ;cd ~/Research/PSec`
 3. Host 2: `cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 currentHostMachineAddress=127.0.0.1:8070 isStartMachine=True startMachine=UntrustedInitializer > host2Output.txt ;cd ~/Research/PSec`
 
-###### OTP Measurement (Distributed)
-In this, we will deploy the OTP measurement example with the KPS and Distributed Host 1 in the same physical machine, and Distributed Host 2 in a different physical machine. We are assuming physical machine 1 has IP address 10.0.0.4 and physical machine 2 has IP address 10.0.0.5.
+###### Performance Metrics Measurement (Distributed)
+In this, we will deploy the Performance Metrics example with the KPS and Distributed Host 1 in the same physical machine, and Distributed Host 2 in a different physical machine. We are assuming physical machine 1 has IP address 10.0.0.4 and physical machine 2 has IP address 10.0.0.5.
 Need to run the following in this order:
 
 1. KPS (IP address: 10.0.0.4): `cd Submodule/P && ./Bld/build-compiler.sh && cd .. && cd .. && cd build  && make clean && cmake .. && make && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=10.0.0.4:8092 8090 10.0.0.5:8070=[ClientWebBrowser,ClientEnclave,UntrustedInitializer] 10.0.0.4:8080=[BankEnclave,TrustedInitializer,MeasureMachine] > kpsOutput.txt ;cd ~/Research/PSec`

@@ -2,14 +2,14 @@
 event BankPublicIDEvent : machine_handle;
 event PublicIDEvent : machine_handle;
 event UNTRUSTEDReceiveRegistrationCredentials : StringType;
-trusted event MasterSecretEvent: secure_StringType;
 event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
-trusted event MapEvent: map[secure_int, secure_int];
 event AuthenticateRequest : (usernamePW : StringType, OTPCode : StringType);
 event AuthSuccess;
 event AuthFailure;
 
+trusted event MasterSecretEvent: secure_StringType;
+trusted event MapEvent: map[secure_int, secure_int];
 trusted event TRUSTEDProvisionBankSSM : secure_machine_handle;
 trusted event TRUSTEDProvisionClientSSM : secure_machine_handle;
 
