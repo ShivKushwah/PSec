@@ -299,10 +299,8 @@ struct RA_network_serialization_headers* deserialize_ra_network_headers(char* se
 
 
 }
-
-
-
 //*******************
+
 
 //Responsiblity of caller to free return
 char* createStringLiteralMalloced(char* stringLiteral) {

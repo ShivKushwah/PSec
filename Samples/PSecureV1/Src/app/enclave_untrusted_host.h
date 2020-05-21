@@ -12,4 +12,4 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
 int untrusted_enclave_start_attestation(const char* receiving_machine_name, char* optional_message="");
 
-char* untrusted_enclave1_receiveNetworkRequest(char* request, size_t requestSize);
+char* untrusted_enclave_host_receiveNetworkRequest(char* request, size_t requestSize);

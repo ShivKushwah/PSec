@@ -1,3 +1,6 @@
+//NOTE This file contains helper functions and is compiled for both the enclave and untrusted host machine
+//Enclave specific code is inside ENCLAVE_STD_ALT
+
 #include "string.h"
 #include <string>
 #include "constants.h"
@@ -57,7 +60,7 @@ extern char* createUSMMachineAPI(char* machineType, int numArgs, int payloadType
 extern char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* newSessionKey);
 
 
-extern char* untrusted_enclave1_receiveNetworkRequest(char* request, size_t requestSize);
+extern char* untrusted_enclave_host_receiveNetworkRequest(char* request, size_t requestSize);
 
 extern char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response);
 
@@ -699,23 +702,19 @@ void parseIPAddressPortString(char* serializedString, string& ipAddress, int& po
 }
 
 // Method that parses the incoming network request and calls the appropiate API method for corresponding SSM or USM
-// Since helper.cpp is shared by both enclave and untrusted host, we have a flag (isEnclaveUntrustedHost) that indicates whether this function is running in the context of the untrusted host machine
+// We have a flag (isEnclaveUntrustedHost) that indicates whether this function is running in the context of app.cpp (USMs) or enclave_untrusted_host (SSM bridge)
 // Responsibility of caller to free return value
 char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEnclaveUntrustedHost) {
-    // ocall_print("helllo");
-    // ocall_print_int(strlen(request));
-    //char requestCopy[250];
     char* requestCopy = (char*) malloc(requestSize);
-    // ocall_print("malloc init");
     memcpy(requestCopy, request, requestSize);
-    // requestCopy[strlen(request)] = '\0';
-    // ocall_print("malloc yeeee");
-
 
     #ifdef ENCLAVE_STD_ALT   
+    //This function should not be defined inside the enclave
     return createStringLiteralMalloced("empty");
     #else
     char* split = strtok(requestCopy, ":");
+
+    //if Trusted Create
     if (strcmp(split, "Create") == 0) {
         char* newMachineID;
         char* parentTrustedMachinePublicIDKey;
@@ -730,8 +729,6 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
         char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1; //TODO using requestcopy here might be an issue
 
-        // char* newTokenizerString = (char*) malloc(strlen(nextIndex) + 1);
-        // strncpy(newTokenizerString, nextIndex, strlen(nextIndex) + 1);
         char* newTokenizerString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
         memcpy(newTokenizerString, nextIndex, SIZE_OF_MAX_EVENT_PAYLOAD);
         ocall_print("New tokenizer is ");
@@ -758,13 +755,12 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         }        
 
         if (isEnclaveUntrustedHost) {
-        
+            //Call the appropiate SSM API for Trusted Create
             sgx_enclave_id_t new_enclave_eid = 0;
             string token = "enclave" + to_string((int)CURRENT_ENCLAVE_EID_NUM) + ".token";
             CURRENT_ENCLAVE_EID_NUM += 1;
 
-
-            if (initialize_enclave(&new_enclave_eid, token, "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
+            if (initialize_enclave(&new_enclave_eid, token, "enclave.signed.so") < 0) { 
                 ocall_print("Fail to initialize enclave.");
             }    
 
@@ -778,14 +774,16 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             return newMachineID;
 
         } else {
-            if (USMAuthorizedTypes.count(machineType) > 0) {
-                char* ret = createUSMMachineAPI(machineType, numArgs, payloadType, payload, payloadSize);
-                safe_free(requestCopy);
-                return ret;
-            } else {
-                safe_free(requestCopy);
-                return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
-            }
+            // if (USMAuthorizedTypes.count(machineType) > 0) {
+            //     char* ret = createUSMMachineAPI(machineType, numArgs, payloadType, payload, payloadSize);
+            //     safe_free(requestCopy);
+            //     return ret;
+            // } else {
+            //     safe_free(requestCopy);
+
+            //Forward to untrusted_enclave_host to process this since trusted create always involves SSMs
+            return untrusted_enclave_host_receiveNetworkRequest(request, requestSize);
+            // }
         }
     
     }  else if (strcmp(split, "UntrustedCreate") == 0) {
@@ -812,16 +810,15 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         }
 
         if (isEnclaveUntrustedHost) {
-
+            //if Untrusted Create of a SSM
             sgx_enclave_id_t new_enclave_eid = 0;
             string token = "enclave" + to_string((int)CURRENT_ENCLAVE_EID_NUM) + ".token";
             CURRENT_ENCLAVE_EID_NUM += 1;
 
-            if (initialize_enclave(&new_enclave_eid, token, "enclave.signed.so") < 0) { //TODO figure out how to initialize all enclaves. Maybe network_ra should do that as a setup step?
+            if (initialize_enclave(&new_enclave_eid, token, "enclave.signed.so") < 0) {
                 ocall_print("Fail to initialize enclave.");
             }   
 
-            
             sgx_status_t status = enclave_UntrustedCreateMachineAPI(new_enclave_eid, new_enclave_eid, machineType, 30, newMachineID, numArgs, payloadType, payload, payloadSize, SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST, SIZE_OF_MAX_MESSAGE, new_enclave_eid);
             
             safe_free(requestCopy);
@@ -830,12 +827,14 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 
         } else {
             if (USMAuthorizedTypes.count(machineType) > 0) {
+                //if Untrusted Create of an USM
                 char* ret = createUSMMachineAPI(machineType, numArgs, payloadType, payload, payloadSize);
                 safe_free(requestCopy);
                 return ret;
             } else {
+                //Forward to untrusted_enclave_host to process this since this is an untrusted create of an SSM
                 safe_free(requestCopy);
-                return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
+                return untrusted_enclave_host_receiveNetworkRequest(request, requestSize);
             }
         }
 
@@ -843,7 +842,6 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
     } else if (strcmp(split, "InitComm") == 0) {
 
         char* encryptedSessionKey;
-        //newSessionKey[0] = '\0';
 
         char* machineInitializingComm;
         char* machineReceivingComm;
@@ -854,16 +852,9 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         memcpy(machineReceivingComm, request + strlen(split) + 1 + SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST + 1, SGX_RSA3072_KEY_SIZE);
         encryptedSessionKey = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
         memcpy(encryptedSessionKey, request + strlen(split) + 1 + SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
-            
-        // machineInitializingComm = (char*) malloc(SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST);
-        // memcpy(machineInitializingComm, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE + 2);
-        // machineReceivingComm = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        // memcpy(machineReceivingComm, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
-        // encryptedSessionKey = (char* ) malloc(SGX_RSA3072_KEY_SIZE);
-        // memcpy(encryptedSessionKey, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
-            
-        
+                    
         if (isEnclaveUntrustedHost) {
+            //if InitComm of SSM
 
             if (PublicIdentityKeyToEidDictionary.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)) == 0) {
                 ocall_print("\n No Enclave Eid Found!\n");
@@ -872,7 +863,6 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)]; //TODO add check here in case its not in dictionary
             char* returnMessage = (char*) malloc(100);
             int ptr;
-            //TODO actually make this call a method in untrusted host (enclave_untrusted_host.cpp)
             sgx_status_t status = enclave_initializeCommunicationAPI(enclave_eid, &ptr, machineInitializingComm,machineReceivingComm, encryptedSessionKey, returnMessage, SIZE_OF_RETURN_ID_AFTER_CREATE_REQUEST, SGX_RSA3072_KEY_SIZE);
             if (status != SGX_SUCCESS) {
                 printf("Sgx Error Code: %x\n", status);
@@ -883,17 +873,16 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             return returnMessage;
 
         } else {
-            // ocall_print("checking the following");
-            // printPayload(machineReceivingComm, SGX_RSA3072_KEY_SIZE);
             if (USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingComm, SGX_RSA3072_KEY_SIZE)) > 0) {
-                // ocall_print("YEEEEEET");
+                //if InitComm of USM
                 char* ret = USMinitializeCommunicationAPI(machineInitializingComm, machineReceivingComm, encryptedSessionKey);
                 safe_free(requestCopy);
                 return ret;
             
             } else {
+                //Forward to untrusted_enclave_host to process this since this is an initcomm of an SSM
                 safe_free(requestCopy);
-                return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
+                return untrusted_enclave_host_receiveNetworkRequest(request, requestSize);
             }
         }
 
@@ -920,7 +909,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         ocall_print(encryptedMessage);
 
         if (isEnclaveUntrustedHost) {
-
+            //if Untrusted Send to SSM
             int count;
             int ptr;
             sgx_enclave_id_t enclave_eid;
@@ -944,6 +933,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             return temp;
 
         } else {
+            //if Untrusted Send to USM
             int count;
            
             count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
@@ -957,8 +947,9 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
                 return ret;
                 
             } else {
+                //Forward to untrusted_enclave_host to process this since this is an untrusted send to an SSM
                 safe_free(requestCopy);
-                return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
+                return untrusted_enclave_host_receiveNetworkRequest(request, requestSize);
             }
         }
 
@@ -985,7 +976,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         ocall_print(encryptedMessage);
 
         if (isEnclaveUntrustedHost) {
-
+            //if Trusted Send to SSM
             int count;
             int ptr;
             sgx_enclave_id_t enclave_eid;
@@ -999,28 +990,29 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             char* responseBuffer = (char*) malloc(RESPONSE_SZ);
             sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, responseBuffer, 1, SGX_RSA3072_KEY_SIZE, encryptedMessageSize, RESPONSE_SZ);
             
-
             if (count == 0) {
                 ocall_print("\n No Enclave Eid Found!");
             }
             
             safe_free(requestCopy);
-            temp = createStringLiteralMalloced("SecureSendReturn");
             return responseBuffer;
 
         } else {
-            int count;
-            count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
+            //
+            // int count;
+            // count = USMPublicIdentityKeyToMachinePIDDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
 
-            if (count > 0) {
-                safe_free(requestCopy);
-                //TODO need to implement
-                return createStringLiteralMalloced("TODO");
+            // if (count > 0) {
+            //     safe_free(requestCopy);
+            //     //TODO need to implement
+            //     return createStringLiteralMalloced("TODO");
                 
-            } else {
+            // } else {
+                
+                //Forward to untrusted_enclave_host to process this since Trusted Send always invovles SSMs
                 safe_free(requestCopy);
-                return untrusted_enclave1_receiveNetworkRequest(request, requestSize);
-            }
+                return untrusted_enclave_host_receiveNetworkRequest(request, requestSize);
+            // }
         }
 
 
