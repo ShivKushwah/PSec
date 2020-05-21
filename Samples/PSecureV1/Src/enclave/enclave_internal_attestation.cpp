@@ -76,6 +76,7 @@ char secure_message_attestation_request[SIZE_OF_MESSAGE];
 // 0x01,0x02,0x03,0x04,0x0x5,0x0x6,0x0x7
 uint8_t g_secret[SIZE_OF_MESSAGE] = {0};
 
+// Enclave methods to allow enclave to attest to KPS *******************
 
 #ifdef SUPPLIED_KEY_DERIVATION
 
@@ -400,7 +401,6 @@ sgx_status_t put_secret_data(
     return ret;
 }
 
-
 // Writes the results to the parameters
 sgx_status_t encrypt_secure_message(
     sgx_ra_context_t context,
@@ -450,5 +450,4 @@ sgx_status_t encrypt_secure_message(
     } while(0);
     return ret;
 }
-
-
+//*******************
