@@ -70,10 +70,93 @@ char* KPS_IP_ADDRESS;
 int KPS_PORT_GENERIC;
 int KPS_PORT_ATTESTATION;
 
-
-//This represents the payload we are going to send to the enclave after a succesful attestation
-//We write to this value in app.cpp before the ping machine initiates the attestation request with Pong enclave
+//This represents the payload the KPS receives from the enclave after a succesful attestation
 char secure_message[SIZE_OF_MESSAGE]; 
+
+
+//KPS Setup functions *******************
+void initKPS() {
+    kps_enclave_eid = 0;
+    string token = "enclavekps.token";
+    //Need an enclave for the KPS to be able to use sgx librarie for key generation
+    if (initialize_enclave(&kps_enclave_eid, token, "enclave.signed.so") < 0) {
+        ocall_print("Fail to initialize enclave.");
+    }    
+
+}
+
+void addRegisteredMachineToKPS(char* machineName, char* machineAddress) {
+    list<string> lst;
+    lst.push_back(string(machineAddress));
+    MachineTypeToValidIPAddresses[string(machineName)] = lst;
+}
+
+//*******************
+
+
+//KPS API Functions*******************
+
+//Returns IP address of a valid distributed host that can spawn SM of requested type
+char* queryIPAddressForMachineType(char* machineTypeRequested, int& responseSize) {
+    char* response;
+    if (MachineTypeToValidIPAddresses.count(string(machineTypeRequested)) > 0) {
+        response = createStringLiteralMalloced((char*)MachineTypeToValidIPAddresses[string(machineTypeRequested)].front().c_str());
+    } else {
+        ocall_print("ERROR: KPS queried for invalid machine type!");
+        response = createStringLiteralMalloced("ERROR: Machine type not found!");
+    }
+    responseSize = strlen(response) + 1;
+    return response;
+}
+
+//Generates capability key pair, should only be called after successful remote attestation
+int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachinePublicIDKey, char* requestedNewMachineTypeToCreate) {
+    ocall_print("CREATING CAPABILITY USING");
+    printRSAKey(newMachinePublicIDKey);
+    printRSAKey(parentTrustedMachinePublicIDKey);
+    ocall_print(requestedNewMachineTypeToCreate);
+    char* private_capability_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    char* public_capability_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    char* private_capability_key = (char*) malloc(sizeof(sgx_rsa3072_key_t));
+    char* public_capability_key = (char*) malloc(sizeof(sgx_rsa3072_public_key_t));
+    sgx_status_t status = enclave_createRsaKeyPairEcall(kps_enclave_eid, public_capability_key_raw, private_capability_key_raw, public_capability_key, private_capability_key, SGX_RSA3072_KEY_SIZE); 
+    if (status != SGX_SUCCESS) {
+        ocall_print("KPS Error in generating capability keys!");
+    }
+
+    char* concatStrings[] = {public_capability_key, ":", private_capability_key};
+    int concatLengths[] = {sizeof(sgx_rsa3072_public_key_t), 1, sizeof(sgx_rsa3072_key_t)};
+    char* capabilityKey = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
+    int capabilityKeyLen = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
+
+    memcpy(secure_message, capabilityKey, SIZE_OF_CAPABILITYKEY);
+    capabilityKeyAccessDictionary[make_tuple(string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE), string(requestedNewMachineTypeToCreate))] = string(parentTrustedMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
+    capabilityKeyDictionary[make_tuple(string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE), string(requestedNewMachineTypeToCreate))] = string(capabilityKey, SIZE_OF_CAPABILITYKEY);
+
+}
+
+//Retrieves capability key pair to the parent SSM for the child SSM, should only be called after successful remote attestation
+//Responsibility of caller to free return value
+char* retrieveCapabilityKey(char* currentMachinePublicIDKey, char* childMachinePublicIDKey, char* requestedMachineTypeToCreate) {
+    ocall_print("RETRIEVING CAPABILITY USING");
+    printRSAKey(currentMachinePublicIDKey);
+    printRSAKey(childMachinePublicIDKey);
+    ocall_print(requestedMachineTypeToCreate);
+
+    if (capabilityKeyAccessDictionary[make_tuple(string(childMachinePublicIDKey, SGX_RSA3072_KEY_SIZE), string(requestedMachineTypeToCreate))].compare(string(currentMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
+        char* returnCapabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
+        memcpy(returnCapabilityKey, capabilityKeyDictionary[make_tuple(string(childMachinePublicIDKey, SGX_RSA3072_KEY_SIZE), string(requestedMachineTypeToCreate))].c_str(), SIZE_OF_CAPABILITYKEY);
+    
+        return (char*) returnCapabilityKey;
+    } else {
+        return createStringLiteralMalloced("Error: No Access!");
+    }    
+
+}
+
+//*******************
+
+//KPS functions necessary to attest enclaves*******************
 
 // This is supported extended epid group of Ping machine. Ping machine can support more than one
 // extended epid group with different extended epid group id and credentials.
@@ -193,7 +276,8 @@ char* extract_measurement(FILE* fp)
    return NULL;
 }
 //
-
+//NOTE code below is largely taken from Intel RemoteAttestation SampleCode and may contain
+//comments in those regards
 
 // Verify message 0 then configure extended epid group.
 int sp_ra_proc_msg0_req(const sample_ra_msg0_t *p_msg0,
@@ -522,8 +606,6 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
 int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
                         uint32_t msg3_size,
                         ra_samp_response_header_t **pp_att_result_msg)
-                        // int message_from_machine_to_enclave) //message_from_machine_to_enclave is 1 when the enclave is supposed to receive a message
-                                                             //0 when the enclave is suppposed to send a message
 {
     int ret = 0;
     sample_status_t sample_ret = SAMPLE_SUCCESS;
@@ -836,168 +918,6 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             break;
         }
 
-        // //We need to send the secure message in this case to the enclave 
-        // if (message_from_machine_to_enclave == CREATE_CAPABILITY_KEY_CONSTANT) { 
-
-        //     // if (NETWORK_DEBUG) {
-        //     //     //Generate the capability key
-        //     //     char* split = strtok(optional_message, ":");
-        //     //     char* childID = split;
-        //     //     split = strtok(NULL, ":");
-        //     //     char* parentID = split;
-
-        //     //     createCapabilityKey(childID, parentID);
-
-        //     //     strcpy((char*)g_secret, secure_message);
-        //     //     p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE; //TODO figure out why this can't be a bigger size, should I just increase size of message
-        //     // } else {
-        //         //TODO untested code
-        //         char* childID = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        //         char* parentID = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        //         memcpy(childID, optional_message, SGX_RSA3072_KEY_SIZE);
-        //         memcpy(parentID, optional_message + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
-
-
-
-        //         char* split = strtok(optional_message + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1, ":");
-        //         int requestedMachineTypeSize = atoi(split);
-        //         char* requestedMachineSizeToCreate = (char*) malloc(requestedMachineTypeSize + 1);
-        //         // encryptedMessage[strlen(split)] = ':'; //undoing effect of strtok
-        //         strncpy(requestedMachineSizeToCreate, optional_message + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1 + strlen(split) + 1, requestedMachineTypeSize);
-        //         requestedMachineSizeToCreate[requestedMachineTypeSize] = '\0';
-
-        //         createCapabilityKey(childID, parentID, requestedMachineSizeToCreate);
-
-        //         safe_free(childID);
-        //         safe_free(parentID);
-        //         safe_free(requestedMachineSizeToCreate);
-
-        //         // strcpy((char*)g_secret, secure_message); //TODO shividentity
-        //         memcpy(g_secret, secure_message, SIZE_OF_MESSAGE);
-        //         p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE;
-
-        //     // }
-
-            
-
-
-        //     // Generate shared secret and encrypt it with SK, if attestation passed.
-        //     uint8_t aes_gcm_iv[SAMPLE_SP_IV_SIZE] = {0};
-            
-        //     if((IAS_QUOTE_OK == attestation_report.status) &&
-        //     (IAS_PSE_OK == attestation_report.pse_status) &&
-        //     (isv_policy_passed == true))
-        //     {
-        //         ret = sample_rijndael128GCM_encrypt(&g_sp_db.sk_key,
-        //                     &g_secret[0],
-        //                     p_att_result_msg->secret.payload_size,
-        //                     p_att_result_msg->secret.payload,
-        //                     &aes_gcm_iv[0],
-        //                     SAMPLE_SP_IV_SIZE,
-        //                     NULL,
-        //                     0,
-        //                     &p_att_result_msg->secret.payload_tag);
-        //     }
-
-        // } else if (message_from_machine_to_enclave == RETRIEVE_CAPABLITY_KEY_CONSTANT) { 
-
-        //     // if (NETWORK_DEBUG) {
-
-        //     //     //Retrieve the capability key
-        //     //     char* split = strtok(optional_message, ":");
-        //     //     printf("Message is %s\n", optional_message);
-        //     //     char* currentMachineID = split;
-        //     //     split = strtok(NULL, ":");
-        //     //     char* childID = split;
-
-        //     //     char* capabilityKey = retrieveCapabilityKey(currentMachineID, childID);
-        //     //     // ocall_print("Cap key generated by KPS is");
-        //     //     // ocall_print(capabilityKey);
-
-
-        //     //     strcpy((char*)g_secret, capabilityKey); //TODO shividentity
-        //     //     safe_free(capabilityKey);
-        //     //     p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE;
-
-        //     // } else {
-        //         // ocall_print("DUUUUURP");
-                
-        //         char* currentMachineID = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        //         char* childID = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-        //         memcpy(currentMachineID, optional_message, SGX_RSA3072_KEY_SIZE);
-        //         memcpy(childID, optional_message + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
-
-        //         char* split = strtok(optional_message + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1, ":");
-        //         int requestedMachineTypeSize = atoi(split);
-        //         char* requestedMachineSizeToCreate = (char*) malloc(requestedMachineTypeSize + 1);
-        //         // encryptedMessage[strlen(split)] = ':'; //undoing effect of strtok
-        //         strncpy(requestedMachineSizeToCreate, optional_message + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1 + strlen(split) + 1, requestedMachineTypeSize);
-        //         requestedMachineSizeToCreate[requestedMachineTypeSize] = '\0';
-
-        //         char* capabilityKey = retrieveCapabilityKey(currentMachineID, childID, requestedMachineSizeToCreate);
-        //         ocall_print("Cap key generated by KPS is");
-        //         ocall_print(capabilityKey);
-
-        //         safe_free(childID);
-        //         safe_free(currentMachineID);
-        //         safe_free(requestedMachineSizeToCreate);
-
-        //         // strcpy((char*)g_secret, secure_message);
-        //         memcpy(g_secret, capabilityKey, SIZE_OF_MESSAGE);
-        //         p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE;
-        //     // }
-
-            
-
-
-        //     // Generate shared secret and encrypt it with SK, if attestation passed.
-        //     uint8_t aes_gcm_iv[SAMPLE_SP_IV_SIZE] = {0};
-            
-        //     if((IAS_QUOTE_OK == attestation_report.status) &&
-        //     (IAS_PSE_OK == attestation_report.pse_status) &&
-        //     (isv_policy_passed == true))
-        //     {
-        //         ret = sample_rijndael128GCM_encrypt(&g_sp_db.sk_key,
-        //                     &g_secret[0],
-        //                     p_att_result_msg->secret.payload_size,
-        //                     p_att_result_msg->secret.payload,
-        //                     &aes_gcm_iv[0],
-        //                     SAMPLE_SP_IV_SIZE,
-        //                     NULL,
-        //                     0,
-        //                     &p_att_result_msg->secret.payload_tag);
-        //     }
-
-        // } else {
-        //     //TODO investigage why if we don't have this else case, the old message is leaked
-        //     //and given to the requesting party. Ex -> comment out this else case, and 
-        //     //in retrieveCapabilityKey in enclave.cpp, call with message_from_machien_to_encalve = 3
-        //     char* capabilityKey = "INVALID REQUEST";
-
-
-        //     strcpy((char*)g_secret, capabilityKey);
-
-
-        //     // Generate shared secret and encrypt it with SK, if attestation passed.
-        //     uint8_t aes_gcm_iv[SAMPLE_SP_IV_SIZE] = {0};
-        //     p_att_result_msg->secret.payload_size = SIZE_OF_MESSAGE;
-        //     if((IAS_QUOTE_OK == attestation_report.status) &&
-        //     (IAS_PSE_OK == attestation_report.pse_status) &&
-        //     (isv_policy_passed == true))
-        //     {
-        //         ret = sample_rijndael128GCM_encrypt(&g_sp_db.sk_key,
-        //                     &g_secret[0],
-        //                     p_att_result_msg->secret.payload_size,
-        //                     p_att_result_msg->secret.payload,
-        //                     &aes_gcm_iv[0],
-        //                     SAMPLE_SP_IV_SIZE,
-        //                     NULL,
-        //                     0,
-        //                     &p_att_result_msg->secret.payload_tag);
-        //     }
-
-        // }
-
         
     }while(0);
 
@@ -1113,10 +1033,6 @@ ra_samp_response_header_t* kps_exchange_capability_key(uint8_t *p_secret,
 
         uint32_t i;
         bool secret_match = true;
-        // handle_incoming_events_ping_machine(atoi((char*) g_secret));        
-
-        // strncpy(message, "RETURNKIRATENCRYPTED", 21);
-
         int payload_size = messageSize;
 
         char* encrypted_payload = (char*) malloc(payload_size);
@@ -1157,122 +1073,7 @@ ra_samp_response_header_t* kps_exchange_capability_key(uint8_t *p_secret,
 
         memcpy(p_resp_msg->body, requestString, respSize);
 
-        // strncpy((char*)p_resp_msg->body, "RETURNKIRAT", 12);
         return p_resp_msg;
 }
 
-void addRegisteredMachineToKPS(char* machineName, char* machineAddress) {
-    list<string> lst;
-    lst.push_back(string(machineAddress));
-    MachineTypeToValidIPAddresses[string(machineName)] = lst;
-}
-
-void initKPS() {
-    kps_enclave_eid = 0;
-    string token = "enclavekps.token";
-
-    if (initialize_enclave(&kps_enclave_eid, token, "enclave.signed.so") < 0) {
-        ocall_print("Fail to initialize enclave.");
-    }    
-
-    // #ifdef CIVITAS_EXAMPLE
-    // list<string> lst;
-    // string local_host("127.0.0.1");
-    // lst.push_back(local_host + string(":") + string("8070"));
-    // MachineTypeToValidIPAddresses[string("VotingUSM")] = lst;
-
-    // list<string> lst2;
-    // lst2.push_back(local_host + string(":") + string("8080"));
-    // MachineTypeToValidIPAddresses[string("InitializerMachine")] = lst2;
-    // MachineTypeToValidIPAddresses[string("SecureBallotBoxMachine")] = lst2;
-    // MachineTypeToValidIPAddresses[string("SecureBulletinBoardMachine")] = lst2;
-    // MachineTypeToValidIPAddresses[string("SecureSupervisorMachine")] = lst2;
-    // MachineTypeToValidIPAddresses[string("SecureTabulationTellerMachine")] = lst2;
-    // MachineTypeToValidIPAddresses[string("SecureTamperEvidentLogMachine")] = lst2;
-    // MachineTypeToValidIPAddresses[string("SecureVotingClientMachine")] = lst2;
-
-    // #elif OTP_EXAMPLE
-    // list<string> lst;
-    // string local_host("127.0.0.1");
-    // lst.push_back(local_host + string(":") + string("8070"));
-    // MachineTypeToValidIPAddresses[string("BankEnclave")] = lst;
-    // MachineTypeToValidIPAddresses[string("TrustedInitializer")] = lst;
-    // MachineTypeToValidIPAddresses[string("UntrustedInitializer")] = lst;
-
-
-    // list<string> lst2;
-    // lst2.push_back(local_host + string(":") + string("8080"));
-    // MachineTypeToValidIPAddresses[string("ClientWebBrowser")] = lst2;
-    // MachineTypeToValidIPAddresses[string("ClientEnclave")] = lst2;
-    // #endif
-
-
-}
-
-char* queryIPAddressForMachineType(char* machineTypeRequested, int& responseSize) {
-    char* response;
-    if (MachineTypeToValidIPAddresses.count(string(machineTypeRequested)) > 0) {
-        response = createStringLiteralMalloced((char*)MachineTypeToValidIPAddresses[string(machineTypeRequested)].front().c_str());
-    } else {
-        ocall_print("ERROR: KPS queried for invalid machine type!");
-        response = createStringLiteralMalloced("ERROR: Machine type not found!");
-    }
-    responseSize = strlen(response) + 1;
-    return response;
-}
-
-
-int createCapabilityKey(char* newMachinePublicIDKey, char* parentTrustedMachinePublicIDKey, char* requestedNewMachineTypeToCreate) {
-    // sprintf(secure_message, "%s", "mvj7D5pI5rxraubh69FGG6Qkf0Wk53I8MRMUApXsJGLltzIWXjDlj470fLHGp61nYZLQHzqloS0ZXiWzKSirLdgREew8lWKDBd03hlvcxkHzA71IaOpm26JM1RF81ksceOjLMOF8pDhggxIWzilIhIdkPCIh4NPEzbXqwdbb8LFDUeYQSGaKeA3qJYKkF84pKaqnr3goz21lJkHjVyaDxRXwf8FATXcWLQI731FKYgLeAiCm0wEYq8GBP0O2inKK3A6GX1rJa88xfHYq1jcFNPlWTzTlkHSYwhKB4D15jEJm9GELAmS67A9ThTJ1J9dNyGoS3BWP1U6MimEM7QofMPNMCY4uq0UoWtWrmi6B5zKEccU09B0bedOdwyOUeZ8F2cVZcHNBWXBCGidJfbx28RygugN6qJn2YPzgC0G1ZA1TyKr4uCs38RaSvg5WSYo9MpwMMWk7GVruwazqRdz1xlCdoP115Nar8ac9Oz2f386jZBEnaPJQQen3OdMDqSrkN0ApCzrOGLVebGK8RKns5w7PKQ6ckXf5tuqdP3eAivfv6ZsWA6gqkMOTPlzOrjWqAhRaIFrPmVJEtxynAzfpkWTwliyZru0n3CBJxewP0XEt7kDHlxXnGkTJ7fDP7rh2sKqy86xj5PHn7MZSYE95B0tGBM86LEDa1LsTZE0XNTy0k4euL3J65HCQ1qk1ICoYjKsBbMWC5yLZhdnlg7hhVrtZFZIB9Qc8pcAvWwSs4z55BZvfiAlAEd1ByxUjivPc");
-    // capabilityKeyDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(secure_message);
-    // //printf("The capability key stored on KPS as: %s\n", capabilityKeyDictionary[string(newMachineID)].c_str() );
-    // capabilityKeyAccessDictionary[string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)] = string(parentTrustedMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
-    // //printf("New machine ID: %s\n", newMachineID);
-    ocall_print("CREATING CAPABILITY USING");
-    printRSAKey(newMachinePublicIDKey);
-    printRSAKey(parentTrustedMachinePublicIDKey);
-    ocall_print(requestedNewMachineTypeToCreate);
-    char* private_capability_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-    char* public_capability_key_raw = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-    char* private_capability_key = (char*) malloc(sizeof(sgx_rsa3072_key_t));
-    char* public_capability_key = (char*) malloc(sizeof(sgx_rsa3072_public_key_t));
-    sgx_status_t status = enclave_createRsaKeyPairEcall(kps_enclave_eid, public_capability_key_raw, private_capability_key_raw, public_capability_key, private_capability_key, SGX_RSA3072_KEY_SIZE); 
-    if (status != SGX_SUCCESS) {
-        ocall_print("KPS Error in generating capability keys!");
-    // } else  {
-    //     ocall_print("KPS able to generate capability keys!");
-    }
-    // printRSAKey(private_capability_key);
-
-    char* concatStrings[] = {public_capability_key, ":", private_capability_key};
-    int concatLengths[] = {sizeof(sgx_rsa3072_public_key_t), 1, sizeof(sgx_rsa3072_key_t)};
-    char* capabilityKey = concatMutipleStringsWithLength(concatStrings, concatLengths, 3);
-    int capabilityKeyLen = returnTotalSizeofLengthArray(concatLengths, 3) + 1;
-
-    memcpy(secure_message, capabilityKey, SIZE_OF_CAPABILITYKEY);
-    capabilityKeyAccessDictionary[make_tuple(string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE), string(requestedNewMachineTypeToCreate))] = string(parentTrustedMachinePublicIDKey, SGX_RSA3072_KEY_SIZE);
-    capabilityKeyDictionary[make_tuple(string(newMachinePublicIDKey, SGX_RSA3072_KEY_SIZE), string(requestedNewMachineTypeToCreate))] = string(capabilityKey, SIZE_OF_CAPABILITYKEY);
-
-    
-
-}
-//Responsibility of caller to free return
-char* retrieveCapabilityKey(char* currentMachinePublicIDKey, char* childMachinePublicIDKey, char* requestedMachineTypeToCreate) {
-    // printf("Current machine ID: %s\n", currentMachineID);
-    // printf("Child machine ID: %s\n", childMachinePublicIDKey);
-    ocall_print("RETRIEVING CAPABILITY USING");
-    printRSAKey(currentMachinePublicIDKey);
-    printRSAKey(childMachinePublicIDKey);
-    ocall_print(requestedMachineTypeToCreate);
-
-    if (capabilityKeyAccessDictionary[make_tuple(string(childMachinePublicIDKey, SGX_RSA3072_KEY_SIZE), string(requestedMachineTypeToCreate))].compare(string(currentMachinePublicIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
-        //printf("The capability key is : %s", capabilityKeyDictionary[string(childMachinePublicIDKey)].c_str());
-        char* returnCapabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
-        memcpy(returnCapabilityKey, capabilityKeyDictionary[make_tuple(string(childMachinePublicIDKey, SGX_RSA3072_KEY_SIZE), string(requestedMachineTypeToCreate))].c_str(), SIZE_OF_CAPABILITYKEY);
-    
-        return (char*) returnCapabilityKey;
-    } else {
-        return createStringLiteralMalloced("Error: No Access!");
-    }    
-
-}
+//*******************
