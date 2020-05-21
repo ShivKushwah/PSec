@@ -64,8 +64,6 @@ void parseIPAddressPortString(char* serializedString, string& ipAddress, int& po
 
 void safe_free(void* ptr);
 
-char* createStringLiteralMalloced(char* stringLiteral);
-
 char* concatMutipleStringsWithLength(char* strings_to_concat[], int lengths[], int size_array);
 int returnTotalSizeofLengthArray(int lengths[], int size);
 void printRSAKey(char* key);
@@ -73,6 +71,8 @@ void printRSAKey(char* key);
 extern void initKPS();
 extern void addRegisteredMachineToKPS(char* machineName, char* machineAddress);
 void printPayload(char* payload, int size);
+
+char* createStringLiteralMalloced(char* stringLiteral);
 
 void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend, bool isEnclave);
 void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, bool isSecureSend);

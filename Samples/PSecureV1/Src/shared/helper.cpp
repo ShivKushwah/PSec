@@ -170,7 +170,7 @@ char* retrievePrivateCapabilityKey(char* capabilityPayload) {
 
 //Responsiblity of caller to free return
 char* createStringLiteralMalloced(char* stringLiteral) {
-    //TODO if modifying here, modify in network_ra.cpp
+    //NOTE if modifying here, modify in network_ra.cpp
     char* malloced = (char*) malloc(strlen(stringLiteral));
     strncpy(malloced, stringLiteral, strlen(stringLiteral) + 1);
     return malloced;

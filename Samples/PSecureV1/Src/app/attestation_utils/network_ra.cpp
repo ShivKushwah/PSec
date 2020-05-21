@@ -44,6 +44,8 @@
 
 extern sgx_enclave_id_t global_eid;
 
+//Network processing functions for Distributed Host Machine*******************
+
 //This method takes in a network payload and creates a thread to process the request
 char* send_network_request_API(char* request, size_t requestSize) {
     char* requestCopy = (char*) malloc(requestSize);
@@ -80,17 +82,68 @@ char* network_request_logic(char* request, size_t requestSize) {
     return receiveNetworkRequest(request, requestSize);
 }
 
-// Used to send requests to the service provider sample.  It
-// simulates network communication between the ISV app and the
-// ISV service provider.  This would be modified in a real
-// product to use the proper IP communication.
-//
-// @param receiving_machine_name String name of the server URL
-// @param p_req Pointer to the message to be sent.
-// @param p_resp Pointer to a pointer of the response message.
+//*******************
 
-// @return int
-//TODO consolidate this and the other network call method
+
+//Network processing functions for KPS *******************
+
+char* handle_socket_kps_generic_request(char* serializedString, int& responseSize) {
+    ocall_print("KPS Network Request Received:");
+    ocall_print(serializedString);
+
+    char* response;
+
+    char* split = strtok(serializedString, ":");
+    char* kps = split;
+    split = strtok(NULL, ":");
+    if (strcmp(split, "IPRequestMachineType") == 0) {
+        char* machineType = strtok(NULL, ":");
+        response = queryIPAddressForMachineType(machineType, responseSize);
+    } else {
+        response = createStringLiteralMalloced("ERROR: KPS unsupported operation!");
+        responseSize = strlen(response) + 1;
+    }
+
+    return response;
+    
+}
+
+char* handle_socket_attestation_request(char* serializedString, int& responseSize) {
+    RA_network_serialization_headers* deseralized = deserialize_ra_network_headers(serializedString);
+
+    ra_samp_response_header_t *p_msg0_resp_full = NULL;
+
+    int ret = ra_network_send_receive(deseralized->sending_machine_name,
+            deseralized->receiving_machine_name,
+            deseralized->p_req,
+            &p_msg0_resp_full, deseralized->optional_Message);
+
+    int size;
+    if (p_msg0_resp_full != NULL) {
+        size = p_msg0_resp_full->size;
+        ocall_print("size of ra is ");
+        ocall_print_int(size);
+    } else {
+        size = 0;
+    }
+    ra_samp_response_header_t *return_resp = (ra_samp_response_header_t*) malloc(sizeof(ra_samp_response_header_t) + size);
+
+    if (p_msg0_resp_full != NULL) {
+        memcpy(return_resp, p_msg0_resp_full, sizeof(ra_samp_response_header_t));
+
+        for (int i = 0; i < size; i++) {
+            return_resp->body[i] = p_msg0_resp_full->body[i];
+        }
+    }
+
+    responseSize = sizeof(ra_samp_response_header_t) + size;
+
+    return (char*)return_resp;
+
+
+}
+
+// Handles KPS attestation network requests
 int ra_network_send_receive(const char *sending_machine_name, 
     const char *receiving_machine_name,
     const ra_samp_request_header_t *p_req,
@@ -194,9 +247,9 @@ void ra_free_network_response_buffer(ra_samp_response_header_t *resp)
     }
 }
 
-//TODO prevent memory leaks
 struct RA_network_serialization_headers* deserialize_ra_network_headers(char* serialized_string) {
-
+    
+    //TODO prevent memory leaks
     struct RA_network_serialization_headers* returnHeaders = ( struct RA_network_serialization_headers*) malloc(sizeof(struct RA_network_serialization_headers));
 
     char* split = strtok(serialized_string , ":");
@@ -247,79 +300,15 @@ struct RA_network_serialization_headers* deserialize_ra_network_headers(char* se
 
 }
 
-char* handle_socket_attestation_request(char* serializedString, int& responseSize) {
-    RA_network_serialization_headers* deseralized = deserialize_ra_network_headers(serializedString);
-
-    ra_samp_response_header_t *p_msg0_resp_full = NULL;
-
-    // const ra_samp_request_header_t *p_req = (const ra_samp_request_header_t *) malloc(sizeof(const ra_samp_request_header_t));
-    // memcpy(p_req, );
-
-    int ret = ra_network_send_receive(deseralized->sending_machine_name,
-            deseralized->receiving_machine_name,
-            deseralized->p_req,
-            &p_msg0_resp_full, deseralized->optional_Message);
-    int size;
-    if (p_msg0_resp_full != NULL) {
-        size = p_msg0_resp_full->size;
-        ocall_print("size of ra is ");
-        ocall_print_int(size);
-    } else {
-        size = 0;
-    }
-    ra_samp_response_header_t *return_resp = (ra_samp_response_header_t*) malloc(sizeof(ra_samp_response_header_t) + size);
-    // return_resp->type = p_msg0_resp_full->type;
-    // return_resp->status = (uint8_t [2]) malloc(2);
-    // for (int i = 0; i < 2; i++) {
-    //     return_resp->status[i] = p_msg0_resp_full->status[i];
-    // }
-    // return_resp->size = p_msg0_resp_full->size;
-    // return_resp->align = (uint8_t*) malloc(1);
-    // return_resp->align[0] = p_msg0_resp_full->align[0];
-    // return_resp->body = (uint8_t*) malloc(return_resp->size);
-    // for (int i = 0; i < return_resp->size; i++) {
-    //     return_resp->body[i] = p_msg0_resp_full->body[i];
-    // }
-
-    if (p_msg0_resp_full != NULL) {
-        memcpy(return_resp, p_msg0_resp_full, sizeof(ra_samp_response_header_t));
-
-        for (int i = 0; i < size; i++) {
-            return_resp->body[i] = p_msg0_resp_full->body[i];
-        }
-    }
-
-    responseSize = sizeof(ra_samp_response_header_t) + size;
-
-    return (char*)return_resp;
 
 
-}
+//*******************
 
-char* handle_socket_kps_generic_request(char* serializedString, int& responseSize) {
-    ocall_print("KPS Network Request Received:");
-    ocall_print(serializedString);
-
-    char* response;
-
-    char* split = strtok(serializedString, ":");
-    char* kps = split;
-    split = strtok(NULL, ":");
-    if (strcmp(split, "IPRequestMachineType") == 0) {
-        char* machineType = strtok(NULL, ":");
-        response = queryIPAddressForMachineType(machineType, responseSize);
-    } else {
-        response = createStringLiteralMalloced("ERROR: Kps unsupported operation!");
-        responseSize = strlen(response) + 1;
-    }
-
-    return response;
-    
-}
-
+//Responsiblity of caller to free return
 char* createStringLiteralMalloced(char* stringLiteral) {
-    //TODO if modifying here, modify in helper.cpp
-    char* malloced = (char*) malloc(99999);//strlen(stringLiteral));
+    //NOTE if modifying here, modify in helper.cpp
+    //TODO remove duplicate code
+    char* malloced = (char*) malloc(strlen(stringLiteral));
     strncpy(malloced, stringLiteral, strlen(stringLiteral) + 1);
     return malloced;
 
