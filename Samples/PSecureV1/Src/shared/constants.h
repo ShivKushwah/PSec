@@ -51,12 +51,8 @@ const int SIZE_OF_SECURE_MACHINE_HANDLE = SIZE_OF_MACHINE_HANDLE + 1 + SIZE_OF_C
 const int SIZE_OF_MAX_EVENT_NAME = 20;
 const int SIZE_OF_MAX_EVENT_PAYLOAD = 16000;
 
-const int ENCLAVE_NUMBER = 0; //TODO retrieve this from network after registering this entire enclave
-
 const int CREATE_CAPABILITY_KEY_CONSTANT = 1;
 const int RETRIEVE_CAPABLITY_KEY_CONSTANT = 2;
-
-
 
 const int ENABLE_KPS_ATTESTATION_PRINT = 0;
 const int ENABLE_ENCLAVE_ATTESTATION_PRINT = 0;

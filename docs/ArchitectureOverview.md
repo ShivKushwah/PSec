@@ -38,10 +38,10 @@ Provided the message is for an SSM, `untrusted_enclave_host_receiveNetworkReques
 
 These methods enable SSMs and USMs to make network calls to send messages to other state machines and create new state machine. These make the actual network calls to send data, and this data is handled by the receiving party and the receiving party calls the appropiate API methods.
 
-1. **Trusted Create (`P_CreateSecureMachineRequest_IMPL`):** This method can only be called within the enclave. It calls `sendCreateMachineNetworkRequest` in helper.cpp with isSecureCreate flag set to true and with the requested new SSM type that this SSM wants to create. This method then calls `ocall_get_ip_address_of_kps` in helper.cpp in order to determine the IP address of the distributed host that can host the new requested SSM type. Upon receiving this information, this method calls `ocall_network_request` to make the actual network request to the receiving distributed host to create the SSM, and it receives the public identity of the newly created SSM in response. It then calls `retrievePublicCapabilityKey` in helper.cpp to attest itself to the KPS and retrieve the capability of the child SSM. The public identity key, capability key, IP address/port information is packaged into a secure_machine_handle object and sent back to the P code.
+1. **Trusted Create (`P_CreateSecureMachineRequest_IMPL`):** This method can only be called within the enclave. It calls `sendCreateMachineNetworkRequest` in helper.cpp with isSecureCreate flag set to true and with the requested new SSM type that this SSM wants to create. This method then calls `ocall_get_ip_address_of_kps` and `ocall_get_generic_port_of_kps` and constructs a message to the KPS using `ocall_network_request` in order to determine the IP address of the distributed host that can host the new requested SSM type. Upon receiving this information, this method calls `ocall_network_request` to make the actual network request to the receiving distributed host to create the SSM, and it receives the public identity of the newly created SSM in response. It then calls `retrievePublicCapabilityKey` in helper.cpp to attest itself to the KPS and retrieve the capability of the child SSM. The public identity key, capability key, IP address/port information is packaged into a secure_machine_handle object and sent back to the P code.
 
 
-2. **Untrusted Create (`P_CreateUSMMachineRequest_IMPL`):** This method calls `sendCreateMachineNetworkRequest` in helper.cpp with isSecureCreate flag set to false and with the requested new machine type that this state machine wants to create. This method then calls `ocall_get_ip_address_of_kps` in helper.cpp in order to determine the IP address of the distributed host that can host the new requested machine type. Upon receiving this information, this method calls `ocall_network_request` to make the actual network request to the receiving distributed host to create the SSM, and it receives the public identity of the newly created state machine in response. The public identity key and IP address/port information is packaged into a machine_handle object and sent back to the P code.
+2. **Untrusted Create (`P_CreateUSMMachineRequest_IMPL`):** This method calls `sendCreateMachineNetworkRequest` in helper.cpp with isSecureCreate flag set to false and with the requested new machine type that this state machine wants to create. This method then calls `ocall_get_ip_address_of_kps` and `ocall_get_generic_port_of_kps` and constructs a message to the KPS using `ocall_network_request` in order to determine the IP address of the distributed host that can host the new requested machine type. Upon receiving this information, this method calls `ocall_network_request` to make the actual network request to the receiving distributed host to create the SSM, and it receives the public identity of the newly created state machine in response. The public identity key and IP address/port information is packaged into a machine_handle object and sent back to the P code.
 
 
 3. **Trusted Send (`P_SecureSend_IMPL`):** This method can only be called within the enclave. It calls `sendSendNetworkRequest` in helper.cpp with isSecure flag set to true and the secure_machine_handle of the receiving SSM, identity of the current SSM, and message payload. This method parses the public identity key, capability key, IP address/port information from the secure_machine_handle and checks if a session key for this SSM to SSM connection already exists. If it doesn't, it creates a session key, encrypts it using the public identity key of the receiving SSM, and calls `ocall_network_request` to reach the InitializeCommunicationAPI of the receiving SSM to share the session key. After, it goes ahead and calls `serializePrtValueToString` in helper.cpp to serialize the P message payload and then encrypts the message and signs over it using the receiving SSM's capability key (crypto details outlined in thesis). It then calls `ocall_network_request` to send this request to the receiving SSM's TrustedSendMessageAPI and receives an encrypted "Success" message upon a successful execution.
@@ -62,10 +62,18 @@ Network_simulator.cpp contains all of the functions for handling network socket 
 
 ### Constants
 
-TODO
+The constants in constants.h serve as a easy way to modify maximum message lengths and other attributes. They can be used to debug the PSec runtime.
+
+1. **NETWORK_DEBUG** - If this is set to 1, then encryption is not used and everything is passed as plaintext. Default should be 0.
+
+2. **ENABLE_OCALL_PRINT** - If this is set to 0, then all ocall_print statements are suppressed and only statements from the P state machines and P process are printed. Default should be 0.
+
+3. **ENABLE_ENCLAVE_ATTESTATION_PRINT** - If this is set to 0, then ocall_print statements related to enclave attestation (generally inside enclave_internal_attestation and enclave_untrusted_host) are suppressed. Default should be 0.
+
+4. **ENABLE_KPS_ATTESTATION_PRINT** - If this is set to 0, then ocall_print statements related to kps attestation (generally inside kps) are suppressed. Default should be 0.
 
 ### Other Methods
 
-`ocall_network_request`
+The `ocall_network_request` method in enclave_untrusted_host.cpp calls `network_socket_sender` in network_simulator.cpp, which actually makes the socket request across the network.
 
-ocall_enclave_attestation_in_thread calls which KPS port
+The `ocall_enclave_attestation_in_thread` method in enclave_untrusted_host.cpp creates a new thread and calls the `enclave_start_attestation` method in order to start the enclave attestation to the KPS. This attestation occurs over the KPS's attestation port (uses `handle_socket_attestation_request` in kps.cpp).
