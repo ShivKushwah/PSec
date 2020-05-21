@@ -115,8 +115,6 @@ PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
-PRT_VALUE* P_Classify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
-
 PRT_VALUE* P_GetThis_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -384,14 +382,6 @@ PRT_FUNDECL P_FUNCTION_Endorse =
 {
     "Endorse",
     &P_Endorse_IMPL,
-    NULL
-};
-
-
-PRT_FUNDECL P_FUNCTION_Classify =
-{
-    "Classify",
-    &P_Classify_IMPL,
     NULL
 };
 
