@@ -185,12 +185,12 @@ typedef struct ms_ocall_request_user_input_t {
 	uint32_t ms_INPUT_SIZE;
 } ms_ocall_request_user_input_t;
 
-typedef struct ms_ocall_pong_enclave_attestation_in_thread_t {
+typedef struct ms_ocall_enclave_attestation_in_thread_t {
 	int ms_retval;
 	sgx_enclave_id_t ms_currentEid;
 	char* ms_other_machine_name;
 	uint32_t ms_other_machine_name_size;
-} ms_ocall_pong_enclave_attestation_in_thread_t;
+} ms_ocall_enclave_attestation_in_thread_t;
 
 typedef struct ms_ocall_network_request_t {
 	int ms_retval;
@@ -331,10 +331,10 @@ static sgx_status_t SGX_CDECL enclave_ocall_request_user_input(void* pms)
 	return SGX_SUCCESS;
 }
 
-static sgx_status_t SGX_CDECL enclave_ocall_pong_enclave_attestation_in_thread(void* pms)
+static sgx_status_t SGX_CDECL enclave_ocall_enclave_attestation_in_thread(void* pms)
 {
-	ms_ocall_pong_enclave_attestation_in_thread_t* ms = SGX_CAST(ms_ocall_pong_enclave_attestation_in_thread_t*, pms);
-	ms->ms_retval = ocall_pong_enclave_attestation_in_thread(ms->ms_currentEid, ms->ms_other_machine_name, ms->ms_other_machine_name_size);
+	ms_ocall_enclave_attestation_in_thread_t* ms = SGX_CAST(ms_ocall_enclave_attestation_in_thread_t*, pms);
+	ms->ms_retval = ocall_enclave_attestation_in_thread(ms->ms_currentEid, ms->ms_other_machine_name, ms->ms_other_machine_name_size);
 
 	return SGX_SUCCESS;
 }
@@ -478,7 +478,7 @@ static const struct {
 		(void*)enclave_ocall_print_current_time,
 		(void*)enclave_ocall_print_int,
 		(void*)enclave_ocall_request_user_input,
-		(void*)enclave_ocall_pong_enclave_attestation_in_thread,
+		(void*)enclave_ocall_enclave_attestation_in_thread,
 		(void*)enclave_ocall_network_request,
 		(void*)enclave_ocall_add_identity_to_eid_dictionary,
 		(void*)enclave_ocall_get_ip_address_of_current_host,

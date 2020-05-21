@@ -13,3 +13,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 int untrusted_enclave_start_attestation(const char* receiving_machine_name, char* optional_message="");
 
 char* untrusted_enclave_host_receiveNetworkRequest(char* request, size_t requestSize);
+
+void* enclave_attestation_thread(void* parameters);
+
+int enclave_start_attestation(sgx_enclave_id_t currentEid, const char* receiving_machine_name);

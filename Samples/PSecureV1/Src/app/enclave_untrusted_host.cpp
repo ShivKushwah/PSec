@@ -27,10 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- */
-
-// This sample is confined to the communication between a SGX client platform
-// and an ISV Application Server. 
+ */ 
 
 #include <stdio.h>
 #include <iostream>
@@ -88,11 +85,66 @@ extern int KPS_PORT_GENERIC;
 
 #define ENCLAVE_PATH "isv_enclave.signed.so"
 
-// uint8_t* msg1_samples[] = { msg1_sample1, msg1_sample2 };
-// uint8_t* msg2_samples[] = { msg2_sample1, msg2_sample2 };
-// uint8_t* msg3_samples[] = { msg3_sample1, msg3_sample2 };
-// uint8_t* attestation_msg_samples[] =
-//     { attestation_msg_sample1, attestation_msg_sample2};
+//Enclave Untrusted Host functions for SSM related communications*******************
+
+
+// Method to handle incoming network payloads intended for SSMs
+char* untrusted_enclave_host_receiveNetworkRequest(char* request, size_t requestSize) {
+    return receiveNetworkRequestHelper(request, requestSize, true);
+}
+
+// "Registers" a newly created SSM by registering its public key with the enclave id it is hosted in, so that future messages can be forwarded to the correct enclave
+void ocall_add_identity_to_eid_dictionary(char* newMachineID, uint32_t ID_SIZE, sgx_enclave_id_t enclave_eid) {
+    string identityString = string(newMachineID, ID_SIZE);
+    PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
+}
+
+// OCall that enables enclaves to make network calls
+int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE, char* ipAddress, uint32_t IP_ADDRESS_SIZE, int port) {
+    ocall_print("Network Request is :");
+    ocall_print(request);
+    
+    char* result = network_socket_sender(request, REQUEST_SIZE, ipAddress, IP_ADDRESS_SIZE, port);
+    ocall_print("Network Response is :");
+    ocall_print(result);
+
+    memcpy(response, result, RESPONSE_SIZE);
+    
+    safe_free(result);
+    return 1;
+
+}
+
+//*******************
+
+
+
+//Methods enabling enclaves to attest themselves to KPS*******************
+
+
+int ocall_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size) {
+
+    struct Enclave_start_attestation_wrapper_arguments parameters = {currentEid, other_machine_name};
+    void* thread_ret;
+    pthread_t thread_id; 
+    ocall_print("\n Calling Attestation Thread\n"); 
+    pthread_create(&thread_id, NULL, enclave_attestation_thread, (void*) (&parameters));
+
+    //TODO look into not calling pthread_join but actually let this run asynchoronous
+    pthread_join(thread_id, &thread_ret); 
+    ocall_print("\n Finished Attestation Thread\n");
+
+    return 0;
+
+}
+
+void* enclave_attestation_thread(void* parameters) { //message_from_machine_to_enclave should be true when the enclave is receiving the message
+                                                          //false when the enclave wants to send a message
+    struct Enclave_start_attestation_wrapper_arguments* p = (struct Enclave_start_attestation_wrapper_arguments*)parameters;
+    return (void*) enclave_start_attestation(p->currentEid, p->machineName);
+}
+
+
 
 // Some utility functions to output some of the data structures passed between
 // the ISV app and the remote attestation service provider.
@@ -248,11 +300,6 @@ char* make_socket_attestation_send_request(char* request, int requestSize) {
     char* copied_response;
     int responseSize;
     return network_socket_sender(request, requestSize, KPS_IP_ADDRESS, strlen(KPS_IP_ADDRESS), KPS_PORT_ATTESTATION);
-    // char* net_response = handle_socket_attestation_request(net_request, responseSize);
-    // copied_response = (char*) malloc(responseSize);
-    // memcpy(copied_response, net_response, responseSize);
-    
-    // return (char*) copied_response;
 
 }
 
@@ -267,22 +314,11 @@ ra_samp_response_header_t* send_attestation_network_request(const char *sending_
 
     
     int returnSize;
-    // ocall_print("serializing");
-    // ocall_print_int(p_req->size);
     char* serializedString = serialize_ra_network_headers(sending_machine_name, receiving_machine_name, p_req, optional_Message, returnSize);
     p_msg0_resp_full = (ra_samp_response_header_t*)make_socket_attestation_send_request(serializedString, returnSize);
     ret = 0;
     
-    // RA_network_serialization_headers* deseralized = deserialize_ra_network_headers(serializedString);
-
-
-    // const ra_samp_request_header_t *p_req = (const ra_samp_request_header_t *) malloc(sizeof(const ra_samp_request_header_t));
-    // memcpy(p_req, );
-
-    // ret = ra_network_send_receive(deseralized->sending_machine_name,
-    //         deseralized->receiving_machine_name,
-    //         deseralized->p_req,
-    //         &p_msg0_resp_full, deseralized->optional_Message);
+  
     int size;
     if (expectingResponse) {
         size = p_msg0_resp_full->size;
@@ -292,18 +328,6 @@ ra_samp_response_header_t* send_attestation_network_request(const char *sending_
         size = 0;
     }
     ra_samp_response_header_t *return_resp = (ra_samp_response_header_t*) malloc(sizeof(ra_samp_response_header_t) + size);
-    // return_resp->type = p_msg0_resp_full->type;
-    // return_resp->status = (uint8_t [2]) malloc(2);
-    // for (int i = 0; i < 2; i++) {
-    //     return_resp->status[i] = p_msg0_resp_full->status[i];
-    // }
-    // return_resp->size = p_msg0_resp_full->size;
-    // return_resp->align = (uint8_t*) malloc(1);
-    // return_resp->align[0] = p_msg0_resp_full->align[0];
-    // return_resp->body = (uint8_t*) malloc(return_resp->size);
-    // for (int i = 0; i < return_resp->size; i++) {
-    //     return_resp->body[i] = p_msg0_resp_full->body[i];
-    // }
 
     if (expectingResponse) {
         memcpy(return_resp, p_msg0_resp_full, sizeof(ra_samp_response_header_t));
@@ -322,8 +346,9 @@ ra_samp_response_header_t* send_attestation_network_request(const char *sending_
 // attestation. Since the enclave can be lost due S3 transitions, apps
 // susceptible to S3 transitions should have logic to restart attestation in
 // these scenarios.
-// This method makes network_ra call to have the pong enclave attest to the ping machine
-inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const char* receiving_machine_name) {
+// This method makes network call to have the enclave attest to the kps
+// NOTE a lot of the comments in this section are since this code is taken from official intel SampleCode for RemoteAttestation
+int enclave_start_attestation(sgx_enclave_id_t currentEid, const char* receiving_machine_name) {
     int ret = 0;
     ra_samp_request_header_t *p_msg0_full = NULL;
     ra_samp_response_header_t *p_msg0_resp_full = NULL;
@@ -414,11 +439,6 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         // The ISV application sends msg0 to the SP.
         // The ISV decides whether to support this extended epid group id.
         fprintf(OUTPUT, "\nSending msg0 to remote attestation service provider.\n");
-
-        // ret = ra_network_send_receive(current_machine_name,
-        //     receiving_machine_name,
-        //     p_msg0_full,
-        //     &p_msg0_resp_full);
         
         p_msg0_resp_full = send_attestation_network_request(current_machine_name,
             receiving_machine_name,
@@ -436,16 +456,9 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
     // (shared secret) from a previous attestation required for secure
     // communication with the server.
     {
-        // ISV application creates the ISV enclave.
         do
         {
             ret = 0;
-            //int ret = initialize_enclave(&enclave_id, "enclave.token", "enclave.signed.so");  
-            // ret = sgx_create_enclave(_T(ENCLAVE_PATH),
-            //                          SGX_DEBUG_FLAG,
-            //                          NULL,
-            //                          NULL,
-            //                          &enclave_id, NULL);
             if(0 != ret)
             {
                 ret = -1;
@@ -528,11 +541,6 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         fprintf(OUTPUT, "\nSending msg1 to remote attestation service provider."
                         "Expecting msg2 back.\n");
 
-
-        // ret = ra_network_send_receive(current_machine_name,
-        //                               receiving_machine_name,
-        //                               p_msg1_full,
-        //                               &p_msg2_full);
         p_msg2_full = send_attestation_network_request(current_machine_name,
                                       receiving_machine_name,
                                       p_msg1_full,
@@ -721,15 +729,7 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         // demonstration.  Note that the attestation result message makes use
         // of both the MK for the MAC and the SK for the secret. These keys are
         // established from the SIGMA secure channel binding.
-        // struct Encrypted_Message temp = {(uint8_t*)&message_from_machine_to_enclave, 0, NULL};
-        //TODO change name from encrypted_message to like normal message? idk tho
-
-        // ret = ra_network_send_receive(current_machine_name,
-        //                               receiving_machine_name,
-        //                               p_msg3_full,
-        //                               &p_att_result_msg_full,
-        //                               temp,
-        //                             optional_message);
+      
         p_att_result_msg_full = send_attestation_network_request(current_machine_name,
                                       receiving_machine_name,
                                       p_msg3_full,
@@ -842,24 +842,6 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
         // passed)
         if(attestation_passed)
         {
-            //If Ping machine wants to send the enclave a secure message
-            // if (message_from_machine_to_enclave) { // message_from_machine_to_enclave == 1 or == 2
-                // ret = enclave_put_secret_data(enclave_id,
-                //                     &status,
-                //                     context,
-                //                     p_att_result_msg_body->secret.payload,
-                //                     p_att_result_msg_body->secret.payload_size,
-                //                     p_att_result_msg_body->secret.payload_tag);
-                // if((SGX_SUCCESS != ret)  || (SGX_SUCCESS != status))
-                // {
-                //     fprintf(OUTPUT, "\nError, attestation result message secret "
-                //                     "using SK based AESGCM failed in [%s]. ret = "
-                //                     "0x%0x. status = 0x%0x", __FUNCTION__, ret,
-                //                     status);
-                //     goto CLEANUP;
-                // }
-
-                //TODO Comment this case out since only KPS sends messages to us, not us to KPS
                 //TODO think about use case where we don't want anyone knowing our requests so we
                 //first perform attestaion to get secure channel, get a session ID, and then send our
                 //request to create the capability Key and stuff
@@ -878,14 +860,9 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                                     payload_tag);
                 //TODO: Do we need to pad message?
 
-                //Send encrypted message to Ping machine
+                //Send encrypted message to KPS
                 struct Encrypted_Message emsg = {encrypted_string, secret_size, payload_tag};
 
-                // ret = ra_network_send_receive(current_machine_name,
-                //                       receiving_machine_name,
-                //                       NULL,
-                //                       NULL,
-                //                       emsg);
                 resp_1 = send_attestation_network_request(current_machine_name,
                                       receiving_machine_name,
                                       NULL, 
@@ -917,44 +894,6 @@ inline int pong_enclave_start_attestation(sgx_enclave_id_t currentEid, const cha
                                     status);
                     goto CLEANUP;
                 }
-
-
-
-
-            // }
-            //If Pong enclave wants to send a secure message to Ping machine
-            // } else { //if message_from_machine_to_enclave == 0
-            //     //TODO Comment this case out since only KPS sends messages to us, not us to KPS
-            //     //TODO think about use case where we don't want anyone knowing our requests so we
-            //     //first perform attestaion to get secure channel, get a session ID, and then send our
-            //     //request to create the capability Key and stuff
-            //     uint8_t payload_tag[16];
-            //     uint8_t* encrypted_string = (uint8_t *) malloc(sizeof(uint8_t) * SIZE_OF_MESSAGE);
-            //     uint32_t secret_size = SIZE_OF_MESSAGE;
-
-            //     //Encrypt message using enclave
-            //     ret = enclave_encrypt_secure_message(enclave_id,
-            //                         &status,
-            //                         context,
-            //                         encrypted_string,
-            //                         secret_size,
-            //                         payload_tag);
-            //     //TODO: Do we need to pad message?
-
-            //     //Send encrypted message to Ping machine
-            //     struct Encrypted_Message emsg = {encrypted_string, secret_size, payload_tag};
-
-            //     // ret = ra_network_send_receive(current_machine_name,
-            //     //                       receiving_machine_name,
-            //     //                       NULL,
-            //     //                       NULL,
-            //     //                       emsg);
-            //     mock_net(current_machine_name,
-            //                           receiving_machine_name,
-            //                           NULL, 
-            //                             emsg, ret, false);
-                
-            // }
         }
         fprintf(OUTPUT, "\nSecret successfully received from server.");
         fprintf(OUTPUT, "\nRemote attestation success!");
@@ -999,13 +938,6 @@ CLEANUP:
     return ret;
 }
 
-
-inline void* pong_enclave_attestation_thread(void* parameters) { //message_from_machine_to_enclave should be true when the enclave is receiving the message
-                                                          //false when the enclave wants to send a message
-    struct Enclave_start_attestation_wrapper_arguments* p = (struct Enclave_start_attestation_wrapper_arguments*)parameters;
-    return (void*) pong_enclave_start_attestation(p->currentEid, p->machineName);
-}
-
 char* enclave_attestation_network_serializer(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size, int message_from_machine_to_enclave, int& returnSize) {
     char* message_from_machine_to_enclaveString = (char*) malloc(10);
 
@@ -1037,101 +969,11 @@ struct Enclave_start_attestation_wrapper_arguments* enclave_attestation_network_
     split = strtok(NULL, ":");
     char* other_machine_name = (char*) malloc(strlen(split) + 1);
     strncpy(other_machine_name, split, strlen(split) + 1);
-    // split = strtok(NULL, ":");
-    // int message_from_machine_to_enclave = atoi(split);
     struct Enclave_start_attestation_wrapper_arguments* parameters = (struct Enclave_start_attestation_wrapper_arguments*) malloc(sizeof(struct Enclave_start_attestation_wrapper_arguments));
-    //{currentEid, other_machine_name, message_from_machine_to_enclave, optionalMessage};
     parameters->currentEid = currentEid;
     parameters->machineName = other_machine_name;
-    // parameters->message_from_machine_to_enclave = message_from_machine_to_enclave;
 
     return parameters;
 
 }
-
-int ocall_pong_enclave_attestation_in_thread(sgx_enclave_id_t currentEid, char* other_machine_name, uint32_t size) {
-
-    struct Enclave_start_attestation_wrapper_arguments parameters = {currentEid, other_machine_name};
-    // struct Enclave_start_attestation_wrapper_arguments* parameters;// = {currentEid, other_machine_name, message_from_machine_to_enclave, optional_message};
-    // int sizeOfSerializedString = 0;
-    // char* serializedString = enclave_attestation_network_serializer(currentEid, other_machine_name, size, message_from_machine_to_enclave, sizeOfSerializedString);
-    // parameters = enclave_attestation_network_deserializer(serializedString);
-
-    // ocall_print("inside ocall_pong_enclave_attestation_in_thread");
-    // printRSAKey(optional_message);
-    // ocall_print("same as");
-    // printRSAKey(optional_message + SGX_RSA3072_KEY_SIZE + 1);
-    void* thread_ret;
-    pthread_t thread_id; 
-    ocall_print("\n Calling Attestation Thread\n"); 
-    // pthread_create(&thread_id, NULL, pong_enclave_attestation_thread, (void*) parameters);
-    pthread_create(&thread_id, NULL, pong_enclave_attestation_thread, (void*) (&parameters));
-
-    //TODO look into not calling pthread_join but actually let this run asynchoronous
-    pthread_join(thread_id, &thread_ret); 
-    ocall_print("\n Finished Attestation Thread\n");
-
-    return 0;
-
-}
-
-int ocall_network_request(char* request, char* response, uint32_t REQUEST_SIZE, uint32_t RESPONSE_SIZE, char* ipAddress, uint32_t IP_ADDRESS_SIZE, int port) {
-    // ocall_print("GUUUUGY");
-    ocall_print("Network Request is :");
-    ocall_print(request);
-    fflush(stdout);
-
-
-    // char* result = network_socket_sender(request, REQUEST_SIZE, RESPONSE_SIZE);
-    char* result = network_socket_sender(request, REQUEST_SIZE, ipAddress, IP_ADDRESS_SIZE, port);
-
-
-    // char* result = send_network_request_API(request, REQUEST_SIZE);
-
-
-    // if (RESPONSE_SIZE == 0) {
-    //     return 1;
-    // }
-
-    ocall_print("Network Response is :");
-    ocall_print(result);
-    // if (result == NULL || result[0] == '\0') {
-    //     printf("ERROR. No Message Received!\n");
-    //     return 0;
-    // }
-    // else if (strlen(result) + 1 > RESPONSE_SIZE) {
-    //     printf("ERROR. Message too big!\n");
-    // }
-    // if (NETWORK_DEBUG) {
-    //     memcpy(response, result, strlen(result) + 1);
-    // } else {
-        memcpy(response, result, RESPONSE_SIZE);
-    // }
-    
-    safe_free(result);
-    return 1;
-
-}
-
-
-char* untrusted_enclave_host_receiveNetworkRequest(char* request, size_t requestSize) { //TODO have network ra forward to this
-
-    return receiveNetworkRequestHelper(request, requestSize, true);
-
-}
-
-
-void ocall_add_identity_to_eid_dictionary(char* newMachineID, uint32_t ID_SIZE, sgx_enclave_id_t enclave_eid) {
-        // if (NETWORK_DEBUG) {
-        //     string identityString = string(newMachineID);
-        //     PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
-        // } else {
-            string identityString = string(newMachineID, ID_SIZE);
-            PublicIdentityKeyToEidDictionary[identityString] = enclave_eid;
-        // }
-        
-        // ocall_print(newMachineID);
-        // ocall_print("has enclave ID");
-        // ocall_print_int(enclave_eid);
-}
-
+//*******************

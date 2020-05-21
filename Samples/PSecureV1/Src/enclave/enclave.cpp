@@ -181,7 +181,7 @@ char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char
 
     memcpy(secure_message_attestation_request, requestStringReal, requestStringSizeReal);
       
-    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE);
+    ocall_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE);
     safe_free(requestStringReal);
     char* capabilityKeyPayload = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKeyPayload, g_secret, SIZE_OF_CAPABILITYKEY);
@@ -387,7 +387,7 @@ char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMach
     ocall_print(requestedMachineTypeToCreate);
     // ocall_print("last one should be same as");
     // printRSAKey(requestString + SGX_RSA3072_KEY_SIZE + 1);
-    ocall_pong_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE);
+    ocall_enclave_attestation_in_thread(&ret, current_eid, (char*)other_machine_name, SGX_RSA3072_KEY_SIZE);
     safe_free(requestStringReal);
     char* capabilityKey = (char*) malloc(SIZE_OF_CAPABILITYKEY);
     memcpy(capabilityKey, g_secret, SIZE_OF_CAPABILITYKEY);

@@ -107,7 +107,7 @@ enclave {
         void ocall_print_current_time();
         void ocall_print_int(int intPrint);
         void ocall_request_user_input([out, size=INPUT_SIZE] char* user_input, uint32_t INPUT_SIZE);
-        int ocall_pong_enclave_attestation_in_thread( sgx_enclave_id_t currentEid,
+        int ocall_enclave_attestation_in_thread( sgx_enclave_id_t currentEid,
                                                     [in,size=other_machine_name_size] char* other_machine_name, 
                                                     uint32_t other_machine_name_size);
                                  //below passes when i do string

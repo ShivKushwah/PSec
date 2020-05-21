@@ -504,11 +504,6 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
     char* strCopy = (char*) malloc(payloadSize + 3);
     memcpy(strCopy, strOriginal, payloadSize + 3);
 
-    // char* str = (char*) malloc(strlen(strOriginal) + 1);
-    // strncpy(str, strOriginal, strlen(strOriginal) + 1);
-    // char* strCopy = (char*) malloc(strlen(strOriginal) + 1);
-    // strncpy(strCopy, strOriginal, strlen(strOriginal) + 1);
-
     PRT_VALUE** values = (PRT_VALUE**) PrtCalloc(numArgs, sizeof(PRT_VALUE*));
     char* reentrant = NULL;
     char* temp = str;
