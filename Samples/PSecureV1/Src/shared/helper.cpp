@@ -1445,7 +1445,6 @@ int createPMachine(char* machineType, int numArgs, int payloadType, char* payloa
 }
 
 void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend, bool isEnclave) {
-    //TODO if making changes in this protocol, make changes in app.cpp
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
 
     ocall_print("Entered Secure Send");
@@ -1850,6 +1849,10 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
         char* split = strtok(decryptedMessage, ":");
         char* msg = split;
+        if (strcmp(msg, "Success") != 0) {
+            ocall_print("ERROR: Message not sent successfully!");
+            abort();
+        }
         split = strtok(NULL, ":");
         char* nonceString = split;
 
@@ -1864,6 +1867,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             ocall_print_int(ChildSessionKeyToNonce[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), sessionKey)]);
             ocall_print("received");
             ocall_print_int(atoi(nonceString));
+            abort();
         }
 
 
