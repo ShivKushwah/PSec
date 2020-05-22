@@ -19,6 +19,4 @@ In order to run sample programs, follow [this](docs/Running.md).
 The architecture of the codebase is documented [here](docs/ArchitectureOverview.md).
 
 TODO:
-* Go over OTP example and explanation in README
-* Sync with Learn&Verify repo
 * Include examples where information flow fails
