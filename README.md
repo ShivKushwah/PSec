@@ -15,8 +15,7 @@ Follow [this](docs/RepoInstallation.md) if building this project on a pre-existi
 ##### Running Instructions:
 In order to run sample programs, follow [this](docs/Running.md).
 
-##### Code Architecture
+##### Other Documentation
 The architecture of the codebase is documented [here](docs/ArchitectureOverview.md).
 
-TODO:
-* Include examples where information flow fails
+An example of the information flow analysis type checker is located [here](docs/InformationFlowTypeCheckerExample.p).
