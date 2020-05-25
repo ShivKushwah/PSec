@@ -21,6 +21,8 @@ map<PMachineChildPair, string> PMachineToChildCapabilityKey;
 map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 map<tuple<string, string>, int> ChildSessionKeyToNonce;
 
+bool containsSSMAlready = false;
+
 // P Process Required Setup Methods *******************
 
 void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
@@ -182,6 +184,12 @@ void startPrtProcessIfNotStarted() {
 
 //SSM API Functions*******************
 void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid, char* machineTypeToCreate, int lengthString, char* returnNewMachinePublicID, int numArgs, int payloadType, char* payloadString, int payloadSize, int ID_SIZE, int PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
+    if (containsSSMAlready) {
+        memcpy(returnNewMachinePublicID, "ERROR", 6);
+        return;
+    }
+    containsSSMAlready = true;
+    
     current_eid = currentEid;
     char* newMachinePublicIDKey = createMachineHelper(machineTypeToCreate, "", numArgs, payloadType, payloadString, payloadSize, false, enclaveEid);
     //"Return" the publicIDKey of the new machine
@@ -190,6 +198,12 @@ void UntrustedCreateMachineAPI(sgx_enclave_id_t currentEid, char* machineTypeToC
 }
 
 int createMachineAPI(sgx_enclave_id_t currentEid, char* machineType, char* parentTrustedMachinePublicIDKey, char* returnNewMachinePublicIDKey, int numArgs, int payloadType, char* payload, int payloadSize, uint32_t ID_SIZE, uint32_t PAYLOAD_SIZE, sgx_enclave_id_t enclaveEid) {
+    if (containsSSMAlready) {
+        memcpy(returnNewMachinePublicIDKey, "ERROR", 6);
+        return -1;
+    }
+    containsSSMAlready = true;
+    
     current_eid = currentEid;
    
     if (!NETWORK_DEBUG) {
