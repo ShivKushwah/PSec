@@ -2,11 +2,11 @@
 
 A programming language for writing secure distributed systems by leveraging Intel SGX.
 
-**Associated Paper** [TODO DATE]:
+[**Associated Paper**](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2020/EECS-2020-83.html) [5-28-2020]
 
-[**Presentation**](https://docs.google.com/presentation/d/1Paf3SXun9uCw4QMuHtezIfzKtVLJAu1-0ZgFQ4BKVM4/edit?usp=sharing) [4-14-2020]:
+[**Presentation**](https://docs.google.com/presentation/d/1Paf3SXun9uCw4QMuHtezIfzKtVLJAu1-0ZgFQ4BKVM4/edit?usp=sharing) [4-14-2020]
 
-[**Presentation Video**](https://youtu.be/QS-BgX-e180) [3-20-2020]:
+[**Presentation Video**](https://youtu.be/QS-BgX-e180) [3-20-2020]
 
 ##### Build Instructions:  
 Follow [this](docs/SGXInstallation.md) if Intel SGX is not installed [Recommended for compatibility].  
