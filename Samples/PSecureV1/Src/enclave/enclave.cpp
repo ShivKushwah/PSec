@@ -353,6 +353,22 @@ void sgx_rijndael128GCM_decrypt_Ecall(const sgx_aes_gcm_128bit_key_t *p_key,
     }
 }
 
+void sgx_rijndael128GCM_encrypt_Ecall(const sgx_aes_gcm_128bit_key_t *p_key,
+                                                const uint8_t *p_src,
+                                                uint32_t src_len,
+                                                uint8_t *p_dst,
+                                                const uint8_t *p_iv,
+                                                uint32_t iv_len,
+                                                const uint8_t *p_aad,
+                                                uint32_t aad_len,
+                                                sgx_aes_gcm_128bit_tag_t *p_out_mac) {
+
+    sgx_status_t status = sgx_rijndael128GCM_encrypt(p_key, p_src, src_len, p_dst, p_iv, iv_len, p_aad, aad_len, p_out_mac);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error: Encrypting in sgx_rijndael128GCM_encrypt_Ecall");
+    }
+}
+
 //*******************
 
 //SSM Other Functions*******************

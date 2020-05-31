@@ -107,6 +107,17 @@ enclave {
                                                 [in, size=aad_len]const uint8_t *p_aad,
                                                 uint32_t aad_len,
                                                 [in, size=16]const sgx_aes_gcm_128bit_tag_t *p_in_mac);
+                                                
+        public void sgx_rijndael128GCM_encrypt_Ecall([in, size=16]const sgx_aes_gcm_128bit_key_t *p_key,
+                                                [in, size=src_len]const uint8_t *p_src,
+                                                uint32_t src_len,
+                                                [out, size=src_len]uint8_t *p_dst,
+                                                [in, size=iv_len]const uint8_t *p_iv,
+                                                uint32_t iv_len,
+                                                [in, size=aad_len]const uint8_t *p_aad,
+                                                uint32_t aad_len,
+                                                [out, size=16]sgx_aes_gcm_128bit_tag_t *p_out_mac);
+
     };
 
     untrusted {
