@@ -122,6 +122,7 @@ sgx_status_t enclave_decryptMessageInteralPrivateKeyEcall(sgx_enclave_id_t eid, 
 sgx_status_t enclave_createRsaKeyPairEcall(sgx_enclave_id_t eid, char* public_key_raw_out, char* private_key_raw_out, char* public_key_out, char* private_key_out, uint32_t KEY_SIZE);
 sgx_status_t enclave_eprint(sgx_enclave_id_t eid, char* printStr);
 sgx_status_t enclave_sgx_read_rand_ecall(sgx_enclave_id_t eid, char* rand_buffer, uint32_t NUM_BYTES_RAND);
+sgx_status_t enclave_sgx_rijndael128GCM_decrypt_Ecall(sgx_enclave_id_t eid, const sgx_aes_gcm_128bit_key_t* p_key, const uint8_t* p_src, uint32_t src_len, uint8_t* p_dst, const uint8_t* p_iv, uint32_t iv_len, const uint8_t* p_aad, uint32_t aad_len, const sgx_aes_gcm_128bit_tag_t* p_in_mac);
 sgx_status_t enclave_sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a);
 sgx_status_t enclave_sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, const sgx_ra_msg2_t* p_msg2, const sgx_target_info_t* p_qe_target, sgx_report_t* p_report, sgx_quote_nonce_t* p_nonce);
 sgx_status_t enclave_sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint32_t quote_size, sgx_report_t* qe_report, sgx_ra_msg3_t* p_msg3, uint32_t msg3_size);

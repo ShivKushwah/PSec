@@ -337,6 +337,22 @@ void decryptMessageInteralPrivateKeyEcall(char* encryptedData, size_t encryptedD
     memcpy(output_decrypted_message, decryptedMessage, SIZE_OF_KEY);
 }
 
+void sgx_rijndael128GCM_decrypt_Ecall(const sgx_aes_gcm_128bit_key_t *p_key,
+                                                const uint8_t *p_src,
+                                                uint32_t src_len,
+                                                uint8_t *p_dst,
+                                                const uint8_t *p_iv,
+                                                uint32_t iv_len,
+                                                const uint8_t *p_aad,
+                                                uint32_t aad_len,
+                                                const sgx_aes_gcm_128bit_tag_t *p_in_mac) {
+
+    sgx_status_t status = sgx_rijndael128GCM_decrypt(p_key, p_src, src_len, p_dst, p_iv, iv_len, p_aad, aad_len, p_in_mac);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error: Decrypting in sgx_rijndael128GCM_decrypt_Ecall");
+    }
+}
+
 //*******************
 
 //SSM Other Functions*******************
