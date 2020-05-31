@@ -1,21 +1,13 @@
 cmake_minimum_required(VERSION 3.0)
-project(programmingenclaves)
+project(psec)
 
 set(SGX ON)
 add_definitions( -DPRT_PLAT_SGXUSER )
-#add_definitions( -DPRT_PLAT_LINUXUSER )
 
 #include the helper functions and decls
 include(HelperScripts/CMakeLists.txt)
 
-#include PingPong Samples directory
-
-#subdirs(Samples/PingPong/)
-#subdirs(Samples/PingPongEnclave/)
-#subdirs(Samples/VotingSystem/)
-#subdirs(Samples/ForeignTypesEnclave/)
-#subdirs(Samples/PingEnclavePongOutside/)
-#subdirs(Samples/PingEnclavePongOutsideRemoteAttestation/)
+#include the PSec samples
 subdirs(Samples/PSecureV1/)
 
 

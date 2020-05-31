@@ -1,6 +1,6 @@
-# PSec
+# The PSec Programming Language
 
-A programming language for writing secure distributed systems by leveraging Intel SGX.
+A programming language for writing secure distributed systems by leveraging Intel SGX. Built on top of the P programming language for distributed systems, located [here](https://github.com/p-org/P).
 
 [**Associated Paper**](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2020/EECS-2020-83.html) [5-28-2020]
 

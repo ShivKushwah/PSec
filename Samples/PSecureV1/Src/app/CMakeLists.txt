@@ -50,14 +50,11 @@ include_directories(
 
 set(LIBHANDLERLIB_PATH ${P_LIBHANDLER_PATH}/out/gcc-amd64-linux-gnu/debug/libhandler.a)
 
-#add_library(Prt_static STATIC ~/Research/temp-del/ProgrammingEnclaves/Samples/PingEnclavePongOutside/Src/app/libPrt_static.a)
 #set_target_properties(Prt_static PROPERTIES LINKER_LANGUAGE C)
 
 target_link_libraries(app
         -L${SGX_LIBRARY_PATH} -l${SGX_URTS_LIB} -l${SGX_USVC_LIB} -lsgx_ukey_exchange
         ${CMAKE_CURRENT_SOURCE_DIR}/libsample_libcrypto.so
-        # ~/Research/PSecuredLang/ProgrammingEnclaves/Samples/PSecureV1/Src/app/libsample_libcrypto.so
-        #~/Research/PSecuredLang/ProgrammingEnclaves/Samples/PSecureV1/Src/app/libPrt_static.a #TODO Unhardcode this
         Prt_static2
         ${LIBHANDLERLIB_PATH}
         -lsgx_capable -Wl,-rpath=$(SGX_LIBRARY_PATH)
