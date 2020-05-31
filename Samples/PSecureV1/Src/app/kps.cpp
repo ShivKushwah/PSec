@@ -942,7 +942,9 @@ ra_samp_response_header_t* kps_exchange_capability_key(uint8_t *p_secret,
 
         uint8_t aes_gcm_iv[12] = {0};
         int ret = 0;
-        sample_rijndael128GCM_encrypt(&g_sp_db.sk_key, //used to decrypt in this case
+
+        enclave_sgx_rijndael128GCM_decrypt_Ecall(kps_enclave_eid,
+                            &g_sp_db.sk_key, 
                             p_secret,
                             secret_size,
                             &g_secret[0],
@@ -951,6 +953,7 @@ ra_samp_response_header_t* kps_exchange_capability_key(uint8_t *p_secret,
                             NULL,
                             0,
                             (sample_aes_gcm_128bit_tag_t *)p_gcm_mac);
+
         printf("KPS Secret is %s\n" , (char*)g_secret);
         printPayload((char*) g_secret, secret_size);
 
@@ -1041,7 +1044,8 @@ ra_samp_response_header_t* kps_exchange_capability_key(uint8_t *p_secret,
 
 
         //encrypt and send message back
-        ret = sample_rijndael128GCM_encrypt(&g_sp_db.sk_key,
+        ret = enclave_sgx_rijndael128GCM_encrypt_Ecall(kps_enclave_eid,
+                            &g_sp_db.sk_key,
                             (const uint8_t *)message,
                             payload_size,
                             (uint8_t *)encrypted_payload,
