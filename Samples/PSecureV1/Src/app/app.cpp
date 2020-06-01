@@ -398,6 +398,8 @@ void ocall_print_int(int intPrint) {
     }
 }
 
+
+
 void ocall_enclave_print(const char* str) {
     printf("[e] %s\n", str);
     fflush(stdout);

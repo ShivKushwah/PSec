@@ -2217,6 +2217,8 @@ PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     if (PrtPrimGetBool(PTMP_tmp28))
     {
+        PrtPrintf("AuthSuccess");
+        
         PRT_VALUE** P_LVALUE_91 = &(PTMP_tmp29);
         PrtFreeValue(*P_LVALUE_91);
         *P_LVALUE_91 = PrtCloneValue(p_this->varValues[1]);

@@ -98,6 +98,7 @@ secure_machine BankEnclave {
             PrintRawStringType(Hash(Declassify(masterSecret) as StringType, Declassify(userCredential) as StringType));
             PrintRawStringType(payload.OTPCode);
             if (Declassify(userCredential) as StringType == payload.usernamePW as StringType && Hash(Declassify(masterSecret) as StringType, Declassify(userCredential) as StringType) == payload.OTPCode) {
+                print "AuthSuccess";
                 send clientUSM, AuthSuccess; //untrusted_send
             } else {
                 send clientUSM, AuthFailure; //untrusted_send

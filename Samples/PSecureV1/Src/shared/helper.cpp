@@ -16,7 +16,6 @@
 
 #ifndef ENCLAVE_STD_ALT
 #include "enclave_u.h"
-#include "sample_libcrypto.h"
 #include "sgx_tcrypto.h"
 extern sgx_enclave_id_t global_app_eid;
 #endif
