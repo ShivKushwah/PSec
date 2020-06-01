@@ -369,6 +369,17 @@ void sgx_rijndael128GCM_encrypt_Ecall(const sgx_aes_gcm_128bit_key_t *p_key,
     }
 }
 
+void sgx_ecc256_create_key_pair_Ecall(sgx_ec256_private_t *p_private,
+                                        sgx_ec256_public_t *p_public,
+                                        sgx_ecc_state_handle_t ecc_handle) {
+
+    sgx_status_t status = sgx_ecc256_create_key_pair(p_private, p_public, ecc_handle);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error: Macing in sgx_ecc256_create_key_pair_Ecall");
+    }
+    
+}
+
 //*******************
 
 //SSM Other Functions*******************

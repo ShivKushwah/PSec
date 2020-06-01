@@ -396,8 +396,12 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
         }
         sample_ec256_public_t pub_key = {{0},{0}};
         sample_ec256_private_t priv_key = {{0}};
-        sample_ret = sample_ecc256_create_key_pair(&priv_key, &pub_key,
-                                                   ecc_state);
+        // sample_ret = sample_ecc256_create_key_pair(&priv_key, &pub_key,
+        //                                            ecc_state);
+        sample_ret = (sample_status_t)enclave_sgx_ecc256_create_key_pair_Ecall(kps_enclave_eid, 
+                                               (sgx_ec256_private_t*) &priv_key, 
+                                               (sgx_ec256_public_t*)&pub_key,
+                                                (sgx_ecc_state_handle_t) ecc_state);                                        
         if(SAMPLE_SUCCESS != sample_ret)
         {
             fprintf(stderr, "\nError, cannot generate key pair in [%s].",
