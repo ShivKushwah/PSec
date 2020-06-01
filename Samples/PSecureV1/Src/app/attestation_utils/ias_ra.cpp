@@ -32,7 +32,11 @@
 
 
 #include "kps.h"
+#include "enclave_u.h"
+#include "sgx_utils/sgx_utils.h"
 #include "sample_libcrypto.h"
+
+
 #include "ecp.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -88,6 +92,8 @@ static const sample_ec256_private_t g_rk_priv_key =
 }};
 
 static sample_spid_t g_sim_spid = {"Service X"};
+
+extern sgx_enclave_id_t kps_enclave_eid;
 
 
 // Simulates the attestation server function for verifying the quote produce by
@@ -150,9 +156,11 @@ int ias_verify_attestation_evidence(
     // Generate the Service providers ECCDH key pair.
     do {
         ret = sample_ecc256_open_context(&ecc_state);
+        // ret = (sample_status_t) enclave_sgx_ecc256_open_context_Ecall(kps_enclave_eid, (sgx_ecc_state_handle_t*)&ecc_state);
         if (SAMPLE_SUCCESS != ret) {
             fprintf(stderr, "\nError, cannot get ECC cotext in [%s].",
                     __FUNCTION__);
+            ocall_print("Error: enclave_sgx_ecc256_open_context_Ecall in ias_ra");
             ret = -1;
             break;
         }
@@ -165,8 +173,17 @@ int ias_verify_attestation_evidence(
                 (sample_ec256_signature_t *)&p_attestation_verification_report->
                     info_blob.signature,
                 ecc_state);
+        // ret = (sample_status_t) enclave_sgx_ecdsa_sign_Ecall( kps_enclave_eid,
+        //         (uint8_t *)&p_attestation_verification_report->
+        //             info_blob.sample_epid_group_status,
+        //         sizeof(ias_platform_info_blob_t) - sizeof(sample_ec_sign256_t),
+        //         (sgx_ec256_private_t *)&g_rk_priv_key,
+        //         (sgx_ec256_signature_t *)&p_attestation_verification_report->
+        //             info_blob.signature,
+        //         (sgx_ecc_state_handle_t)ecc_state);
         if (SAMPLE_SUCCESS != ret) {
             fprintf(stderr, "\nError, sign ga_gb fail in [%s].", __FUNCTION__);
+            ocall_print("Error: enclave_sgx_ecdsa_sign_Ecall in ias_ra");
             ret = SP_INTERNAL_ERROR;
             break;
         }
@@ -178,6 +195,8 @@ int ias_verify_attestation_evidence(
     }while (0);
     if (ecc_state) {
         sample_ecc256_close_context(ecc_state);
+        // enclave_sgx_ecc256_close_context_Ecall(kps_enclave_eid, (sgx_ecc_state_handle_t) ecc_state);        
+
     }
     p_attestation_verification_report->pse_status = IAS_PSE_OK;
 

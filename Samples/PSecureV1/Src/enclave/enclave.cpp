@@ -406,6 +406,18 @@ void sgx_ecc256_compute_shared_dhkey_Ecall(sgx_ec256_private_t *p_private_b,
 
 }
 
+void sgx_ecdsa_sign_Ecall(const uint8_t *p_data, 
+                            uint32_t data_size,  
+                            sgx_ec256_private_t *p_private, 
+                            sgx_ec256_signature_t *p_signature, 
+                            sgx_ecc_state_handle_t ecc_handle) {
+    sgx_status_t status = sgx_ecdsa_sign(p_data, data_size, p_private, p_signature, ecc_handle);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error:  in sgx_ecdsa_sign_Ecall");
+    }
+
+}
+
 //*******************
 
 //SSM Other Functions*******************

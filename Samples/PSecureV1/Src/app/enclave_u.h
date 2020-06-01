@@ -128,6 +128,7 @@ sgx_status_t enclave_sgx_ecc256_open_context_Ecall(sgx_enclave_id_t eid, sgx_ecc
 sgx_status_t enclave_sgx_ecc256_close_context_Ecall(sgx_enclave_id_t eid, sgx_ecc_state_handle_t ecc_handle);
 sgx_status_t enclave_sgx_ecc256_create_key_pair_Ecall(sgx_enclave_id_t eid, sgx_ec256_private_t* p_private, sgx_ec256_public_t* p_public, sgx_ecc_state_handle_t ecc_handle);
 sgx_status_t enclave_sgx_ecc256_compute_shared_dhkey_Ecall(sgx_enclave_id_t eid, sgx_ec256_private_t* p_private_b, sgx_ec256_public_t* p_public_ga, sgx_ec256_dh_shared_t* p_shared_key, sgx_ecc_state_handle_t ecc_handle);
+sgx_status_t enclave_sgx_ecdsa_sign_Ecall(sgx_enclave_id_t eid, const uint8_t* p_data, uint32_t data_size, sgx_ec256_private_t* p_private, sgx_ec256_signature_t* p_signature, sgx_ecc_state_handle_t ecc_handle);
 sgx_status_t enclave_sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a);
 sgx_status_t enclave_sgx_ra_proc_msg2_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, const sgx_ra_msg2_t* p_msg2, const sgx_target_info_t* p_qe_target, sgx_report_t* p_report, sgx_quote_nonce_t* p_nonce);
 sgx_status_t enclave_sgx_ra_get_msg3_trusted(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, uint32_t quote_size, sgx_report_t* qe_report, sgx_ra_msg3_t* p_msg3, uint32_t msg3_size);
