@@ -20,6 +20,7 @@ sudo apt-get update
 sudo apt-get install dotnet-sdk-2.2
 sudo apt-get install default-jre
 # endif
+git checkout master
 ./Bld/build-compiler.sh
 cd .. && cd ..
 mkdir build
