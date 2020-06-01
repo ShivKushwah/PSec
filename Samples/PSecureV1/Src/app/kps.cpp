@@ -386,18 +386,17 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
         }
 
         // Generate the Service providers ECCDH key pair.
-        sample_ret = sample_ecc256_open_context(&ecc_state);
+        sample_ret = (sample_status_t) enclave_sgx_ecc256_open_context_Ecall(kps_enclave_eid, (sgx_ecc_state_handle_t*)&ecc_state);
         if(SAMPLE_SUCCESS != sample_ret)
         {
             fprintf(stderr, "\nError, cannot get ECC context in [%s].",
                              __FUNCTION__);
+            ocall_print("Error: KPS attestation error in open context");
             ret = -1;
             break;
         }
         sample_ec256_public_t pub_key = {{0},{0}};
         sample_ec256_private_t priv_key = {{0}};
-        // sample_ret = sample_ecc256_create_key_pair(&priv_key, &pub_key,
-        //                                            ecc_state);
         sample_ret = (sample_status_t)enclave_sgx_ecc256_create_key_pair_Ecall(kps_enclave_eid, 
                                                (sgx_ec256_private_t*) &priv_key, 
                                                (sgx_ec256_public_t*)&pub_key,
@@ -406,6 +405,7 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
         {
             fprintf(stderr, "\nError, cannot generate key pair in [%s].",
                     __FUNCTION__);
+            ocall_print("Error: KPS attestation error in create key pair");
             ret = SP_INTERNAL_ERROR;
             break;
         }
@@ -422,14 +422,16 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
 
         // Generate the client/SP shared secret
         sample_ec_dh_shared_t dh_key = {{0}};
-        sample_ret = sample_ecc256_compute_shared_dhkey(&priv_key,
-            (sample_ec256_public_t *)&p_msg1->g_a,
-            (sample_ec256_dh_shared_t *)&dh_key,
-            ecc_state);
+        sample_ret = (sample_status_t) enclave_sgx_ecc256_compute_shared_dhkey_Ecall( kps_enclave_eid,
+            (sgx_ec256_private_t *)&priv_key,
+            (sgx_ec256_public_t *)&p_msg1->g_a,
+            (sgx_ec256_dh_shared_t *)&dh_key,
+            (sgx_ecc_state_handle_t) ecc_state);
         if(SAMPLE_SUCCESS != sample_ret)
         {
             fprintf(stderr, "\nError, compute share key fail in [%s].",
                     __FUNCTION__);
+            ocall_print("Error: KPS attestation error in compute shared dhkey");
             ret = SP_INTERNAL_ERROR;
             break;
         }
@@ -600,7 +602,7 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
 
     if(ecc_state)
     {
-        sample_ecc256_close_context(ecc_state);
+        enclave_sgx_ecc256_close_context_Ecall(kps_enclave_eid, (sgx_ecc_state_handle_t) ecc_state);
     }
 
     return ret;

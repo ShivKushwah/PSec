@@ -117,8 +117,18 @@ enclave {
                                                 [in, size=aad_len]const uint8_t *p_aad,
                                                 uint32_t aad_len,
                                                 [out, size=16]sgx_aes_gcm_128bit_tag_t *p_out_mac);
+
+        public void sgx_ecc256_open_context_Ecall([out]sgx_ecc_state_handle_t* ecc_handle);
+
+        public void sgx_ecc256_close_context_Ecall(sgx_ecc_state_handle_t ecc_handle);
+
         public void sgx_ecc256_create_key_pair_Ecall([out, size=32]sgx_ec256_private_t *p_private,
                                         [out, size=64]sgx_ec256_public_t *p_public,
+                                        sgx_ecc_state_handle_t ecc_handle);
+
+        public void sgx_ecc256_compute_shared_dhkey_Ecall([in, size=32]sgx_ec256_private_t *p_private_b,
+                                             [in, size=64]sgx_ec256_public_t *p_public_ga,
+                                             [out, size=32]sgx_ec256_dh_shared_t *p_shared_key,
                                         sgx_ecc_state_handle_t ecc_handle);
 
     };

@@ -369,6 +369,21 @@ void sgx_rijndael128GCM_encrypt_Ecall(const sgx_aes_gcm_128bit_key_t *p_key,
     }
 }
 
+
+void sgx_ecc256_open_context_Ecall(sgx_ecc_state_handle_t* ecc_handle) {
+    sgx_status_t status = sgx_ecc256_open_context(ecc_handle);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error: in sgx_ecc256_open_context_Ecall");
+    }
+}
+
+void sgx_ecc256_close_context_Ecall(sgx_ecc_state_handle_t ecc_handle) {
+    sgx_status_t status = sgx_ecc256_close_context(ecc_handle);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error: in sgx_ecc256_close_context_Ecall");
+    }
+}
+
 void sgx_ecc256_create_key_pair_Ecall(sgx_ec256_private_t *p_private,
                                         sgx_ec256_public_t *p_public,
                                         sgx_ecc_state_handle_t ecc_handle) {
@@ -378,6 +393,17 @@ void sgx_ecc256_create_key_pair_Ecall(sgx_ec256_private_t *p_private,
         ocall_print("Error: Macing in sgx_ecc256_create_key_pair_Ecall");
     }
     
+}
+
+void sgx_ecc256_compute_shared_dhkey_Ecall(sgx_ec256_private_t *p_private_b,
+                                             sgx_ec256_public_t *p_public_ga,
+                                             sgx_ec256_dh_shared_t *p_shared_key,
+                                             sgx_ecc_state_handle_t ecc_handle) {
+    sgx_status_t status = sgx_ecc256_compute_shared_dhkey(p_private_b, p_public_ga, p_shared_key, ecc_handle);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error:  in sgx_ecc256_compute_shared_dhkey");
+    }
+
 }
 
 //*******************
