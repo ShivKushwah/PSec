@@ -58,6 +58,8 @@ If running the distributed setting, follow these instructions above in all termi
 
 If running any of these samples for the first time, remove the `make clean` command from the provided instructions below.
 
+These samples are documented in the [thesis](PSec-Masters-Thesis.pdf) in the Evaluation section. Changes have been made since the thesis was published, and git checkouting a version of this repo (between May 25 and May 31) will have versions of these samples consistent with the thesis documentation. 
+
 ###### Civitas (Local)
 In this, we will deploy the Civitas example with the KPS, Distributed Host 1, and Distributed Host 2 all running within the same physical machine. 
 Need to run the following in different terminal tabs (and in this order):
