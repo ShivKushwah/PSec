@@ -6,7 +6,7 @@ machine InitializerMachine {
 
 	start state Init {
 		entry {
-			supervisor = new SecureSupervisorMachine();
+			supervisor = new SecureSupervisorMachine() @ this;
 			votingMachine = new VotingUSM(); 
 			send votingMachine, UNTRUSTEDProvisionVotingUSM, (supervisor = supervisor, credential = GenerateCredential1()); //untrusted_send
 			votingMachine2 = new VotingUSM();

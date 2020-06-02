@@ -739,7 +739,8 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
     _P_GEN_funargs[0] = "SecureSupervisorMachine";
     _P_GEN_funargs[1] = "0";
-    _P_GEN_funargs[2] = NULL;
+    PRT_VALUE* P_this_ref = (P_GetThis_IMPL(context, _P_GEN_funargs));
+    _P_GEN_funargs[2] = &P_this_ref;
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
     *P_LVALUE = ((_P_GEN_funval = P_CreateUSMMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -1076,7 +1077,8 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE P_LIT_INT32_2 = { PRT_VALUE_KIND_INT, { .nt = 2 } };
     _P_GEN_funargs[0] = "SecureBulletinBoardMachine";
     _P_GEN_funargs[1] = "0";
-    _P_GEN_funargs[2] = NULL;
+    PRT_VALUE* P_this_ref_1 = (P_GetThis_IMPL(context, _P_GEN_funargs));
+    _P_GEN_funargs[2] = &P_this_ref_1;
     PRT_VALUE** P_LVALUE_16 = &(PTMP_tmp0_1);
     PrtFreeValue(*P_LVALUE_16);
     *P_LVALUE_16 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -1098,7 +1100,8 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "SecureBallotBoxMachine";
     _P_GEN_funargs[1] = "0";
-    _P_GEN_funargs[2] = NULL;
+    PRT_VALUE* P_this_ref_2 = (P_GetThis_IMPL(context, _P_GEN_funargs));
+    _P_GEN_funargs[2] = &P_this_ref_2;
     PRT_VALUE** P_LVALUE_18 = &(PTMP_tmp1_1);
     PrtFreeValue(*P_LVALUE_18);
     *P_LVALUE_18 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -1327,7 +1330,7 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "SecureVotingClientMachine";
     _P_GEN_funargs[1] = "0";
-    _P_GEN_funargs[2] = NULL;
+    _P_GEN_funargs[2] = &(*P_VAR_requestingMachine);
     PRT_VALUE** P_LVALUE_38 = &(PTMP_tmp0_2);
     PrtFreeValue(*P_LVALUE_38);
     *P_LVALUE_38 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));

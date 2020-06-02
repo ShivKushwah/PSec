@@ -16,8 +16,8 @@ secure_machine SecureSupervisorMachine
         entry {
             var i : int;
 
-            bBoard = new SecureBulletinBoardMachine();
-            bBox = new SecureBallotBoxMachine();
+            bBoard = new SecureBulletinBoardMachine() @ this;
+            bBox = new SecureBallotBoxMachine() @ this;
             send bBox, TRUSTEDProvisionSecureBallotBoxMachine, (bBoard = bBoard, supervisor = this); //secure_send
 
             //These are the credentials of voters that have registered to vote
@@ -38,7 +38,7 @@ secure_machine SecureSupervisorMachine
         on UNTRUSTEDGetVotingSSM do (requestingMachine: machine_handle) {
             var secureVotingClientMachine : secure_machine_handle;
             print "Provisioning a secure voting client!";
-            secureVotingClientMachine = new SecureVotingClientMachine();
+            secureVotingClientMachine = new SecureVotingClientMachine() @ requestingMachine;
             send secureVotingClientMachine, TRUSTEDProvisionSecureVotingClientMachine, (ballotBox = bBox, bulletinBoard = bBoard); //secure_send
             
             send requestingMachine, UNTRUSTEDReceiveVotingSSM, Declassify(secureVotingClientMachine) as machine_handle; //untrusted_send, CastHandle(secureVotingClientMachine)
