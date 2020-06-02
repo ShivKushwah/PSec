@@ -16,9 +16,9 @@ secure_machine SecureBallotBoxMachine
     start state Init {
         on TRUSTEDProvisionSecureBallotBoxMachine do (payload: (bBoard: secure_machine_handle, supervisor : secure_machine_handle)){
             bulletinBoard = payload.bBoard;
-            appendOnlyLog = new SecureTamperEvidentLogMachine(); //essentially the db of votes for this ballotbox
+            appendOnlyLog = new SecureTamperEvidentLogMachine() @ this; //essentially the db of votes for this ballotbox
             send appendOnlyLog, TRUSTEDProvisionSecureTamperEvidentLogMachine, this; //secure_send
-            tabulationTeller = new SecureTabulationTellerMachine(); //counts the votes
+            tabulationTeller = new SecureTabulationTellerMachine() @ this; //counts the votes
             send tabulationTeller, TRUSTEDProvisionSecureTabulationTellerMachine, (bBoard = bulletinBoard, supervisor = payload.supervisor);//secure_send
             goto StartElection;
         }

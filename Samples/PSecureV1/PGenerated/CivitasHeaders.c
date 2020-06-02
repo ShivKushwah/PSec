@@ -2940,7 +2940,8 @@ PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "SecureTamperEvidentLogMachine";
     _P_GEN_funargs[1] = "0";
-    _P_GEN_funargs[2] = NULL;
+    PRT_VALUE* P_this_ref_3 = (P_GetThis_IMPL(context, _P_GEN_funargs));
+    _P_GEN_funargs[2] = &P_this_ref_3;
     PRT_VALUE** P_LVALUE_141 = &(PTMP_tmp1_8);
     PrtFreeValue(*P_LVALUE_141);
     *P_LVALUE_141 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -2989,7 +2990,8 @@ PRT_VALUE* P_Anon_IMPL_9(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "SecureTabulationTellerMachine";
     _P_GEN_funargs[1] = "0";
-    _P_GEN_funargs[2] = NULL;
+    PRT_VALUE* P_this_ref_4 = (P_GetThis_IMPL(context, _P_GEN_funargs));
+    _P_GEN_funargs[2] = &P_this_ref_4;
     PRT_VALUE** P_LVALUE_146 = &(PTMP_tmp5_6);
     PrtFreeValue(*P_LVALUE_146);
     *P_LVALUE_146 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
