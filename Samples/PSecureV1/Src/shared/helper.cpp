@@ -1181,14 +1181,18 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 
     if (numArgs == 0 && argRefs[2] != NULL) {//if @ command is specified, then the location information is contained within the @ machine_handle
         PRT_VALUE* machineLocationHandlePrtValue = (PRT_VALUE*) (*argRefs[2]);
-        char* ipAddrAndPortInfo = NULL;
+        char* ipAddrAndPortInfo = (char*) malloc(46);
         if (machineLocationHandlePrtValue->valueUnion.frgn->typeTag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex) {
-            ipAddrAndPortInfo = (char*) machineLocationHandlePrtValue->valueUnion.frgn->value + SGX_RSA3072_KEY_SIZE + 1 + sizeof(sgx_rsa3072_public_key_t) + 1 + SIZE_OF_CAPABILITYKEY + 1;
+            memcpy(ipAddrAndPortInfo, (char*) machineLocationHandlePrtValue->valueUnion.frgn->value + SGX_RSA3072_KEY_SIZE + 1 + sizeof(sgx_rsa3072_public_key_t) + 1 + SIZE_OF_CAPABILITYKEY + 1, 46);
         } else { //machine_handle
-            ipAddrAndPortInfo = (char*) machineLocationHandlePrtValue->valueUnion.frgn->value + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1;
+            memcpy(ipAddrAndPortInfo, (char*) machineLocationHandlePrtValue->valueUnion.frgn->value + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1, 46);
         }
 
+        ocall_print("Received IP Address of target machine from @ handle:");
+        ocall_print(ipAddrAndPortInfo);
         parseIPAddressPortString(ipAddrAndPortInfo, ipAddress, port);
+        free(ipAddrAndPortInfo);
+        
 
     } else {
         //Query the KPS to determine the target IP address of this type of machine

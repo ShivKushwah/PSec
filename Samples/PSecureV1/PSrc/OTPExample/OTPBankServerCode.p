@@ -34,8 +34,8 @@ secure_machine BankEnclave {
 
     state ReceiveClientUSM {
         on TRUSTEDProvisionBankSSM do (payload: secure_machine_handle) {
-            clientSSM = new ClientEnclave();
             clientUSM = Declassify(payload) as machine_handle;
+            clientSSM = new ClientEnclave() @ clientUSM;
             send clientSSM, TRUSTEDProvisionClientSSM, Endorse(clientUSM) as secure_machine_handle;
             goto RegisterNewBankAccount;
             

@@ -518,6 +518,7 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     _P_GEN_funargs[0] = "TrustedInitializer";
     _P_GEN_funargs[1] = "0";
+    _P_GEN_funargs[2] = NULL;
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
     *P_LVALUE = ((_P_GEN_funval = P_CreateUSMMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -656,6 +657,7 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
     _P_GEN_funargs[0] = "ClientWebBrowser";
     _P_GEN_funargs[1] = "0";
+    _P_GEN_funargs[2] = NULL;
     PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp0_1);
     PrtFreeValue(*P_LVALUE_2);
     *P_LVALUE_2 = ((_P_GEN_funval = P_CreateUSMMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -677,6 +679,7 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "BankEnclave";
     _P_GEN_funargs[1] = "0";
+    _P_GEN_funargs[2] = NULL;
     PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp1);
     PrtFreeValue(*P_LVALUE_4);
     *P_LVALUE_4 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -1098,11 +1101,13 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32_1 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
-    _P_GEN_funargs[0] = "ClientEnclave";
-    _P_GEN_funargs[1] = "0";
     PRT_VALUE** P_LVALUE_16 = &(PTMP_tmp0_2);
     PrtFreeValue(*P_LVALUE_16);
-    *P_LVALUE_16 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    *P_LVALUE_16 = PrtCloneValue(*P_VAR_payload);
+    
+    PRT_VALUE** P_LVALUE_17 = &(PTMP_tmp1_1);
+    PrtFreeValue(*P_LVALUE_17);
+    *P_LVALUE_17 = ((_P_GEN_funargs[0] = &(PTMP_tmp0_2)), (_P_GEN_funval = P_Declassify_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp0_2), PTMP_tmp0_2 = NULL), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_3;
     }
@@ -1111,36 +1116,35 @@ PRT_VALUE* P_Anon_IMPL_3(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         _P_GEN_retval = NULL;
         goto p_return_3;
     }
+    
+    PRT_VALUE** P_LVALUE_18 = &(PTMP_tmp2_1);
+    PrtFreeValue(*P_LVALUE_18);
+    *P_LVALUE_18 = PrtCloneValue(PrtCastValue(PTMP_tmp1_1, &P_GEND_TYPE_machine_handle));
     
     {
-        PRT_VALUE** P_LVALUE_17 = &(p_this->varValues[0]);
-        PrtFreeValue(*P_LVALUE_17);
-        *P_LVALUE_17 = PTMP_tmp0_2;
-        PTMP_tmp0_2 = NULL;
+        PRT_VALUE** P_LVALUE_19 = &(p_this->varValues[1]);
+        PrtFreeValue(*P_LVALUE_19);
+        *P_LVALUE_19 = PTMP_tmp2_1;
+        PTMP_tmp2_1 = NULL;
     }
     
-    PRT_VALUE** P_LVALUE_18 = &(PTMP_tmp1_1);
-    PrtFreeValue(*P_LVALUE_18);
-    *P_LVALUE_18 = PrtCloneValue(*P_VAR_payload);
-    
-    PRT_VALUE** P_LVALUE_19 = &(PTMP_tmp2_1);
-    PrtFreeValue(*P_LVALUE_19);
-    *P_LVALUE_19 = ((_P_GEN_funargs[0] = &(PTMP_tmp1_1)), (_P_GEN_funval = P_Declassify_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp1_1), PTMP_tmp1_1 = NULL), (_P_GEN_funval));
-    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
-        goto p_return_3;
-    }
-    if (p_this->isHalted == PRT_TRUE) {
-        PrtFreeValue(_P_GEN_retval);
-        _P_GEN_retval = NULL;
-        goto p_return_3;
-    }
-    
+    _P_GEN_funargs[0] = "ClientEnclave";
+    _P_GEN_funargs[1] = "0";
+    _P_GEN_funargs[2] = &(p_this->varValues[1]);
     PRT_VALUE** P_LVALUE_20 = &(PTMP_tmp3_1);
     PrtFreeValue(*P_LVALUE_20);
-    *P_LVALUE_20 = PrtCloneValue(PrtCastValue(PTMP_tmp2_1, &P_GEND_TYPE_machine_handle));
+    *P_LVALUE_20 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_3;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_3;
+    }
     
     {
-        PRT_VALUE** P_LVALUE_21 = &(p_this->varValues[1]);
+        PRT_VALUE** P_LVALUE_21 = &(p_this->varValues[0]);
         PrtFreeValue(*P_LVALUE_21);
         *P_LVALUE_21 = PTMP_tmp3_1;
         PTMP_tmp3_1 = NULL;
