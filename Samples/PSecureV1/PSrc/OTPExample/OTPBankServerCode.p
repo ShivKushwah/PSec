@@ -14,7 +14,7 @@ secure_machine TrustedInitializer {
     start state Initial {
         entry {
             clientUSM = new ClientWebBrowser();
-            bankSSM = new BankEnclave();
+            bankSSM = new BankEnclave() @ this;
             send bankSSM, TRUSTEDProvisionBankSSM, Endorse(clientUSM) as secure_machine_handle; //secure_send
             send clientUSM, BankPublicIDEvent, Declassify(bankSSM) as machine_handle; //untrusted_send
         }

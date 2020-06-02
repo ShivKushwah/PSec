@@ -679,7 +679,8 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "BankEnclave";
     _P_GEN_funargs[1] = "0";
-    _P_GEN_funargs[2] = NULL;
+    PRT_VALUE* this_ref = (P_GetThis_IMPL(context, _P_GEN_funargs));
+    _P_GEN_funargs[2] = &this_ref;
     PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp1);
     PrtFreeValue(*P_LVALUE_4);
     *P_LVALUE_4 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));

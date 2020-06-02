@@ -1180,6 +1180,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     int port = 0;
 
     if (numArgs == 0 && argRefs[2] != NULL) {//if @ command is specified, then the location information is contained within the @ machine_handle
+        ocall_print("@ command usage detected: Parsing other machine handle for location information");
         PRT_VALUE* machineLocationHandlePrtValue = (PRT_VALUE*) (*argRefs[2]);
         char* ipAddrAndPortInfo = (char*) malloc(46);
         if (machineLocationHandlePrtValue->valueUnion.frgn->typeTag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex) {
