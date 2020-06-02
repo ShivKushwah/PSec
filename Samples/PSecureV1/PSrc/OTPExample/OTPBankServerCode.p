@@ -2,7 +2,7 @@ machine UntrustedInitializer {
     var handler: machine_handle;
     start state Initial {
         entry {
-            handler = new TrustedInitializer();
+            handler = new TrustedInitializer() @ this;
         }
     }
 }
