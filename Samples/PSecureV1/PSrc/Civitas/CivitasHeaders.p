@@ -32,22 +32,3 @@ fun PrintKey(input : machine_handle);
 fun PrintPCapability(input : capability);
 fun PrintString(inputString : StringType);
 fun PrintMachineHandle(inputString : machine_handle);
-
-/**
- * PSec Internal Library
- */
- //TODO Potentially add to PrtCodeGenerator
-type StringType;
-type machine_handle;
-type capability;
-type secure_machine_handle;
-type secure_StringType;
-
-fun Declassify(input : any) : any;
-fun Endorse(input : any) : any;
-
-fun GetThis() : machine_handle;
-
-fun CreateSecureMachineRequest(): secure_machine_handle;
-fun CreateUSMMachineRequest(): machine_handle;
-
