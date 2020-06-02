@@ -630,6 +630,7 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "MeasureMachine";
     _P_GEN_funargs[1] = "0";
+    _P_GEN_funargs[2] = NULL;
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
     *P_LVALUE = ((_P_GEN_funval = P_CreateUSMMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -663,6 +664,7 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "TrustedInitializer";
     _P_GEN_funargs[1] = "0";
+    _P_GEN_funargs[2] = NULL;
     PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp1);
     PrtFreeValue(*P_LVALUE_2);
     *P_LVALUE_2 = ((_P_GEN_funval = P_CreateUSMMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -921,6 +923,7 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "ClientWebBrowser";
     _P_GEN_funargs[1] = "0";
+    _P_GEN_funargs[2] = NULL;
     PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp0_1);
     PrtFreeValue(*P_LVALUE_4);
     *P_LVALUE_4 = ((_P_GEN_funval = P_CreateUSMMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -942,6 +945,7 @@ PRT_VALUE* P_Anon_IMPL_2(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "BankEnclave";
     _P_GEN_funargs[1] = "0";
+    _P_GEN_funargs[2] = NULL;
     PRT_VALUE** P_LVALUE_6 = &(PTMP_tmp1_1);
     PrtFreeValue(*P_LVALUE_6);
     *P_LVALUE_6 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -1397,6 +1401,7 @@ PRT_VALUE* P_Anon_IMPL_4(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "ClientEnclave";
     _P_GEN_funargs[1] = "0";
+    _P_GEN_funargs[2] = NULL;
     PRT_VALUE** P_LVALUE_18 = &(PTMP_tmp0_2);
     PrtFreeValue(*P_LVALUE_18);
     *P_LVALUE_18 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));

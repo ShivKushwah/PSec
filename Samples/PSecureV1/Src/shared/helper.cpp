@@ -1172,42 +1172,58 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
 }
 
 PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* createTypeCommand, bool isSecureCreate) {
-    //If making changes here, make relevant changes in app.cpp
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
     char* requestedNewMachineTypeToCreate = (char*) argRefs[0];
+    int numArgs = atoi((char*) argRefs[1]);
 
     string ipAddress;
     int port = 0;
+
+    if (numArgs == 0 && argRefs[2] != NULL) {//if @ command is specified, then the location information is contained within the @ machine_handle
+        PRT_VALUE* machineLocationHandlePrtValue = (PRT_VALUE*) (*argRefs[2]);
+        char* ipAddrAndPortInfo = NULL;
+        if (machineLocationHandlePrtValue->valueUnion.frgn->typeTag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex) {
+            ipAddrAndPortInfo = (char*) machineLocationHandlePrtValue->valueUnion.frgn->value + SGX_RSA3072_KEY_SIZE + 1 + sizeof(sgx_rsa3072_public_key_t) + 1 + SIZE_OF_CAPABILITYKEY + 1;
+        } else { //machine_handle
+            ipAddrAndPortInfo = (char*) machineLocationHandlePrtValue->valueUnion.frgn->value + SIZE_OF_KEY_IDENTITY_IN_HANDLE + 1;
+        }
+
+        parseIPAddressPortString(ipAddrAndPortInfo, ipAddress, port);
+
+    } else {
+        //Query the KPS to determine the target IP address of this type of machine
+        char* ipAddressOfRequestedMachine = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+        char* ipAddressOfKPSMachine = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
+        ocall_get_ip_address_of_kps(ipAddressOfKPSMachine, IP_ADDRESS_AND_PORT_STRING_SIZE);
+        #ifdef ENCLAVE_STD_ALT
+        ocall_get_generic_port_of_kps(&port);
+        #else 
+        port = ocall_get_generic_port_of_kps();
+        #endif
+        
+
+        char* constructString[] = {"KPS", ":", "IPRequestMachineType", ":", requestedNewMachineTypeToCreate};
+        int constructStringLengths[] = {strlen("KPS"), 1, strlen("IPRequestMachineType"), 1, strlen(requestedNewMachineTypeToCreate)};
+        char* kpsIpRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 5);
+        int requestLength = returnTotalSizeofLengthArray(constructStringLengths, 5) + 1;
+        int ret_value; 
+
+        
+
+        #ifdef ENCLAVE_STD_ALT   
+        ocall_network_request(&ret_value, kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, ipAddressOfKPSMachine, strlen(ipAddressOfKPSMachine) + 1, port);
+        #else
+        ocall_network_request(kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, ipAddressOfKPSMachine, strlen(ipAddressOfKPSMachine) + 1, port);
+        #endif
+        ocall_print("Received IP Address of target machine from KPS:");
+        ocall_print(ipAddressOfRequestedMachine);
+
+        parseIPAddressPortString(ipAddressOfRequestedMachine, ipAddress, port);
+    }
+
     
-    //Query the KPS to determine the target IP address of this type of machine
-    char* ipAddressOfRequestedMachine = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
-    char* ipAddressOfKPSMachine = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
-    ocall_get_ip_address_of_kps(ipAddressOfKPSMachine, IP_ADDRESS_AND_PORT_STRING_SIZE);
-    #ifdef ENCLAVE_STD_ALT
-    ocall_get_generic_port_of_kps(&port);
-    #else 
-    port = ocall_get_generic_port_of_kps();
-    #endif
     
-
-    char* constructString[] = {"KPS", ":", "IPRequestMachineType", ":", requestedNewMachineTypeToCreate};
-    int constructStringLengths[] = {strlen("KPS"), 1, strlen("IPRequestMachineType"), 1, strlen(requestedNewMachineTypeToCreate)};
-    char* kpsIpRequest = concatMutipleStringsWithLength(constructString, constructStringLengths, 5);
-    int requestLength = returnTotalSizeofLengthArray(constructStringLengths, 5) + 1;
-    int ret_value; 
-
     
-
-    #ifdef ENCLAVE_STD_ALT   
-    ocall_network_request(&ret_value, kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, ipAddressOfKPSMachine, strlen(ipAddressOfKPSMachine) + 1, port);
-    #else
-    ocall_network_request(kpsIpRequest, ipAddressOfRequestedMachine, requestLength, IP_ADDRESS_AND_PORT_STRING_SIZE, ipAddressOfKPSMachine, strlen(ipAddressOfKPSMachine) + 1, port);
-    #endif
-    ocall_print("Received IP Address of target machine from KPS:");
-    ocall_print(ipAddressOfRequestedMachine);
-
-    parseIPAddressPortString(ipAddressOfRequestedMachine, ipAddress, port);
-
 
     ocall_print("Requesting to create this new type of machine");
     ocall_print(requestedNewMachineTypeToCreate);
@@ -1218,7 +1234,6 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     currentMachineIDPublicKey = (char*) malloc(SGX_RSA3072_KEY_SIZE);
     memcpy(currentMachineIDPublicKey, (char*)(get<0>(MachinePIDToIdentityDictionary[currentMachinePID]).c_str()), SGX_RSA3072_KEY_SIZE);
     
-    int numArgs = atoi((char*) argRefs[1]);
 
     PRT_VALUE* payloadPrtValue;
     char* payloadString = NULL;  
@@ -1249,6 +1264,8 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
     char* createMachineRequest = (char*) malloc(requestSize);
     char* numArgsString = (char*) argRefs[1];
     char* payloadTypeString = (char*) malloc(10);
+    int requestLength;
+    int ret_value;
     itoa(payloadType, payloadTypeString, 10);
          if (isSecureCreate) {
             if (numArgs == 0) {
