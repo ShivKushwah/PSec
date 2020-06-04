@@ -518,8 +518,8 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     _P_GEN_funargs[0] = "TrustedInitializer";
     _P_GEN_funargs[1] = "0";
-    PRT_VALUE* this_ref = (P_GetThis_IMPL(context, _P_GEN_funargs));
-    _P_GEN_funargs[2] = &this_ref;
+    PRT_VALUE* P_this_ref = (P_GetThis_IMPL(context, _P_GEN_funargs));
+    _P_GEN_funargs[2] = &P_this_ref;
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
     *P_LVALUE = ((_P_GEN_funval = P_CreateUSMMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -680,8 +680,8 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     _P_GEN_funargs[0] = "BankEnclave";
     _P_GEN_funargs[1] = "0";
-    PRT_VALUE* this_ref = (P_GetThis_IMPL(context, _P_GEN_funargs));
-    _P_GEN_funargs[2] = &this_ref;
+    PRT_VALUE* P_this_ref_1 = (P_GetThis_IMPL(context, _P_GEN_funargs));
+    _P_GEN_funargs[2] = &P_this_ref_1;
     PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp1);
     PrtFreeValue(*P_LVALUE_4);
     *P_LVALUE_4 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));

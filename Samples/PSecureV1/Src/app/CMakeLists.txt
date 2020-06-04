@@ -48,6 +48,8 @@ target_link_libraries(app
         -lsgx_capable -Wl,-rpath=$(SGX_LIBRARY_PATH)
         -Wl,-rpath -Wl,/usr/local/lib
         -Wl,-rpath -Wl,${SGX_LIBRARY_PATH}
+        -lssl
+        -lcrypto
         -lpthread)
 
 add_dependencies(app enclave)

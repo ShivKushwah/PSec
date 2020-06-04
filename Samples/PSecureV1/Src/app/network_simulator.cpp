@@ -9,6 +9,10 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <resolv.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#define FAIL -1
 #define MAX 72400 
 #define SA struct sockaddr 
 
@@ -20,90 +24,185 @@ const int DISTRIBUTED_HOST_READ_REQUEST = 1;
 const int KPS_ATTESTATION_READ_REQUEST = 2;
 const int KPS_GENERIC_READ_REQUEST = 3;
 
+//TLS 1.2 Helper functions with OpenSSL
+SSL_CTX* InitCTX(void)
+{
+    const SSL_METHOD *method;
+    SSL_CTX *ctx;
+    OpenSSL_add_all_algorithms();  /* Load cryptos, et.al. */
+    SSL_load_error_strings();   /* Bring in and register error messages */
+    method = TLSv1_2_client_method();  /* Create new client-method instance */
+    ctx = SSL_CTX_new(method);   /* Create new context */
+    if ( ctx == NULL )
+    {
+        ERR_print_errors_fp(stderr);
+        abort();
+    }
+    return ctx;
+}
+SSL_CTX* InitServerCTX(void)
+{
+    const SSL_METHOD *method;
+    SSL_CTX *ctx;
+    OpenSSL_add_all_algorithms();  /* load & register all cryptos, etc. */
+    SSL_load_error_strings();   /* load all error messages */
+    method = TLSv1_2_server_method();  /* create new server-method instance */
+    ctx = SSL_CTX_new(method);   /* create new context from method */
+    if ( ctx == NULL )
+    {
+        ERR_print_errors_fp(stderr);
+        abort();
+    }
+    return ctx;
+}
+void ShowCerts(SSL* ssl)
+{
+    X509 *cert;
+    char *line;
+    cert = SSL_get_peer_certificate(ssl); /* get the server's certificate */
+    if ( cert != NULL )
+    {
+        ocall_print("Server certificates:\n");
+        line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
+        ocall_print("Subject:");
+		ocall_print(line);
+        free(line);       /* free the malloc'ed string */
+        line = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
+        ocall_print("Issuer:");
+		ocall_print(line);
+        free(line);       /* free the malloc'ed string */
+        X509_free(cert);     /* free the malloc'ed certificate copy */
+    }
+    else
+        ocall_print("Info: No client certificates configured.\n");
+}
+
+void LoadCertificates(SSL_CTX* ctx, char* CertFile, char* KeyFile)
+{
+    /* set the local certificate from CertFile */
+    if ( SSL_CTX_use_certificate_file(ctx, CertFile, SSL_FILETYPE_PEM) <= 0 )
+    {
+        ERR_print_errors_fp(stderr);
+        abort();
+    }
+    /* set the private key from KeyFile (may be the same as CertFile) */
+    if ( SSL_CTX_use_PrivateKey_file(ctx, KeyFile, SSL_FILETYPE_PEM) <= 0 )
+    {
+        ERR_print_errors_fp(stderr);
+        abort();
+    }
+    /* verify private key */
+    if ( !SSL_CTX_check_private_key(ctx) )
+    {
+		ocall_print("ERROR: Private key issues in TLS connection");
+        fprintf(stderr, "Private key does not match the public certificate\n");
+        abort();
+    }
+}
+
 // Reading Incoming Network Request Handlers *******************
 
 // Function that reads incoming data from the network and forwards it to send_network_request_API and returns the results back over the network
-void func(int sockfd, int handle_incoming_request_type) 
+void func(SSL* ssl, int handle_incoming_request_type) 
 { 
-	char buff[MAX]; 
-	int n; 
-	// infinite loop for chat 
-	for (;;) { 
-		bzero(buff, MAX); 
+	if ( SSL_accept(ssl) == FAIL )     /* do SSL-protocol accept */
+        ERR_print_errors_fp(stderr);
+    else
+    {
+		ShowCerts(ssl);        /* get any certificates */
+		char buff[MAX]; 
+		int n; 
+		// infinite loop for chat 
+		for (;;) { 
+			bzero(buff, MAX); 
 
-		// read the message from client and copy it in buffer 
-		int actual_response_size = read(sockfd, buff, sizeof(buff)); 
+			// read the message from client and copy it in buffer 
+			// int actual_response_size = read(sockfd, buff, sizeof(buff)); 
+			int actual_response_size = SSL_read(ssl, buff, sizeof(buff)); /* get request */
 
-		if (actual_response_size >= sizeof(buff)) {
-			ocall_print("NOTE: Server Network buffer full\n");
-		}
-
-		int responseSize;
-		char* retString;
-		if (handle_incoming_request_type == DISTRIBUTED_HOST_READ_REQUEST) {
-			responseSize = 1000; //TODO unhardcode 1000 and have make network request return values that have size associated with them 
-			retString = send_network_request_API(buff, actual_response_size);
-		} else if (handle_incoming_request_type == KPS_ATTESTATION_READ_REQUEST) {
-			retString = handle_socket_attestation_request(buff, responseSize);
-			if (responseSize >= MAX) {
-				ocall_print("ERROR: Server network buffer overflow\n");
+			if (actual_response_size >= sizeof(buff)) {
+				ocall_print("NOTE: Server Network buffer full\n");
 			}
-		} else {
-			retString = handle_socket_kps_generic_request(buff, responseSize);
-			if (responseSize >= MAX) {
-				ocall_print("ERROR: Server network buffer overflow\n");
+
+			int responseSize;
+			char* retString;
+			if (handle_incoming_request_type == DISTRIBUTED_HOST_READ_REQUEST) {
+				responseSize = 1000; //TODO unhardcode 1000 and have make network request return values that have size associated with them 
+				retString = send_network_request_API(buff, actual_response_size);
+			} else if (handle_incoming_request_type == KPS_ATTESTATION_READ_REQUEST) {
+				retString = handle_socket_attestation_request(buff, responseSize);
+				if (responseSize >= MAX) {
+					ocall_print("ERROR: Server network buffer overflow\n");
+				}
+			} else {
+				retString = handle_socket_kps_generic_request(buff, responseSize);
+				if (responseSize >= MAX) {
+					ocall_print("ERROR: Server network buffer overflow\n");
+				}
 			}
-		}
 
 
-		// print buffer which contains the client contents 
-		// ocall_print("From client: %s\t To client : ", buff); 
-		bzero(buff, MAX); 
-		n = 0; 
-		// copy server message in the buffer 
-		ocall_print("Server: copying into return buffer\n");
-		printPayload(retString, 20);
-		ocall_print("Server: about to memcpy\n");
-		memcpy(buff, retString, responseSize);  
-		
+			// print buffer which contains the client contents 
+			// ocall_print("From client: %s\t To client : ", buff); 
+			bzero(buff, MAX); 
+			n = 0; 
+			// copy server message in the buffer 
+			ocall_print("Server: copying into return buffer\n");
+			printPayload(retString, 20);
+			ocall_print("Server: about to memcpy\n");
+			memcpy(buff, retString, responseSize); 
 
-		// and send that buffer to client 
-		write(sockfd, buff, responseSize); 
+			// and send that buffer to client 
+			// write(sockfd, buff, responseSize); 
+			SSL_write(ssl, buff, responseSize);			
 
-		// if msg contains "Exit" then server exit and chat ended. 
-		// if (strncmp("exit", buff, 4) == 0) { 
-		// 	ocall_print("Server Exit...\n"); 
-		// 	break; 
-		// } 
-		ocall_print("Server sent message to client!\n");
-        break;
-	} 
+			// if msg contains "Exit" then server exit and chat ended. 
+			// if (strncmp("exit", buff, 4) == 0) { 
+			// 	ocall_print("Server Exit...\n"); 
+			// 	break; 
+			// } 
+			ocall_print("Server sent message to client!\n");
+			break;
+		} 
+	}
 } 
 
 void* server_handle_connection_thread(void* arg) {
-	int sockfd = *((int *)arg);
-	func(sockfd, DISTRIBUTED_HOST_READ_REQUEST);
-	close(sockfd);
+	SSL* ssl = (SSL*) arg;
+	func(ssl, DISTRIBUTED_HOST_READ_REQUEST);
+	int sd = SSL_get_fd(ssl);       /* get socket connection */
+    SSL_free(ssl);         /* release SSL state */
+    close(sd);          /* close connection */
 
 }
 
 void* server_handle_attestation_connection_thread(void* arg) {
-	int sockfd = *((int *)arg);
-	func(sockfd, KPS_ATTESTATION_READ_REQUEST);
-	close(sockfd);
+	SSL* ssl = (SSL*) arg;
+	func(ssl, KPS_ATTESTATION_READ_REQUEST);
+	int sd = SSL_get_fd(ssl);       /* get socket connection */
+    SSL_free(ssl);         /* release SSL state */
+    close(sd);          /* close connection */
 
 }
 
 void* server_handle_kps_generic_connection_thread(void* arg) {
-	int sockfd = *((int *)arg);
-	func(sockfd, KPS_GENERIC_READ_REQUEST);
-	close(sockfd);
+	SSL* ssl = (SSL*) arg;
+	func(ssl, KPS_GENERIC_READ_REQUEST);
+	int sd = SSL_get_fd(ssl);       /* get socket connection */
+    SSL_free(ssl);         /* release SSL state */
+    close(sd);          /* close connection */
 
 }
 
 void handle_socket_helper(void* arg, int handle_incoming_request_type) {
 	int sockfd, connfd, len; 
-	struct sockaddr_in servaddr, cli; 
+	struct sockaddr_in servaddr, cli;
+	SSL_CTX *ctx;
+ 
+	SSL_library_init();
+    ctx = InitServerCTX();        /* initialize SSL */
+	//TODO unhardcode path
+    LoadCertificates(ctx, "/home/shiv/Research/PSec/mycert.pem", "/home/shiv/Research/PSec/mycert.pem"); /* load certs */
 
 	// socket create and verification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
@@ -198,20 +297,25 @@ void handle_socket_helper(void* arg, int handle_incoming_request_type) {
             exit(0); 
         } 
         else
-            ocall_print("server acccept the client...\n"); 
+            ocall_print("server acccept the client...\n");
+		
+		SSL *ssl;
+		ssl = SSL_new(ctx);              /* get new SSL state with context */
+        SSL_set_fd(ssl, connfd);      /* set connection socket to SSL state */ 
 
 		pthread_t pid;
 		if (handle_incoming_request_type == DISTRIBUTED_HOST_READ_REQUEST) {
-			pthread_create(&pid, NULL, server_handle_connection_thread, &connfd);
+			pthread_create(&pid, NULL, server_handle_connection_thread, ssl);
 		} else if (handle_incoming_request_type == KPS_ATTESTATION_READ_REQUEST) {
-			pthread_create(&pid, NULL, server_handle_attestation_connection_thread, &connfd); 
+			pthread_create(&pid, NULL, server_handle_attestation_connection_thread, ssl); 
 		} else {
-			pthread_create(&pid, NULL, server_handle_kps_generic_connection_thread, &connfd);
+			pthread_create(&pid, NULL, server_handle_kps_generic_connection_thread, ssl);
 		}
 
         // After chatting close the socket 
         // close(connfd); 
     }
+	SSL_CTX_free(ctx);         /* release context */
 }
 
 void* handle_socket_network_request(void* arg) 
@@ -234,15 +338,22 @@ void* handle_socket_network_kps_generic_requests(void* arg)
 // Sending Outgoing Network Request Methods *******************
 
 // Function that sends outgoing data across the network to appropiate machine and returns response
-void func_sender(int sockfd, char* request, int request_size, char* network_response) 
+void func_sender(int sockfd, char* request, int request_size, char* network_response, SSL* ssl) 
 { 
 	char buff[MAX]; 
 	for (;;) { 
 		bzero(buff, sizeof(buff)); 
 		memcpy(buff, request, request_size);
-		write(sockfd, buff, request_size); 
+		ocall_print("\n\nConnected with encryption:");
+		ocall_print(SSL_get_cipher(ssl));
+        ShowCerts(ssl);        /* get any certs */
+        SSL_write(ssl, buff, request_size);   /* encrypt & send message */
 		bzero(buff, sizeof(buff)); 
-		read(sockfd, buff, sizeof(buff)); 
+        SSL_read(ssl, buff, sizeof(buff)); /* get reply & decrypt */
+
+		// write(sockfd, buff, request_size); 
+		// bzero(buff, sizeof(buff)); 
+		// read(sockfd, buff, sizeof(buff)); 
 		ocall_print("From Server :");
 		ocall_print(buff); 
 		if ((strncmp(buff, "exit", 4)) == 0) { 
@@ -259,6 +370,8 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 	int sockfd, connfd; 
 	struct sockaddr_in servaddr, cli;
 	char* network_response = (char*) malloc(MAX); 
+	SSL_CTX *ctx;
+    SSL *ssl;
 
 	// socket create and varification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
@@ -311,9 +424,22 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 	} 
 	else
 		ocall_print("client connected to the server..\n"); 
+	
+	ctx = InitCTX();
+	ssl = SSL_new(ctx);      /* create new SSL connection state */
+    SSL_set_fd(ssl, sockfd);    /* attach the socket descriptor */
+    if ( SSL_connect(ssl) == FAIL )   /* perform the connection */
+        ERR_print_errors_fp(stderr);
+    else
+    {
+		// function for chat 
+		func_sender(sockfd, request, request_size, network_response, ssl); 
+		SSL_free(ssl);        /* release connection state */
+		SSL_CTX_free(ctx);        /* release context */
+	}
 
-	// function for chat 
-	func_sender(sockfd, request, request_size, network_response); 
+
+	
 
 	// close the socket 
 	close(sockfd); 
