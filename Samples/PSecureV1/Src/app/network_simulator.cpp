@@ -12,6 +12,7 @@
 #include <resolv.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include <openssl/pem.h>
 #define FAIL -1
 #define MAX 72400 
 #define SA struct sockaddr 
@@ -54,6 +55,66 @@ SSL_CTX* InitServerCTX(void)
         abort();
     }
     return ctx;
+}
+bool validateServerCertIsSignedByKPS(SSL* ssl) {
+	X509 *cert;
+    char *line;
+    cert = SSL_get_peer_certificate(ssl); /* get the server's certificate */
+	if (cert != NULL) {
+		ocall_print("Checking Server cert is signed by KPS\n");
+		FILE * pFile;
+  		pFile = fopen ("/home/shiv/Research/PSec/TLSCertReceived.pem","w");
+		PEM_write_X509(pFile, cert);
+		fclose(pFile);
+
+		// system("openssl verify -CAfile /home/shiv/Research/PSec/KPS.pem /home/shiv/Research/PSec/TLSCertReceived.pem > temp.txt");
+
+		char* cmd = "openssl verify -CAfile /home/shiv/Research/PSec/KPS.pem /home/shiv/Research/PSec/TLSCertReceived.pem";
+		char buf[200];
+		FILE *fp;
+
+		if ((fp = popen(cmd, "r")) == NULL) {
+			ocall_print("Error: Error opening pipe for openssl system command!\n");
+			return false;
+		}
+		bool success;
+
+		while (fgets(buf, 200, fp) != NULL) {
+			// if (strcmp(buf + strlen(buf) - 3, "OK") == 0) {
+			if (buf[strlen(buf) - 3] == 'O' && buf[strlen(buf) - 2] == 'K') {
+				ocall_print("Server certificate validated!\n");
+				success = true;
+			} else {
+				ocall_print("Error: server certificate invalid!");
+				success = false;
+			}
+		}
+
+		if(pclose(fp))  {
+			ocall_print("Error: Openssl Command not found or exited with error status\n");
+			return false;
+		}
+
+		return success;
+
+
+		// system("openssl verify -CAfile KPS.pem TLSCertReceived.pem");
+		// X509_STORE *s = X509_STORE_new();
+		// int num = sk_X509_num(sk);
+		// X509 *top = sk_X509_value(st, num-1);
+		// X509_STORE_add_cert(s, top);
+		// X509_STORE_CTX *ctx = X509_STORE_CTX_new();
+		// X509_STORE_CTX_init(ctx, s, cert, st);
+		// int rc = X509_verify_cert(ctx);
+		// if (rc == 1) {
+		// 	// validated OK. either trusted or self signed.
+		// } else {
+		// 	// validation failed
+		// 	int err = X509_STORE_CTX_get_error(ctx);
+		// }
+	} else {
+		return false;
+	}
 }
 void ShowCerts(SSL* ssl)
 {
@@ -202,7 +263,7 @@ void handle_socket_helper(void* arg, int handle_incoming_request_type) {
 	SSL_library_init();
     ctx = InitServerCTX();        /* initialize SSL */
 	//TODO unhardcode path
-    LoadCertificates(ctx, "/home/shiv/Research/PSec/mycert.pem", "/home/shiv/Research/PSec/mycert.pem"); /* load certs */
+    LoadCertificates(ctx, "/home/shiv/Research/PSec/dstHost.pem", "/home/shiv/Research/PSec/dstHost.key"); /* load certs */
 
 	// socket create and verification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
@@ -347,6 +408,9 @@ void func_sender(int sockfd, char* request, int request_size, char* network_resp
 		ocall_print("\n\nConnected with encryption:");
 		ocall_print(SSL_get_cipher(ssl));
         ShowCerts(ssl);        /* get any certs */
+		if (!validateServerCertIsSignedByKPS(ssl)) {
+			return;
+		}
         SSL_write(ssl, buff, request_size);   /* encrypt & send message */
 		bzero(buff, sizeof(buff)); 
         SSL_read(ssl, buff, sizeof(buff)); /* get reply & decrypt */
