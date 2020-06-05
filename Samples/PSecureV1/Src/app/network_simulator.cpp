@@ -63,12 +63,12 @@ bool validateServerCertIsSignedByKPS(SSL* ssl) {
 	if (cert != NULL) {
 		ocall_print("Checking Server cert is signed by KPS\n");
 		FILE * pFile;
-  		pFile = fopen ("/home/shiv/Research/PSec/TLSCertReceived.pem","w");
+  		pFile = fopen ("/home/shiv/Research/PSec/keys/TLSCertReceived.pem","w");
 		PEM_write_X509(pFile, cert);
 		fclose(pFile);
 
 		// system("openssl verify -CAfile /home/shiv/Research/PSec/KPS.pem /home/shiv/Research/PSec/TLSCertReceived.pem > temp.txt");
-		char* cmdFormat = "openssl verify -CAfile %s /home/shiv/Research/PSec/TLSCertReceived.pem";
+		char* cmdFormat = "openssl verify -CAfile %s /home/shiv/Research/PSec/keys/TLSCertReceived.pem";
 		char cmd[200];
 		sprintf(cmd, cmdFormat, KPS_CERT_LOCATION);
 		char buf[200];
