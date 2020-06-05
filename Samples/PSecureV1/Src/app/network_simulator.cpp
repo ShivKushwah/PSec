@@ -68,8 +68,9 @@ bool validateServerCertIsSignedByKPS(SSL* ssl) {
 		fclose(pFile);
 
 		// system("openssl verify -CAfile /home/shiv/Research/PSec/KPS.pem /home/shiv/Research/PSec/TLSCertReceived.pem > temp.txt");
-
-		char* cmd = "openssl verify -CAfile /home/shiv/Research/PSec/KPS.pem /home/shiv/Research/PSec/TLSCertReceived.pem";
+		char* cmdFormat = "openssl verify -CAfile %s /home/shiv/Research/PSec/TLSCertReceived.pem";
+		char cmd[200];
+		sprintf(cmd, cmdFormat, KPS_CERT_LOCATION);
 		char buf[200];
 		FILE *fp;
 

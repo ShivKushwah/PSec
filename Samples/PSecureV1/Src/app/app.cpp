@@ -44,6 +44,7 @@ int host_machine_port;
 extern char* KPS_IP_ADDRESS;
 extern int KPS_PORT_GENERIC;
 extern int KPS_PORT_ATTESTATION;
+char* KPS_CERT_LOCATION;
 
 bool isKpsProcess = false;
 
@@ -105,7 +106,7 @@ int main(int argc, char const *argv[]) {
     }
 
     char* split = strtok((char*) argv[2], "=");
-    split = strtok(NULL, "-"); //Get ip address and generic port of KPS
+    split = split + strlen(split) + 1;//strtok(NULL, "-"); //Get ip address and generic port of KPS
     string kpsIPAddress;
     parseIPAddressPortString(split, kpsIPAddress, KPS_PORT_GENERIC);
     KPS_IP_ADDRESS = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
@@ -113,9 +114,15 @@ int main(int argc, char const *argv[]) {
 
     KPS_PORT_ATTESTATION = atoi((char*) argv[3]); //Attestation port of KPS
 
+    split = strtok((char*) argv[4], "="); //Get location of KPS root certificate location
+    split = split + strlen(split) + 1;
+    KPS_CERT_LOCATION = (char*) malloc(100);
+    memcpy(KPS_CERT_LOCATION, split, strlen(split));
+    KPS_CERT_LOCATION[strlen(split)] = '\0';
+
     if (isKpsProcess) {
 
-        int i = 4;
+        int i = 5;
         while (i < argc) {
             split = strtok((char*) argv[i], "=");
             char* machineAddress = split;
@@ -139,17 +146,17 @@ int main(int argc, char const *argv[]) {
         }
 
     } else {
-        char* split = strtok((char*) argv[4], "=");
+        char* split = strtok((char*) argv[5], "=");
         char* currentHostMachineAddress = split + strlen(split) + 1;
 
-        if (strcmp(argv[5], "isStartMachine=True") == 0) {
+        if (strcmp(argv[6], "isStartMachine=True") == 0) {
             isStartHostMachine = true;
         } else {
             isStartHostMachine = false;
         }
 
         if (isStartHostMachine) {
-            split = strtok((char*) argv[6], "=");
+            split = strtok((char*) argv[7], "=");
             startMachineName = split + strlen(split) + 1;
         }
 

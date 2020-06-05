@@ -17,6 +17,8 @@ typedef tuple <string,string> PublicMachineChildPair; //parentMachineID, childPu
 typedef tuple <string,string> identityKeyPair; //public, private
 typedef tuple <uint32_t,string> PMachineChildPair; //parentMachineID, childPublicKey
 
+extern char* KPS_CERT_LOCATION;
+
 void initApp();
 
 void start_socket_network_handler();
