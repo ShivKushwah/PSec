@@ -3,6 +3,8 @@
 #include "enclave_u.h"
 
 extern char* KPS_CERT_LOCATION;
+extern char* KPS_CERT_KEYS_LOCATION;
+extern bool isKpsProcess;
 
 void* handle_socket_network_request(void* arg);
 void* handle_socket_network_request_attestation(void* arg);

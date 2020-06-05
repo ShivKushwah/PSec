@@ -18,6 +18,8 @@ typedef tuple <string,string> identityKeyPair; //public, private
 typedef tuple <uint32_t,string> PMachineChildPair; //parentMachineID, childPublicKey
 
 extern char* KPS_CERT_LOCATION;
+extern char* KPS_CERT_KEYS_LOCATION;
+extern bool isKpsProcess;
 
 void initApp();
 

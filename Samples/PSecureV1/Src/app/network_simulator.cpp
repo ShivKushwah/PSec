@@ -263,8 +263,11 @@ void handle_socket_helper(void* arg, int handle_incoming_request_type) {
  
 	SSL_library_init();
     ctx = InitServerCTX();        /* initialize SSL */
-	//TODO unhardcode path
-    LoadCertificates(ctx, "/home/shiv/Research/PSec/dstHost.pem", "/home/shiv/Research/PSec/dstHost.key"); /* load certs */
+	if (isKpsProcess) {
+		LoadCertificates(ctx, KPS_CERT_LOCATION, KPS_CERT_KEYS_LOCATION); /* load certs */
+	} else {
+		LoadCertificates(ctx, "/home/shiv/Research/PSec/dstHost.pem", "/home/shiv/Research/PSec/dstHost.key"); /* load certs */
+	}
 
 	// socket create and verification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 

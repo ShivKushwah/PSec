@@ -45,6 +45,7 @@ extern char* KPS_IP_ADDRESS;
 extern int KPS_PORT_GENERIC;
 extern int KPS_PORT_ATTESTATION;
 char* KPS_CERT_LOCATION;
+char* KPS_CERT_KEYS_LOCATION;
 
 bool isKpsProcess = false;
 
@@ -106,7 +107,7 @@ int main(int argc, char const *argv[]) {
     }
 
     char* split = strtok((char*) argv[2], "=");
-    split = split + strlen(split) + 1;//strtok(NULL, "-"); //Get ip address and generic port of KPS
+    split = split + strlen(split) + 1; //Get ip address and generic port of KPS
     string kpsIPAddress;
     parseIPAddressPortString(split, kpsIPAddress, KPS_PORT_GENERIC);
     KPS_IP_ADDRESS = (char*) malloc(IP_ADDRESS_AND_PORT_STRING_SIZE);
@@ -122,7 +123,13 @@ int main(int argc, char const *argv[]) {
 
     if (isKpsProcess) {
 
-        int i = 5;
+        split = strtok((char*) argv[5], "="); //Get location of KPS root certificate location
+        split = split + strlen(split) + 1;
+        KPS_CERT_KEYS_LOCATION = (char*) malloc(100);
+        memcpy(KPS_CERT_KEYS_LOCATION, split, strlen(split));
+        KPS_CERT_KEYS_LOCATION[strlen(split)] = '\0';
+
+        int i = 6;
         while (i < argc) {
             split = strtok((char*) argv[i], "=");
             char* machineAddress = split;
