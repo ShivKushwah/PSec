@@ -44,8 +44,10 @@ int host_machine_port;
 extern char* KPS_IP_ADDRESS;
 extern int KPS_PORT_GENERIC;
 extern int KPS_PORT_ATTESTATION;
-char* KPS_CERT_LOCATION;
-char* KPS_CERT_KEYS_LOCATION;
+char* KPS_CERT_LOCATION; 
+char* KPS_CERT_KEYS_LOCATION; // will be empty if not KPS process
+char* DST_HOST_CERT_LOCATION; // will be empty if KPS process
+char* DST_HOST_CERT_KEYS_LOCATION; //will be empty if KPS process
 
 bool isKpsProcess = false;
 
@@ -123,7 +125,7 @@ int main(int argc, char const *argv[]) {
 
     if (isKpsProcess) {
 
-        split = strtok((char*) argv[5], "="); //Get location of KPS root certificate location
+        split = strtok((char*) argv[5], "="); //Get location of KPS root certificate keys location
         split = split + strlen(split) + 1;
         KPS_CERT_KEYS_LOCATION = (char*) malloc(100);
         memcpy(KPS_CERT_KEYS_LOCATION, split, strlen(split));
@@ -156,14 +158,26 @@ int main(int argc, char const *argv[]) {
         char* split = strtok((char*) argv[5], "=");
         char* currentHostMachineAddress = split + strlen(split) + 1;
 
-        if (strcmp(argv[6], "isStartMachine=True") == 0) {
+        split = strtok((char*) argv[6], "="); //Get location of distributed host certificate location
+        split = split + strlen(split) + 1;
+        DST_HOST_CERT_LOCATION = (char*) malloc(100);
+        memcpy(DST_HOST_CERT_LOCATION, split, strlen(split));
+        DST_HOST_CERT_LOCATION[strlen(split)] = '\0';
+
+        split = strtok((char*) argv[7], "="); //Get location of distributed host certificate keys location
+        split = split + strlen(split) + 1;
+        DST_HOST_CERT_KEYS_LOCATION = (char*) malloc(100);
+        memcpy(DST_HOST_CERT_KEYS_LOCATION, split, strlen(split));
+        DST_HOST_CERT_KEYS_LOCATION[strlen(split)] = '\0';
+
+        if (strcmp(argv[8], "isStartMachine=True") == 0) {
             isStartHostMachine = true;
         } else {
             isStartHostMachine = false;
         }
 
         if (isStartHostMachine) {
-            split = strtok((char*) argv[7], "=");
+            split = strtok((char*) argv[9], "=");
             startMachineName = split + strlen(split) + 1;
         }
 

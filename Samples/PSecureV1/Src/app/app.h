@@ -21,6 +21,9 @@ extern char* KPS_CERT_LOCATION;
 extern char* KPS_CERT_KEYS_LOCATION;
 extern bool isKpsProcess;
 
+extern char* DST_HOST_CERT_LOCATION;
+extern char* DST_HOST_CERT_KEYS_LOCATION;
+
 void initApp();
 
 void start_socket_network_handler();

@@ -266,7 +266,7 @@ void handle_socket_helper(void* arg, int handle_incoming_request_type) {
 	if (isKpsProcess) {
 		LoadCertificates(ctx, KPS_CERT_LOCATION, KPS_CERT_KEYS_LOCATION); /* load certs */
 	} else {
-		LoadCertificates(ctx, "/home/shiv/Research/PSec/dstHost.pem", "/home/shiv/Research/PSec/dstHost.key"); /* load certs */
+		LoadCertificates(ctx, DST_HOST_CERT_LOCATION, DST_HOST_CERT_KEYS_LOCATION); /* load certs */
 	}
 
 	// socket create and verification 
