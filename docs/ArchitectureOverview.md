@@ -77,3 +77,7 @@ The constants in constants.h serve as a easy way to modify maximum message lengt
 The `ocall_network_request` method in enclave_untrusted_host.cpp calls `network_socket_sender` in network_simulator.cpp, which actually makes the socket request across the network.
 
 The `ocall_enclave_attestation_in_thread` method in enclave_untrusted_host.cpp creates a new thread and calls the `enclave_start_attestation` method in order to start the enclave attestation to the KPS. This attestation occurs over the KPS's attestation port (uses `handle_socket_attestation_request` in kps.cpp).
+
+### Additional Notes
+
+The TLS architecture overview is located [here](TLSDocumentation.md).
