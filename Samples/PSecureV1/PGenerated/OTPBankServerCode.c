@@ -383,22 +383,6 @@ PRT_FUNDECL P_FUNCTION_CreateUSMMachineRequest =
 };
 
 
-PRT_EVENTDECL* P_UntrustedInitializer_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
-PRT_EVENTSETDECL P_EVENTSET_UntrustedInitializer_RECV =
-{
-    13U,
-    P_UntrustedInitializer_RECV_INNER,
-    NULL
-};
-
-PRT_INTERFACEDECL P_I_UntrustedInitializer =
-{
-    0U,
-    "UntrustedInitializer",
-    &P_GEND_TYPE_n,
-    &P_EVENTSET_UntrustedInitializer_RECV
-};
-
 PRT_EVENTDECL* P_TrustedInitializer_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
 PRT_EVENTSETDECL P_EVENTSET_TrustedInitializer_RECV =
 {
@@ -409,10 +393,26 @@ PRT_EVENTSETDECL P_EVENTSET_TrustedInitializer_RECV =
 
 PRT_INTERFACEDECL P_I_TrustedInitializer =
 {
-    1U,
+    0U,
     "TrustedInitializer",
     &P_GEND_TYPE_n,
     &P_EVENTSET_TrustedInitializer_RECV
+};
+
+PRT_EVENTDECL* P_UntrustedInitializer_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_UntrustedInitializer_RECV =
+{
+    13U,
+    P_UntrustedInitializer_RECV_INNER,
+    NULL
+};
+
+PRT_INTERFACEDECL P_I_UntrustedInitializer =
+{
+    1U,
+    "UntrustedInitializer",
+    &P_GEND_TYPE_n,
+    &P_EVENTSET_UntrustedInitializer_RECV
 };
 
 PRT_EVENTDECL* P_BankEnclave_RECV_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
@@ -463,8 +463,9 @@ PRT_INTERFACEDECL P_I_ClientWebBrowser =
     &P_EVENTSET_ClientWebBrowser_RECV
 };
 
-PRT_VARDECL P_UntrustedInitializer_VARS[] = {
-    { "handler", &P_GEND_TYPE_machine_handle }
+PRT_VARDECL P_TrustedInitializer_VARS[] = {
+    { "clientUSM", &P_GEND_TYPE_machine_handle },
+    { "bankSSM", &P_GEND_TYPE_secure_machine_handle }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER[] = { NULL };
@@ -491,9 +492,9 @@ PRT_EVENTSETDECL P_EVENTSET_Initial_DOS =
     NULL
 };
 
-#define P_STATE_UntrustedInitializer_Initial \
+#define P_STATE_TrustedInitializer_Initial \
 { \
-    "UntrustedInitializer.Initial", \
+    "TrustedInitializer.Initial", \
     0U, \
     0U, \
     &P_EVENTSET_Initial_DEFERS, \
@@ -505,7 +506,7 @@ PRT_EVENTSETDECL P_EVENTSET_Initial_DOS =
     &_P_NO_OP, \
 }
 
-PRT_STATEDECL P_UntrustedInitializer_STATES[] = { P_STATE_UntrustedInitializer_Initial };
+PRT_STATEDECL P_TrustedInitializer_STATES[] = { P_STATE_TrustedInitializer_Initial };
 
 PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
@@ -514,12 +515,23 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE* PTMP_tmp0 = NULL;
+    PRT_VALUE* PTMP_tmp1 = NULL;
+    PRT_VALUE* PTMP_tmp2 = NULL;
+    PRT_VALUE* PTMP_tmp3 = NULL;
+    PRT_VALUE* PTMP_tmp4 = NULL;
+    PRT_VALUE* PTMP_tmp5 = NULL;
+    PRT_VALUE* PTMP_tmp6 = NULL;
+    PRT_VALUE* PTMP_tmp7 = NULL;
+    PRT_VALUE* PTMP_tmp8 = NULL;
+    PRT_VALUE* PTMP_tmp9 = NULL;
+    PRT_VALUE* PTMP_tmp10 = NULL;
+    PRT_VALUE* PTMP_tmp11 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    _P_GEN_funargs[0] = "TrustedInitializer";
+    PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
+    _P_GEN_funargs[0] = "ClientWebBrowser";
     _P_GEN_funargs[1] = "0";
-    PRT_VALUE* P_this_ref = (P_GetThis_IMPL(context, _P_GEN_funargs));
-    _P_GEN_funargs[2] = &P_this_ref;
+    _P_GEN_funargs[2] = NULL;
     PRT_VALUE** P_LVALUE = &(PTMP_tmp0);
     PrtFreeValue(*P_LVALUE);
     *P_LVALUE = ((_P_GEN_funval = P_CreateUSMMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
@@ -539,8 +551,128 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         PTMP_tmp0 = NULL;
     }
     
+    _P_GEN_funargs[0] = "BankEnclave";
+    _P_GEN_funargs[1] = "0";
+    PRT_VALUE* P_this_ref = (P_GetThis_IMPL(context, _P_GEN_funargs));
+    _P_GEN_funargs[2] = &P_this_ref;
+    PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp1);
+    PrtFreeValue(*P_LVALUE_2);
+    *P_LVALUE_2 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
+    {
+        PRT_VALUE** P_LVALUE_3 = &(p_this->varValues[1]);
+        PrtFreeValue(*P_LVALUE_3);
+        *P_LVALUE_3 = PTMP_tmp1;
+        PTMP_tmp1 = NULL;
+    }
+    
+    PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp2);
+    PrtFreeValue(*P_LVALUE_4);
+    *P_LVALUE_4 = PrtCloneValue(p_this->varValues[1]);
+    
+    PRT_VALUE** P_LVALUE_5 = &(PTMP_tmp3);
+    PrtFreeValue(*P_LVALUE_5);
+    *P_LVALUE_5 = PrtCloneValue((&P_EVENT_TRUSTEDProvisionBankSSM.value));
+    
+    PRT_VALUE** P_LVALUE_6 = &(PTMP_tmp4);
+    PrtFreeValue(*P_LVALUE_6);
+    *P_LVALUE_6 = PrtCloneValue(p_this->varValues[0]);
+    
+    PRT_VALUE** P_LVALUE_7 = &(PTMP_tmp5);
+    PrtFreeValue(*P_LVALUE_7);
+    *P_LVALUE_7 = ((_P_GEN_funargs[0] = &(PTMP_tmp4)), (_P_GEN_funval = P_Endorse_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp4), PTMP_tmp4 = NULL), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
+    PRT_VALUE** P_LVALUE_8 = &(PTMP_tmp6);
+    PrtFreeValue(*P_LVALUE_8);
+    *P_LVALUE_8 = PrtCloneValue(PrtCastValue(PTMP_tmp5, &P_GEND_TYPE_secure_machine_handle));
+    
+    PRT_VALUE* P_PTMP_tmp = PrtCloneValue(&(P_LIT_INT32));
+    _P_GEN_funargs[0] = &(PTMP_tmp2);
+    _P_GEN_funargs[1] = &(PTMP_tmp3);
+    _P_GEN_funargs[2] = &(P_PTMP_tmp);
+    _P_GEN_funargs[3] = &(PTMP_tmp6);
+    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
+    PRT_VALUE** P_LVALUE_9 = &(PTMP_tmp7);
+    PrtFreeValue(*P_LVALUE_9);
+    *P_LVALUE_9 = PrtCloneValue(p_this->varValues[0]);
+    
+    PRT_VALUE** P_LVALUE_10 = &(PTMP_tmp8);
+    PrtFreeValue(*P_LVALUE_10);
+    *P_LVALUE_10 = PrtCloneValue((&P_EVENT_BankPublicIDEvent.value));
+    
+    PRT_VALUE** P_LVALUE_11 = &(PTMP_tmp9);
+    PrtFreeValue(*P_LVALUE_11);
+    *P_LVALUE_11 = PrtCloneValue(p_this->varValues[1]);
+    
+    PRT_VALUE** P_LVALUE_12 = &(PTMP_tmp10);
+    PrtFreeValue(*P_LVALUE_12);
+    *P_LVALUE_12 = ((_P_GEN_funargs[0] = &(PTMP_tmp9)), (_P_GEN_funval = P_Declassify_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp9), PTMP_tmp9 = NULL), (_P_GEN_funval));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
+    PRT_VALUE** P_LVALUE_13 = &(PTMP_tmp11);
+    PrtFreeValue(*P_LVALUE_13);
+    *P_LVALUE_13 = PrtCloneValue(PrtCastValue(PTMP_tmp10, &P_GEND_TYPE_machine_handle));
+    
+    PRT_VALUE* P_PTMP_tmp_1 = PrtCloneValue(&(P_LIT_INT32));
+    _P_GEN_funargs[0] = &(PTMP_tmp7);
+    _P_GEN_funargs[1] = &(PTMP_tmp8);
+    _P_GEN_funargs[2] = &(P_PTMP_tmp_1);
+    _P_GEN_funargs[3] = &(PTMP_tmp11);
+    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return;
+    }
+    
 p_return: ;
     PrtFreeValue(PTMP_tmp0); PTMP_tmp0 = NULL;
+    PrtFreeValue(PTMP_tmp1); PTMP_tmp1 = NULL;
+    PrtFreeValue(PTMP_tmp2); PTMP_tmp2 = NULL;
+    PrtFreeValue(PTMP_tmp3); PTMP_tmp3 = NULL;
+    PrtFreeValue(PTMP_tmp4); PTMP_tmp4 = NULL;
+    PrtFreeValue(PTMP_tmp5); PTMP_tmp5 = NULL;
+    PrtFreeValue(PTMP_tmp6); PTMP_tmp6 = NULL;
+    PrtFreeValue(PTMP_tmp7); PTMP_tmp7 = NULL;
+    PrtFreeValue(PTMP_tmp8); PTMP_tmp8 = NULL;
+    PrtFreeValue(PTMP_tmp9); PTMP_tmp9 = NULL;
+    PrtFreeValue(PTMP_tmp10); PTMP_tmp10 = NULL;
+    PrtFreeValue(PTMP_tmp11); PTMP_tmp11 = NULL;
     return _P_GEN_retval;
 }
 
@@ -552,47 +684,46 @@ PRT_FUNDECL P_FUNCTION_Anon =
 };
 
 
-PRT_FUNDECL* P_UntrustedInitializer_METHODS[] = { &P_FUNCTION_Anon };
+PRT_FUNDECL* P_TrustedInitializer_METHODS[] = { &P_FUNCTION_Anon };
 
-PRT_EVENTDECL* P_UntrustedInitializer_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
-PRT_EVENTSETDECL P_EVENTSET_UntrustedInitializer_RECV_1 =
+PRT_EVENTDECL* P_TrustedInitializer_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_TrustedInitializer_RECV_1 =
 {
     13U,
-    P_UntrustedInitializer_RECV_INNER_1,
+    P_TrustedInitializer_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_UntrustedInitializer_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
-PRT_EVENTSETDECL P_EVENTSET_UntrustedInitializer_SEND =
+PRT_EVENTDECL* P_TrustedInitializer_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_TrustedInitializer_SEND =
 {
     13U,
-    P_UntrustedInitializer_SEND_INNER,
+    P_TrustedInitializer_SEND_INNER,
     NULL
 };
 
-PRT_UINT32 P_UntrustedInitializer_CREATES_ARR[] = { 1 };
-PRT_INTERFACESETDECL P_UntrustedInitializer_CREATES = { 1, P_UntrustedInitializer_CREATES_ARR };
-PRT_MACHINEDECL P_MACHINE_UntrustedInitializer = 
+PRT_UINT32 P_TrustedInitializer_CREATES_ARR[] = { 2, 4 };
+PRT_INTERFACESETDECL P_TrustedInitializer_CREATES = { 2, P_TrustedInitializer_CREATES_ARR };
+PRT_MACHINEDECL P_MACHINE_TrustedInitializer = 
 {
     0U,
-    "UntrustedInitializer",
-    &P_EVENTSET_UntrustedInitializer_RECV_1,
-    &P_EVENTSET_UntrustedInitializer_SEND,
-    &P_UntrustedInitializer_CREATES,
-    1U,
+    "TrustedInitializer",
+    &P_EVENTSET_TrustedInitializer_RECV_1,
+    &P_EVENTSET_TrustedInitializer_SEND,
+    &P_TrustedInitializer_CREATES,
+    2U,
     1U,
     1U,
     4294967295U,
     0U,
-    P_UntrustedInitializer_VARS,
-    P_UntrustedInitializer_STATES,
-    P_UntrustedInitializer_METHODS,
-    PRT_FALSE
+    P_TrustedInitializer_VARS,
+    P_TrustedInitializer_STATES,
+    P_TrustedInitializer_METHODS,
+    PRT_TRUE
 };
 
-PRT_VARDECL P_TrustedInitializer_VARS[] = {
-    { "clientUSM", &P_GEND_TYPE_machine_handle },
-    { "bankSSM", &P_GEND_TYPE_secure_machine_handle }
+PRT_VARDECL P_UntrustedInitializer_VARS[] = {
+    { "handler", &P_GEND_TYPE_machine_handle }
 };
 
 PRT_EVENTDECL* P_Initial_DEFERS_INNER_1[] = { NULL };
@@ -619,9 +750,9 @@ PRT_EVENTSETDECL P_EVENTSET_Initial_DOS_1 =
     NULL
 };
 
-#define P_STATE_TrustedInitializer_Initial \
+#define P_STATE_UntrustedInitializer_Initial \
 { \
-    "TrustedInitializer.Initial", \
+    "UntrustedInitializer.Initial", \
     0U, \
     0U, \
     &P_EVENTSET_Initial_DEFERS_1, \
@@ -633,7 +764,7 @@ PRT_EVENTSETDECL P_EVENTSET_Initial_DOS_1 =
     &_P_NO_OP, \
 }
 
-PRT_STATEDECL P_TrustedInitializer_STATES[] = { P_STATE_TrustedInitializer_Initial };
+PRT_STATEDECL P_UntrustedInitializer_STATES[] = { P_STATE_UntrustedInitializer_Initial };
 
 PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
@@ -642,49 +773,15 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE* PTMP_tmp0_1 = NULL;
-    PRT_VALUE* PTMP_tmp1 = NULL;
-    PRT_VALUE* PTMP_tmp2 = NULL;
-    PRT_VALUE* PTMP_tmp3 = NULL;
-    PRT_VALUE* PTMP_tmp4 = NULL;
-    PRT_VALUE* PTMP_tmp5 = NULL;
-    PRT_VALUE* PTMP_tmp6 = NULL;
-    PRT_VALUE* PTMP_tmp7 = NULL;
-    PRT_VALUE* PTMP_tmp8 = NULL;
-    PRT_VALUE* PTMP_tmp9 = NULL;
-    PRT_VALUE* PTMP_tmp10 = NULL;
-    PRT_VALUE* PTMP_tmp11 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PRT_VALUE P_LIT_INT32 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
-    _P_GEN_funargs[0] = "ClientWebBrowser";
-    _P_GEN_funargs[1] = "0";
-    _P_GEN_funargs[2] = NULL;
-    PRT_VALUE** P_LVALUE_2 = &(PTMP_tmp0_1);
-    PrtFreeValue(*P_LVALUE_2);
-    *P_LVALUE_2 = ((_P_GEN_funval = P_CreateUSMMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
-    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
-        goto p_return_1;
-    }
-    if (p_this->isHalted == PRT_TRUE) {
-        PrtFreeValue(_P_GEN_retval);
-        _P_GEN_retval = NULL;
-        goto p_return_1;
-    }
-    
-    {
-        PRT_VALUE** P_LVALUE_3 = &(p_this->varValues[0]);
-        PrtFreeValue(*P_LVALUE_3);
-        *P_LVALUE_3 = PTMP_tmp0_1;
-        PTMP_tmp0_1 = NULL;
-    }
-    
-    _P_GEN_funargs[0] = "BankEnclave";
+    _P_GEN_funargs[0] = "TrustedInitializer";
     _P_GEN_funargs[1] = "0";
     PRT_VALUE* P_this_ref_1 = (P_GetThis_IMPL(context, _P_GEN_funargs));
     _P_GEN_funargs[2] = &P_this_ref_1;
-    PRT_VALUE** P_LVALUE_4 = &(PTMP_tmp1);
-    PrtFreeValue(*P_LVALUE_4);
-    *P_LVALUE_4 = ((_P_GEN_funval = P_CreateSecureMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
+    PRT_VALUE** P_LVALUE_14 = &(PTMP_tmp0_1);
+    PrtFreeValue(*P_LVALUE_14);
+    *P_LVALUE_14 = ((_P_GEN_funval = P_CreateUSMMachineRequest_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));
     if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
         goto p_return_1;
     }
@@ -695,111 +792,14 @@ PRT_VALUE* P_Anon_IMPL_1(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     }
     
     {
-        PRT_VALUE** P_LVALUE_5 = &(p_this->varValues[1]);
-        PrtFreeValue(*P_LVALUE_5);
-        *P_LVALUE_5 = PTMP_tmp1;
-        PTMP_tmp1 = NULL;
-    }
-    
-    PRT_VALUE** P_LVALUE_6 = &(PTMP_tmp2);
-    PrtFreeValue(*P_LVALUE_6);
-    *P_LVALUE_6 = PrtCloneValue(p_this->varValues[1]);
-    
-    PRT_VALUE** P_LVALUE_7 = &(PTMP_tmp3);
-    PrtFreeValue(*P_LVALUE_7);
-    *P_LVALUE_7 = PrtCloneValue((&P_EVENT_TRUSTEDProvisionBankSSM.value));
-    
-    PRT_VALUE** P_LVALUE_8 = &(PTMP_tmp4);
-    PrtFreeValue(*P_LVALUE_8);
-    *P_LVALUE_8 = PrtCloneValue(p_this->varValues[0]);
-    
-    PRT_VALUE** P_LVALUE_9 = &(PTMP_tmp5);
-    PrtFreeValue(*P_LVALUE_9);
-    *P_LVALUE_9 = ((_P_GEN_funargs[0] = &(PTMP_tmp4)), (_P_GEN_funval = P_Endorse_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp4), PTMP_tmp4 = NULL), (_P_GEN_funval));
-    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
-        goto p_return_1;
-    }
-    if (p_this->isHalted == PRT_TRUE) {
-        PrtFreeValue(_P_GEN_retval);
-        _P_GEN_retval = NULL;
-        goto p_return_1;
-    }
-    
-    PRT_VALUE** P_LVALUE_10 = &(PTMP_tmp6);
-    PrtFreeValue(*P_LVALUE_10);
-    *P_LVALUE_10 = PrtCloneValue(PrtCastValue(PTMP_tmp5, &P_GEND_TYPE_secure_machine_handle));
-    
-    PRT_VALUE* P_PTMP_tmp = PrtCloneValue(&(P_LIT_INT32));
-    _P_GEN_funargs[0] = &(PTMP_tmp2);
-    _P_GEN_funargs[1] = &(PTMP_tmp3);
-    _P_GEN_funargs[2] = &(P_PTMP_tmp);
-    _P_GEN_funargs[3] = &(PTMP_tmp6);
-    PrtFreeValue(P_SecureSend_IMPL(context, _P_GEN_funargs));
-    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
-        goto p_return_1;
-    }
-    if (p_this->isHalted == PRT_TRUE) {
-        PrtFreeValue(_P_GEN_retval);
-        _P_GEN_retval = NULL;
-        goto p_return_1;
-    }
-    
-    PRT_VALUE** P_LVALUE_11 = &(PTMP_tmp7);
-    PrtFreeValue(*P_LVALUE_11);
-    *P_LVALUE_11 = PrtCloneValue(p_this->varValues[0]);
-    
-    PRT_VALUE** P_LVALUE_12 = &(PTMP_tmp8);
-    PrtFreeValue(*P_LVALUE_12);
-    *P_LVALUE_12 = PrtCloneValue((&P_EVENT_BankPublicIDEvent.value));
-    
-    PRT_VALUE** P_LVALUE_13 = &(PTMP_tmp9);
-    PrtFreeValue(*P_LVALUE_13);
-    *P_LVALUE_13 = PrtCloneValue(p_this->varValues[1]);
-    
-    PRT_VALUE** P_LVALUE_14 = &(PTMP_tmp10);
-    PrtFreeValue(*P_LVALUE_14);
-    *P_LVALUE_14 = ((_P_GEN_funargs[0] = &(PTMP_tmp9)), (_P_GEN_funval = P_Declassify_IMPL(context, _P_GEN_funargs)), (PrtFreeValue(PTMP_tmp9), PTMP_tmp9 = NULL), (_P_GEN_funval));
-    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
-        goto p_return_1;
-    }
-    if (p_this->isHalted == PRT_TRUE) {
-        PrtFreeValue(_P_GEN_retval);
-        _P_GEN_retval = NULL;
-        goto p_return_1;
-    }
-    
-    PRT_VALUE** P_LVALUE_15 = &(PTMP_tmp11);
-    PrtFreeValue(*P_LVALUE_15);
-    *P_LVALUE_15 = PrtCloneValue(PrtCastValue(PTMP_tmp10, &P_GEND_TYPE_machine_handle));
-    
-    PRT_VALUE* P_PTMP_tmp_1 = PrtCloneValue(&(P_LIT_INT32));
-    _P_GEN_funargs[0] = &(PTMP_tmp7);
-    _P_GEN_funargs[1] = &(PTMP_tmp8);
-    _P_GEN_funargs[2] = &(P_PTMP_tmp_1);
-    _P_GEN_funargs[3] = &(PTMP_tmp11);
-    PrtFreeValue(P_UntrustedSend_IMPL(context, _P_GEN_funargs));
-    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
-        goto p_return_1;
-    }
-    if (p_this->isHalted == PRT_TRUE) {
-        PrtFreeValue(_P_GEN_retval);
-        _P_GEN_retval = NULL;
-        goto p_return_1;
+        PRT_VALUE** P_LVALUE_15 = &(p_this->varValues[0]);
+        PrtFreeValue(*P_LVALUE_15);
+        *P_LVALUE_15 = PTMP_tmp0_1;
+        PTMP_tmp0_1 = NULL;
     }
     
 p_return_1: ;
     PrtFreeValue(PTMP_tmp0_1); PTMP_tmp0_1 = NULL;
-    PrtFreeValue(PTMP_tmp1); PTMP_tmp1 = NULL;
-    PrtFreeValue(PTMP_tmp2); PTMP_tmp2 = NULL;
-    PrtFreeValue(PTMP_tmp3); PTMP_tmp3 = NULL;
-    PrtFreeValue(PTMP_tmp4); PTMP_tmp4 = NULL;
-    PrtFreeValue(PTMP_tmp5); PTMP_tmp5 = NULL;
-    PrtFreeValue(PTMP_tmp6); PTMP_tmp6 = NULL;
-    PrtFreeValue(PTMP_tmp7); PTMP_tmp7 = NULL;
-    PrtFreeValue(PTMP_tmp8); PTMP_tmp8 = NULL;
-    PrtFreeValue(PTMP_tmp9); PTMP_tmp9 = NULL;
-    PrtFreeValue(PTMP_tmp10); PTMP_tmp10 = NULL;
-    PrtFreeValue(PTMP_tmp11); PTMP_tmp11 = NULL;
     return _P_GEN_retval;
 }
 
@@ -811,42 +811,42 @@ PRT_FUNDECL P_FUNCTION_Anon_1 =
 };
 
 
-PRT_FUNDECL* P_TrustedInitializer_METHODS[] = { &P_FUNCTION_Anon_1 };
+PRT_FUNDECL* P_UntrustedInitializer_METHODS[] = { &P_FUNCTION_Anon_1 };
 
-PRT_EVENTDECL* P_TrustedInitializer_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
-PRT_EVENTSETDECL P_EVENTSET_TrustedInitializer_RECV_1 =
+PRT_EVENTDECL* P_UntrustedInitializer_RECV_INNER_1[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_UntrustedInitializer_RECV_1 =
 {
     13U,
-    P_TrustedInitializer_RECV_INNER_1,
+    P_UntrustedInitializer_RECV_INNER_1,
     NULL
 };
 
-PRT_EVENTDECL* P_TrustedInitializer_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
-PRT_EVENTSETDECL P_EVENTSET_TrustedInitializer_SEND =
+PRT_EVENTDECL* P_UntrustedInitializer_SEND_INNER[] = { &P_EVENT_AuthFailure, &P_EVENT_AuthSuccess, &P_EVENT_AuthenticateRequest, &P_EVENT_BankPublicIDEvent, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_MapEvent, &P_EVENT_MasterSecretEvent, &P_EVENT_OTPCodeEvent, &P_EVENT_PublicIDEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &_P_EVENT_HALT_STRUCT };
+PRT_EVENTSETDECL P_EVENTSET_UntrustedInitializer_SEND =
 {
     13U,
-    P_TrustedInitializer_SEND_INNER,
+    P_UntrustedInitializer_SEND_INNER,
     NULL
 };
 
-PRT_UINT32 P_TrustedInitializer_CREATES_ARR[] = { 2, 4 };
-PRT_INTERFACESETDECL P_TrustedInitializer_CREATES = { 2, P_TrustedInitializer_CREATES_ARR };
-PRT_MACHINEDECL P_MACHINE_TrustedInitializer = 
+PRT_UINT32 P_UntrustedInitializer_CREATES_ARR[] = { 0 };
+PRT_INTERFACESETDECL P_UntrustedInitializer_CREATES = { 1, P_UntrustedInitializer_CREATES_ARR };
+PRT_MACHINEDECL P_MACHINE_UntrustedInitializer = 
 {
     1U,
-    "TrustedInitializer",
-    &P_EVENTSET_TrustedInitializer_RECV_1,
-    &P_EVENTSET_TrustedInitializer_SEND,
-    &P_TrustedInitializer_CREATES,
-    2U,
+    "UntrustedInitializer",
+    &P_EVENTSET_UntrustedInitializer_RECV_1,
+    &P_EVENTSET_UntrustedInitializer_SEND,
+    &P_UntrustedInitializer_CREATES,
+    1U,
     1U,
     1U,
     4294967295U,
     0U,
-    P_TrustedInitializer_VARS,
-    P_TrustedInitializer_STATES,
-    P_TrustedInitializer_METHODS,
-    PRT_TRUE
+    P_UntrustedInitializer_VARS,
+    P_UntrustedInitializer_STATES,
+    P_UntrustedInitializer_METHODS,
+    PRT_FALSE
 };
 
 PRT_VARDECL P_BankEnclave_VARS[] = {
@@ -2838,12 +2838,12 @@ PRT_TYPE* P_TYPEDEF_capability = &P_GEND_TYPE_capability;
 PRT_TYPE* P_TYPEDEF_secure_machine_handle = &P_GEND_TYPE_secure_machine_handle;
 PRT_TYPE* P_TYPEDEF_secure_StringType = &P_GEND_TYPE_secure_StringType;
 PRT_EVENTDECL* P_ALL_EVENTS[] = { &_P_EVENT_NULL_STRUCT, &_P_EVENT_HALT_STRUCT, &P_EVENT_OTPCodeEvent, &P_EVENT_AuthSuccess, &P_EVENT_AuthFailure, &P_EVENT_BankPublicIDEvent, &P_EVENT_PublicIDEvent, &P_EVENT_UNTRUSTEDReceiveRegistrationCredentials, &P_EVENT_GenerateOTPCodeEvent, &P_EVENT_AuthenticateRequest, &P_EVENT_MasterSecretEvent, &P_EVENT_MapEvent, &P_EVENT_TRUSTEDProvisionBankSSM, &P_EVENT_TRUSTEDProvisionClientSSM };
-PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_UntrustedInitializer, &P_MACHINE_TrustedInitializer, &P_MACHINE_BankEnclave, &P_MACHINE_ClientEnclave, &P_MACHINE_ClientWebBrowser };
-PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_UntrustedInitializer, &P_I_TrustedInitializer, &P_I_BankEnclave, &P_I_ClientEnclave, &P_I_ClientWebBrowser };
+PRT_MACHINEDECL* P_ALL_MACHINES[] = { &P_MACHINE_TrustedInitializer, &P_MACHINE_UntrustedInitializer, &P_MACHINE_BankEnclave, &P_MACHINE_ClientEnclave, &P_MACHINE_ClientWebBrowser };
+PRT_INTERFACEDECL* P_ALL_INTERFACES[] = { &P_I_TrustedInitializer, &P_I_UntrustedInitializer, &P_I_BankEnclave, &P_I_ClientEnclave, &P_I_ClientWebBrowser };
 PRT_FUNDECL* P_ALL_FUNCTIONS[] = { NULL };
 PRT_FOREIGNTYPEDECL* P_ALL_FOREIGN_TYPES[] = { &P_machine_handle, &P_StringType, &P_secure_StringType, &P_secure_machine_handle, &P_capability };
-int P_DefaultImpl_LME_0[] = { -1,1,-1,-1,-1 };
-int P_DefaultImpl_LME_1[] = { -1,-1,2,-1,4 };
+int P_DefaultImpl_LME_0[] = { -1,-1,2,-1,4 };
+int P_DefaultImpl_LME_1[] = { 0,-1,-1,-1,-1 };
 int P_DefaultImpl_LME_2[] = { -1,-1,-1,3,-1 };
 int P_DefaultImpl_LME_3[] = { -1,-1,-1,-1,-1 };
 int P_DefaultImpl_LME_4[] = { -1,-1,-1,-1,-1 };

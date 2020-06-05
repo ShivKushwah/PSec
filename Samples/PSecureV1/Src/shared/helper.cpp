@@ -1460,6 +1460,10 @@ int createPMachine(char* machineType, int numArgs, int payloadType, char* payloa
     }
     PRT_UINT32 newMachinePID;
 	PRT_BOOLEAN foundMachine = PrtLookupMachineByName(machineType, &newMachinePID);
+    if (!foundMachine) {
+        ocall_print("Error: no machine found!");
+        ocall_print(machineType);
+    }
 	PrtAssert(foundMachine, "No machine found!");
 	PRT_MACHINEINST* newMachine = PrtMkMachine(process, newMachinePID, 1, &prtPayload);
     return newMachine->id->valueUnion.mid->machineId;

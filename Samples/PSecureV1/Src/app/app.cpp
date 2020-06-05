@@ -45,6 +45,7 @@ extern char* KPS_IP_ADDRESS;
 extern int KPS_PORT_GENERIC;
 extern int KPS_PORT_ATTESTATION;
 
+bool isKpsProcess = false;
 
 unordered_map<int, identityKeyPair> MachinePIDToIdentityDictionary; //Map from (this host machine's USM P Process ID) -> its Identity public/private key 
 unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary;
@@ -92,7 +93,7 @@ int main(int argc, char const *argv[]) {
     }
     #endif
 
-    bool isKpsProcess = false;
+    // bool isKpsProcess = false;
     bool isStartHostMachine = true;
     char* startMachineName;
 
@@ -148,7 +149,7 @@ int main(int argc, char const *argv[]) {
         }
 
         if (isStartHostMachine) {
-            split = strtok((char*) argv[5], "=");
+            split = strtok((char*) argv[6], "=");
             startMachineName = split + strlen(split) + 1;
         }
 
