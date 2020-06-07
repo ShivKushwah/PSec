@@ -2607,8 +2607,21 @@ extern "C" PRT_VALUE* P_GenerateSealedData_IMPL(PRT_MACHINEINST* context, PRT_VA
     char* key = (char*)sealedDataKey->valueUnion.frgn->value;
     PRT_VALUE* serializePrtValue = (PRT_VALUE*) (*argRefs[1]);
 
+    int eventPayloadType = serializePrtValue->discriminator;
+    char* eventPayloadTypeString = (char*) malloc(10);
+    itoa(eventPayloadType, eventPayloadTypeString, 10);
+
+    char* colon = ":";
+
     int serializedStringSize = 0;
-    char* serializedString = serializePrtValueToString(serializePrtValue, serializedStringSize);
+    char* restOfSerializedString = serializePrtValueToString(serializePrtValue, serializedStringSize);
+    
+    char* concatStrings1[] = {eventPayloadTypeString, colon, restOfSerializedString};
+    int concatLenghts1[] = {strlen(eventPayloadTypeString), strlen(colon), serializedStringSize};
+    char* serializedString = concatMutipleStringsWithLength(concatStrings1, concatLenghts1, 3);
+    serializedStringSize = returnTotalSizeofLengthArray(concatLenghts1, 3) + 1;
+
+    safe_free(restOfSerializedString);
 
     char* iv = generateIV();
     char* mac = "1234567891234567";
@@ -2653,7 +2666,6 @@ extern "C" PRT_VALUE* P_GenerateSealedData_IMPL(PRT_MACHINEINST* context, PRT_VA
     encryptedMessageSizeString = (char*) malloc(10);
     itoa(encryptedMessageSize, encryptedMessageSizeString, 10);
 
-    char* colon = ":";
 
     char* concatStrings[] = {iv, colon, mac, colon, encryptedMessageSizeString, colon, encryptedMessage};
     int concatLenghts[] = {SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageSizeString), strlen(colon), encryptedMessageSize};
