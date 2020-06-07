@@ -19,6 +19,7 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_MapEvent;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionBankSSM;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionClientSSM;
+    extern PRT_FUNDECL P_FUNCTION_seal;
     extern PRT_INTERFACEDECL P_I_UntrustedInitializer;
     extern PRT_INTERFACEDECL P_I_TrustedInitializer;
     extern PRT_INTERFACEDECL P_I_BankEnclave;
@@ -34,6 +35,8 @@ extern "C" {
     extern PRT_TYPE* P_TYPEDEF_capability;
     extern PRT_TYPE* P_TYPEDEF_secure_machine_handle;
     extern PRT_TYPE* P_TYPEDEF_secure_StringType;
+    extern PRT_TYPE* P_TYPEDEF_sealed_data;
+    extern PRT_TYPE* P_TYPEDEF_sealed_data_key;
     extern PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl;
     
 #ifdef __cplusplus

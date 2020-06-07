@@ -1677,7 +1677,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
                 sgx_aes_ctr_128bit_key_t g_region_key;
                 sgx_aes_gcm_128bit_tag_t g_mac;
-                memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+                memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
 
                 encryptedMessageSize = trustedPayloadLength;
                 encryptedMessage = (char*) malloc(encryptedMessageSize);
@@ -1770,7 +1770,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
               
                 sgx_aes_ctr_128bit_key_t g_region_key;
                 sgx_aes_gcm_128bit_tag_t g_mac;
-                memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+                memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
 
                 encryptedMessageSize = trustedPayloadLength;
                 encryptedMessage = (char*) malloc(encryptedMessageSize);
@@ -1859,7 +1859,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
         sgx_aes_ctr_128bit_key_t g_region_key;
         sgx_aes_gcm_128bit_tag_t g_mac;
-        memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+        memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
         memcpy(g_mac, mac, SIZE_OF_MAC);
 
         char* decryptedMessage = (char*) malloc(atoi(encryptedStringSizeString));
@@ -1944,7 +1944,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
 
         sgx_aes_ctr_128bit_key_t g_region_key;
         sgx_aes_gcm_128bit_tag_t g_mac;
-        memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+        memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
         memcpy(g_mac, mac, SIZE_OF_MAC);
 
         char* actualEncryptedMessage = encryptedMessage + strlen(encryptedMessageSize) + 1;
@@ -2127,7 +2127,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
 
         sgx_aes_ctr_128bit_key_t g_region_key;
         sgx_aes_gcm_128bit_tag_t g_mac;
-        memcpy(g_region_key, (char*)sessionKey.c_str(), 16);
+        memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
 
         char* encryptedMessage = (char*) malloc(encryptedMessageSize);
         #ifdef ENCLAVE_STD_ALT
@@ -2591,6 +2591,92 @@ extern "C" void P_Debug_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     #endif
 }
 
+extern "C" PRT_VALUE* P_GenerateSealedDataKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_REAL_SESSION_KEY));
+    memset(str, sizeof(PRT_CHAR) * (SIZE_OF_REAL_SESSION_KEY), 0);
+    string sessionKey;
+    generateSessionKey(sessionKey);
+    memcpy(str, sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_sealed_data_key);
+    
+}
+
+extern "C" PRT_VALUE* P_GenerateSealedData_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    PRT_VALUE* sealedDataKey = (PRT_VALUE*) (*argRefs[0]);
+    char* key = (char*)sealedDataKey->valueUnion.frgn->value;
+    PRT_VALUE* serializePrtValue = (PRT_VALUE*) (*argRefs[1]);
+
+    int serializedStringSize = 0;
+    char* serializedString = serializePrtValueToString(serializePrtValue, serializedStringSize);
+
+    char* iv = generateIV();
+    char* mac = "1234567891234567";
+    char* encryptedMessage;
+    char* messageToEncrypt;
+    int messageToEncryptSize;
+    int encryptedMessageSize;
+    char* encryptedMessageSizeString;
+
+    messageToEncrypt = serializedString;
+    messageToEncryptSize = serializedStringSize;
+
+    string sessionKey = string(key, SIZE_OF_REAL_SESSION_KEY);
+
+    char* trustedPayload = messageToEncrypt;
+    int trustedPayloadLength = messageToEncryptSize;
+    // ocall_print("Printing Untrusted Payload after public key");
+    // ocall_print(trustedPayload + SGX_RSA3072_KEY_SIZE);
+    
+    sgx_aes_ctr_128bit_key_t g_region_key;
+    sgx_aes_gcm_128bit_tag_t g_mac;
+    memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
+
+    encryptedMessageSize = trustedPayloadLength;
+    encryptedMessage = (char*) malloc(encryptedMessageSize);
+    #ifdef ENCLAVE_STD_ALT
+    sgx_status_t status = sgx_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) trustedPayload, trustedPayloadLength, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    #else 
+    enclave_sgx_rijndael128GCM_encrypt_Ecall(global_app_eid, &g_region_key, (const uint8_t*) trustedPayload, trustedPayloadLength, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    #endif
+    ocall_print("Encrypted Message -DEBUG- is");
+    printPayload(encryptedMessage, encryptedMessageSize);
+    mac = (char*) malloc(SIZE_OF_MAC);
+    memcpy(mac, (char*)g_mac, SIZE_OF_MAC);
+
+    ocall_print("mac -DEBUG- is");
+    printPayload(mac, SIZE_OF_MAC);
+
+    safe_free(serializedString);
+        
+    
+    encryptedMessageSizeString = (char*) malloc(10);
+    itoa(encryptedMessageSize, encryptedMessageSizeString, 10);
+
+    char* colon = ":";
+
+    char* concatStrings[] = {iv, colon, mac, colon, encryptedMessageSizeString, colon, encryptedMessage};
+    int concatLenghts[] = {SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageSizeString), strlen(colon), encryptedMessageSize};
+    char* sealed_data = concatMutipleStringsWithLength(concatStrings, concatLenghts, 7);
+    int sealed_data_total_size = returnTotalSizeofLengthArray(concatLenghts, 7) + 1;
+
+    // ocall_print("encryptedMessageSize is");
+    // ocall_print_int(encryptedMessageSize);
+    // ocall_print("helper encryptedMessageSizeString is");
+    // ocall_print(encryptedMessageSizeString);
+
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SEALED_DATA));
+    memset(str, sizeof(PRT_CHAR) * (SIZE_OF_SEALED_DATA), 0);
+
+    memcpy(str, sealed_data, sealed_data_total_size);
+    safe_free(encryptedMessage);
+    safe_free(encryptedMessageSizeString);
+    safe_free(sealed_data);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_sealed_data);
+    
+}
+
 //*******************
 
 //P ForeignType Library Types*******************
@@ -2676,6 +2762,85 @@ extern "C" PRT_UINT64 P_CLONE_secure_StringType_IMPL(PRT_UINT64 frgnVal)
     memcpy(str, (void*)frgnVal, SIZE_OF_PRT_STRING_SERIALIZED);
 	return (PRT_UINT64)str;
 }
+
+//sealed_data Class
+
+extern "C" void P_FREE_sealed_data_IMPL(PRT_UINT64 frgnVal)
+{
+	PrtFree((PRT_STRING)frgnVal);
+}
+
+extern "C" PRT_BOOLEAN P_ISEQUAL_sealed_data_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
+{
+    return memcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2, SIZE_OF_SEALED_DATA) == 0 ? PRT_TRUE : PRT_FALSE;
+
+}
+
+extern "C" PRT_STRING P_TOSTRING_sealed_data_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SEALED_DATA));
+	sprintf_s(str, SIZE_OF_SEALED_DATA, "String : %s", frgnVal);
+	return str;
+}
+
+extern "C" PRT_UINT32 P_GETHASHCODE_sealed_data_IMPL(PRT_UINT64 frgnVal)
+{
+    return 7;
+}
+
+extern "C" PRT_UINT64 P_MKDEF_sealed_data_IMPL(void)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SEALED_DATA));
+	sprintf_s(str, SIZE_OF_SEALED_DATA, "xyx$12");
+	return (PRT_UINT64)str;
+}
+
+extern "C" PRT_UINT64 P_CLONE_sealed_data_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SEALED_DATA));
+    memcpy(str, (void*)frgnVal, SIZE_OF_SEALED_DATA);
+	return (PRT_UINT64)str;
+}
+
+//sealed_data_key Class
+
+extern "C" void P_FREE_sealed_data_key_IMPL(PRT_UINT64 frgnVal)
+{
+	PrtFree((PRT_STRING)frgnVal);
+}
+
+extern "C" PRT_BOOLEAN P_ISEQUAL_sealed_data_key_IMPL(PRT_UINT64 frgnVal1, PRT_UINT64 frgnVal2)
+{
+    return memcmp((PRT_STRING)frgnVal1, (PRT_STRING)frgnVal2, SIZE_OF_REAL_SESSION_KEY) == 0 ? PRT_TRUE : PRT_FALSE;
+
+}
+
+extern "C" PRT_STRING P_TOSTRING_sealed_data_key_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_REAL_SESSION_KEY));
+	sprintf_s(str, SIZE_OF_REAL_SESSION_KEY, "String : %s", frgnVal);
+	return str;
+}
+
+extern "C" PRT_UINT32 P_GETHASHCODE_sealed_data_key_IMPL(PRT_UINT64 frgnVal)
+{
+    return 7;
+}
+
+extern "C" PRT_UINT64 P_MKDEF_sealed_data_key_IMPL(void)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_REAL_SESSION_KEY));
+	sprintf_s(str, SIZE_OF_REAL_SESSION_KEY, "xyx$12");
+	return (PRT_UINT64)str;
+}
+
+extern "C" PRT_UINT64 P_CLONE_sealed_data_key_IMPL(PRT_UINT64 frgnVal)
+{
+	PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_REAL_SESSION_KEY));
+    memcpy(str, (void*)frgnVal, SIZE_OF_REAL_SESSION_KEY);
+	return (PRT_UINT64)str;
+}
+
 
 //machine_handle class
 
