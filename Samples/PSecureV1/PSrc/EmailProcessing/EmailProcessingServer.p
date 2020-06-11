@@ -26,7 +26,7 @@ secure_machine SecureSpamFilter {
         on UNTRUSTEDReceiveEmailEnclaveIDEvent do (payload: machine_handle) {
             var emailEnclaveSSM: secure_machine_handle;
             emailEnclaveSSM = new EmailUserEnclave() @ payload;
-            send emailEnclaveSSM, TRUSTEDProvisionEmailUserEnclave, (this, payload); 
+            send emailEnclaveSSM, TRUSTEDProvisionEmailUserEnclave, (this, Endorse(payload) as secure_machine_handle); 
             send payload, UNTRUSTEDEmailEnclaveIDEvent, Declassify(emailEnclaveSSM) as machine_handle;
         }
 

@@ -3,9 +3,9 @@ secure_machine EmailUserEnclave {
     var emailUserUSM : machine_handle;
     
     start state Initial {
-        on TRUSTEDProvisionEmailUserEnclave do (payload : (secure_machine_handle, machine_handle)) {
+        on TRUSTEDProvisionEmailUserEnclave do (payload : (secure_machine_handle, secure_machine_handle)) {
             secureSpamSSM = payload.0;
-            emailUserUSM = payload.1;
+            emailUserUSM = Declassify(payload.1) as machine_handle;
             goto ReceiveEmailBodyAndSendSpamRequest;
         }
     }
