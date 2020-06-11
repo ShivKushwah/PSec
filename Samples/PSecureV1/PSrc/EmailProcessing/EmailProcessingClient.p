@@ -1,75 +1,71 @@
-machine UntrustedInitializer {
-    var handler: machine_handle;
-    start state Initial {
-        entry {
-            handler = new TrustedInitializer() @ this;
-        }
-    }
-}
-
-secure_machine TrustedInitializer {
+secure_machine EmailUserEnclave {
+    var secureSpamSSM : secure_machine_handle;
+    var emailUserUSM : machine_handle;
     
-    var clientUSM: machine_handle;
-    var bankSSM: secure_machine_handle;
     start state Initial {
-        entry {
-            clientUSM = new ClientWebBrowser();
-            bankSSM = new BankEnclave() @ this;
-            send bankSSM, TRUSTEDProvisionBankSSM, Endorse(clientUSM) as secure_machine_handle; //secure_send
-            send clientUSM, BankPublicIDEvent, Declassify(bankSSM) as machine_handle; //untrusted_send
+        on TRUSTEDProvisionEmailUserEnclave do (payload : (secure_machine_handle, machine_handle)) {
+            secureSpamSSM = payload.0;
+            emailUserUSM = payload.1;
+            goto ReceiveEmailBodyAndSendSpamRequest;
         }
     }
+
+    state ReceiveEmailBodyAndSendSpamRequest {
+        on UNTRUSTEDEmailBodyEvent do (payload: StringType) {
+            send secureSpamSSM, TRUSTEDEmailBodyEvent, (this, Endorse(payload) as secure_StringType);
+            goto ReceiveSpamResult;
+        }
+    }
+
+    state ReceiveSpamResult {
+        on TRUSTEDSpamResultEvent do (payload: secure_bool) {
+            send emailUserUSM, UNTRUSTEDSpamResultEvent, Declassify(payload) as bool;
+            goto ReceiveEmailBodyAndSendSpamRequest;
+        }
+    }
+
 }
 
-secure_machine BankEnclave {
-    var clientSSM: secure_machine_handle;
-    var clientUSM: machine_handle;
-    var masterSecret : secure_StringType;
-    var userCredential : secure_StringType;
+machine EmailUser {
+    var secureSpamSSM : machine_handle;
+    var emailEnclaveSSM: machine_handle;
+
     start state Initial {
-        entry { 
-            goto ReceiveClientUSM;
-        } 
+        on UNTRUSTEDSecureSpamFilterIDEvent goto SaveSecureSpamFilter;
     }
 
-    state ReceiveClientUSM {
-        on TRUSTEDProvisionBankSSM do (payload: secure_machine_handle) {
-            clientUSM = Declassify(payload) as machine_handle;
-            clientSSM = new ClientEnclave() @ clientUSM;
-            send clientSSM, TRUSTEDProvisionClientSSM, Endorse(clientUSM) as secure_machine_handle;
-            goto RegisterNewBankAccount;
-            
+    state SaveSecureSpamFilter {
+        entry (payload: machine_handle) {
+            secureSpamSSM = payload;
+            goto SaveEmailUserEnclave;
         }
     }
 
-    state RegisterNewBankAccount {
-        on UNTRUSTEDReceiveRegistrationCredentials do (payload: StringType) {
-            print "Bank: Creating new bank account!";
-            userCredential = Endorse(payload) as secure_StringType;
-            masterSecret = GenerateRandomMasterSecret();
-            send clientSSM, MasterSecretEvent, masterSecret; //secure_send
-            send clientUSM, PublicIDEvent, Declassify(clientSSM) as machine_handle; //untrusted_send
-            goto AuthCheck;
-
+    state SaveEmailUserEnclave {
+        entry {
+            send secureSpamSSM, UNTRUSTEDReceiveEmailEnclaveIDEvent, this;
+        }
+        on UNTRUSTEDEmailEnclaveIDEvent do (payload: machine_handle)  {
+            emailEnclaveSSM = payload;
+            goto RequestSpamCheck;
         }
     }
 
-    state AuthCheck {
-       on AuthenticateRequest goto Verify;
+    state RequestSpamCheck {
+        entry {
+            var emailBody : StringType;
+            send emailEnclaveSSM, UNTRUSTEDEmailBodyEvent, emailBody;
+        }
+        on UNTRUSTEDSpamResultEvent goto Done;
     }
 
-    state Verify { 
-        entry (payload : (usernamePW: StringType, OTPCode: StringType)) {
-            if (Declassify(userCredential) as StringType == payload.usernamePW && Hash(Declassify(masterSecret) as StringType, Declassify(userCredential) as StringType) == payload.OTPCode) {
-                print "Auth Success";
-                send clientUSM, AuthSuccess; //untrusted_send
+    state Done {
+        entry (payload: bool) {
+            if (payload == true) {
+                print "Spam detected and deleted!";
             } else {
-                print "Auth Failure";
-                send clientUSM, AuthFailure; //untrusted_send
+                print "Email is good!";
             }
-            
-            goto AuthCheck;
         }
-
-    }
+     }
 }

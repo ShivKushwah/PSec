@@ -1,24 +1,17 @@
-//OTP Events
-event BankPublicIDEvent : machine_handle;
-event PublicIDEvent : machine_handle;
-event UNTRUSTEDReceiveRegistrationCredentials : StringType;
-event GenerateOTPCodeEvent : StringType;
-event OTPCodeEvent : StringType;
-event AuthenticateRequest : (usernamePW : StringType, OTPCode : StringType);
-event AuthSuccess;
-event AuthFailure;
+//Email Processing Events
+event UNTRUSTEDSecureSpamFilterIDEvent : machine_handle;
+event UNTRUSTEDReceiveEmailEnclaveIDEvent : machine_handle;
+event UNTRUSTEDEmailEnclaveIDEvent : machine_handle;
+event UNTRUSTEDEmailBodyEvent : StringType;
+event UNTRUSTEDSpamResultEvent : bool;
 
-trusted event MasterSecretEvent: secure_StringType;
-trusted event MapEvent: map[secure_int, secure_int];
-trusted event TRUSTEDProvisionBankSSM : secure_machine_handle;
-trusted event TRUSTEDProvisionClientSSM : secure_machine_handle;
+trusted event TRUSTEDSecureSpamFilterIDEvent : secure_machine_handle;
+trusted event TRUSTEDProvisionEmailUserEnclave : (secure_machine_handle, machine_handle);
+trusted event TRUSTEDEmailBodyEvent: (secure_machine_handle, secure_StringType);
+trusted event TRUSTEDSpamResultEvent: secure_bool;
 
-//OTP Functions
+//Email Processing Functions
 fun PrintString(inputString : StringType);
 fun PrintRawStringType(inputString : StringType);
 fun PrintRawSecureStringType(inputString : secure_StringType);
 fun PrintKey(input : machine_handle);
-fun GenerateRandomMasterSecret() : secure_StringType;
-fun GetUserInput() : StringType;
-fun Concat(input1:StringType, input2:StringType) : StringType;
-fun Hash(input1:StringType, input2:StringType) : StringType;

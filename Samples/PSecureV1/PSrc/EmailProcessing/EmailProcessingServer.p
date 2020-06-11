@@ -1,117 +1,43 @@
-secure_machine ClientEnclave {
-    var masterSecret: secure_StringType;
-    var clientUSM : machine_handle;
-    
+machine UntrustedInitializer {
+    var handler: machine_handle;
     start state Initial {
-        defer GenerateOTPCodeEvent;
-        on TRUSTEDProvisionClientSSM do (payload : secure_machine_handle) {
-            clientUSM = Declassify(payload) as machine_handle;
-            goto ReceiveMasterSecretEvent;
+        entry {
+            handler = new TrustedInitializer() @ this;
         }
     }
-
-    state ReceiveMasterSecretEvent {
-        defer GenerateOTPCodeEvent;
-        on MasterSecretEvent goto ProvisionEnclaveWithSecret;
-    }
-
-    state ProvisionEnclaveWithSecret {
-        entry (payload : secure_StringType){
-            masterSecret = payload;
-            goto WaitForGenerateOTP;
-        }
-    }
-
-    state WaitForGenerateOTP {
-        on GenerateOTPCodeEvent do (usernamePassword: StringType) {
-            var hashedString : StringType;          
-            hashedString = Hash(Declassify(masterSecret) as StringType, usernamePassword);
-            send clientUSM, OTPCodeEvent, hashedString; //untrusted_send
-        }
-    }
-
 }
 
-machine ClientWebBrowser {
-    var clientSSM: machine_handle;
-    var bankSSM: machine_handle;
-    var usernamePassword: StringType;
-    var OTPCode: StringType;
+secure_machine TrustedInitializer {
+    
+    var emailUserUSM: machine_handle;
+    var spamFilterSSM: secure_machine_handle;
+    start state Initial {
+        entry {
+            emailUserUSM = new EmailUser();
+            spamFilterSSM = new SecureSpamFilter() @ this;
+            send emailUserUSM, UNTRUSTEDSecureSpamFilterIDEvent, Declassify(spamFilterSSM) as machine_handle; //untrusted_send
+        }
+    }
+}
+
+secure_machine SecureSpamFilter {
 
     start state Initial {
-        defer PublicIDEvent;
-        on BankPublicIDEvent goto SaveBankSSM;
-    }
-
-    state SaveBankSSM {
-        entry (payload: machine_handle) {
-            bankSSM = payload;
-            goto RegisterAccountInBank;
+        on UNTRUSTEDReceiveEmailEnclaveIDEvent do (payload: machine_handle) {
+            var emailEnclaveSSM: secure_machine_handle;
+            emailEnclaveSSM = new EmailUserEnclave() @ payload;
+            send emailEnclaveSSM, TRUSTEDProvisionEmailUserEnclave, (this, payload); 
+            send payload, UNTRUSTEDEmailEnclaveIDEvent, Declassify(emailEnclaveSSM) as machine_handle;
         }
-    }
 
-    state RegisterAccountInBank {
-        entry {
-            var credentials : StringType;
-            credentials = GetUserInput();
-            send bankSSM, UNTRUSTEDReceiveRegistrationCredentials, credentials;
-        }
-        on PublicIDEvent goto Authenticate;
-    }
-    
-    state Authenticate {
-        entry (payload: machine_handle) {
-            clientSSM = payload;
-            print "Client Web Browser: Enter Credentials to login to bank!\n";
-            usernamePassword = GetUserInput();
-            goto RequestOTPCodeGeneration;
-        }
-    }
-
-    state RequestOTPCodeGeneration {
-        entry {
-            send clientSSM, GenerateOTPCodeEvent, usernamePassword; //untrusted_send
-            receive {
-                case OTPCodeEvent : (payload : StringType) {
-                    goto SaveOTPCode, payload;
-                }
+        on TRUSTEDEmailBodyEvent do (payload: (secure_machine_handle, secure_StringType)) {
+            var emailEnclaveSSM: secure_machine_handle;
+            emailEnclaveSSM = payload.0;
+            if ($) {
+                send emailEnclaveSSM, TRUSTEDSpamResultEvent, Endorse(true) as secure_bool;
+            } else {
+                send emailEnclaveSSM, TRUSTEDSpamResultEvent, Endorse(false) as secure_bool;
             }
         }
-    }
-
-    state SaveOTPCode {
-        entry (payload : StringType) {
-            //print "OTP Code Received: {0}\n", payload;
-            print "OTP Code Received:\n";
-            PrintString(payload); 
-            OTPCode = payload;
-            goto ValidateOTPCode;
-        }
-
-    }
-
-    state ValidateOTPCode {
-        entry {
-            send bankSSM, AuthenticateRequest, (usernamePW = usernamePassword, OTPCode = OTPCode); //untrusted_send
-            receive {
-                case AuthSuccess : {
-                    goto Done;
-                }
-                case AuthFailure : {
-                    print "Authentication Failed!";
-                    print "Client Web Browser: Reenter Credentials to login!";
-                    usernamePassword = GetUserInput();
-                    goto RequestOTPCodeGeneration;
-                }
-            }
-        }
-        
-    }
-
-    state Done {
-        entry {
-            print "Client Web Browser Authenticated Successfully!";
-        }
-     }
-
+    }  
 }
