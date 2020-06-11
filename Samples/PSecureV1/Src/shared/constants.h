@@ -7,6 +7,8 @@
 #include "OTPBankServerCode.h"
 #elif EMAIL_PROCESSING
 #include "EmailProcessingClient.h"
+#elif HEALTH_ANALYSIS
+#include "HealthAnalysisClient.h"
 #elif PERFORMANCE_METRICS_EXAMPLE
 #include "PerformanceMachines1.h"
 #endif

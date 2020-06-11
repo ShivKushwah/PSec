@@ -16,10 +16,13 @@ set(CMAKE_BUILD_TYPE Debug)
 # add_definitions(-DPERFORMANCE_METRICS_EXAMPLE)
 
 
-set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/EmailProcessing/EmailProcessingClient.p  ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/EmailProcessing/EmailProcessingServer.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/EmailProcessing/EmailProcessingHeaderDeclarations.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/PSecInternalLib.p)
-set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/EmailProcessingClient.c) #only need EmailProcessingClient.c because P compiler writes all p code from multiple files into first p file with c extension
-add_definitions(-DEMAIL_PROCESSING)
+# set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/EmailProcessing/EmailProcessingClient.p  ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/EmailProcessing/EmailProcessingServer.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/EmailProcessing/EmailProcessingHeaderDeclarations.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/PSecInternalLib.p)
+# set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/EmailProcessingClient.c) #only need EmailProcessingClient.c because P compiler writes all p code from multiple files into first p file with c extension
+# add_definitions(-DEMAIL_PROCESSING)
 
+set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/HealthAnalysis/HealthAnalysisClient.p  ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/HealthAnalysis/HealthAnalysisServer.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/HealthAnalysis/HealthAnalysisHeaderDeclarations.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/PSecInternalLib.p)
+set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/HealthAnalysisClient.c) #only need HealthAnalysisClient.c because P compiler writes all p code from multiple files into first p file with c extension
+add_definitions(-DHEALTH_ANALYSIS)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
