@@ -156,8 +156,7 @@ enclave {
         void ocall_get_ip_address_of_kps([out, size=MAX_IP_ADDRESS_SIZE]char* ipAddress, int MAX_IP_ADDRESS_SIZE);
         int ocall_get_attestation_port_of_kps();
         int ocall_get_generic_port_of_kps();
-
-
+        void ocall_kill();
 
     };
 };

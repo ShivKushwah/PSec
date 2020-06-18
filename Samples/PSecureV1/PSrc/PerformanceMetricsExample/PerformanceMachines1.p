@@ -104,6 +104,8 @@ secure_machine BankEnclave {
                 send clientUSM, AuthFailure; //untrusted_send
             }
             
+            EXIT();
+            
             goto AuthCheck;
         }
 

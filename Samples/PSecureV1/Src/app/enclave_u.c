@@ -448,6 +448,13 @@ static sgx_status_t SGX_CDECL enclave_ocall_get_generic_port_of_kps(void* pms)
 	return SGX_SUCCESS;
 }
 
+static sgx_status_t SGX_CDECL enclave_ocall_kill(void* pms)
+{
+	if (pms != NULL) return SGX_ERROR_INVALID_PARAMETER;
+	ocall_kill();
+	return SGX_SUCCESS;
+}
+
 static sgx_status_t SGX_CDECL enclave_sgx_oc_cpuidex(void* pms)
 {
 	ms_sgx_oc_cpuidex_t* ms = SGX_CAST(ms_sgx_oc_cpuidex_t*, pms);
@@ -522,9 +529,9 @@ static sgx_status_t SGX_CDECL enclave_invoke_service_ocall(void* pms)
 
 static const struct {
 	size_t nr_ocall;
-	void * table[22];
+	void * table[23];
 } ocall_table_enclave = {
-	22,
+	23,
 	{
 		(void*)enclave_ocall_print,
 		(void*)enclave_ocall_enclave_print,
@@ -539,6 +546,7 @@ static const struct {
 		(void*)enclave_ocall_get_ip_address_of_kps,
 		(void*)enclave_ocall_get_attestation_port_of_kps,
 		(void*)enclave_ocall_get_generic_port_of_kps,
+		(void*)enclave_ocall_kill,
 		(void*)enclave_sgx_oc_cpuidex,
 		(void*)enclave_sgx_thread_wait_untrusted_event_ocall,
 		(void*)enclave_sgx_thread_set_untrusted_event_ocall,

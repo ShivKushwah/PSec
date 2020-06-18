@@ -69,6 +69,10 @@ int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_get_attestation_port_of_kps, (void));
 #define OCALL_GET_GENERIC_PORT_OF_KPS_DEFINED__
 int SGX_UBRIDGE(SGX_NOCONVENTION, ocall_get_generic_port_of_kps, (void));
 #endif
+#ifndef OCALL_KILL_DEFINED__
+#define OCALL_KILL_DEFINED__
+void SGX_UBRIDGE(SGX_NOCONVENTION, ocall_kill, (void));
+#endif
 #ifndef SGX_OC_CPUIDEX_DEFINED__
 #define SGX_OC_CPUIDEX_DEFINED__
 void SGX_UBRIDGE(SGX_CDECL, sgx_oc_cpuidex, (int cpuinfo[4], int leaf, int subleaf));

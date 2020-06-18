@@ -446,6 +446,10 @@ void ocall_request_user_input(char* user_input, uint32_t max_input_len) {
     strtok(user_input, "\n"); //To remove trailing new line in fgets
 }
 
+void ocall_kill() {
+    exit(1);
+}
+
 //*******************
 
 //USM API Functions*******************

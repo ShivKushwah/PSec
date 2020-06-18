@@ -2735,6 +2735,11 @@ extern "C" PRT_VALUE* P_unseal_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRe
     return *(deserializeStringToPrtValue(1, decryptedMessage, atoi(encryptedMessageSize), &numCharactersProcessed));
 }
 
+extern "C" void P_EXIT_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
+    ocall_kill();
+}
+
+
 //*******************
 
 //P ForeignType Library Types*******************

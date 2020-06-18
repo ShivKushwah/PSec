@@ -151,9 +151,6 @@ machine ClientWebBrowser {
                 print "Third Seal Test Success!";
             }
 
-
-
-
             print "Client Web Browser Authenticated Successfully!";
         }
      }

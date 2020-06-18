@@ -28,3 +28,4 @@ fun GenerateRandomMasterSecret() : secure_StringType;
 fun GetUserInput() : StringType;
 fun GetHelloWorld() : StringType;
 fun MeasureTime();
+fun EXIT();

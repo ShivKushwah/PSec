@@ -167,6 +167,8 @@ PRT_VALUE* P_GetHelloWorld_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_MeasureTime_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
+PRT_VALUE* P_EXIT_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -473,6 +475,14 @@ PRT_FUNDECL P_FUNCTION_MeasureTime =
 {
     "MeasureTime",
     &P_MeasureTime_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_EXIT =
+{
+    "EXIT",
+    &P_EXIT_IMPL,
     NULL
 };
 
@@ -2430,6 +2440,16 @@ PRT_VALUE* P_Anon_IMPL_8(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         
     }
     
+    
+    PrtFreeValue(P_EXIT_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_9;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_9;
+    }
     
     PrtGoto(p_this, 3U, 0);
     
