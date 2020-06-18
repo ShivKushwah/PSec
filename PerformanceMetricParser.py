@@ -2,6 +2,7 @@ import re
 import subprocess
 import time
 import json
+import statistics 
 
 #NOTE to use this script, make sure you build the PSec program separately before use
 
@@ -73,5 +74,13 @@ while curr_iteration < num_iterations:
     curr_iteration += 1
 
 
+for key in data_dict.keys():
+    lst = data_dict[key] 
+    print(key)
+    print('Mean:')
+    print(float(sum(lst))/len(lst))
+    print('Standard Deviation:')
+    res = statistics.pstdev(lst)
+    print(res) 
 
 print(data_dict)
