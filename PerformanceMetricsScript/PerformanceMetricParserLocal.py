@@ -4,9 +4,13 @@ import time
 import json
 import statistics 
 import time
+import os
 
 num_iterations = 2
 is_sim = True
+
+#Move program to root context
+os.chdir('..')
 
 #Words to parse
 search_lst1 = ['MEASURE UNTRUSTED CREATE START', 'MEASURE UNTRUSTED CREATE SSM START', 'MEASURE TRUSTED CREATE START', 'MEASURE TRUSTED SEND START', 'MEASURE TRUSTED SEND 2 START', 'MEASURE UNTRUSTED SEND START', 'MEASURE UNTRUSTED SEND 2 START']
@@ -85,7 +89,7 @@ while curr_iteration < num_iterations:
 
         # data_dict.add(id_lst[i], data_lst)
 
-    with open('PerformanceMetricsCache.txt', 'w') as file:
+    with open('PerformanceMetricsScript/PerformanceMetricsCache.txt', 'w') as file:
         file.write(json.dumps(data_dict)) # use `json.loads` to do the reverse
     
     print('Iteration: (' + str(curr_iteration + 1) + '/' + str(num_iterations) + ') in ' + str(get_time() - current_time_millis) + ' ms')
