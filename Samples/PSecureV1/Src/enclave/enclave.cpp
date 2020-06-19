@@ -430,7 +430,7 @@ int ecall_create_report (sgx_target_info_t* quote_enc_info, sgx_report_t* report
     return ret;
 }
 
-int validate_SSM_type_hosted_by_this_enclave(char* SSMTypeQuery, int SSMTypeStringLength) {
+int ecall_validate_SSM_type_hosted_by_this_enclave(char* SSMTypeQuery, int SSMTypeStringLength) {
     if (strcmp(SSMTypeQuery, SSMTypeHostedByCurrentEnclave) == 0) {
         return 1;
     } else {

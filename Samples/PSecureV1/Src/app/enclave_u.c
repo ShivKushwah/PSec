@@ -203,11 +203,11 @@ typedef struct ms_ecall_create_report_t {
 	sgx_report_t* ms_report;
 } ms_ecall_create_report_t;
 
-typedef struct ms_validate_SSM_type_hosted_by_this_enclave_t {
+typedef struct ms_ecall_validate_SSM_type_hosted_by_this_enclave_t {
 	int ms_retval;
 	char* ms_SSMTypeQuery;
 	int ms_SSMTypeStringLength;
-} ms_validate_SSM_type_hosted_by_this_enclave_t;
+} ms_ecall_validate_SSM_type_hosted_by_this_enclave_t;
 
 typedef struct ms_sgx_ra_get_ga_t {
 	sgx_status_t ms_retval;
@@ -892,10 +892,10 @@ sgx_status_t enclave_ecall_create_report(sgx_enclave_id_t eid, int* retval, sgx_
 	return status;
 }
 
-sgx_status_t enclave_validate_SSM_type_hosted_by_this_enclave(sgx_enclave_id_t eid, int* retval, char* SSMTypeQuery, int SSMTypeStringLength)
+sgx_status_t enclave_ecall_validate_SSM_type_hosted_by_this_enclave(sgx_enclave_id_t eid, int* retval, char* SSMTypeQuery, int SSMTypeStringLength)
 {
 	sgx_status_t status;
-	ms_validate_SSM_type_hosted_by_this_enclave_t ms;
+	ms_ecall_validate_SSM_type_hosted_by_this_enclave_t ms;
 	ms.ms_SSMTypeQuery = SSMTypeQuery;
 	ms.ms_SSMTypeStringLength = SSMTypeStringLength;
 	status = sgx_ecall(eid, 24, &ocall_table_enclave, &ms);
