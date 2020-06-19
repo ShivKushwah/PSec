@@ -619,7 +619,7 @@ void generateIdentity(string& publicID, string& privateID, string prefix, string
     }
 } 
 
-char* get_attestation(sgx_enclave_id_t eid) {
+char* get_measurement(sgx_enclave_id_t eid) {
     //get enclave_hash value
     sgx_target_info_t qe_info;
     sgx_epid_group_id_t p_gid;

@@ -22,6 +22,8 @@ map<PMachineChildPair, string> PMachineToChildCapabilityKey;
 map<PublicMachineChildPair, string> PublicIdentityKeyToChildSessionKey;
 map<tuple<string, string>, int> ChildSessionKeyToNonce;
 
+char* SSMTypeHostedByCurrentEnclave;
+
 bool containsSSMAlready = false;
 
 // P Process Required Setup Methods *******************
@@ -428,6 +430,14 @@ int ecall_create_report (sgx_target_info_t* quote_enc_info, sgx_report_t* report
     return ret;
 }
 
+int validate_SSM_type_hosted_by_this_enclave(char* SSMTypeQuery, int SSMTypeStringLength) {
+    if (strcmp(SSMTypeQuery, SSMTypeHostedByCurrentEnclave) == 0) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 //*******************
 
 //SSM Other Functions*******************
@@ -435,6 +445,9 @@ int ecall_create_report (sgx_target_info_t* quote_enc_info, sgx_report_t* report
 // Responsibility of caller to free return
 char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDKey, int numArgs, int payloadType, char* payload, int payloadSize, bool isSecureCreate, sgx_enclave_id_t enclaveEid) {
     startPrtProcessIfNotStarted();
+
+    char* machineTypeCopy = (char*) malloc(strlen(machineType) + 1);
+    memcpy(machineTypeCopy, machineType, strlen(machineType) + 1);
 
     if (!machineTypeIsSecure(machineType)) {
         return "Error: Tried to Create USM inside enclave!";
@@ -518,6 +531,8 @@ char* createMachineHelper(char* machineType, char* parentTrustedMachinePublicIDK
     int requestSize = returnTotalSizeofLengthArray(concatLenghts, 3) + 1;
 
     safe_free(returnNewMachinePublicIDKey);
+
+    SSMTypeHostedByCurrentEnclave = machineTypeCopy;
 
     return returnID;
 

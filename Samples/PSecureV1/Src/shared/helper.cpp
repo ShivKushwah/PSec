@@ -25,7 +25,8 @@ using namespace std;
 
 #ifndef ENCLAVE_STD_ALT
 extern unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary; 
-extern char* get_attestation(sgx_enclave_id_t eid);
+extern char* get_measurement(sgx_enclave_id_t eid);
+extern char* extract_measurement(FILE* fp);
 #endif
 
 extern PRT_PROCESS *process;
@@ -2744,25 +2745,38 @@ extern "C" void P_EXIT_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
 extern "C" PRT_VALUE* P_localAuthenticate_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
 
     #ifndef ENCLAVE_STD_ALT
+
     PRT_VALUE** P_VAR_payload = argRefs[1];
     char* SSMTypeToValidate = (*P_VAR_payload)->valueUnion.str;
     PRT_VALUE** P_VAR_payload2 = argRefs[0];
     char* machineHandleToValidate = (char*) (*P_VAR_payload2)->valueUnion.frgn->value;
 
-    //Verify measurement
-
     //Get enclaveID of SSMTypeToValidate
     sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineHandleToValidate, SGX_RSA3072_KEY_SIZE)];
 
-    //Call getAttestationReport
-    char* measurement = get_attestation(enclave_eid);
+    //Retrieve measurement of enclave
+    char* measurement = get_measurement(enclave_eid);
     ocall_enclave_print("Kirat\n");
     ocall_enclave_print(measurement);
 
- 
+    //Verify measurement
+    FILE *fp1 = fopen("metadata_info.txt", "r"); 
+    if (fp1 == NULL) 
+    { 
+        ocall_print("Error : File not open"); 
+        exit(0); 
+    } 
+    char* expected_measurement = extract_measurement(fp1);
+    if (!(strcmp(expected_measurement, measurement) == 0)) {
+        ocall_print("ERROR: MEASUREMENT ERROR!");
+        return (PRT_VALUE*) PrtMkBoolValue((PRT_BOOLEAN)false);
+    } 
 
-    return (PRT_VALUE*) PrtMkBoolValue((PRT_BOOLEAN)true);
-
+    //Verify the SSM running inside the enclave
+    int verifyType = 0;
+    enclave_validate_SSM_type_hosted_by_this_enclave(enclave_eid, &verifyType, SSMTypeToValidate, strlen(SSMTypeToValidate) + 1);
+    
+    return (PRT_VALUE*) PrtMkBoolValue((PRT_BOOLEAN)verifyType);
     #endif
 }
 

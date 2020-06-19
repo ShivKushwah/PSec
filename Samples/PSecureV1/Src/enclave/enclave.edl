@@ -137,6 +137,7 @@ enclave {
                             sgx_ecc_state_handle_t ecc_handle);
         public int ecall_create_report ([in] sgx_target_info_t* quote_enc_info, [out] sgx_report_t* report);
 
+        public int validate_SSM_type_hosted_by_this_enclave([in, size = SSMTypeStringLength]char* SSMTypeQuery, int SSMTypeStringLength);
 
     };
 
