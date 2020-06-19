@@ -254,27 +254,27 @@ void ErrorHandler(PRT_STATUS status, PRT_MACHINEINST *ptr)
 {
     if (status == PRT_STATUS_ASSERT)
     {
-        ocall_print("exiting with PRT_STATUS_ASSERT (assertion failure)\n");
+        ocall_enclave_print("exiting with PRT_STATUS_ASSERT (assertion failure)\n");
     }
     else if (status == PRT_STATUS_EVENT_OVERFLOW)
     {
-        ocall_print("exiting with PRT_STATUS_EVENT_OVERFLOW\n");
+        ocall_enclave_print("exiting with PRT_STATUS_EVENT_OVERFLOW\n");
     }
     else if (status == PRT_STATUS_EVENT_UNHANDLED)
     {
-        ocall_print("exiting with PRT_STATUS_EVENT_UNHANDLED\n");
+        ocall_enclave_print("exiting with PRT_STATUS_EVENT_UNHANDLED\n");
     }
     else if (status == PRT_STATUS_QUEUE_OVERFLOW)
     {
-        ocall_print("exiting with PRT_STATUS_QUEUE_OVERFLOW \n");
+        ocall_enclave_print("exiting with PRT_STATUS_QUEUE_OVERFLOW \n");
     }
     else if (status == PRT_STATUS_ILLEGAL_SEND)
     {
-        ocall_print("exiting with PRT_STATUS_ILLEGAL_SEND \n");
+        ocall_enclave_print("exiting with PRT_STATUS_ILLEGAL_SEND \n");
     }
     else
     {
-        ocall_print("unexpected PRT_STATUS in ErrorHandler: \n");
+        ocall_enclave_print("unexpected PRT_STATUS in ErrorHandler: \n");
     }
     exit(1);
 

@@ -47,6 +47,8 @@ extern "C" {
 		/**< The kind of the `int` type        */
 		PRT_KIND_SECURE_INT = 14,
 		/**< The kind of the `secure_int` type        */
+		PRT_KIND_STRING = 16,
+		/**< The kind of the `string` type        */
 		PRT_KIND_FLOAT = 6,
 		/**< The kind of the `int` type        */
 		PRT_KIND_MAP = 7,

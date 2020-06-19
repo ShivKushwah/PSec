@@ -29,3 +29,5 @@ fun seal(input : any) : (sealed_data_key, sealed_data) {
 }
 
 fun unseal(input1:sealed_data_key, input2:sealed_data) : any;
+
+fun localAuthenticate(input1: machine_handle, input2: string) : bool;

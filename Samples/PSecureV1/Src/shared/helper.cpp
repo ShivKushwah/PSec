@@ -2739,6 +2739,13 @@ extern "C" void P_EXIT_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
     ocall_kill();
 }
 
+extern "C" PRT_VALUE* P_localAuthenticate_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
+    ocall_enclave_print("KIRAT\n");
+    PRT_VALUE** P_VAR_payload = argRefs[1];
+    ocall_enclave_print((*P_VAR_payload)->valueUnion.str);
+    return (PRT_VALUE*) PrtMkBoolValue((PRT_BOOLEAN)true);
+}
+
 
 //*******************
 

@@ -70,6 +70,11 @@ machine ClientWebBrowser {
 
     state RequestOTPCodeGeneration {
         entry {
+            var machineTypeToValidate : string;
+            machineTypeToValidate = "ClientEnclave";
+            if (localAuthenticate(clientSSM, machineTypeToValidate)) {
+                print "Authenticated installed enclave!";
+            }
             send clientSSM, GenerateOTPCodeEvent, usernamePassword; //untrusted_send
             receive {
                 case OTPCodeEvent : (payload : StringType) {

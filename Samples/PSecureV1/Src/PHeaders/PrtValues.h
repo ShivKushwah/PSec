@@ -73,6 +73,8 @@ typedef enum PRT_VALUE_KIND
 	/**< The number of value kinds               */
 	PRT_VALUE_KIND_SECURE_INT = 11,
 	/**< The number of value kinds               */
+	PRT_VALUE_KIND_STRING = 14,
+	/**< The kind of string values                  */
 	PRT_VALUE_KIND_SECURE_BOOL = 13,
 	/**< The number of value kinds               */
 } PRT_VALUE_KIND;
@@ -86,6 +88,7 @@ typedef struct PRT_VALUE
 		PRT_BOOLEAN bl; /**< A boolean value            */
 		PRT_INT nt; /**< An integer value           */
 		PRT_FLOAT ft; /**< An float value           */
+		PRT_STRING str; /*< A string value           */
 		PRT_UINT32 ev; /**< An event id value          */
 		struct PRT_MACHINEID* mid; /**< A machine id value */
 		struct PRT_FOREIGNVALUE* frgn; /**< A foreign value            */
@@ -272,6 +275,13 @@ PRT_API PRT_UINT32 PRT_CALL_CONV PrtSetCapacity(_In_ PRT_VALUE* set);
 	* @see PrtFreeValue
 	*/
 	PRT_API PRT_VALUE* PRT_CALL_CONV PrtMkFloatValue(_In_ PRT_FLOAT value);
+
+	/** Makes an string value.
+	* @param[in] value A string value.
+	* @returns A proper string value. Caller is responsible for freeing.
+	* @see PrtFreeValue
+	*/
+	PRT_API PRT_VALUE* PRT_CALL_CONV PrtMkStringValue(_In_ PRT_STRING value);
 
 	/** Makes null value.
 	* The types null, event, and machine all share the null value.
