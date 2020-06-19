@@ -17,6 +17,7 @@
 #ifndef ENCLAVE_STD_ALT
 #include "enclave_u.h"
 #include "sgx_tcrypto.h"
+
 extern sgx_enclave_id_t global_app_eid;
 #endif
 
@@ -24,6 +25,7 @@ using namespace std;
 
 #ifndef ENCLAVE_STD_ALT
 extern unordered_map<string, int> USMPublicIdentityKeyToMachinePIDDictionary; 
+extern char* get_attestation(sgx_enclave_id_t eid);
 #endif
 
 extern PRT_PROCESS *process;
@@ -2740,10 +2742,28 @@ extern "C" void P_EXIT_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
 }
 
 extern "C" PRT_VALUE* P_localAuthenticate_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
-    ocall_enclave_print("KIRAT\n");
+
+    #ifndef ENCLAVE_STD_ALT
     PRT_VALUE** P_VAR_payload = argRefs[1];
-    ocall_enclave_print((*P_VAR_payload)->valueUnion.str);
+    char* SSMTypeToValidate = (*P_VAR_payload)->valueUnion.str;
+    PRT_VALUE** P_VAR_payload2 = argRefs[0];
+    char* machineHandleToValidate = (char*) (*P_VAR_payload2)->valueUnion.frgn->value;
+
+    //Verify measurement
+
+    //Get enclaveID of SSMTypeToValidate
+    sgx_enclave_id_t enclave_eid = PublicIdentityKeyToEidDictionary[string(machineHandleToValidate, SGX_RSA3072_KEY_SIZE)];
+
+    //Call getAttestationReport
+    char* measurement = get_attestation(enclave_eid);
+    ocall_enclave_print("Kirat\n");
+    ocall_enclave_print(measurement);
+
+ 
+
     return (PRT_VALUE*) PrtMkBoolValue((PRT_BOOLEAN)true);
+
+    #endif
 }
 
 

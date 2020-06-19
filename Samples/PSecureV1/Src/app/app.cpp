@@ -619,4 +619,44 @@ void generateIdentity(string& publicID, string& privateID, string prefix, string
     }
 } 
 
+char* get_attestation(sgx_enclave_id_t eid) {
+    //get enclave_hash value
+    sgx_target_info_t qe_info;
+    sgx_epid_group_id_t p_gid;
+    sgx_report_t report;
+    sgx_spid_t spid;
+    int ret;
+    sgx_status_t ecall_ret;
+
+    sgx_init_quote(&qe_info, &p_gid);
+    memset(qe_info.reserved1, 0, sizeof qe_info.reserved1);
+    memset(qe_info.reserved2, 0, sizeof qe_info.reserved2);
+    ecall_ret = enclave_ecall_create_report(eid, &ret, &qe_info, &report);
+    if (ecall_ret != SGX_SUCCESS || ret) {
+        printf("ecall_create_report: ecall_ret=%x, ret=%x", ecall_ret, ret);
+    }
+
+    memset(spid.id, 0x88, sizeof spid.id);
+    uint32_t quote_size;
+    sgx_get_quote_size(NULL, &quote_size);
+    sgx_quote_t *quote = reinterpret_cast<sgx_quote_t *>(malloc(quote_size));
+    ecall_ret = sgx_get_quote(&report, SGX_LINKABLE_SIGNATURE, &spid, NULL, NULL,
+                                0, NULL, quote, quote_size);
+    if (ecall_ret != SGX_SUCCESS) {
+        print_error_message((sgx_status_t)ret);
+    }
+
+    char* enclave_hash = (char*) malloc(100);
+    char* ptr = enclave_hash;
+
+    int i;
+    for(i=0;i<32;i++)
+    {
+        sprintf(ptr, "%02x",report.body.mr_enclave.m[i]);
+        ptr += 2;
+    }
+    ptr[i] = '\0';
+    return enclave_hash;
+}
+
 //*******************

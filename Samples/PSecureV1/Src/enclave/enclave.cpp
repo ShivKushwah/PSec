@@ -1,4 +1,5 @@
 #include "enclave.h"
+#include "sgx_utils.h"
 
 const int n_byte_size = SGX_RSA3072_KEY_SIZE;
 
@@ -416,6 +417,15 @@ void sgx_ecdsa_sign_Ecall(const uint8_t *p_data,
         ocall_print("Error:  in sgx_ecdsa_sign_Ecall");
     }
 
+}
+
+int ecall_create_report (sgx_target_info_t* quote_enc_info, sgx_report_t* report)
+{
+    sgx_report_data_t data;
+    int ret = 0;
+    memset( &data.d, 0x88, sizeof data.d); // random data
+    ret = sgx_create_report(quote_enc_info, &data, report);
+    return ret;
 }
 
 //*******************
