@@ -372,6 +372,15 @@ void sgx_rijndael128GCM_encrypt_Ecall(const sgx_aes_gcm_128bit_key_t *p_key,
     }
 }
 
+void sgx_rijndael128_cmac_msg_Ecall(const sgx_cmac_128bit_key_t *p_key, 
+                              const uint8_t *p_src, uint32_t src_len, 
+                              sgx_cmac_128bit_tag_t *p_mac) {
+    sgx_status_t status = sgx_rijndael128_cmac_msg(p_key, p_src, src_len, p_mac);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error: Encrypting in sgx_rijndael128_cmac_msg_Ecall");
+    }
+}
+
 
 void sgx_ecc256_open_context_Ecall(sgx_ecc_state_handle_t* ecc_handle) {
     sgx_status_t status = sgx_ecc256_open_context(ecc_handle);

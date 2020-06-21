@@ -128,6 +128,7 @@ sgx_status_t enclave_eprint(sgx_enclave_id_t eid, char* printStr);
 sgx_status_t enclave_sgx_read_rand_ecall(sgx_enclave_id_t eid, char* rand_buffer, uint32_t NUM_BYTES_RAND);
 sgx_status_t enclave_sgx_rijndael128GCM_decrypt_Ecall(sgx_enclave_id_t eid, const sgx_aes_gcm_128bit_key_t* p_key, const uint8_t* p_src, uint32_t src_len, uint8_t* p_dst, const uint8_t* p_iv, uint32_t iv_len, const uint8_t* p_aad, uint32_t aad_len, const sgx_aes_gcm_128bit_tag_t* p_in_mac);
 sgx_status_t enclave_sgx_rijndael128GCM_encrypt_Ecall(sgx_enclave_id_t eid, const sgx_aes_gcm_128bit_key_t* p_key, const uint8_t* p_src, uint32_t src_len, uint8_t* p_dst, const uint8_t* p_iv, uint32_t iv_len, const uint8_t* p_aad, uint32_t aad_len, sgx_aes_gcm_128bit_tag_t* p_out_mac);
+sgx_status_t enclave_sgx_rijndael128_cmac_msg_Ecall(sgx_enclave_id_t eid, const sgx_cmac_128bit_key_t* p_key, const uint8_t* p_src, uint32_t src_len, sgx_cmac_128bit_tag_t* p_mac);
 sgx_status_t enclave_sgx_ecc256_open_context_Ecall(sgx_enclave_id_t eid, sgx_ecc_state_handle_t* ecc_handle);
 sgx_status_t enclave_sgx_ecc256_close_context_Ecall(sgx_enclave_id_t eid, sgx_ecc_state_handle_t ecc_handle);
 sgx_status_t enclave_sgx_ecc256_create_key_pair_Ecall(sgx_enclave_id_t eid, sgx_ec256_private_t* p_private, sgx_ec256_public_t* p_public, sgx_ecc_state_handle_t ecc_handle);

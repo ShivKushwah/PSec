@@ -125,15 +125,15 @@ typedef uint8_t sample_aes_ctr_128bit_key_t[SAMPLE_AESCTR_KEY_SIZE];
 //                                         uint8_t *p_dst, const uint8_t *p_iv, uint32_t iv_len, const uint8_t *p_aad, uint32_t aad_len,
 //                                         sample_aes_gcm_128bit_tag_t *p_out_mac);
 
-/* Message Authentication - Rijndael 128 CMAC
-* Parameters:
-*   Return: sample_status_t  - SAMPLE_SUCCESS on success, error code otherwise.
-*   Inputs: sample_cmac_128bit_key_t *p_key - Pointer to key used in encryption/decryption operation
-*           uint8_t *p_src - Pointer to input stream to be MAC
-*           uint32_t src_len - Length of input stream to be MAC
-*   Output: sample_cmac_gcm_128bit_tag_t *p_mac - Pointer to resultant MAC */
-SAMPLE_LIBCRYPTO_API sample_status_t sample_rijndael128_cmac_msg(const sample_cmac_128bit_key_t *p_key, const uint8_t *p_src,
-                                      uint32_t src_len, sample_cmac_128bit_tag_t *p_mac);
+// /* Message Authentication - Rijndael 128 CMAC
+// * Parameters:
+// *   Return: sample_status_t  - SAMPLE_SUCCESS on success, error code otherwise.
+// *   Inputs: sample_cmac_128bit_key_t *p_key - Pointer to key used in encryption/decryption operation
+// *           uint8_t *p_src - Pointer to input stream to be MAC
+// *           uint32_t src_len - Length of input stream to be MAC
+// *   Output: sample_cmac_gcm_128bit_tag_t *p_mac - Pointer to resultant MAC */
+// SAMPLE_LIBCRYPTO_API sample_status_t sample_rijndael128_cmac_msg(const sample_cmac_128bit_key_t *p_key, const uint8_t *p_src,
+//                                       uint32_t src_len, sample_cmac_128bit_tag_t *p_mac);
 
 
 

@@ -569,7 +569,9 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
         // Generate the CMACsmk for gb||SPID||TYPE||KDF_ID||Sigsp(gb,ga)
         uint8_t mac[SAMPLE_EC_MAC_SIZE] = {0};
         uint32_t cmac_size = offsetof(sample_ra_msg2_t, mac);
-        sample_ret = sample_rijndael128_cmac_msg(&g_sp_db.smk_key,
+        // sample_ret = sample_rijndael128_cmac_msg(&g_sp_db.smk_key,
+        //     (uint8_t *)&p_msg2->g_b, cmac_size, &mac);
+        sample_ret = (sample_status_t) enclave_sgx_rijndael128_cmac_msg_Ecall(kps_enclave_eid, &g_sp_db.smk_key,
             (uint8_t *)&p_msg2->g_b, cmac_size, &mac);
         if(SAMPLE_SUCCESS != sample_ret)
         {
@@ -657,7 +659,12 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 
         // Verify the message mac using SMK
         sample_cmac_128bit_tag_t mac = {0};
-        sample_ret = sample_rijndael128_cmac_msg(&g_sp_db.smk_key,
+        // sample_ret = sample_rijndael128_cmac_msg(&g_sp_db.smk_key,
+        //                                    p_msg3_cmaced,
+        //                                    mac_size,
+        //                                    &mac);
+        sample_ret = (sample_status_t) enclave_sgx_rijndael128_cmac_msg_Ecall(kps_enclave_eid,
+                                            &g_sp_db.smk_key,
                                            p_msg3_cmaced,
                                            mac_size,
                                            &mac);
@@ -928,10 +935,15 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
 
         // Generate mac based on the mk key.
         mac_size = sizeof(ias_platform_info_blob_t);
-        sample_ret = sample_rijndael128_cmac_msg(&g_sp_db.mk_key,
-            (const uint8_t*)&p_att_result_msg->platform_info_blob,
-            mac_size,
-            &p_att_result_msg->mac);
+        // sample_ret = sample_rijndael128_cmac_msg(&g_sp_db.mk_key,
+        //     (const uint8_t*)&p_att_result_msg->platform_info_blob,
+        //     mac_size,
+        //     &p_att_result_msg->mac);
+        sample_ret = (sample_status_t) enclave_sgx_rijndael128_cmac_msg_Ecall(kps_enclave_eid,
+                                                &g_sp_db.mk_key,
+                                                (const uint8_t*)&p_att_result_msg->platform_info_blob,
+                                                mac_size,
+                                                &p_att_result_msg->mac);
         if(SAMPLE_SUCCESS != sample_ret)
         {
             fprintf(stderr, "\nError, cmac fail in [%s].", __FUNCTION__);

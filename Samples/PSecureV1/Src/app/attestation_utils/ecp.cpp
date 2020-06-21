@@ -36,6 +36,10 @@
 #include "ecp.h"
 
 #include "sample_libcrypto.h"
+#include "enclave_u.h"
+#include "sgx_utils/sgx_utils.h"
+
+extern sgx_enclave_id_t kps_enclave_eid;
 
 
 #define MAC_KEY_SIZE       16
@@ -61,10 +65,15 @@ bool verify_cmac128(
     uint8_t data_mac[SAMPLE_EC_MAC_SIZE];
     sample_status_t sample_ret;
 
-    sample_ret = sample_rijndael128_cmac_msg((sample_cmac_128bit_key_t*)mac_key,
-        p_data_buf,
-        buf_size,
-        (sample_cmac_128bit_tag_t *)data_mac);
+    // sample_ret = sample_rijndael128_cmac_msg((sample_cmac_128bit_key_t*)mac_key,
+    //     p_data_buf,
+    //     buf_size,
+    //     (sample_cmac_128bit_tag_t *)data_mac);
+    sample_ret = (sample_status_t) enclave_sgx_rijndael128_cmac_msg_Ecall(kps_enclave_eid,
+                                                    (sgx_cmac_128bit_key_t*)mac_key,
+                                                    p_data_buf,
+                                                    buf_size,
+                                                    (sgx_cmac_128bit_tag_t *)data_mac);
     if(sample_ret != SAMPLE_SUCCESS)
         return false;
     // In real implementation, should use a time safe version of memcmp here,
@@ -178,11 +187,16 @@ bool derive_key(
     
     memset(&cmac_key, 0, MAC_KEY_SIZE);
 
-    sample_ret = sample_rijndael128_cmac_msg(
-        (const sample_cmac_128bit_key_t *)&cmac_key,
-        (const uint8_t*)p_shared_key,
-        sizeof(sample_ec_dh_shared_t),
-        (sample_cmac_128bit_tag_t *)&key_derive_key);
+    // sample_ret = sample_rijndael128_cmac_msg(
+    //     (const sample_cmac_128bit_key_t *)&cmac_key,
+    //     (const uint8_t*)p_shared_key,
+    //     sizeof(sample_ec_dh_shared_t),
+    //     (sample_cmac_128bit_tag_t *)&key_derive_key);
+    sample_ret = (sample_status_t) enclave_sgx_rijndael128_cmac_msg_Ecall(kps_enclave_eid,
+                                                            (const sgx_cmac_128bit_key_t *)&cmac_key,
+                                                            (const uint8_t*)p_shared_key,
+                                                            sizeof(sample_ec_dh_shared_t),
+                                                            (sgx_cmac_128bit_tag_t *)&key_derive_key);
     if (sample_ret != SAMPLE_SUCCESS)
     {
         // memset here can be optimized away by compiler, so please use memset_s on
@@ -239,11 +253,16 @@ bool derive_key(
     *key_len = 0x0080;
 
 
-    sample_ret = sample_rijndael128_cmac_msg(
-        (sample_cmac_128bit_key_t *)&key_derive_key,
-        p_derivation_buffer,
-        derivation_buffer_length,
-        (sample_cmac_128bit_tag_t *)derived_key);
+    // sample_ret = sample_rijndael128_cmac_msg(
+    //     (sample_cmac_128bit_key_t *)&key_derive_key,
+    //     p_derivation_buffer,
+    //     derivation_buffer_length,
+    //     (sample_cmac_128bit_tag_t *)derived_key);
+    sample_ret = (sample_status_t) enclave_sgx_rijndael128_cmac_msg_Ecall(kps_enclave_eid,
+                                                        (sgx_cmac_128bit_key_t *)&key_derive_key,
+                                                        p_derivation_buffer,
+                                                        derivation_buffer_length,
+                                                        (sgx_cmac_128bit_tag_t *)derived_key);
     free(p_derivation_buffer);
     // memset here can be optimized away by compiler, so please use memset_s on
     // windows for production code and similar functions on other OSes.
