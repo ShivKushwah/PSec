@@ -414,10 +414,14 @@ void sgx_ecdsa_sign_Ecall(const uint8_t *p_data,
                             sgx_ec256_private_t *p_private, 
                             sgx_ec256_signature_t *p_signature, 
                             sgx_ecc_state_handle_t ecc_handle) {
-    sgx_status_t status = sgx_ecdsa_sign(p_data, data_size, p_private, p_signature, ecc_handle);
+    ocall_print("yeetrat");
+    sgx_ec256_signature_t * sig = (sgx_ec256_signature_t *) malloc(sizeof(sgx_ec256_signature_t));
+    sgx_status_t status = sgx_ecdsa_sign(p_data, data_size, p_private, sig, ecc_handle);
     if (status != SGX_SUCCESS) {
         ocall_print("Error:  in sgx_ecdsa_sign_Ecall");
     }
+    memcpy(p_signature, sig, sizeof(sgx_ec256_signature_t));
+    ocall_print("hmmm should be chilly boys");
 
 }
 

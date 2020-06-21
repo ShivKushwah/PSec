@@ -155,8 +155,8 @@ int ias_verify_attestation_evidence(
     // @TODO: Product signing algorithm still TBD.  May be RSA2048 signing.
     // Generate the Service providers ECCDH key pair.
     do {
-        ret = sample_ecc256_open_context(&ecc_state);
-        // ret = (sample_status_t) enclave_sgx_ecc256_open_context_Ecall(kps_enclave_eid, (sgx_ecc_state_handle_t*)&ecc_state);
+        // ret = sample_ecc256_open_context(&ecc_state);
+        ret = (sample_status_t) enclave_sgx_ecc256_open_context_Ecall(kps_enclave_eid, (sgx_ecc_state_handle_t*)&ecc_state);
         if (SAMPLE_SUCCESS != ret) {
             fprintf(stderr, "\nError, cannot get ECC cotext in [%s].",
                     __FUNCTION__);
@@ -165,22 +165,26 @@ int ias_verify_attestation_evidence(
             break;
         }
         // Sign
-        ret = sample_ecdsa_sign(
-                (uint8_t *)&p_attestation_verification_report->
-                    info_blob.sample_epid_group_status,
-                sizeof(ias_platform_info_blob_t) - sizeof(sample_ec_sign256_t),
-                (sample_ec256_private_t *)&g_rk_priv_key,
-                (sample_ec256_signature_t *)&p_attestation_verification_report->
-                    info_blob.signature,
-                ecc_state);
-        // ret = (sample_status_t) enclave_sgx_ecdsa_sign_Ecall( kps_enclave_eid,
+        // ret = sample_ecdsa_sign(
         //         (uint8_t *)&p_attestation_verification_report->
         //             info_blob.sample_epid_group_status,
         //         sizeof(ias_platform_info_blob_t) - sizeof(sample_ec_sign256_t),
-        //         (sgx_ec256_private_t *)&g_rk_priv_key,
-        //         (sgx_ec256_signature_t *)&p_attestation_verification_report->
+        //         (sample_ec256_private_t *)&g_rk_priv_key,
+        //         (sample_ec256_signature_t *)&p_attestation_verification_report->
         //             info_blob.signature,
-        //         (sgx_ecc_state_handle_t)ecc_state);
+        //         ecc_state);
+        sgx_ec256_signature_t* temp = (sgx_ec256_signature_t*) malloc(sizeof(sgx_ec256_signature_t));
+        ret = (sample_status_t) enclave_sgx_ecdsa_sign_Ecall( kps_enclave_eid,
+                (uint8_t *)&p_attestation_verification_report->
+                    info_blob.sample_epid_group_status,
+                sizeof(ias_platform_info_blob_t) - sizeof(sample_ec_sign256_t),
+                (sgx_ec256_private_t *)&g_rk_priv_key,
+                (sgx_ec256_signature_t *)temp,
+                (sgx_ecc_state_handle_t)ecc_state);
+        memcpy(&p_attestation_verification_report->info_blob.signature, temp, sizeof(sgx_ec256_signature_t));
+        
+
+
         if (SAMPLE_SUCCESS != ret) {
             fprintf(stderr, "\nError, sign ga_gb fail in [%s].", __FUNCTION__);
             ocall_print("Error: enclave_sgx_ecdsa_sign_Ecall in ias_ra");
@@ -194,8 +198,8 @@ int ias_verify_attestation_evidence(
 
     }while (0);
     if (ecc_state) {
-        sample_ecc256_close_context(ecc_state);
-        // enclave_sgx_ecc256_close_context_Ecall(kps_enclave_eid, (sgx_ecc_state_handle_t) ecc_state);        
+        // sample_ecc256_close_context(ecc_state);
+        enclave_sgx_ecc256_close_context_Ecall(kps_enclave_eid, (sgx_ecc_state_handle_t) ecc_state);        
 
     }
     p_attestation_verification_report->pse_status = IAS_PSE_OK;
