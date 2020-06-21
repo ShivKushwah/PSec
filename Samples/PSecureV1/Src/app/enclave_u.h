@@ -133,6 +133,10 @@ sgx_status_t enclave_sgx_ecc256_close_context_Ecall(sgx_enclave_id_t eid, sgx_ec
 sgx_status_t enclave_sgx_ecc256_create_key_pair_Ecall(sgx_enclave_id_t eid, sgx_ec256_private_t* p_private, sgx_ec256_public_t* p_public, sgx_ecc_state_handle_t ecc_handle);
 sgx_status_t enclave_sgx_ecc256_compute_shared_dhkey_Ecall(sgx_enclave_id_t eid, sgx_ec256_private_t* p_private_b, sgx_ec256_public_t* p_public_ga, sgx_ec256_dh_shared_t* p_shared_key, sgx_ecc_state_handle_t ecc_handle);
 sgx_status_t enclave_sgx_ecdsa_sign_Ecall(sgx_enclave_id_t eid, const uint8_t* p_data, uint32_t data_size, sgx_ec256_private_t* p_private, sgx_ec256_signature_t* p_signature, sgx_ecc_state_handle_t ecc_handle);
+sgx_status_t enclave_sgx_sha256_init_Ecall(sgx_enclave_id_t eid, sgx_sha_state_handle_t* ecc_handle);
+sgx_status_t enclave_sgx_sha256_update_Ecall(sgx_enclave_id_t eid, const uint8_t* p_src, uint32_t src_len, sgx_sha_state_handle_t sha_handle);
+sgx_status_t enclave_sgx_sha256_get_hash_Ecall(sgx_enclave_id_t eid, sgx_sha_state_handle_t sha_handle, sgx_sha256_hash_t* p_hash);
+sgx_status_t enclave_sgx_sha256_close_Ecall(sgx_enclave_id_t eid, sgx_sha_state_handle_t sha_handle);
 sgx_status_t enclave_ecall_create_report(sgx_enclave_id_t eid, int* retval, sgx_target_info_t* quote_enc_info, sgx_report_t* report);
 sgx_status_t enclave_ecall_validate_SSM_type_hosted_by_this_enclave(sgx_enclave_id_t eid, int* retval, char* SSMTypeQuery, int SSMTypeStringLength);
 sgx_status_t enclave_sgx_ra_get_ga(sgx_enclave_id_t eid, sgx_status_t* retval, sgx_ra_context_t context, sgx_ec256_public_t* g_a);

@@ -700,15 +700,19 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
         // Verify the report_data in the Quote matches the expected value.
         // The first 32 bytes of report_data are SHA256 HASH of {ga|gb|vk}.
         // The second 32 bytes of report_data are set to zero.
-        sample_ret = sample_sha256_init(&sha_handle);
+        // sample_ret = sample_sha256_init(&sha_handle);
+        sample_ret = (sample_status_t) enclave_sgx_sha256_init_Ecall(kps_enclave_eid, (sgx_sha_state_handle_t*) &sha_handle);
         if(sample_ret != SAMPLE_SUCCESS)
         {
             fprintf(stderr,"\nError, init hash failed in [%s].", __FUNCTION__);
             ret = SP_INTERNAL_ERROR;
             break;
         }
-        sample_ret = sample_sha256_update((uint8_t *)&(g_sp_db.g_a),
-                                     sizeof(g_sp_db.g_a), sha_handle);
+        // sample_ret = sample_sha256_update((uint8_t *)&(g_sp_db.g_a),
+        //                              sizeof(g_sp_db.g_a), sha_handle);
+        sample_ret = (sample_status_t) enclave_sgx_sha256_update_Ecall(kps_enclave_eid, 
+        (uint8_t *)&(g_sp_db.g_a), sizeof(g_sp_db.g_a), (sgx_sha_state_handle_t)sha_handle);
+
         if(sample_ret != SAMPLE_SUCCESS)
         {
             fprintf(stderr,"\nError, udpate hash failed in [%s].",
@@ -716,8 +720,10 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             ret = SP_INTERNAL_ERROR;
             break;
         }
-        sample_ret = sample_sha256_update((uint8_t *)&(g_sp_db.g_b),
-                                     sizeof(g_sp_db.g_b), sha_handle);
+        // sample_ret = sample_sha256_update((uint8_t *)&(g_sp_db.g_b),
+        //                              sizeof(g_sp_db.g_b), sha_handle);
+        sample_ret = (sample_status_t) enclave_sgx_sha256_update_Ecall(kps_enclave_eid, 
+        (uint8_t *)&(g_sp_db.g_b), sizeof(g_sp_db.g_b), (sgx_sha_state_handle_t)sha_handle);
         if(sample_ret != SAMPLE_SUCCESS)
         {
             fprintf(stderr,"\nError, udpate hash failed in [%s].",
@@ -725,8 +731,10 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             ret = SP_INTERNAL_ERROR;
             break;
         }
-        sample_ret = sample_sha256_update((uint8_t *)&(g_sp_db.vk_key),
-                                     sizeof(g_sp_db.vk_key), sha_handle);
+        // sample_ret = sample_sha256_update((uint8_t *)&(g_sp_db.vk_key),
+        //                              sizeof(g_sp_db.vk_key), sha_handle);
+        sample_ret = (sample_status_t) enclave_sgx_sha256_update_Ecall(kps_enclave_eid, 
+        (uint8_t *)&(g_sp_db.vk_key), sizeof(g_sp_db.vk_key), (sgx_sha_state_handle_t)sha_handle);
         if(sample_ret != SAMPLE_SUCCESS)
         {
             fprintf(stderr,"\nError, udpate hash failed in [%s].",
@@ -734,8 +742,10 @@ int sp_ra_proc_msg3_req(const sample_ra_msg3_t *p_msg3,
             ret = SP_INTERNAL_ERROR;
             break;
         }
-        sample_ret = sample_sha256_get_hash(sha_handle,
-                                      (sample_sha256_hash_t *)&report_data);
+        // sample_ret = sample_sha256_get_hash(sha_handle,
+        //                               (sample_sha256_hash_t *)&report_data);
+        sample_ret = (sample_status_t) enclave_sgx_sha256_get_hash_Ecall(kps_enclave_eid, 
+        (sgx_sha_state_handle_t)sha_handle, (sgx_sha256_hash_t *)&report_data);
         if(sample_ret != SAMPLE_SUCCESS)
         {
             fprintf(stderr,"\nError, Get hash failed in [%s].", __FUNCTION__);

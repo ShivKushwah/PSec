@@ -135,6 +135,15 @@ enclave {
                             [in, size=64]sgx_ec256_private_t *p_private, 
                             [out, size=64]sgx_ec256_signature_t *p_signature, 
                             sgx_ecc_state_handle_t ecc_handle);
+
+        public void sgx_sha256_init_Ecall([out]sgx_sha_state_handle_t* ecc_handle);
+        public void sgx_sha256_update_Ecall([in, size=src_len]const uint8_t *p_src, uint32_t src_len,
+                                             sgx_sha_state_handle_t sha_handle);
+        public void sgx_sha256_get_hash_Ecall(sgx_sha_state_handle_t sha_handle, 
+                                                [out, size=32]sgx_sha256_hash_t *p_hash);
+        public void sgx_sha256_close_Ecall(sgx_sha_state_handle_t sha_handle);
+
+
         public int ecall_create_report ([in] sgx_target_info_t* quote_enc_info, [out] sgx_report_t* report);
 
         public int ecall_validate_SSM_type_hosted_by_this_enclave([in, size = SSMTypeStringLength]char* SSMTypeQuery, int SSMTypeStringLength);

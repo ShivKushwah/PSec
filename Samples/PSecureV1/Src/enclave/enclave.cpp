@@ -425,6 +425,38 @@ void sgx_ecdsa_sign_Ecall(const uint8_t *p_data,
 
 }
 
+void sgx_sha256_init_Ecall(sgx_sha_state_handle_t* ecc_handle) {
+     sgx_status_t status = sgx_sha256_init(ecc_handle);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error: in sgx_sha256_init_Ecall");
+    }
+}
+
+void sgx_sha256_update_Ecall(const uint8_t *p_src, 
+                            uint32_t src_len,
+                            sgx_sha_state_handle_t sha_handle) {
+    sgx_status_t status = sgx_sha256_update(p_src, src_len, sha_handle);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error: in sgx_sha256_update_Ecall");
+    }
+
+}
+void sgx_sha256_get_hash_Ecall(sgx_sha_state_handle_t sha_handle, 
+                                sgx_sha256_hash_t *p_hash) {
+    sgx_status_t status = sgx_sha256_get_hash(sha_handle, p_hash);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error: in sgx_sha256_get_hash_Ecall");
+    }
+
+}
+void sgx_sha256_close_Ecall(sgx_sha_state_handle_t sha_handle) {
+    sgx_status_t status = sgx_sha256_close(sha_handle);
+    if (status != SGX_SUCCESS) {
+        ocall_print("Error: in sgx_sha256_close_Ecall");
+    }
+
+}
+
 int ecall_create_report (sgx_target_info_t* quote_enc_info, sgx_report_t* report)
 {
     sgx_report_data_t data;
