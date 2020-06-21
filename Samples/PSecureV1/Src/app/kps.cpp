@@ -550,10 +550,15 @@ int sp_ra_proc_msg1_req(const sample_ra_msg1_t *p_msg1,
         }
 
         // Sign gb_ga
-        sample_ret = sample_ecdsa_sign((uint8_t *)&gb_ga, sizeof(gb_ga),
-                        (sample_ec256_private_t *)&g_sp_priv_key,
-                        (sample_ec256_signature_t *)&p_msg2->sign_gb_ga,
-                        ecc_state);
+        // sample_ret = sample_ecdsa_sign((uint8_t *)&gb_ga, sizeof(gb_ga),
+        //                 (sample_ec256_private_t *)&g_sp_priv_key,
+        //                 (sample_ec256_signature_t *)&p_msg2->sign_gb_ga,
+        //                 ecc_state);
+        sample_ret = (sample_status_t) enclave_sgx_ecdsa_sign_Ecall( kps_enclave_eid,
+                        (uint8_t *)&gb_ga, sizeof(gb_ga),
+                        (sgx_ec256_private_t *)&g_sp_priv_key,
+                        (sgx_ec256_signature_t *)&p_msg2->sign_gb_ga,
+                        (sgx_ecc_state_handle_t) ecc_state);
         if(SAMPLE_SUCCESS != sample_ret)
         {
             fprintf(stderr, "\nError, sign ga_gb fail in [%s].", __FUNCTION__);

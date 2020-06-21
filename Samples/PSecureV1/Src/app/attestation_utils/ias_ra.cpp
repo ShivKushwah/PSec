@@ -173,15 +173,16 @@ int ias_verify_attestation_evidence(
         //         (sample_ec256_signature_t *)&p_attestation_verification_report->
         //             info_blob.signature,
         //         ecc_state);
-        sgx_ec256_signature_t* temp = (sgx_ec256_signature_t*) malloc(sizeof(sgx_ec256_signature_t));
+        // sgx_ec256_signature_t* temp = (sgx_ec256_signature_t*) malloc(sizeof(sgx_ec256_signature_t));
         ret = (sample_status_t) enclave_sgx_ecdsa_sign_Ecall( kps_enclave_eid,
                 (uint8_t *)&p_attestation_verification_report->
                     info_blob.sample_epid_group_status,
                 sizeof(ias_platform_info_blob_t) - sizeof(sample_ec_sign256_t),
                 (sgx_ec256_private_t *)&g_rk_priv_key,
-                (sgx_ec256_signature_t *)temp,
+                (sgx_ec256_signature_t *)&p_attestation_verification_report->
+                    info_blob.signature,
                 (sgx_ecc_state_handle_t)ecc_state);
-        memcpy(&p_attestation_verification_report->info_blob.signature, temp, sizeof(sgx_ec256_signature_t));
+        // memcpy(&p_attestation_verification_report->info_blob.signature, temp, sizeof(sgx_ec256_signature_t));
         
 
 
