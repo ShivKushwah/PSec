@@ -3073,9 +3073,9 @@ void sendUnencryptedSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** ar
             safe_free(encryptedMessage);
             safe_free(encryptedMessageSizeString);
 
-            if (!NETWORK_DEBUG) {
-                safe_free(mac);    
-            }
+            // if (!NETWORK_DEBUG) {
+            //     safe_free(mac);    
+            // }
             
         
 

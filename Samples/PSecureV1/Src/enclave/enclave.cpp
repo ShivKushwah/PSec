@@ -290,6 +290,11 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, true);  
 }
 
+extern "C" void P_UnencryptedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
+{   
+    
+}
+
 //*******************
 
 //Ecall Implementation*******************

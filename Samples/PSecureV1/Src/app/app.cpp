@@ -564,6 +564,11 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, false);
 }
 
+extern "C" void P_UnencryptedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
+{   
+    sendUnencryptedSendNetworkRequest(context, argRefs);
+}
+
 //Needs to be empty for compilation with Helper.cpp
 extern "C" PRT_VALUE* P_CreateSecureMachineRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
     // //USMs can only make untrusted requests to create machines
