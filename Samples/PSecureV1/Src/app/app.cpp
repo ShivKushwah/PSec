@@ -536,6 +536,11 @@ char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKe
     decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, false);
 }
 
+// USM send unencrypted message API [for baseline performance testing purposes]
+char* USMSendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response) {
+    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, false);
+}
+
 //*******************
 
 
