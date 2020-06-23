@@ -1995,6 +1995,248 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
 
 }
 
+void sendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, bool isSecureSend) {
+    ocall_print("entered decrypt fn");
+    printPayload(encryptedMessage, 9);
+    char* split = strtok(encryptedMessage, ":");
+    // char* encryptedMessageSize = split;
+    // int encryptedMessageSizeInt = atoi(encryptedMessageSize);
+    // int encryptedMessageSizeIntString = strlen(encryptedMessageSize);
+    char* eventNum;
+    int numArgs;
+    int payloadType;
+    char* payload;
+    int payloadSize;
+    char* next = NULL;
+
+    char* decryptedMessage = NULL;
+
+    // if (!NETWORK_DEBUG) {
+    //     int machinePID;
+    //     string sendingToMachineCapabilityKeyPayload;
+    //     char* publicCapabilityKeySendingToMachine = NULL;
+    //     #ifdef ENCLAVE_STD_ALT
+    //     machinePID = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+    //     sendingToMachineCapabilityKeyPayload = MachinePIDtoCapabilityKeyDictionary[machinePID];
+    //     publicCapabilityKeySendingToMachine = retrievePublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
+    //     #else
+    //     machinePID = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+    //     #endif
+        
+    //     string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
+
+    //     sgx_aes_ctr_128bit_key_t g_region_key;
+    //     sgx_aes_gcm_128bit_tag_t g_mac;
+    //     memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
+    //     memcpy(g_mac, mac, SIZE_OF_MAC);
+
+    //     char* actualEncryptedMessage = encryptedMessage + strlen(encryptedMessageSize) + 1;
+    //     decryptedMessage = (char*) malloc(atoi(encryptedMessageSize));
+    //     #ifdef ENCLAVE_STD_ALT
+    //     sgx_status_t status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) actualEncryptedMessage, atoi(encryptedMessageSize), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    //     #else
+    //     sgx_status_t status = enclave_sgx_rijndael128GCM_decrypt_Ecall(global_app_eid, &g_region_key, (const uint8_t*) actualEncryptedMessage, atoi(encryptedMessageSize), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    //     #endif
+    //     char* checkMyPublicIdentity = (char*) malloc(SGX_RSA3072_KEY_SIZE);
+    //     memcpy(checkMyPublicIdentity, decryptedMessage, SGX_RSA3072_KEY_SIZE);
+    //     if (string(checkMyPublicIdentity, SGX_RSA3072_KEY_SIZE) != string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) {
+    //         ocall_print("ERROR: Checking Public Identity Key inside Message FAILED in Secure Send");
+    //         ocall_print("Expected:");
+    //         printPayload(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE);
+    //         ocall_print("Received:");
+    //         printPayload(checkMyPublicIdentity, SGX_RSA3072_KEY_SIZE);
+    //         return;
+    //     }
+
+    //     sgx_rsa3072_signature_t* decryptedSignature = (sgx_rsa3072_signature_t*) malloc(SGX_RSA3072_KEY_SIZE);
+    //     char* messageSignedOver = (char*) malloc(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+    //     memcpy(messageSignedOver, decryptedMessage, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+    //     memcpy(decryptedSignature, decryptedMessage + atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
+    //     if (isSecureSend) {
+    //         ocall_print("Received Signature:");
+    //         printRSAKey((char*)decryptedSignature);
+    //         ocall_print("Signature is over message");
+    //         printRSAKey(messageSignedOver);
+    //         ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
+    //         ocall_print("Key needed to verify signature is");
+    //         ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
+    //         ocall_print("actual key is");
+    //         printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
+    //         #ifdef ENCLAVE_STD_ALT
+
+    //         if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
+    //             ocall_print("Secure Send Verifying Signature works!!!!");
+    //         } else {
+    //             ocall_print("Error: Secure Send Signature Verification Failed!");
+    //             return;
+    //         }
+
+    //         #endif
+
+    //     } else {
+    //         if (PublicIdentityKeyToPublicSigningKey.count(string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
+    //             ocall_print("ERROR: Cannot find signing key!");
+               
+    //         }
+    //         sgx_rsa3072_public_key_t* publicSigningKeyRequestingMachine = (sgx_rsa3072_public_key_t*) PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)].c_str();
+
+    //         #ifndef ENCLAVE_STD_ALT
+    //         int success;
+
+    //         sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
+    //         if (status != SGX_SUCCESS) {
+    //             ocall_print("sgx call failed!");
+    //         }
+    //         if (success == 1) {
+    //             ocall_print("Untrusted Send Verifying Signature works!!!!");
+    //         } else {
+    //             ocall_print("Error: Untrusted Send Signature Verification Failed!");
+    //             return;
+    //         }
+
+    //         #else 
+
+    //         if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicSigningKeyRequestingMachine)) {
+    //             ocall_print("Untrusted Send Verifying Signature works!!!!");
+    //         } else {
+    //             ocall_print("Error: Untrusted Send Enclave Signature Verification Failed!");
+    //             return;
+    //         }
+
+    //         #endif
+
+    //     }
+        
+        
+
+    //     safe_free(checkMyPublicIdentity);
+    //     char* nonce = strtok(decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, ":");
+    //     if (atoi(nonce) == ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)]) {
+    //         ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)] = ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)] + 1;
+    //     } else {
+    //         ocall_print("Error: Replay attack! Nonce reused");
+    //         ocall_print("expecting");
+    //         ocall_print_int(ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)]);
+    //         ocall_print("received");
+    //         ocall_print_int(atoi(nonce));
+    //     }
+    //     char* message = (char*) malloc(atoi(encryptedMessageSize) - strlen(nonce) - 1); 
+    //     memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1 + strlen(nonce) + 1, atoi(encryptedMessageSize) - strlen(nonce) - 1);
+    //     next = message;
+
+    // }
+
+
+    // if (!isAfterDecrypt) {
+    //     split = strtok(next, ":");
+    // }
+    eventNum = split;
+    split = strtok(NULL, ":");
+    ocall_print("num args is");
+    ocall_print(split);
+    if (split[0] == '0') {
+        numArgs = 0;
+    } else {
+        numArgs = atoi(split);
+    }
+    
+    payloadType = -1;
+    payload = (char*) malloc(10);
+    payloadSize;
+    payload[0] = '\0';
+    if (numArgs > 0) {
+        split = strtok(NULL, ":");
+        payloadType = atoi(split);
+        split = strtok(NULL, ":");
+        payloadSize = atoi(split);
+        safe_free(payload);
+        payload = split + strlen(split) + 1;
+
+    } else {
+        safe_free(payload);
+    }
+
+    #ifndef ENCLAVE_STD_ALT
+
+    PRT_MACHINEID receivingMachinePID;
+    char* temp = (char*) malloc(10);
+    snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
+    safe_free(temp);
+    receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize, isSecureSend); //TODO shividentity
+
+    #else
+
+    PRT_MACHINEID receivingMachinePID;
+    ocall_print("SecureChildMachine has a PID of:");
+    char* temp = (char*) malloc(10);
+   
+    if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
+        ocall_print("Key not found");
+    }
+    snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
+    ocall_print(temp);
+    safe_free(temp);
+    receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+    
+    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize, isSecureSend); //TODO update to untrusted send api
+
+    #endif
+    safe_free(decryptedMessage);
+
+
+    // if (!NETWORK_DEBUG) {
+    //     //Return Success Messag with encryption
+    //     string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
+    //     int nonce = ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)];
+    //     ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)] = ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)] + 1;
+    //     char* nonceStr = (char*) malloc(10);
+    //     itoa(nonce, nonceStr, 10);
+
+    //     char* colon = ":";
+
+    //     char* baseMessage = "Success";
+
+    //     int encryptedMessageLength = strlen(baseMessage) + 1 + strlen(nonceStr);
+    //     char* encryptedMessageLengthString = (char*) malloc(10);
+
+    //     itoa(encryptedMessageLength, encryptedMessageLengthString, 10);
+
+    //     char* iv = generateIV();
+    //     char* mac = "1234567891234567";
+
+    //     char* concatStrings[] = {baseMessage, colon, nonceStr};
+    //     int concatLenghts[] = {strlen(baseMessage), strlen(colon), strlen(nonceStr)};
+    //     char* toBeEncryptedMessage = concatMutipleStringsWithLength(concatStrings, concatLenghts, 3);
+    //     int encryptedMessageSize = returnTotalSizeofLengthArray(concatLenghts, 3);
+
+    //     sgx_aes_ctr_128bit_key_t g_region_key;
+    //     sgx_aes_gcm_128bit_tag_t g_mac;
+    //     memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
+
+    //     char* encryptedMessage = (char*) malloc(encryptedMessageSize);
+    //     #ifdef ENCLAVE_STD_ALT
+    //     sgx_status_t status = sgx_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) toBeEncryptedMessage, encryptedMessageSize, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    //     #else 
+    //     enclave_sgx_rijndael128GCM_encrypt_Ecall(global_app_eid, &g_region_key, (const uint8_t*) toBeEncryptedMessage, encryptedMessageSize, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    //     #endif
+    //     mac = (char*) malloc(SIZE_OF_MAC);
+    //     memcpy(mac, (char*)g_mac, SIZE_OF_MAC);
+
+    //     char* concatStrings2[] = {iv, colon, mac, colon, encryptedMessageLengthString, colon, encryptedMessage};
+    //     int concatLenghts2[] = {SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageLengthString), strlen(colon), encryptedMessageSize};
+    //     char* returnString = concatMutipleStringsWithLength(concatStrings2, concatLenghts2, 7);
+    //     int requestSize = returnTotalSizeofLengthArray(concatLenghts2, 7) + 1;
+    //     memcpy(response, returnString, requestSize);
+
+    //     safe_free(encryptedMessage);
+    //     safe_free(returnString);
+
+    // }
+
+}
+
 void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, bool isSecureSend) {
     ocall_print("entered decrypt fn");
     printPayload(encryptedMessage, 9);
@@ -2125,61 +2367,63 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         next = message;
 
     }
+    //next is the decryptedMessagePayload
+    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, next, response, isSecureSend);
 
-    split = strtok(next, ":");
-    eventNum = split;
-    split = strtok(NULL, ":");
-    ocall_print("num args is");
-    ocall_print(split);
-    if (split[0] == '0') {
-        numArgs = 0;
-    } else {
-        numArgs = atoi(split);
-    }
+    // split = strtok(next, ":");
+    // eventNum = split;
+    // split = strtok(NULL, ":");
+    // ocall_print("num args is");
+    // ocall_print(split);
+    // if (split[0] == '0') {
+    //     numArgs = 0;
+    // } else {
+    //     numArgs = atoi(split);
+    // }
     
-    payloadType = -1;
-    payload = (char*) malloc(10);
-    payloadSize;
-    payload[0] = '\0';
-    if (numArgs > 0) {
-        split = strtok(NULL, ":");
-        payloadType = atoi(split);
-        split = strtok(NULL, ":");
-        payloadSize = atoi(split);
-        safe_free(payload);
-        payload = split + strlen(split) + 1;
+    // payloadType = -1;
+    // payload = (char*) malloc(10);
+    // payloadSize;
+    // payload[0] = '\0';
+    // if (numArgs > 0) {
+    //     split = strtok(NULL, ":");
+    //     payloadType = atoi(split);
+    //     split = strtok(NULL, ":");
+    //     payloadSize = atoi(split);
+    //     safe_free(payload);
+    //     payload = split + strlen(split) + 1;
 
-    } else {
-        safe_free(payload);
-    }
+    // } else {
+    //     safe_free(payload);
+    // }
 
-    #ifndef ENCLAVE_STD_ALT
+    // #ifndef ENCLAVE_STD_ALT
 
-    PRT_MACHINEID receivingMachinePID;
-    char* temp = (char*) malloc(10);
-    snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
-    safe_free(temp);
-    receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+    // PRT_MACHINEID receivingMachinePID;
+    // char* temp = (char*) malloc(10);
+    // snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
+    // safe_free(temp);
+    // receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
 
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize, isSecureSend); //TODO shividentity
+    // handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize, isSecureSend); //TODO shividentity
 
-    #else
+    // #else
 
-    PRT_MACHINEID receivingMachinePID;
-    ocall_print("SecureChildMachine has a PID of:");
-    char* temp = (char*) malloc(10);
+    // PRT_MACHINEID receivingMachinePID;
+    // ocall_print("SecureChildMachine has a PID of:");
+    // char* temp = (char*) malloc(10);
    
-    if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
-        ocall_print("Key not found");
-    }
-    snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
-    ocall_print(temp);
-    safe_free(temp);
-    receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
+    // if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
+    //     ocall_print("Key not found");
+    // }
+    // snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
+    // ocall_print(temp);
+    // safe_free(temp);
+    // receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
     
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize, isSecureSend); //TODO update to untrusted send api
+    // handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize, isSecureSend); //TODO update to untrusted send api
 
-    #endif
+    // #endif
     safe_free(decryptedMessage);
 
 
@@ -2231,245 +2475,6 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         safe_free(returnString);
 
     }
-
-}
-
-void sendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, bool isSecureSend) {
-    ocall_print("entered decrypt fn");
-    printPayload(encryptedMessage, 9);
-    char* split = strtok(encryptedMessage, ":");
-    char* encryptedMessageSize = split;
-    int encryptedMessageSizeInt = atoi(encryptedMessageSize);
-    int encryptedMessageSizeIntString = strlen(encryptedMessageSize);
-    char* eventNum;
-    int numArgs;
-    int payloadType;
-    char* payload;
-    int payloadSize;
-    char* next = NULL;
-
-    char* decryptedMessage = NULL;
-
-    // if (!NETWORK_DEBUG) {
-    //     int machinePID;
-    //     string sendingToMachineCapabilityKeyPayload;
-    //     char* publicCapabilityKeySendingToMachine = NULL;
-    //     #ifdef ENCLAVE_STD_ALT
-    //     machinePID = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
-    //     sendingToMachineCapabilityKeyPayload = MachinePIDtoCapabilityKeyDictionary[machinePID];
-    //     publicCapabilityKeySendingToMachine = retrievePublicCapabilityKey((char*)sendingToMachineCapabilityKeyPayload.c_str());
-    //     #else
-    //     machinePID = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
-    //     #endif
-        
-    //     string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
-
-    //     sgx_aes_ctr_128bit_key_t g_region_key;
-    //     sgx_aes_gcm_128bit_tag_t g_mac;
-    //     memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
-    //     memcpy(g_mac, mac, SIZE_OF_MAC);
-
-    //     char* actualEncryptedMessage = encryptedMessage + strlen(encryptedMessageSize) + 1;
-    //     decryptedMessage = (char*) malloc(atoi(encryptedMessageSize));
-    //     #ifdef ENCLAVE_STD_ALT
-    //     sgx_status_t status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) actualEncryptedMessage, atoi(encryptedMessageSize), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
-    //     #else
-    //     sgx_status_t status = enclave_sgx_rijndael128GCM_decrypt_Ecall(global_app_eid, &g_region_key, (const uint8_t*) actualEncryptedMessage, atoi(encryptedMessageSize), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
-    //     #endif
-    //     char* checkMyPublicIdentity = (char*) malloc(SGX_RSA3072_KEY_SIZE);
-    //     memcpy(checkMyPublicIdentity, decryptedMessage, SGX_RSA3072_KEY_SIZE);
-    //     if (string(checkMyPublicIdentity, SGX_RSA3072_KEY_SIZE) != string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) {
-    //         ocall_print("ERROR: Checking Public Identity Key inside Message FAILED in Secure Send");
-    //         ocall_print("Expected:");
-    //         printPayload(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE);
-    //         ocall_print("Received:");
-    //         printPayload(checkMyPublicIdentity, SGX_RSA3072_KEY_SIZE);
-    //         return;
-    //     }
-
-    //     sgx_rsa3072_signature_t* decryptedSignature = (sgx_rsa3072_signature_t*) malloc(SGX_RSA3072_KEY_SIZE);
-    //     char* messageSignedOver = (char*) malloc(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-    //     memcpy(messageSignedOver, decryptedMessage, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-    //     memcpy(decryptedSignature, decryptedMessage + atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE, SGX_RSA3072_KEY_SIZE);
-    //     if (isSecureSend) {
-    //         ocall_print("Received Signature:");
-    //         printRSAKey((char*)decryptedSignature);
-    //         ocall_print("Signature is over message");
-    //         printRSAKey(messageSignedOver);
-    //         ocall_print_int(atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1);
-    //         ocall_print("Key needed to verify signature is");
-    //         ocall_print((char*)sendingToMachineCapabilityKeyPayload.c_str());
-    //         ocall_print("actual key is");
-    //         printPublicCapabilityKey(publicCapabilityKeySendingToMachine);
-    //         #ifdef ENCLAVE_STD_ALT
-
-    //         if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicCapabilityKeySendingToMachine)) {
-    //             ocall_print("Secure Send Verifying Signature works!!!!");
-    //         } else {
-    //             ocall_print("Error: Secure Send Signature Verification Failed!");
-    //             return;
-    //         }
-
-    //         #endif
-
-    //     } else {
-    //         if (PublicIdentityKeyToPublicSigningKey.count(string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
-    //             ocall_print("ERROR: Cannot find signing key!");
-               
-    //         }
-    //         sgx_rsa3072_public_key_t* publicSigningKeyRequestingMachine = (sgx_rsa3072_public_key_t*) PublicIdentityKeyToPublicSigningKey[string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE)].c_str();
-
-    //         #ifndef ENCLAVE_STD_ALT
-    //         int success;
-
-    //         sgx_status_t status = enclave_verifySignatureEcall(global_app_eid , &success, messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, (char*)decryptedSignature, (char*)publicSigningKeyRequestingMachine, SGX_RSA3072_KEY_SIZE, (uint32_t) sizeof(sgx_rsa3072_public_key_t));
-    //         if (status != SGX_SUCCESS) {
-    //             ocall_print("sgx call failed!");
-    //         }
-    //         if (success == 1) {
-    //             ocall_print("Untrusted Send Verifying Signature works!!!!");
-    //         } else {
-    //             ocall_print("Error: Untrusted Send Signature Verification Failed!");
-    //             return;
-    //         }
-
-    //         #else 
-
-    //         if (verifySignature(messageSignedOver, atoi(encryptedMessageSize) - SGX_RSA3072_KEY_SIZE - 1, decryptedSignature, (sgx_rsa3072_public_key_t*)publicSigningKeyRequestingMachine)) {
-    //             ocall_print("Untrusted Send Verifying Signature works!!!!");
-    //         } else {
-    //             ocall_print("Error: Untrusted Send Enclave Signature Verification Failed!");
-    //             return;
-    //         }
-
-    //         #endif
-
-    //     }
-        
-        
-
-    //     safe_free(checkMyPublicIdentity);
-    //     char* nonce = strtok(decryptedMessage + SGX_RSA3072_KEY_SIZE + 1, ":");
-    //     if (atoi(nonce) == ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)]) {
-    //         ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)] = ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)] + 1;
-    //     } else {
-    //         ocall_print("Error: Replay attack! Nonce reused");
-    //         ocall_print("expecting");
-    //         ocall_print_int(ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)]);
-    //         ocall_print("received");
-    //         ocall_print_int(atoi(nonce));
-    //     }
-    //     char* message = (char*) malloc(atoi(encryptedMessageSize) - strlen(nonce) - 1); 
-    //     memcpy(message, decryptedMessage + SGX_RSA3072_KEY_SIZE + 1 + strlen(nonce) + 1, atoi(encryptedMessageSize) - strlen(nonce) - 1);
-    //     next = message;
-
-    // }
-
-    split = strtok(next, ":");
-    eventNum = split;
-    split = strtok(NULL, ":");
-    ocall_print("num args is");
-    ocall_print(split);
-    if (split[0] == '0') {
-        numArgs = 0;
-    } else {
-        numArgs = atoi(split);
-    }
-    
-    payloadType = -1;
-    payload = (char*) malloc(10);
-    payloadSize;
-    payload[0] = '\0';
-    if (numArgs > 0) {
-        split = strtok(NULL, ":");
-        payloadType = atoi(split);
-        split = strtok(NULL, ":");
-        payloadSize = atoi(split);
-        safe_free(payload);
-        payload = split + strlen(split) + 1;
-
-    } else {
-        safe_free(payload);
-    }
-
-    #ifndef ENCLAVE_STD_ALT
-
-    PRT_MACHINEID receivingMachinePID;
-    char* temp = (char*) malloc(10);
-    snprintf(temp, 5, "%d\n", USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
-    safe_free(temp);
-    receivingMachinePID.machineId = USMPublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
-
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize, isSecureSend); //TODO shividentity
-
-    #else
-
-    PRT_MACHINEID receivingMachinePID;
-    ocall_print("SecureChildMachine has a PID of:");
-    char* temp = (char*) malloc(10);
-   
-    if (PublicIdentityKeyToMachinePIDDictionary.count(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)) == 0) {
-        ocall_print("Key not found");
-    }
-    snprintf(temp, 5, "%d", PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)]);
-    ocall_print(temp);
-    safe_free(temp);
-    receivingMachinePID.machineId = PublicIdentityKeyToMachinePIDDictionary[string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE)];
-    
-    handle_incoming_event(atoi(eventNum), receivingMachinePID, numArgs, payloadType, payload, payloadSize, isSecureSend); //TODO update to untrusted send api
-
-    #endif
-    safe_free(decryptedMessage);
-
-
-    // if (!NETWORK_DEBUG) {
-    //     //Return Success Messag with encryption
-    //     string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), string(requestingMachineIDKey, SGX_RSA3072_KEY_SIZE))];
-    //     int nonce = ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)];
-    //     ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)] = ChildSessionKeyToNonce[make_tuple(string(receivingMachineIDKey, SGX_RSA3072_KEY_SIZE), sessionKey)] + 1;
-    //     char* nonceStr = (char*) malloc(10);
-    //     itoa(nonce, nonceStr, 10);
-
-    //     char* colon = ":";
-
-    //     char* baseMessage = "Success";
-
-    //     int encryptedMessageLength = strlen(baseMessage) + 1 + strlen(nonceStr);
-    //     char* encryptedMessageLengthString = (char*) malloc(10);
-
-    //     itoa(encryptedMessageLength, encryptedMessageLengthString, 10);
-
-    //     char* iv = generateIV();
-    //     char* mac = "1234567891234567";
-
-    //     char* concatStrings[] = {baseMessage, colon, nonceStr};
-    //     int concatLenghts[] = {strlen(baseMessage), strlen(colon), strlen(nonceStr)};
-    //     char* toBeEncryptedMessage = concatMutipleStringsWithLength(concatStrings, concatLenghts, 3);
-    //     int encryptedMessageSize = returnTotalSizeofLengthArray(concatLenghts, 3);
-
-    //     sgx_aes_ctr_128bit_key_t g_region_key;
-    //     sgx_aes_gcm_128bit_tag_t g_mac;
-    //     memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
-
-    //     char* encryptedMessage = (char*) malloc(encryptedMessageSize);
-    //     #ifdef ENCLAVE_STD_ALT
-    //     sgx_status_t status = sgx_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) toBeEncryptedMessage, encryptedMessageSize, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
-    //     #else 
-    //     enclave_sgx_rijndael128GCM_encrypt_Ecall(global_app_eid, &g_region_key, (const uint8_t*) toBeEncryptedMessage, encryptedMessageSize, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
-    //     #endif
-    //     mac = (char*) malloc(SIZE_OF_MAC);
-    //     memcpy(mac, (char*)g_mac, SIZE_OF_MAC);
-
-    //     char* concatStrings2[] = {iv, colon, mac, colon, encryptedMessageLengthString, colon, encryptedMessage};
-    //     int concatLenghts2[] = {SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageLengthString), strlen(colon), encryptedMessageSize};
-    //     char* returnString = concatMutipleStringsWithLength(concatStrings2, concatLenghts2, 7);
-    //     int requestSize = returnTotalSizeofLengthArray(concatLenghts2, 7) + 1;
-    //     memcpy(response, returnString, requestSize);
-
-    //     safe_free(encryptedMessage);
-    //     safe_free(returnString);
-
-    // }
 
 }
 

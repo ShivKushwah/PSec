@@ -538,7 +538,9 @@ char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKe
 
 // USM send unencrypted message API [for baseline performance testing purposes]
 char* USMSendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response) {
-    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, false);
+    char* messagePayloadSize = strtok(encryptedMessage, ":"); //remove the messagePayloadSize field
+    char* messagePayload = encryptedMessage + strlen(messagePayloadSize) + 1;
+    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, messagePayload, response, false);
 }
 
 //*******************
