@@ -1925,7 +1925,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         char* enc = sendReturn + SIZE_OF_IV + 1 + SIZE_OF_MAC + 1;
         char* encryptedStringSizeString = strtok(enc, ":");
         int size = 0;
-        if (encryptedStringSizeString == NULL || encryptedStringSizeString == "" || encryptedStringSizeString == 0) {
+        if (encryptedStringSizeString == NULL || encryptedStringSizeString == "" || encryptedStringSizeString == 0 || encryptedStringSizeString[0] == '\0') {
             //Sending has terminated prematurely or failed
             //This block is necessary to call EXIT() command on OTP example to measure performance results
             //TODO Potentially retry?
@@ -2060,7 +2060,7 @@ void sendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMach
     #endif
 
     if (!isCalledFromDecryptAndSend) {
-        memcpy(response, "Success!", strlen("Success!") + 1);
+        memcpy(response, "Success", strlen("Success") + 1);
     }
 
 }
@@ -2891,6 +2891,24 @@ void sendUnencryptedSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** ar
     safe_free(sendRequest);
     ocall_print("Send/UntrustedSend Network call returned:");
     ocall_print(sendReturn);
+
+    if (sendReturn == NULL || sendReturn == "" || sendReturn == 0 || sendReturn[0] == '\0') {
+            //Sending has terminated prematurely or failed
+            //This block is necessary to call EXIT() command on OTP example to measure performance results
+            //TODO Potentially retry?
+            safe_free(event);
+            safe_free(eventMessagePayload);
+            safe_free(numArgsPayload);
+
+            safe_free(currentMachineIDPublicKey);
+            return;
+        }
+    
+    if (strcmp(sendReturn, "Success") != 0) {
+        ocall_print("ERROR: Message not sent successfully!");
+        abort();
+        //TODO maybe add retry behavior?
+    }
 
     // if (!NETWORK_DEBUG) {
     //     char* iv = (char*) malloc(SIZE_OF_IV);
