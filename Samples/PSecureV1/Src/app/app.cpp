@@ -540,7 +540,7 @@ char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKe
 char* USMSendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response) {
     char* messagePayloadSize = strtok(encryptedMessage, ":"); //remove the messagePayloadSize field
     char* messagePayload = encryptedMessage + strlen(messagePayloadSize) + 1;
-    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, messagePayload, response, false);
+    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, messagePayload, false, response, false);
 }
 
 //*******************

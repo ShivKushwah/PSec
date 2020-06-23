@@ -259,7 +259,7 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
 int sendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, int isSecureSend, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE, uint32_t RESPONSE_SIZE) {
     char* messagePayloadSize = strtok(encryptedMessage, ":"); //remove the messagePayloadSize field
     char* messagePayload = encryptedMessage + strlen(messagePayloadSize) + 1;
-    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, messagePayload, response, isSecureSend);
+    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, messagePayload, false, response, false);
 }
 
 //*******************
