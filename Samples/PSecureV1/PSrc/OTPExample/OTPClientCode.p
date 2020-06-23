@@ -115,7 +115,10 @@ machine ClientWebBrowser {
 
     state Done {
         entry {
-            print "Client Web Browser Authenticated Successfully!";
+            print "Client Web Browser Authenticated Successfully!\n";
+            print "MEASURE OTPBASELINE END:";
+            MeasureTime();
+            EXIT();
         }
      }
 

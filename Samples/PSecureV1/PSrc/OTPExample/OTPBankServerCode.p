@@ -2,6 +2,8 @@ machine UntrustedInitializer {
     var handler: machine_handle;
     start state Initial {
         entry {
+            print "MEASURE OTPBASELINE START:";
+            MeasureTime();
             handler = new TrustedInitializer() @ this;
         }
     }
@@ -67,7 +69,7 @@ secure_machine BankEnclave {
                 print "Auth Failure";
                 send clientUSM, AuthFailure; //untrusted_send
             }
-            
+            // EXIT();
             goto AuthCheck;
         }
 

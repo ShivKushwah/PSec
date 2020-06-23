@@ -22,3 +22,6 @@ fun GenerateRandomMasterSecret() : StringType;
 fun GetUserInput() : StringType;
 fun Concat(input1:StringType, input2:StringType) : StringType;
 fun Hash(input1:StringType, input2:StringType) : StringType;
+
+fun MeasureTime();
+fun EXIT();

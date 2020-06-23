@@ -150,6 +150,10 @@ PRT_VALUE* P_Concat_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
+PRT_VALUE* P_MeasureTime_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
+PRT_VALUE* P_EXIT_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
+
 PRT_VALUE* P_Declassify_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
 
 PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
@@ -388,6 +392,22 @@ PRT_FUNDECL P_FUNCTION_Hash =
 {
     "Hash",
     &P_Hash_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_MeasureTime =
+{
+    "MeasureTime",
+    &P_MeasureTime_IMPL,
+    NULL
+};
+
+
+PRT_FUNDECL P_FUNCTION_EXIT =
+{
+    "EXIT",
+    &P_EXIT_IMPL,
     NULL
 };
 
@@ -678,6 +698,18 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
+    PrtPrintf("MEASURE OTPBASELINE START:");
+    
+    PrtFreeValue(P_MeasureTime_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_1;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_1;
+    }
+    
     _P_GEN_funargs[0] = "TrustedInitializer";
     _P_GEN_funargs[1] = "0";
     PRT_VALUE* P_this_ref = (P_GetThis_IMPL(context, _P_GEN_funargs));
@@ -1535,6 +1567,16 @@ PRT_VALUE* P_Anon_IMPL_5(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
         
     }
     
+    
+    PrtFreeValue(P_EXIT_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_6;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_6;
+    }
     
     PrtGoto(p_this, 3U, 0);
     
@@ -2743,7 +2785,29 @@ PRT_VALUE* P_Anon_IMPL_15(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_MACHINEINST_PRIV* p_this = (PRT_MACHINEINST_PRIV*)context;
     PRT_VALUE* _P_GEN_retval = NULL;
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PrtPrintf("Client Web Browser Authenticated Successfully!");
+    PrtPrintf("Client Web Browser Authenticated Successfully!\n");
+    
+    PrtPrintf("MEASURE OTPBASELINE END:");
+    
+    PrtFreeValue(P_MeasureTime_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_19;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_19;
+    }
+    
+    PrtFreeValue(P_EXIT_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_19;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_19;
+    }
     
 p_return_19: ;
     return _P_GEN_retval;

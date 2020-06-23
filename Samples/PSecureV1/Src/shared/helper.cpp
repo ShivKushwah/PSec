@@ -1924,6 +1924,18 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
         memcpy(mac, sendReturn + SIZE_OF_IV + 1, SIZE_OF_MAC);
         char* enc = sendReturn + SIZE_OF_IV + 1 + SIZE_OF_MAC + 1;
         char* encryptedStringSizeString = strtok(enc, ":");
+        int size = 0;
+        if (encryptedStringSizeString == NULL || encryptedStringSizeString == "" || encryptedStringSizeString == 0) {
+            //Sending has terminated prematurely or failed
+            //This block is necessary to call EXIT() command on OTP example to measure performance results
+            //TODO Potentially retry?
+            safe_free(event);
+            safe_free(eventMessagePayload);
+            safe_free(numArgsPayload);
+
+            safe_free(currentMachineIDPublicKey);
+            return;
+        }
         char* encryptedMessage = (char*)malloc(atoi(encryptedStringSizeString));
         memcpy(encryptedMessage, enc + strlen(encryptedStringSizeString) + 1, atoi(encryptedStringSizeString));
 
@@ -3364,6 +3376,7 @@ extern "C" void P_Debug_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 }
 
 extern "C" void P_EXIT_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {
+    ocall_enclave_print("Ending Program due to Exit command!");
     ocall_kill();
 }
 
