@@ -296,7 +296,7 @@ extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
     if (ENABLE_UNTRUSTED_SEND_REDUDANT_SECURITY) {
         sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, true);  
     } else {
-        sendUnencryptedSendNetworkRequest(context, argRefs); // Since host machines are already connected via TLS, we don't need extra encryption
+        sendSendNetworkRequest(context, argRefs, "UnencryptedSend", false, true); // Since host machines are already connected via TLS, we don't need extra encryption
     }
 }
 

@@ -86,4 +86,3 @@ char* createStringLiteralMalloced(char* stringLiteral);
 void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend, bool isEnclave);
 void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, bool isSecureSend);
 void sendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* messagePayload, bool isSecureSend, char* response, bool isCalledFromDecryptAndSend);
-void sendUnencryptedSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs);
