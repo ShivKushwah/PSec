@@ -256,6 +256,10 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
     decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, isSecureSend);
 }
 
+int sendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, int isSecureSend, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE, uint32_t RESPONSE_SIZE) {
+    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, isSecureSend);
+}
+
 //*******************
 
 //SSM P Foreign Functions*******************

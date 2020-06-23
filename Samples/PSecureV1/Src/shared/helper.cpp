@@ -1139,29 +1139,29 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         ocall_print(encryptedMessage);
 
         if (isEnclaveUntrustedHost) {
-            // //if Untrusted Send to SSM
-            // int count;
-            // int ptr;
-            // sgx_enclave_id_t enclave_eid;
-            // count = PublicIdentityKeyToEidDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
-            // enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)];
-            // char* split = strtok(encryptedMessage, ":");
-            // int encryptedMessageSize = atoi(split) + strlen(split) + 1;
-            // printPayload(encryptedMessage, 9);
-            // encryptedMessage[strlen(split)] = ':'; //undoing effect of strtok
-            // int RESPONSE_SZ = 100;
-            // char* responseBuffer = (char*) malloc(RESPONSE_SZ);
-            // sgx_status_t status = enclave_decryptAndSendMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, responseBuffer, 0, SGX_RSA3072_KEY_SIZE, encryptedMessageSize, RESPONSE_SZ);
+            //if Untrusted Send to SSM
+            int count;
+            int ptr;
+            sgx_enclave_id_t enclave_eid;
+            count = PublicIdentityKeyToEidDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
+            enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)];
+            char* split = strtok(encryptedMessage, ":");
+            int encryptedMessageSize = atoi(split) + strlen(split) + 1;
+            printPayload(encryptedMessage, 9);
+            encryptedMessage[strlen(split)] = ':'; //undoing effect of strtok
+            int RESPONSE_SZ = 100;
+            char* responseBuffer = (char*) malloc(RESPONSE_SZ);
+            sgx_status_t status = enclave_sendUnencryptedMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, responseBuffer, 0, SGX_RSA3072_KEY_SIZE, encryptedMessageSize, RESPONSE_SZ);
             
 
-            // if (count == 0) {
-            //     ocall_print("\n No Enclave Eid Found!");
-            // }
+            if (count == 0) {
+                ocall_print("\n No Enclave Eid Found!");
+            }
             
-            // safe_free(requestCopy);
-            // temp = responseBuffer;
-            // return temp;
-            ocall_print("ERROR: Should not be here!");
+            safe_free(requestCopy);
+            temp = responseBuffer;
+            return temp;
+            // ocall_print("ERROR: Should not be here!");
 
         } else {
             //if Untrusted Send to USM

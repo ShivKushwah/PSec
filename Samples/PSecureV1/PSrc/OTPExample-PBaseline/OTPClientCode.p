@@ -72,9 +72,9 @@ machine ClientWebBrowser {
         entry {
             var machineTypeToValidate : string;
             machineTypeToValidate = "ClientEnclave";
-            if (localAuthenticate(clientSSM, machineTypeToValidate)) {
-                print "Authenticated installed enclave!";
-            }
+            // if (localAuthenticate(clientSSM, machineTypeToValidate)) {
+            //     print "Authenticated installed enclave!";
+            // }
             unencrypted_send clientSSM, GenerateOTPCodeEvent, usernamePassword; //untrusted_unencrypted_send
             receive {
                 case OTPCodeEvent : (payload : StringType) {

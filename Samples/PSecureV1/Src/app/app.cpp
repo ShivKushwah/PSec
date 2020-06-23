@@ -561,7 +561,11 @@ extern "C" PRT_VALUE* P_UntrustedCreateRequest_IMPL(PRT_MACHINEINST* context, PR
 // Method for USM to send "Untrusted Send" request across the network
 extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
 {   
-    sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, false);
+    if (ENABLE_UNTRUSTED_SEND_REDUDANT_SECURITY) {
+        sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, false);
+    } else {
+        sendUnencryptedSendNetworkRequest(context, argRefs); // Since host machines are already connected via TLS, we don't need extra encryption
+    }
 }
 
 extern "C" void P_UnencryptedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
@@ -643,7 +647,7 @@ char* get_measurement(sgx_enclave_id_t eid) {
     memset(qe_info.reserved2, 0, sizeof qe_info.reserved2);
     ecall_ret = enclave_ecall_create_report(eid, &ret, &qe_info, &report);
     if (ecall_ret != SGX_SUCCESS || ret) {
-        printf("ecall_create_report: ecall_ret=%x, ret=%x", ecall_ret, ret);
+        printf("ERROR:ecall_create_report: ecall_ret=%x, ret=%x", ecall_ret, ret);
     }
 
     memset(spid.id, 0x88, sizeof spid.id);

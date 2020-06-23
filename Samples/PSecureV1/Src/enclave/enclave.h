@@ -76,6 +76,7 @@ char* retrievePrivateCapabilityKey(char* capabilityPayload);
 void printPayload(char* payload, int size);
 void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend);
 void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, bool isSecureSend);
+void sendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, bool isSecureSend);
 char* decryptMessageInteralPrivateKey(char* encryptedData, size_t encryptedDataSize, void* private_key);
 char* encryptMessageExternalPublicKey(char* message, size_t message_length_with_null_byte, void* other_party_public_key_raw, int& output_encrypted_message_length, void* other_party_public_key);
 void printSessionKey(char* key);
