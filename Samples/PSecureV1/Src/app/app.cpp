@@ -531,16 +531,16 @@ char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* receivin
     
 }
 
-// USM send message API [other SM is trying to send a message through an encrypted channel to USM hosted by this distributed host]
+// USM send message API [other SM is trying to send a message through an encrypted channel to a USM hosted by this distributed host, this relies on having redudant untrusted send security turned on]
 char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response) {
     decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, false);
 }
 
-// USM send unencrypted message API [for baseline performance testing purposes]
-char* USMSendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response) {
-    char* messagePayloadSize = strtok(encryptedMessage, ":"); //remove the messagePayloadSize field
-    char* messagePayload = encryptedMessage + strlen(messagePayloadSize) + 1;
-    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, messagePayload, false, response, false);
+// USM send unencrypted message API (for untrusted send without redudant security)
+char* USMSendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* messagePayload, char* response) {
+    char* messagePayloadSize = strtok(messagePayload, ":"); //remove the messagePayloadSize field
+    char* messagePayloadContent = messagePayload + strlen(messagePayloadSize) + 1;
+    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, messagePayloadContent, false, response, false);
 }
 
 //*******************

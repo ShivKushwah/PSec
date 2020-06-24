@@ -256,10 +256,10 @@ int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachin
     decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, isSecureSend);
 }
 
-int sendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, int isSecureSend, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE, uint32_t RESPONSE_SIZE) {
-    char* messagePayloadSize = strtok(encryptedMessage, ":"); //remove the messagePayloadSize field
-    char* messagePayload = encryptedMessage + strlen(messagePayloadSize) + 1;
-    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, messagePayload, false, response, false);
+int sendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* messagePayload, char* response, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE, uint32_t RESPONSE_SIZE) {
+    char* messagePayloadSize = strtok(messagePayload, ":"); //remove the messagePayloadSize field
+    char* messagePayloadContent = messagePayload + strlen(messagePayloadSize) + 1;
+    sendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, messagePayloadContent, false, response, false);
 }
 
 //*******************

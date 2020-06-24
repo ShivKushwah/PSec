@@ -65,7 +65,7 @@ extern char* USMinitializeCommunicationAPI(char* requestingMachineIDKey, char* r
 extern char* untrusted_enclave_host_receiveNetworkRequest(char* request, size_t requestSize);
 
 extern char* USMSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response);
-extern char* USMSendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response);
+extern char* USMSendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* messagePayload, char* response);
 
 extern char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey, char* requestedMachineTypeToCreate);
 extern char* send_network_request_API(char* request);
@@ -1120,9 +1120,9 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
     } else if (strcmp(split, "UnencryptedSend") == 0) {
         char* machineSendingMessage;
         char* machineReceivingMessage;
-        char* iv;
-        char* mac;
-        char* encryptedMessage;
+        char* iv; //unused field
+        char* mac; //unused field
+        char* messagePayload;
         char* temp;
 
  
@@ -1132,11 +1132,11 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         memcpy(machineReceivingMessage, request + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1, SGX_RSA3072_KEY_SIZE);
         iv = requestCopy + strlen("UnencryptedSend") + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1;
         mac = requestCopy + strlen("UnencryptedSend") + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1 + SIZE_OF_IV + 1;
-        encryptedMessage = requestCopy + strlen("UnencryptedSend") + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1 + SIZE_OF_IV + 1 + SIZE_OF_MAC + 1;
+        messagePayload = requestCopy + strlen("UnencryptedSend") + 1 + SGX_RSA3072_KEY_SIZE + 1 + SGX_RSA3072_KEY_SIZE + 1 + SIZE_OF_IV + 1 + SIZE_OF_MAC + 1;
 
         
         ocall_print("encrypted message is helper");
-        ocall_print(encryptedMessage);
+        ocall_print(messagePayload);
 
         if (isEnclaveUntrustedHost) {
             //if Untrusted Send to SSM
@@ -1145,13 +1145,13 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             sgx_enclave_id_t enclave_eid;
             count = PublicIdentityKeyToEidDictionary.count(string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE));
             enclave_eid = PublicIdentityKeyToEidDictionary[string(machineReceivingMessage, SGX_RSA3072_KEY_SIZE)];
-            char* split = strtok(encryptedMessage, ":");
-            int encryptedMessageSize = atoi(split) + strlen(split) + 1;
-            printPayload(encryptedMessage, 9);
-            encryptedMessage[strlen(split)] = ':'; //undoing effect of strtok
+            char* split = strtok(messagePayload, ":");
+            int messagePayloadSize = atoi(split) + strlen(split) + 1;
+            printPayload(messagePayload, 9);
+            messagePayload[strlen(split)] = ':'; //undoing effect of strtok
             int RESPONSE_SZ = 100;
             char* responseBuffer = (char*) malloc(RESPONSE_SZ);
-            sgx_status_t status = enclave_sendUnencryptedMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, iv, mac, encryptedMessage, responseBuffer, 0, SGX_RSA3072_KEY_SIZE, encryptedMessageSize, RESPONSE_SZ);
+            sgx_status_t status = enclave_sendUnencryptedMessageAPI(enclave_eid, &ptr, machineSendingMessage,machineReceivingMessage, messagePayload, responseBuffer, SGX_RSA3072_KEY_SIZE, messagePayloadSize, RESPONSE_SZ);
             
 
             if (count == 0) {
@@ -1172,7 +1172,7 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
             if (count > 0) {
                 int RESPONSE_SZ = 100;
                 char* responseBuffer = (char*) malloc(RESPONSE_SZ);
-                char* ret = USMSendUnencryptedMessageAPI(machineSendingMessage, machineReceivingMessage, iv, mac, encryptedMessage, responseBuffer);
+                char* ret = USMSendUnencryptedMessageAPI(machineSendingMessage, machineReceivingMessage, messagePayload, responseBuffer);
                 safe_free(requestCopy);
                 ret = responseBuffer;
                 return ret;

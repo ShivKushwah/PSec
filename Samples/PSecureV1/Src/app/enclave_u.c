@@ -55,13 +55,10 @@ typedef struct ms_sendUnencryptedMessageAPI_t {
 	int ms_retval;
 	char* ms_requestingMachineIDKey;
 	char* ms_receivingMachineIDKey;
-	char* ms_iv;
-	char* ms_mac;
-	char* ms_encryptedMessage;
+	char* ms_messagePayload;
 	char* ms_response;
-	int ms_isSecureSend;
 	uint32_t ms_ID_SIZE;
-	uint32_t ms_MAX_ENCRYPTED_MESSAGE;
+	uint32_t ms_MAX_MESSAGE_PAYLOAD;
 	uint32_t ms_MAX_RESPONSE_SIZE;
 } ms_sendUnencryptedMessageAPI_t;
 
@@ -690,19 +687,16 @@ sgx_status_t enclave_decryptAndSendMessageAPI(sgx_enclave_id_t eid, int* retval,
 	return status;
 }
 
-sgx_status_t enclave_sendUnencryptedMessageAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, int isSecureSend, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE, uint32_t MAX_RESPONSE_SIZE)
+sgx_status_t enclave_sendUnencryptedMessageAPI(sgx_enclave_id_t eid, int* retval, char* requestingMachineIDKey, char* receivingMachineIDKey, char* messagePayload, char* response, uint32_t ID_SIZE, uint32_t MAX_MESSAGE_PAYLOAD, uint32_t MAX_RESPONSE_SIZE)
 {
 	sgx_status_t status;
 	ms_sendUnencryptedMessageAPI_t ms;
 	ms.ms_requestingMachineIDKey = requestingMachineIDKey;
 	ms.ms_receivingMachineIDKey = receivingMachineIDKey;
-	ms.ms_iv = iv;
-	ms.ms_mac = mac;
-	ms.ms_encryptedMessage = encryptedMessage;
+	ms.ms_messagePayload = messagePayload;
 	ms.ms_response = response;
-	ms.ms_isSecureSend = isSecureSend;
 	ms.ms_ID_SIZE = ID_SIZE;
-	ms.ms_MAX_ENCRYPTED_MESSAGE = MAX_ENCRYPTED_MESSAGE;
+	ms.ms_MAX_MESSAGE_PAYLOAD = MAX_MESSAGE_PAYLOAD;
 	ms.ms_MAX_RESPONSE_SIZE = MAX_RESPONSE_SIZE;
 	status = sgx_ecall(eid, 6, &ocall_table_enclave, &ms);
 	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
