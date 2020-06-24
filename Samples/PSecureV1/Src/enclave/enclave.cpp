@@ -252,10 +252,12 @@ int initializeCommunicationAPI(char* requestingMachineIDKey, char* receivingMach
     
 }
 
+//For trusted send and (untrusted send with redudant security)
 int decryptAndSendMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, int isSecureSend, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE, uint32_t RESPONSE_SIZE) {
     decryptAndSendInternalMessageHelper(requestingMachineIDKey, receivingMachineIDKey, iv, mac, encryptedMessage, response, isSecureSend);
 }
 
+//For untrusted send without redudant security
 int sendUnencryptedMessageAPI(char* requestingMachineIDKey, char* receivingMachineIDKey, char* messagePayload, char* response, uint32_t ID_SIZE, uint32_t MAX_ENCRYPTED_MESSAGE, uint32_t RESPONSE_SIZE) {
     char* messagePayloadSize = strtok(messagePayload, ":"); //remove the messagePayloadSize field
     char* messagePayloadContent = messagePayload + strlen(messagePayloadSize) + 1;
