@@ -13,6 +13,7 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
+#include <libgen.h>
 #define FAIL -1
 #define MAX 72400 
 #define SA struct sockaddr 
@@ -62,15 +63,31 @@ bool validateServerCertIsSignedByKPS(SSL* ssl) {
     cert = SSL_get_peer_certificate(ssl); /* get the server's certificate */
 	if (cert != NULL) {
 		ocall_print("Checking Server cert is signed by KPS\n");
+		char* curr_directory = (char*) malloc(200);
+		getcwd(curr_directory, 200);
+		// ocall_enclave_print("cur dir is");
+		// ocall_enclave_print(curr_directory);
+		// ocall_enclave_print("parent dir is");
+		// ocall_enclave_print(dirname(curr_directory));
+		// ocall_enclave_print("cur dir is");
+		// ocall_enclave_print(dirname(dirname(curr_directory)));
+		char* root_dir = dirname(dirname(dirname(curr_directory)));
+		char* localTLSCertLocation = "/keys/TLSCertReceived.pem";
+		char* TLSCertLocation = (char*) malloc(200);
+		strcpy(TLSCertLocation, root_dir);
+		strcat(TLSCertLocation, localTLSCertLocation);
+		// ocall_enclave_print(TLSCertLocation);
 		FILE * pFile;
-  		pFile = fopen ("/home/shivendra/Research/PSec/keys/TLSCertReceived.pem","w");
+  		pFile = fopen (TLSCertLocation,"w");
 		PEM_write_X509(pFile, cert);
 		fclose(pFile); 
+		free(curr_directory);
 
 		// system("openssl verify -CAfile /home/shiv/Research/PSec/KPS.pem /home/shiv/Research/PSec/TLSCertReceived.pem > temp.txt");
-		char* cmdFormat = "openssl verify -CAfile %s /home/shivendra/Research/PSec/keys/TLSCertReceived.pem";
+		char* cmdFormat = "openssl verify -CAfile %s %s";
 		char cmd[200];
-		sprintf(cmd, cmdFormat, KPS_CERT_LOCATION);
+		sprintf(cmd, cmdFormat, KPS_CERT_LOCATION, TLSCertLocation);
+		free(TLSCertLocation);
 		char buf[200];
 		FILE *fp;
 
