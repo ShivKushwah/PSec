@@ -31,6 +31,7 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureTabulationTellerMachine;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureBallotBoxMachine;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionSecureVotingClientMachine;
+    extern PRT_FUNDECL P_FUNCTION_seal;
     extern PRT_INTERFACEDECL P_I_InitializerMachine;
     extern PRT_INTERFACEDECL P_I_SecureSupervisorMachine;
     extern PRT_INTERFACEDECL P_I_VotingUSM;
@@ -52,6 +53,8 @@ extern "C" {
     extern PRT_TYPE* P_TYPEDEF_capability;
     extern PRT_TYPE* P_TYPEDEF_secure_machine_handle;
     extern PRT_TYPE* P_TYPEDEF_secure_StringType;
+    extern PRT_TYPE* P_TYPEDEF_sealed_data;
+    extern PRT_TYPE* P_TYPEDEF_sealed_data_key;
     extern PRT_PROGRAMDECL P_GEND_IMPL_DefaultImpl;
     
 #ifdef __cplusplus

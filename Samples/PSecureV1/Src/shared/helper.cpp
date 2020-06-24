@@ -901,12 +901,12 @@ char* receiveNetworkRequestHelper(char* request, size_t requestSize, bool isEncl
         memcpy(parentTrustedMachinePublicIDKey, request + strlen(split) + 1, SGX_RSA3072_KEY_SIZE);
         char* nextIndex = requestCopy + strlen(split) + 1 + SGX_RSA3072_KEY_SIZE + 1; //TODO using requestcopy here might be an issue
 
-        char* newTokenizerString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
-        memcpy(newTokenizerString, nextIndex, SIZE_OF_MAX_EVENT_PAYLOAD);
-        ocall_print("New tokenizer is ");
-        ocall_print(newTokenizerString);
+        // char* newTokenizerString = (char*) malloc(SIZE_OF_MAX_EVENT_PAYLOAD);
+        // memcpy(newTokenizerString, nextIndex, SIZE_OF_MAX_EVENT_PAYLOAD);
+        // ocall_print("New tokenizer is ");
+        // ocall_print(newTokenizerString);
 
-        split = strtok(newTokenizerString, ":");
+        split = strtok(nextIndex, ":");
         machineType = split;
         split = strtok(NULL, ":");
         numArgs = atoi(split);

@@ -314,18 +314,24 @@ static void RunToIdle(void* process)
     PRT_PROCESS_PRIV* privateProcess = (PRT_PROCESS_PRIV*)process;
 	while (privateProcess->terminating == PRT_FALSE)
 	{
-		PRT_STEP_RESULT result = PrtStepProcess((PRT_PROCESS*) process);
-		switch (result) {
-		case PRT_STEP_TERMINATING:
-			break;
-		case PRT_STEP_IDLE:
-			PrtWaitForWork((PRT_PROCESS*)process);
-			break;
-		case PRT_STEP_MORE:
-			PrtYieldThread();
-			break;
-		}
+		// PRT_STEP_RESULT result = PrtStepProcess((PRT_PROCESS*) process);
+		// switch (result) {
+		// case PRT_STEP_TERMINATING:
+		// 	break;
+		// case PRT_STEP_IDLE:
+		// 	PrtWaitForWork((PRT_PROCESS*)process);
+		// 	break;
+		// case PRT_STEP_MORE:
+		// 	PrtYieldThread();
+		// 	break;
+		// }
 	}
+}
+
+void decrement_threadsRunning() {
+    pthread_mutex_lock(&threadsRunning_mutex);
+    threadsRunning = threadsRunning - 1;
+    pthread_mutex_unlock(&threadsRunning_mutex);
 }
 
 long get_threadsRunning() {
@@ -353,30 +359,30 @@ void startPrtProcessIfNotStarted() {
             PrtSetSchedulingPolicy(process, PRT_SCHEDULINGPOLICY_COOPERATIVE);
         }
 		
-        if (cooperative)
-        {
+        // if (cooperative)
+        // {
 
-            // PRT_VALUE *payload = PrtMkNullValue();
-            // PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
-            // // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
-            // PRT_BOOLEAN foundMachine = PrtLookupMachineByName("UntrustedInitializer", &mainMachine);
-            // PrtAssert(foundMachine, "No 'GodUntrusted' machine found!");
-            // PRT_MACHINEINST* newMachine = PrtMkMachine(process, mainMachine, 1, &payload);  
+        //     // PRT_VALUE *payload = PrtMkNullValue();
+        //     // PRT_UINT32 mainMachine = 1; //TODO NOTE: I'm not able to send messages to machines unless they have id of 1. Otherwise I receive 
+        //     // // id out of bounds when I call PRT_MACHINEINST* pingMachine = PrtGetMachine(process, PrtMkMachineValue(pingId));
+        //     // PRT_BOOLEAN foundMachine = PrtLookupMachineByName("UntrustedInitializer", &mainMachine);
+        //     // PrtAssert(foundMachine, "No 'GodUntrusted' machine found!");
+        //     // PRT_MACHINEINST* newMachine = PrtMkMachine(process, mainMachine, 1, &payload);  
 
-            // // test some multithreading across state machines.
+        //     // // test some multithreading across state machines.
             
-            // typedef void *(*start_routine) (void *);
-            // pthread_t tid[threads];
-            // for (int i = 0; i < threads; i++)
-            // {
-            //     pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
-            // }
-            // for (int i = 0; i < threads; i++)
-            // {
-            //     pthread_join(tid[i], NULL);
-            // }
+        //     // typedef void *(*start_routine) (void *);
+        //     // pthread_t tid[threads];
+        //     // for (int i = 0; i < threads; i++)
+        //     // {
+        //     //     pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
+        //     // }
+        //     // for (int i = 0; i < threads; i++)
+        //     // {
+        //     //     pthread_join(tid[i], NULL);
+        //     // }
             
-        }
+        // }
 
         for (int i = 0; i < program->nMachines; i++) {
             if (!program->machines[i]->isSecure) {
@@ -385,6 +391,19 @@ void startPrtProcessIfNotStarted() {
         }
 
         PrtUpdateAssertFn(MyAssert);
+
+        if (cooperative) {
+            typedef void *(*start_routine) (void *);
+            pthread_t tid[threads];
+            for (int i = 0; i < threads; i++)
+            {
+                threadsRunning++;
+                pthread_create(&tid[i], NULL, (start_routine)RunToIdle, (void*)process);
+            }
+            while(get_threadsRunning() != 0);
+
+        }
+        // PrtStopProcess(process);
 
     }
 
