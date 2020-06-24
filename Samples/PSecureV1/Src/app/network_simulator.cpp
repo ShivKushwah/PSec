@@ -63,7 +63,7 @@ bool validateServerCertIsSignedByKPS(SSL* ssl) {
 	if (cert != NULL) {
 		ocall_print("Checking Server cert is signed by KPS\n");
 		FILE * pFile;
-  		pFile = fopen ("/home/shiv/Research/PSec/keys/TLSCertReceived.pem","w");
+  		pFile = fopen ("~/Research/PSec/keys/TLSCertReceived.pem","w");
 		PEM_write_X509(pFile, cert);
 		fclose(pFile);
 
