@@ -7,8 +7,8 @@ import time
 import os
 
 num_iterations = 2
-# is_sim = False
-is_sim = True
+is_sim = False
+# is_sim = True
 
 #Move program to root context
 os.chdir('..')

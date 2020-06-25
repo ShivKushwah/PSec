@@ -14,6 +14,7 @@
 #include <openssl/err.h>
 #include <openssl/pem.h>
 #include <libgen.h>
+#include <fcntl.h>  
 #define FAIL -1
 #define MAX 72400 
 #define SA struct sockaddr 
@@ -289,7 +290,7 @@ void handle_socket_helper(void* arg, int handle_incoming_request_type) {
 	// socket create and verification 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
 	if (sockfd == -1) { 
-		ocall_print("Server Socket creation failed...\n"); 
+		ocall_print("Error: Server Socket creation failed...\n"); 
 		exit(0); 
 	} 
 	else
@@ -299,9 +300,8 @@ void handle_socket_helper(void* arg, int handle_incoming_request_type) {
 	int enable = 1;
 
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-		ocall_print("server setsockopt(SO_REUSEADDR) failed\n");
+		ocall_print("Error: server setsockopt(SO_REUSEADDR) failed\n");
 	}
-    
 
 	// assign IP, PORT 
 	servaddr.sin_family = AF_INET; 
@@ -458,14 +458,6 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 	SSL_CTX *ctx;
     SSL *ssl;
 
-	// socket create and varification 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
-	if (sockfd == -1) { 
-		ocall_print("client socket creation failed...\n"); 
-		exit(0); 
-	} 
-	else
-		ocall_print("Client Socket successfully created..\n"); 
 	bzero(&servaddr, sizeof(servaddr)); 
 
 	char* ipAddressCopy = (char*) malloc(ipAddressSize + 1);
@@ -482,33 +474,30 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 	servaddr.sin_addr.s_addr = inet_addr(ipAddressCopy); 
 	servaddr.sin_port = htons(port); 
 
-	//---------------------------
-	// int sockfd2, connfd2; 
-	// struct sockaddr_in servaddr2, cli2; 
+	int attempts = 0;
 
-	// // socket create and varification 
-	// sockfd2 = socket(AF_INET, SOCK_STREAM, 0); 
-	// if (sockfd2 == -1) { 
-	// 	ocall_print("socket2 creation failed...\n"); 
-	// 	exit(0); 
-	// } 
-	// else
-	// 	ocall_print("Socket2 successfully created..\n"); 
-	// bzero(&servaddr2, sizeof(servaddr2)); 
+	//Retry creating connection 20 times
+	while(attempts < 20) {
+    	/* Create the client socket */
+		sockfd = socket(AF_INET, SOCK_STREAM, 0); 
+		if (sockfd == -1) { 
+			ocall_print("client socket creation failed...\n"); 
+			exit(0); 
+		} 
+		else
+			ocall_print("Client Socket successfully created..\n"); 
 
-	// // assign IP, PORT 
-	// servaddr2.sin_family = AF_INET; 
-	// servaddr2.sin_addr.s_addr = inet_addr("127.0.0.1"); 
-	// servaddr2.sin_port = htons(PORT2); 
-	//--------------------
+		//Connect client to server
+		if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) == 0 ) {
+			break;
+		}
 
-	// connect the client socket to server socket 
-	if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) != 0) { 
-		ocall_print("client connection with the server failed...\n"); 
-		exit(0); 
-	} 
-	else
-		ocall_print("client connected to the server..\n"); 
+		fprintf(stderr, "Cannot connect to the server. Retrying...\n");
+		ocall_print("Cannot connect to the server. Retrying...");
+		close(sockfd);
+		sleep(1);
+		attempts++;
+	}
 	
 	ctx = InitCTX();
 	ssl = SSL_new(ctx);      /* create new SSL connection state */
@@ -522,9 +511,6 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 		SSL_free(ssl);        /* release connection state */
 		SSL_CTX_free(ctx);        /* release context */
 	}
-
-
-	
 
 	// close the socket 
 	close(sockfd); 
