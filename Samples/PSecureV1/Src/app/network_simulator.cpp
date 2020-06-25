@@ -476,8 +476,8 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 
 	int attempts = 0;
 
-	//Retry creating connection 20 times
-	while(attempts < 20) {
+	//Retry creating connection 30 times
+	while(attempts < 30) {
     	/* Create the client socket */
 		sockfd = socket(AF_INET, SOCK_STREAM, 0); 
 		if (sockfd == -1) { 

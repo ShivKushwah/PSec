@@ -53,6 +53,10 @@ machine ClientWebBrowser {
     state RegisterAccountInBank {
         entry {
             var credentials : StringType;
+            
+            print "MEASURE OTPBASELINE START:";
+            MeasureTime();
+
             credentials = GetUserInput();
             send bankSSM, UNTRUSTEDReceiveRegistrationCredentials, credentials;
         }

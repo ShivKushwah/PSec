@@ -698,18 +698,6 @@ PRT_VALUE* P_Anon_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     PRT_VALUE* PTMP_tmp0_1 = NULL;
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
-    PrtPrintf("MEASURE OTPBASELINE START:");
-    
-    PrtFreeValue(P_MeasureTime_IMPL(context, _P_GEN_funargs));
-    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
-        goto p_return_1;
-    }
-    if (p_this->isHalted == PRT_TRUE) {
-        PrtFreeValue(_P_GEN_retval);
-        _P_GEN_retval = NULL;
-        goto p_return_1;
-    }
-    
     _P_GEN_funargs[0] = "TrustedInitializer";
     _P_GEN_funargs[1] = "0";
     PRT_VALUE* P_this_ref = (P_GetThis_IMPL(context, _P_GEN_funargs));
@@ -2601,6 +2589,18 @@ PRT_VALUE* P_Anon_IMPL_10(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
     
     PRT_VALUE _P_GEN_null = { PRT_VALUE_KIND_NULL, { .ev = PRT_SPECIAL_EVENT_NULL } };
     PRT_VALUE P_LIT_INT32_5 = { PRT_VALUE_KIND_INT, { .nt = 1 } };
+    PrtPrintf("MEASURE OTPBASELINE START:");
+    
+    PrtFreeValue(P_MeasureTime_IMPL(context, _P_GEN_funargs));
+    if (p_this->returnKind != ReturnStatement && p_this->returnKind != ReceiveStatement) {
+        goto p_return_11;
+    }
+    if (p_this->isHalted == PRT_TRUE) {
+        PrtFreeValue(_P_GEN_retval);
+        _P_GEN_retval = NULL;
+        goto p_return_11;
+    }
+    
     PRT_VALUE** P_LVALUE_82 = &(PTMP_tmp0_8);
     PrtFreeValue(*P_LVALUE_82);
     *P_LVALUE_82 = ((_P_GEN_funval = P_GetUserInput_IMPL(context, _P_GEN_funargs)), (_P_GEN_funval));

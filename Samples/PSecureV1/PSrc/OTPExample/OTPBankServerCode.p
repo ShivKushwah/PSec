@@ -2,8 +2,6 @@ machine UntrustedInitializer {
     var handler: machine_handle;
     start state Initial {
         entry {
-            print "MEASURE OTPBASELINE START:";
-            MeasureTime();
             handler = new TrustedInitializer() @ this;
         }
     }

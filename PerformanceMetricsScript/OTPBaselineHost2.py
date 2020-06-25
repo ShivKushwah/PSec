@@ -7,21 +7,25 @@ import time
 import os
 
 num_iterations = 2
-is_sim = False
-# is_sim = True
+# is_sim = False
+is_sim = True
 
 #Move program to root context
 os.chdir('..')
 
-host2_lst = ['MEASURE OTPBASELINE START']
+if is_sim:
+    host2_lst = ['MEASURE OTPBASELINE START', 'MEASURE OTPBASELINE END']
+else:
+    host2_lst = ['MEASURE OTPBASELINE START', 'MEASURE OTPBASELINE END']
 
 #Commands to build and run PSec PerformanceMetricsExample
 build_cmd = 'cd Submodule/P && ./Bld/build-compiler.sh && cd .. && cd .. && cd build && make clean && cmake .. && make'
-host_2_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8080 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost2.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost2.key isStartMachine=True startMachine=UntrustedInitializer > host2Output.txt ;cd ~/Research/PSec/'
 
 if is_sim:
+    host_2_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8070 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost2.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost2.key isStartMachine=False > host2Output.txt ;cd ~/Research/PSec/'
     environment_cmd = 'source ~/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment; '
 else:
+    host_2_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=10.0.0.4:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=10.0.0.5:8070 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost2.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost2.key isStartMachine=False > host2Output.txt ;cd ~/Research/PSec/'
     environment_cmd = 'source ~/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment; unset LD_LIBRARY_PATH; export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:/opt/intel/sgxpsw/lib64; '
 
 #Build the program
@@ -66,7 +70,10 @@ while curr_iteration < num_iterations:
     for i in range(len(host2_lst)):
         match1 = re.search(host2_lst[i] + ':(\d+)', data)
         data_lst = data_dict[host2_lst[i]]
-        data_lst.append(int(match1.group(1)))
+        if match1 is not None:
+            data_lst.append(int(match1.group(1)))
+        else:
+            print("No match found!")
 
     with open('PerformanceMetricsScript/OTPBaselineCacheHost2.txt', 'w') as file:
         file.write(json.dumps(data_dict)) # use `json.loads` to do the reverse
