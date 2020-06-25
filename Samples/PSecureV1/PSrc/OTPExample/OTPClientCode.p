@@ -58,7 +58,7 @@ machine ClientWebBrowser {
             MeasureTime();
 
             credentials = GetUserInput();
-            send bankSSM, UNTRUSTEDReceiveRegistrationCredentials, credentials;
+            send bankSSM, UNTRUSTEDReceiveRegistrationCredentials, (this, credentials);
         }
         on PublicIDEvent goto Authenticate;
     }

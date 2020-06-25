@@ -1,7 +1,7 @@
 //OTP Events
 event BankPublicIDEvent : machine_handle;
 event PublicIDEvent : machine_handle;
-event UNTRUSTEDReceiveRegistrationCredentials : StringType;
+event UNTRUSTEDReceiveRegistrationCredentials : (machine_handle, StringType);
 event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
 event AuthenticateRequest : (usernamePW : StringType, OTPCode : StringType);
@@ -10,7 +10,6 @@ event AuthFailure;
 
 event MasterSecretEvent: StringType;
 event MapEvent: map[int, int];
-event TRUSTEDProvisionBankSSM : machine_handle;
 event TRUSTEDProvisionClientSSM : machine_handle;
 
 //OTP Functions

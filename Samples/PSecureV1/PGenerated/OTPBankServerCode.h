@@ -17,7 +17,6 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_AuthFailure;
     extern PRT_EVENTDECL P_EVENT_MasterSecretEvent;
     extern PRT_EVENTDECL P_EVENT_MapEvent;
-    extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionBankSSM;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDProvisionClientSSM;
     extern PRT_FUNDECL P_FUNCTION_seal;
     extern PRT_INTERFACEDECL P_I_UntrustedInitializer;

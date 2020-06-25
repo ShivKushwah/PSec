@@ -15,7 +15,6 @@ machine TrustedInitializer {
         entry {
             clientUSM = new ClientWebBrowser();
             bankSSM = new BankEnclave() @ this;
-            unencrypted_send bankSSM, TRUSTEDProvisionBankSSM, clientUSM;
             unencrypted_send clientUSM, BankPublicIDEvent, bankSSM;
         }
     }
@@ -28,25 +27,20 @@ machine BankEnclave {
     var userCredential : StringType;
     start state Initial {
         entry { 
-            goto ReceiveClientUSM;
+            goto RegisterNewBankAccount;
         } 
     }
 
-    state ReceiveClientUSM {
-        on TRUSTEDProvisionBankSSM do (payload: machine_handle) {
-            clientUSM = payload;
-            clientSSM = new ClientEnclave() @ clientUSM;
-            unencrypted_send clientSSM, TRUSTEDProvisionClientSSM, clientUSM;
-            goto RegisterNewBankAccount;
-            
-        }
-    }
-
     state RegisterNewBankAccount {
-        on UNTRUSTEDReceiveRegistrationCredentials do (payload: StringType) {
+        on UNTRUSTEDReceiveRegistrationCredentials do (payload: (machine_handle, StringType)) {
             print "Bank: Creating new bank account!";
-            userCredential = payload;
+
+            clientUSM = payload.0;
+            userCredential = payload.1;
             masterSecret = GenerateRandomMasterSecret();
+
+            clientSSM = new ClientEnclave() @ clientUSM;
+            unencrypted_send clientSSM, TRUSTEDProvisionClientSSM, clientUSM; //secure_send
             unencrypted_send clientSSM, MasterSecretEvent, masterSecret; //unencrypted_send
             unencrypted_send clientUSM, PublicIDEvent, clientSSM; //untrusted_unencrypted_send
             goto AuthCheck;
