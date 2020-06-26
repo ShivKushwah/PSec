@@ -284,7 +284,7 @@ extern "C" PRT_VALUE* P_CreateUSMMachineRequest_IMPL(PRT_MACHINEINST* context, P
 
 extern "C" PRT_VALUE* P_SecureSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    sendSendNetworkRequest(context, argRefs, "Send", true, true);
+    sendSendNetworkRequest(context, argRefs, "Send", true, true, false);
 }
 
 extern "C" PRT_VALUE* P_UntrustedCreateRequest_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
@@ -296,9 +296,9 @@ extern "C" PRT_VALUE* P_UntrustedCreateRequest_IMPL(PRT_MACHINEINST* context, PR
 extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     if (ENABLE_UNTRUSTED_SEND_REDUDANT_SECURITY) {
-        sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, true);  
+        sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, true, false);  
     } else {
-        sendSendNetworkRequest(context, argRefs, "UnencryptedSend", false, true); // Since host machines are already connected via TLS, we don't need extra encryption
+        sendSendNetworkRequest(context, argRefs, "UnencryptedSend", false, true, false); // Since host machines are already connected via TLS, we don't need extra encryption
     }
 }
 

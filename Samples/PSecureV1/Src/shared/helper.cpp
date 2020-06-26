@@ -1540,7 +1540,7 @@ int createPMachine(char* machineType, int numArgs, int payloadType, char* payloa
     return newMachine->id->valueUnion.mid->machineId;
 }
 
-void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend, bool isEnclave) {
+void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend, bool isEnclave, bool isUnencryptedGenericSend) {
     uint32_t currentMachinePID = context->id->valueUnion.mid->machineId;
 
     ocall_print("Entered Send Network Request");
@@ -1577,7 +1577,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     ocall_print("Need to send to machine (received via P argument)");
     printRSAKey(sendingToMachinePublicID);
     
-    if (isSecureSend || encryptedUntrustedSend) { //If secure TrustedSend or secure UntrustedSend
+    if (!isUnencryptedGenericSend && (isSecureSend || encryptedUntrustedSend)) { //If secure TrustedSend or secure UntrustedSend
   
         //Check if we don't have a pre-existing session key with the other machine, if so 
         //we need to intialize communications and establish a session key
@@ -1804,7 +1804,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
                 messageToEncryptSize = returnTotalSizeofLengthArray(encryptLenghts, 3);
             }
 
-            if (!NETWORK_DEBUG && encryptedUntrustedSend) {
+            if (!NETWORK_DEBUG && encryptedUntrustedSend && !isUnencryptedGenericSend) {
                 //add encryption logic here
                 string sessionKey = PublicIdentityKeyToChildSessionKey[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), string(sendingToMachinePublicID, SGX_RSA3072_KEY_SIZE))];
                 int nonce = ChildSessionKeyToNonce[make_tuple(string(currentMachineIDPublicKey, SGX_RSA3072_KEY_SIZE), sessionKey)];
@@ -1884,7 +1884,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             safe_free(encryptedMessage);
             safe_free(encryptedMessageSizeString);
 
-            if (!NETWORK_DEBUG && encryptedUntrustedSend) {
+            if (!NETWORK_DEBUG && encryptedUntrustedSend && !isUnencryptedGenericSend) {
                 safe_free(mac);    
             }
             
@@ -1919,7 +1919,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
     ocall_print("Send/UntrustedSend Network call returned:");
     ocall_print(sendReturn);
 
-    if (!isSecureSend && !encryptedUntrustedSend) { //if untrusted, unencrypted send
+    if (!isSecureSend && (!encryptedUntrustedSend || isUnencryptedGenericSend)) { //if untrusted, unencrypted send or unencrypted_send command
         if (sendReturn == NULL || sendReturn == "" || sendReturn == 0 || sendReturn[0] == '\0') {
             //Sending has terminated prematurely or failed
             //This block is necessary to call EXIT() command on OTP example to measure performance results
@@ -1937,7 +1937,7 @@ void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char
             abort();
             //TODO maybe add retry behavior?
         }
-    } else if (!NETWORK_DEBUG && (isSecureSend || encryptedUntrustedSend)) { //else if Trusted or Untrusted encrypted send
+    } else if (!NETWORK_DEBUG && !isUnencryptedGenericSend && (isSecureSend || encryptedUntrustedSend)) { //else if Trusted or Untrusted encrypted send
         char* iv = (char*) malloc(SIZE_OF_IV);
         char* mac = (char*) malloc(SIZE_OF_MAC);
         memcpy(iv, sendReturn, SIZE_OF_IV);

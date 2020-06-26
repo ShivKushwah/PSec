@@ -45,7 +45,7 @@ PRT_VALUE* sendCreateMachineNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE**
 int createPMachine(char* machineType, int numArgs, int payloadType, char* payload, int payloadSize);
 char* receiveNewCapabilityKeyFromKPS(char* parentTrustedMachineID, char* newMachinePublicIDKey, char* requestedMachineTypeToCreate);
 char* retrieveCapabilityKeyForChildFromKPS(char* currentMachinePublicIDKey, char* childPublicIDKey, char* requestedMachineTypeToCreate);
-void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend, bool isEnclave);
+void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend, bool isEnclave, bool isUnencryptedGenericSend);
 void generateSessionKey(string& newSessionKey);
 
 int machineTypeIsSecure(char* machineType);
@@ -74,7 +74,6 @@ void createRsaKeyPair(sgx_rsa3072_public_key_t *public_key ,sgx_rsa3072_key_t *p
 char* retrievePublicCapabilityKey(char* capabilityPayload);
 char* retrievePrivateCapabilityKey(char* capabilityPayload);
 void printPayload(char* payload, int size);
-void sendSendNetworkRequest(PRT_MACHINEINST* context, PRT_VALUE*** argRefs, char* sendTypeCommand, bool isSecureSend);
 void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* iv, char* mac, char* encryptedMessage, char* response, bool isSecureSend);
 void sendInternalMessageHelper(char* requestingMachineIDKey, char* receivingMachineIDKey, char* messagePayload, bool isSecureSend, char* response, bool isCalledFromDecryptAndSend);
 char* decryptMessageInteralPrivateKey(char* encryptedData, size_t encryptedDataSize, void* private_key);

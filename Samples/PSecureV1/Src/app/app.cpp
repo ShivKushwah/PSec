@@ -583,15 +583,15 @@ extern "C" PRT_VALUE* P_UntrustedCreateRequest_IMPL(PRT_MACHINEINST* context, PR
 extern "C" void P_UntrustedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
 {   
     if (ENABLE_UNTRUSTED_SEND_REDUDANT_SECURITY) {
-        sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, false);
+        sendSendNetworkRequest(context, argRefs, "UntrustedSend", false, false, false);
     } else {
-        sendSendNetworkRequest(context, argRefs, "UnencryptedSend", false, false); // Since host machines are already connected via TLS, we don't need extra encryption
+        sendSendNetworkRequest(context, argRefs, "UnencryptedSend", false, false, false); // Since host machines are already connected via TLS, we don't need extra encryption
     }
 }
 
 extern "C" void P_UnencryptedSend_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) 
 {   
-    sendSendNetworkRequest(context, argRefs, "UnencryptedSend", false, false);
+    sendSendNetworkRequest(context, argRefs, "UnencryptedSend", false, false, true);
 }
 
 //Needs to be empty for compilation with Helper.cpp
