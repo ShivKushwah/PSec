@@ -23,7 +23,7 @@ machine TrustedInitializer {
 machine BankEnclave {
     var clientSSM: machine_handle;
     var clientUSM: machine_handle;
-    var registeredCredentials : seq[StringType];
+    var registeredCredentials : map[StringType, StringType];
     var credentialToMasterSecretMap : map[StringType, StringType];
 
     start state Initial {
@@ -33,15 +33,17 @@ machine BankEnclave {
     }
 
     state RegisterNewBankAccount {
-        on UNTRUSTEDReceiveRegistrationCredentials do (payload: (machine_handle, StringType)) {
+        on UNTRUSTEDReceiveRegistrationCredentials do (payload: (machine_handle, StringType, StringType)) {
             var masterSecret : StringType;
-            var userCredential : StringType;
+            var username : StringType;  
+            var password : StringType;      
 
             clientUSM = payload.0;
-            userCredential = payload.1;
+            username = payload.1;
+            password = payload.2;
             masterSecret = GenerateRandomMasterSecret();
-            registeredCredentials += (sizeof(registeredCredentials), userCredential);
-            credentialToMasterSecretMap[userCredential] = masterSecret;
+            registeredCredentials[username] = password;
+            credentialToMasterSecretMap[username] = masterSecret;
 
             print "Bank: Creating new bank account!";
 
@@ -51,15 +53,17 @@ machine BankEnclave {
             unencrypted_send clientUSM, PublicIDEvent, clientSSM; //unencrypted_send
         }
 
-        on UNTRUSTEDAuthenticateRequest do (payload : (usernamePW: StringType, OTPCode: StringType)) {
+        on UNTRUSTEDAuthenticateRequest do (payload : (Username: StringType, Password: StringType, OTPCode: StringType)) {
             var masterSecret : StringType;
-            var userCredential : StringType; 
-            userCredential = payload.usernamePW;
-            masterSecret = credentialToMasterSecretMap[userCredential];
+            var inputUsername : StringType; 
+            var inputPassword : StringType;
+            inputUsername = payload.Username;
+            inputPassword = payload.Password;
+            masterSecret = credentialToMasterSecretMap[inputUsername];
 
             //userCredential == payload.usernamePW
 
-            if (Hash(masterSecret, userCredential) == payload.OTPCode) {
+            if ((registeredCredentials[inputUsername] == inputPassword) && Hash(masterSecret, inputPassword) == payload.OTPCode) {
                 print "Auth Success";
                 unencrypted_send clientUSM, AuthSuccess; //untrusted_unencrypted_send
             } else {

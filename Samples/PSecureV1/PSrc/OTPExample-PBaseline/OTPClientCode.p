@@ -23,9 +23,9 @@ machine ClientEnclave {
     }
 
     state WaitForGenerateOTP {
-        on GenerateOTPCodeEvent do (usernamePassword: StringType) {
+        on GenerateOTPCodeEvent do (password: StringType) {
             var hashedString : StringType;          
-            hashedString = Hash(masterSecret, usernamePassword);
+            hashedString = Hash(masterSecret, password);
             unencrypted_send clientUSM, OTPCodeEvent, hashedString; //untrusted_unencrypted_send
         }
     }
@@ -35,7 +35,8 @@ machine ClientEnclave {
 machine ClientWebBrowser {
     var clientSSM: machine_handle;
     var bankSSM: machine_handle;
-    var usernamePassword: StringType;
+    var username: StringType;
+    var password: StringType;
     var OTPCode: StringType;
 
     start state Initial {
@@ -52,13 +53,12 @@ machine ClientWebBrowser {
 
     state RegisterAccountInBank {
         entry {
-            var credentials : StringType;
-            
             print "MEASURE OTPBASELINE START:";
             MeasureTime();
             
-            credentials = GetUserInput();
-            unencrypted_send bankSSM, UNTRUSTEDReceiveRegistrationCredentials, (this, credentials);
+            username = GetUserInput();
+            password = GetUserInput();
+            unencrypted_send bankSSM, UNTRUSTEDReceiveRegistrationCredentials, (this, username, password);
         }
         on PublicIDEvent goto Authenticate;
     }
@@ -67,7 +67,6 @@ machine ClientWebBrowser {
         entry (payload: machine_handle) {
             clientSSM = payload;
             print "Client Web Browser: Enter Credentials to login to bank!\n";
-            usernamePassword = GetUserInput();
             goto RequestOTPCodeGeneration;
         }
     }
@@ -79,7 +78,7 @@ machine ClientWebBrowser {
             // if (localAuthenticate(clientSSM, machineTypeToValidate)) {
             //     print "Authenticated installed enclave!";
             // }
-            unencrypted_send clientSSM, GenerateOTPCodeEvent, usernamePassword; //untrusted_unencrypted_send
+            unencrypted_send clientSSM, GenerateOTPCodeEvent, password; //untrusted_unencrypted_send
             receive {
                 case OTPCodeEvent : (payload : StringType) {
                     goto SaveOTPCode, payload;
@@ -101,7 +100,7 @@ machine ClientWebBrowser {
 
     state ValidateOTPCode {
         entry {
-            unencrypted_send bankSSM, UNTRUSTEDAuthenticateRequest, (usernamePW = usernamePassword, OTPCode = OTPCode); //untrusted_unencrypted_send
+            unencrypted_send bankSSM, UNTRUSTEDAuthenticateRequest, (Username = username, Password = password, OTPCode = OTPCode); //untrusted_unencrypted_send
             receive {
                 case AuthSuccess : {
                     goto Done;
@@ -109,7 +108,8 @@ machine ClientWebBrowser {
                 case AuthFailure : {
                     print "Authentication Failed!";
                     print "Client Web Browser: Reenter Credentials to login!";
-                    usernamePassword = GetUserInput();
+                    username = GetUserInput();
+                    password = GetUserInput();
                     goto RequestOTPCodeGeneration;
                 }
             }

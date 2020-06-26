@@ -1,10 +1,10 @@
 //OTP Events
 event BankPublicIDEvent : machine_handle;
 event PublicIDEvent : machine_handle;
-event UNTRUSTEDReceiveRegistrationCredentials : (machine_handle, StringType);
+event UNTRUSTEDReceiveRegistrationCredentials : (machine_handle, StringType, StringType);
 event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
-event UNTRUSTEDAuthenticateRequest : (usernamePW : StringType, OTPCode : StringType);
+event UNTRUSTEDAuthenticateRequest : (Username : StringType, Password : StringType, OTPCode : StringType);
 event AuthSuccess;
 event AuthFailure;
 
