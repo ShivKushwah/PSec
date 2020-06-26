@@ -12,7 +12,7 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDReceiveRegistrationCredentials;
     extern PRT_EVENTDECL P_EVENT_GenerateOTPCodeEvent;
     extern PRT_EVENTDECL P_EVENT_OTPCodeEvent;
-    extern PRT_EVENTDECL P_EVENT_AuthenticateRequest;
+    extern PRT_EVENTDECL P_EVENT_UNTRUSTEDAuthenticateRequest;
     extern PRT_EVENTDECL P_EVENT_AuthSuccess;
     extern PRT_EVENTDECL P_EVENT_AuthFailure;
     extern PRT_EVENTDECL P_EVENT_MasterSecretEvent;

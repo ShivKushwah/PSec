@@ -23,8 +23,9 @@ machine TrustedInitializer {
 machine BankEnclave {
     var clientSSM: machine_handle;
     var clientUSM: machine_handle;
-    var masterSecret : StringType;
-    var userCredential : StringType;
+    var registeredCredentials : seq[StringType];
+    var credentialToMasterSecretMap : map[StringType, StringType];
+
     start state Initial {
         entry { 
             goto RegisterNewBankAccount;
@@ -33,37 +34,40 @@ machine BankEnclave {
 
     state RegisterNewBankAccount {
         on UNTRUSTEDReceiveRegistrationCredentials do (payload: (machine_handle, StringType)) {
-            print "Bank: Creating new bank account!";
+            var masterSecret : StringType;
+            var userCredential : StringType;
 
             clientUSM = payload.0;
             userCredential = payload.1;
             masterSecret = GenerateRandomMasterSecret();
+            registeredCredentials += (sizeof(registeredCredentials), userCredential);
+            credentialToMasterSecretMap[userCredential] = masterSecret;
+
+            print "Bank: Creating new bank account!";
 
             clientSSM = new ClientEnclave() @ clientUSM;
-            unencrypted_send clientSSM, TRUSTEDProvisionClientSSM, clientUSM; //secure_send
+            unencrypted_send clientSSM, TRUSTEDProvisionClientSSM, clientUSM; //unencrypted_send
             unencrypted_send clientSSM, MasterSecretEvent, masterSecret; //unencrypted_send
-            unencrypted_send clientUSM, PublicIDEvent, clientSSM; //untrusted_unencrypted_send
-            goto AuthCheck;
-
+            unencrypted_send clientUSM, PublicIDEvent, clientSSM; //unencrypted_send
         }
-    }
 
-    state AuthCheck {
-       on AuthenticateRequest goto Verify;
-    }
+        on UNTRUSTEDAuthenticateRequest do (payload : (usernamePW: StringType, OTPCode: StringType)) {
+            var masterSecret : StringType;
+            var userCredential : StringType; 
+            userCredential = payload.usernamePW;
+            masterSecret = credentialToMasterSecretMap[userCredential];
 
-    state Verify { 
-        entry (payload : (usernamePW: StringType, OTPCode: StringType)) {
-            if (userCredential == payload.usernamePW && Hash(masterSecret, userCredential) == payload.OTPCode) {
+            //userCredential == payload.usernamePW
+
+            if (Hash(masterSecret, userCredential) == payload.OTPCode) {
                 print "Auth Success";
                 unencrypted_send clientUSM, AuthSuccess; //untrusted_unencrypted_send
             } else {
                 print "Auth Failure";
                 unencrypted_send clientUSM, AuthFailure; //untrusted_unencrypted_send
             }
-            EXIT();
-            goto AuthCheck;
+            // EXIT();
         }
-
     }
+
 }

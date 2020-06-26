@@ -4,7 +4,7 @@ event PublicIDEvent : machine_handle;
 event UNTRUSTEDReceiveRegistrationCredentials : (machine_handle, StringType);
 event GenerateOTPCodeEvent : StringType;
 event OTPCodeEvent : StringType;
-event AuthenticateRequest : (usernamePW : StringType, OTPCode : StringType);
+event UNTRUSTEDAuthenticateRequest : (usernamePW : StringType, OTPCode : StringType);
 event AuthSuccess;
 event AuthFailure;
 

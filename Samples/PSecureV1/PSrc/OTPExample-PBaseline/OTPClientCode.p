@@ -101,7 +101,7 @@ machine ClientWebBrowser {
 
     state ValidateOTPCode {
         entry {
-            unencrypted_send bankSSM, AuthenticateRequest, (usernamePW = usernamePassword, OTPCode = OTPCode); //untrusted_unencrypted_send
+            unencrypted_send bankSSM, UNTRUSTEDAuthenticateRequest, (usernamePW = usernamePassword, OTPCode = OTPCode); //untrusted_unencrypted_send
             receive {
                 case AuthSuccess : {
                     goto Done;
