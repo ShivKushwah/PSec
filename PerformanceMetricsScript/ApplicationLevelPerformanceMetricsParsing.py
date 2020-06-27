@@ -5,6 +5,7 @@ import json
 import statistics 
 import time
 import os
+import sys
 
 search_lst1 = ['MEASURE BASELINE START']
 search_lst2 = ['MEASURE BASELINE END']

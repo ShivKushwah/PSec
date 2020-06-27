@@ -5,14 +5,57 @@ import json
 import statistics 
 import time
 import os
+import sys
 
-num_iterations = 2
+if (len(sys.argv) != 5):
+    print("Insufficient arguments!")
+    sys.exit()
+
+example_name = sys.argv[1]
+mode = sys.argv[2]
+num_iterations = int(sys.argv[3])
+host = sys.argv[4]
+
+is_civitas = False
+is_otp = False
+is_sim = False
+is_host1 = False 
+is_host2 = False
+
+if (example_name == 'CIVITAS'):
+    is_civitas = True
+elif (example_name == 'OTP'):
+    is_otp = True
+else:
+    print("Example not supported!")
+    sys.exit()
+
+if (mode == 'SIM'):
+    is_sim = True
+elif (mode == 'HW'):
+    is_sim = False
+else:
+    print("Incorrect SIM/HW argument!")
+    sys.exit()
+
+if num_iterations <= 0:
+    print("Invalid number of iterations!")
+    sys.exit()
+
+if (host == 'host1'):
+    is_host1 = True
+    host_num = 1
+elif (host == 'host2'):
+    is_host2 = True
+    host_num = 2
+
+
+# num_iterations = 2
 
 # is_sim = False
-is_sim = True
+# is_sim = True
 
-is_civitas = True
-is_otp = False
+
 # is_civitas = False
 # is_otp = True
 
@@ -20,9 +63,15 @@ is_otp = False
 os.chdir('..')
 
 if is_sim:
-    host1_lst = []
+    if is_host1:
+        host_lst = []
+    elif is_host2:
+        host_lst = ['MEASURE BASELINE START', 'MEASURE BASELINE END']
 else:
-    host1_lst = []
+    if is_host1:
+        host_lst = []
+    elif is_host2:
+        host_lst = ['MEASURE BASELINE START', 'MEASURE BASELINE END']
 
 #Commands to build and run PSec PerformanceMetricsExample
 build_cmd = 'cd Submodule/P && ./Bld/build-compiler.sh && cd .. && cd .. && cd build && make clean && cmake .. && make'
@@ -31,18 +80,21 @@ if is_sim:
     if is_otp:
         kps_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem KpsCertificateKeysLocation=~/Research/PSec/keys/KPS.key 127.0.0.1:8070=[ClientWebBrowser,ClientEnclave] 127.0.0.1:8080=[BankEnclave,TrustedInitializer,UntrustedInitializer] > kpsOutput.txt ;cd ~/Research/PSec'
         host_1_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8080 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost.key isStartMachine=True startMachine=UntrustedInitializer > host1Output.txt ;cd ~/Research/PSec/'
+        host_2_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8070 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost2.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost2.key isStartMachine=False > host2Output.txt ;cd ~/Research/PSec/'
     elif is_civitas:
         kps_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem KpsCertificateKeysLocation=~/Research/PSec/keys/KPS.key 127.0.0.1:8070=[VotingUSM,SecureVotingClientMachine] 127.0.0.1:8080=[InitializerMachine,SecureBallotBoxMachine,SecureBulletinBoardMachine,SecureSupervisorMachine,SecureTabulationTellerMachine,SecureTamperEvidentLogMachine] > kpsOutput.txt ;cd ~/Research/PSec/'
         host_1_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8080 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost.key isStartMachine=True startMachine=InitializerMachine > host1Output.txt ;cd ~/Research/PSec/'
+        host_2_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8070 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost2.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost2.key isStartMachine=False > host2Output.txt ;cd ~/Research/PSec/'
 else:
     environment_cmd = 'source ~/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment; unset LD_LIBRARY_PATH; export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:/opt/intel/sgxpsw/lib64; '
     if is_otp:
         kps_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=10.0.0.4:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem KpsCertificateKeysLocation=~/Research/PSec/keys/KPS.key 10.0.0.5:8070=[ClientWebBrowser,ClientEnclave] 10.0.0.4:8080=[BankEnclave,TrustedInitializer,UntrustedInitializer] > kpsOutput.txt ;cd ~/Research/PSec'
         host_1_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=10.0.0.4:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=10.0.0.4:8080 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost.key isStartMachine=True startMachine=UntrustedInitializer > host1Output.txt ;cd ~/Research/PSec/'
+        host_2_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=10.0.0.4:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=10.0.0.5:8070 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost2.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost2.key isStartMachine=False > host2Output.txt ;cd ~/Research/PSec/'
     elif is_civitas:
         kps_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=10.0.0.4:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem KpsCertificateKeysLocation=~/Research/PSec/keys/KPS.key 10.0.0.5:8070=[VotingUSM,SecureVotingClientMachine] 10.0.0.4:8080=[InitializerMachine,SecureBallotBoxMachine,SecureBulletinBoardMachine,SecureSupervisorMachine,SecureTabulationTellerMachine,SecureTamperEvidentLogMachine] > kpsOutput.txt ;cd ~/Research/PSec/'
         host_1_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=10.0.0.4:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=10.0.0.4:8080 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost.key isStartMachine=True startMachine=InitializerMachine > host1Output.txt ;cd ~/Research/PSec/'
-
+        host_2_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=10.0.0.4:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=10.0.0.5:8070 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost2.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost2.key isStartMachine=False > host2Output.txt ;cd ~/Research/PSec/'
 
 #Build the program
 bld = subprocess.Popen(environment_cmd + build_cmd, shell=True, executable="/bin/bash")
@@ -53,7 +105,7 @@ print('Build Complete!')
 
 #Setup data dictionary for all data points
 data_dict = {}
-for item in host1_lst:
+for item in host_lst:
     data_dict[item] = []
 
 get_time = lambda: int(round(time.time() * 1000))
@@ -61,12 +113,19 @@ current_time_millis = get_time()
 
 curr_iteration = 0
 while curr_iteration < num_iterations:
-    #Run KPS + host machine 1
-    kps = subprocess.Popen(environment_cmd + kps_app_cmd, shell=True, executable="/bin/bash")
-    hostmachine1 = subprocess.Popen(environment_cmd + host_1_app_cmd, shell=True, executable="/bin/bash")
+    if is_host1:
+        #Run KPS + host machine 1
+        kps = subprocess.Popen(environment_cmd + kps_app_cmd, shell=True, executable="/bin/bash")
+        hostmachine1 = subprocess.Popen(environment_cmd + host_1_app_cmd, shell=True, executable="/bin/bash")
 
-    while hostmachine1.poll() is None:
-        time.sleep(1)
+        while hostmachine1.poll() is None:
+            time.sleep(1)
+    elif is_host2:
+        #Run host machine 2 
+        hostmachine2 = subprocess.Popen(environment_cmd + host_2_app_cmd, shell=True, executable="/bin/bash")
+
+        while hostmachine2.poll() is None:
+            time.sleep(1)
 
     #Kill Process after execution
     p = subprocess.Popen('killall -9 app', shell=True)
@@ -79,21 +138,20 @@ while curr_iteration < num_iterations:
     data = "" 
     
     # Reading data from file1 
-    with open('build/Samples/PSecureV1/host1Output.txt') as fp: 
+    with open('build/Samples/PSecureV1/host' + str(host_num) + 'Output.txt') as fp: 
         data = fp.read() 
     
     data += "\n"
 
-    for i in range(len(host1_lst)):
-        match1 = re.search(host1_lst[i] + ':(\d+)', data)
-        data_lst = data_dict[host1_lst[i]]
-        data_lst.append(int(match1.group(1)))
+    for i in range(len(host_lst)):
+        match1 = re.search(host_lst[i] + ':(\d+)', data)
+        data_lst = data_dict[host_lst[i]]
         if match1 is not None:
             data_lst.append(int(match1.group(1)))
         else:
             print("No match found!")
 
-    with open('PerformanceMetricsScript/BaselineCacheHost1.txt', 'w') as file:
+    with open('PerformanceMetricsScript/BaselineCacheHost' + str(host_num) + '.txt', 'w') as file:
         file.write(json.dumps(data_dict)) # use `json.loads` to do the reverse
     
     print('Iteration: (' + str(curr_iteration + 1) + '/' + str(num_iterations) + ') in ' + str(get_time() - current_time_millis) + ' ms')
