@@ -6,14 +6,14 @@ import statistics
 import time
 import os
 
-search_lst1 = ['MEASURE OTPBASELINE START']
-search_lst2 = ['MEASURE OTPBASELINE END']
-id_lst = ['MEASURE OTPBASELINE']
+search_lst1 = ['MEASURE BASELINE START']
+search_lst2 = ['MEASURE BASELINE END']
+id_lst = ['MEASURE BASELINE']
 
-with open('OTPBaselineCacheHost1.txt') as json_file:
+with open('BaselineCacheHost1.txt') as json_file:
     data1 = json.load(json_file)
 
-with open('OTPBaselineCacheHost2.txt') as json_file:
+with open('BaselineCacheHost2.txt') as json_file:
     data2 = json.load(json_file)
 
 #merge 2 dictionaries into 1
@@ -27,7 +27,7 @@ for i in range(len(search_lst1)):
     lst2 = data1[search_lst2[i]]
     data_dict[id_lst[i]] = [end - start for end, start in zip(lst2, lst1)]
 
-with open('OTPBaselineCacheFinalResults.txt', 'w') as file:
+with open('BaselineCacheFinalResults.txt', 'w') as file:
         file.write(json.dumps(data_dict)) # use `json.loads` to do the reverse
 
 for key in data_dict.keys():

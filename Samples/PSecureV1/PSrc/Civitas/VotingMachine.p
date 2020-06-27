@@ -15,6 +15,8 @@ machine VotingUSM {
 	start state Init {
 		on UNTRUSTEDProvisionVotingUSM do (payload: (supervisor: machine_handle, credential: StringType)) {
 			print "VotingUSM ready!";
+			print "MEASURE BASELINE START:";
+            MeasureTime();
 			supervisor = payload.supervisor;
 			credential = payload.credential;
 
@@ -37,6 +39,9 @@ machine VotingUSM {
 					print "ERROR: My vote was not counted!\n";
 				}
 				print "{0} won the election\n", payload.whoWon;
+				print "MEASURE BASELINE END:";
+            	MeasureTime();
+				EXIT();
 				goto Done;
 		}
 	}

@@ -32,3 +32,5 @@ fun PrintKey(input : machine_handle);
 fun PrintPCapability(input : capability);
 fun PrintString(inputString : StringType);
 fun PrintMachineHandle(inputString : machine_handle);
+fun EXIT();
+fun MeasureTime();

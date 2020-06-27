@@ -53,7 +53,7 @@ machine ClientWebBrowser {
 
     state RegisterAccountInBank {
         entry {
-            print "MEASURE OTPBASELINE START:";
+            print "MEASURE BASELINE START:";
             MeasureTime();
             
             username = GetUsernameInput();
@@ -120,7 +120,7 @@ machine ClientWebBrowser {
     state Done {
         entry {
             print "Client Web Browser Authenticated Successfully!\n";
-            print "MEASURE OTPBASELINE END:";
+            print "MEASURE BASELINE END:";
             MeasureTime();
             EXIT();
         }
