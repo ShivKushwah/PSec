@@ -2700,6 +2700,20 @@ extern "C" PRT_VALUE* P_localAuthenticate_IMPL(PRT_MACHINEINST* context, PRT_VAL
 
 //P Foreign Function Implementations for example code*******************
 
+//djb2 hash algorithm
+unsigned long hashFn(unsigned char *str, int length)
+{
+    unsigned long hash = 5381;
+    int c;
+
+    for (int i = 0; i < length; i++) {
+        c = *str++;
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+    }
+
+    return hash;
+}
+
 extern "C" PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     PRT_VALUE** P_VAR_payload = argRefs[0];
@@ -2708,11 +2722,19 @@ extern "C" PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     PRT_VALUE** P_VAR_payload2 = argRefs[1];
     PRT_UINT64 val2 = (*P_VAR_payload2)->valueUnion.frgn->value;
 
-    strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
-    strncat((char*) val, "hash", strlen("hash") + 1);
+    char* combined = (char*) malloc(SIZE_OF_PRT_STRING_SERIALIZED * 2);
+    memcpy(combined, (void*) val, SIZE_OF_PRT_STRING_SERIALIZED);
+    memcpy(combined + SIZE_OF_PRT_STRING_SERIALIZED, (void*) val2, SIZE_OF_PRT_STRING_SERIALIZED);
+
+    long hash = hashFn((unsigned char*)combined, SIZE_OF_PRT_STRING_SERIALIZED*2);
+    char* hashString = (char*) malloc(10);
+    itoa((int)hash, hashString, 10); 
+
+    // strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
+    // strncat((char*) val, "hash", strlen("hash") + 1);
 
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
-    memcpy(str, (char*)val, SIZE_OF_PRT_STRING_SERIALIZED);
+    memcpy(str, (char*)hashString, SIZE_OF_PRT_STRING_SERIALIZED);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
 }
 
@@ -2790,11 +2812,22 @@ extern "C" PRT_VALUE* P_GetHelloWorld_IMPL(PRT_MACHINEINST* context, PRT_VALUE**
 
 
 
-extern "C" PRT_VALUE* P_GetUserInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+extern "C" PRT_VALUE* P_GetUsernameInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
     char user_input[100];
     // ocall_request_user_input(user_input, 100);
-    memcpy(user_input, "pword", 6);
+    memcpy(user_input, "kirat", strlen("kirat") + 1);
+    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
+	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, user_input);
+    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);
+    
+}
+
+extern "C" PRT_VALUE* P_GetPasswordInput_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+{
+    char user_input[100];
+    // ocall_request_user_input(user_input, 100);
+    memcpy(user_input, "secretpassword", strlen("secretpassword") + 1);
     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_PRT_STRING_SERIALIZED));
 	sprintf_s(str, SIZE_OF_PRT_STRING_SERIALIZED, user_input);
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_StringType);

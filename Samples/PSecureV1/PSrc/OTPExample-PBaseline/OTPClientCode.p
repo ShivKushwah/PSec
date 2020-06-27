@@ -56,8 +56,8 @@ machine ClientWebBrowser {
             print "MEASURE OTPBASELINE START:";
             MeasureTime();
             
-            username = GetUserInput();
-            password = GetUserInput();
+            username = GetUsernameInput();
+            password = GetPasswordInput();
             unencrypted_send bankSSM, UNTRUSTEDReceiveRegistrationCredentials, (this, username, password);
         }
         on PublicIDEvent goto Authenticate;
@@ -108,8 +108,8 @@ machine ClientWebBrowser {
                 case AuthFailure : {
                     print "Authentication Failed!";
                     print "Client Web Browser: Reenter Credentials to login!";
-                    username = GetUserInput();
-                    password = GetUserInput();
+                    username = GetUsernameInput();
+                    password = GetPasswordInput();
                     goto RequestOTPCodeGeneration;
                 }
             }

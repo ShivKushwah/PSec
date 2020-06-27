@@ -18,7 +18,8 @@ fun PrintRawStringType(inputString : StringType);
 fun PrintRawSecureStringType(inputString : secure_StringType);
 fun PrintKey(input : machine_handle);
 fun GenerateRandomMasterSecret() : secure_StringType;
-fun GetUserInput() : StringType;
+fun GetUsernameInput() : StringType;
+fun GetPasswordInput() : StringType;
 fun Concat(input1:StringType, input2:StringType) : StringType;
 fun Hash(input1:StringType, input2:StringType) : StringType;
 
