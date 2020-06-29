@@ -53,8 +53,8 @@ machine ClientWebBrowser {
 
     state RegisterAccountInBank {
         entry {
-            print "MEASURE BASELINE START:";
-            MeasureTime();
+            // print "MEASURE BASELINE START:";
+            // MeasureTime();
             
             username = GetUsernameInput();
             password = GetPasswordInput();
@@ -65,6 +65,9 @@ machine ClientWebBrowser {
     
     state Authenticate {
         entry (payload: machine_handle) {
+            print "MEASURE BASELINE START:";
+            MeasureTime();
+            
             clientSSM = payload;
             print "Client Web Browser: Enter Credentials to login to bank!\n";
             goto RequestOTPCodeGeneration;
