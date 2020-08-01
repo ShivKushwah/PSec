@@ -24,7 +24,7 @@ secure_machine ClientEnclave {
 
     state WaitForGenerateOTP {
         on GenerateOTPCodeEvent do (password: StringType) {
-            var hashedString : StringType;          
+            var hashedString : StringType;
             hashedString = Hash(Declassify(masterSecret) as StringType, password);
             send clientUSM, OTPCodeEvent, hashedString; //untrusted_send
         }

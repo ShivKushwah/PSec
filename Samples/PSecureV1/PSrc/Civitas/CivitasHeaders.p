@@ -4,6 +4,7 @@ event UNTRUSTEDReceiveVotingSSM : machine_handle;
 event UNTRUSTEDVoteRequest : (credential : StringType, vote : int, requestingMachine : machine_handle);
 event UNTRUSTEDGetResults : (whoWon : int, myVoteCounted : bool);
 event UNTRUSTEDProvisionVotingUSM : (supervisor : machine_handle, credential : StringType);
+event UNTRUSTEDSendSealedVote : sealed_data;
 event eCloseElection;
 
 trusted event TRUSTEDeStartElection : secure_int;

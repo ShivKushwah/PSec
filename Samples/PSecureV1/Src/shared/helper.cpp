@@ -12,11 +12,13 @@
 
 #ifdef ENCLAVE_STD_ALT
 #include "enclave_t.h"
+#include "sgx_tseal.h"
 #endif
 
 #ifndef ENCLAVE_STD_ALT
 #include "enclave_u.h"
 #include "sgx_tcrypto.h"
+#include "sgx_tseal.h"
 
 extern sgx_enclave_id_t global_app_eid;
 #endif
@@ -532,6 +534,8 @@ int returnSizeOfForeignType(int type_tag) {
         return SIZE_OF_P_CAPABILITY_FOREIGN_TYPE;
     } else if (type_tag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex) {
         return SIZE_OF_SECURE_MACHINE_HANDLE;
+    } else if (type_tag == P_TYPEDEF_sealed_data->typeUnion.foreignType->declIndex) {
+        return SIZE_OF_SEALED_DATA;
     } else {
         return -1;
     }
@@ -2516,21 +2520,104 @@ extern "C" PRT_VALUE* P_Endorse_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argR
 
 }
 
-extern "C" PRT_VALUE* P_GenerateSealedDataKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
-{
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_REAL_SESSION_KEY));
-    memset(str, sizeof(PRT_CHAR) * (SIZE_OF_REAL_SESSION_KEY), 0);
-    string sessionKey;
-    generateSessionKey(sessionKey);
-    memcpy(str, sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_sealed_data_key);  
-}
+// extern "C" PRT_VALUE* P_GenerateSealedDataKey_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
+// {
+//     PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_REAL_SESSION_KEY));
+//     memset(str, sizeof(PRT_CHAR) * (SIZE_OF_REAL_SESSION_KEY), 0);
+//     string sessionKey;
+//     generateSessionKey(sessionKey);
+//     memcpy(str, sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
+//     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_sealed_data_key);  
+// }
 
 extern "C" PRT_VALUE* P_GenerateSealedData_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-    PRT_VALUE* sealedDataKey = (PRT_VALUE*) (*argRefs[0]);
-    char* key = (char*)sealedDataKey->valueUnion.frgn->value;
-    PRT_VALUE* serializePrtValue = (PRT_VALUE*) (*argRefs[1]);
+    // PRT_VALUE* sealedDataKey = (PRT_VALUE*) (*argRefs[0]);
+    // char* key = (char*)sealedDataKey->valueUnion.frgn->value;
+    // PRT_VALUE* serializePrtValue = (PRT_VALUE*) (*argRefs[1]);
+
+    // int eventPayloadType = serializePrtValue->discriminator;
+    // char* eventPayloadTypeString = (char*) malloc(10);
+    // itoa(eventPayloadType, eventPayloadTypeString, 10);
+
+    // char* colon = ":";
+
+    // int serializedStringSize = 0;
+    // char* restOfSerializedString = serializePrtValueToString(serializePrtValue, serializedStringSize);
+    
+    // char* concatStrings1[] = {eventPayloadTypeString, colon, restOfSerializedString};
+    // int concatLenghts1[] = {strlen(eventPayloadTypeString), strlen(colon), serializedStringSize};
+    // char* serializedString = concatMutipleStringsWithLength(concatStrings1, concatLenghts1, 3);
+    // serializedStringSize = returnTotalSizeofLengthArray(concatLenghts1, 3) + 1;
+
+    // safe_free(restOfSerializedString);
+
+    // char* iv = generateIV();
+    // char* mac = "1234567891234567";
+    // char* encryptedMessage;
+    // char* messageToEncrypt;
+    // int messageToEncryptSize;
+    // int encryptedMessageSize;
+    // char* encryptedMessageSizeString;
+
+    // messageToEncrypt = serializedString;
+    // messageToEncryptSize = serializedStringSize;
+
+    // string sessionKey = string(key, SIZE_OF_REAL_SESSION_KEY);
+
+    // char* trustedPayload = messageToEncrypt;
+    // int trustedPayloadLength = messageToEncryptSize;
+    // // ocall_print("Printing Untrusted Payload after public key");
+    // // ocall_print(trustedPayload + SGX_RSA3072_KEY_SIZE);
+    
+    // sgx_aes_ctr_128bit_key_t g_region_key;
+    // sgx_aes_gcm_128bit_tag_t g_mac;
+    // memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
+
+    // encryptedMessageSize = trustedPayloadLength;
+    // encryptedMessage = (char*) malloc(encryptedMessageSize);
+    // #ifdef ENCLAVE_STD_ALT
+    // sgx_status_t status = sgx_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) trustedPayload, trustedPayloadLength, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    // #else 
+    // enclave_sgx_rijndael128GCM_encrypt_Ecall(global_app_eid, &g_region_key, (const uint8_t*) trustedPayload, trustedPayloadLength, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    // #endif
+    // ocall_print("Encrypted Message -DEBUG- is");
+    // printPayload(encryptedMessage, encryptedMessageSize);
+    // mac = (char*) malloc(SIZE_OF_MAC);
+    // memcpy(mac, (char*)g_mac, SIZE_OF_MAC);
+
+    // ocall_print("mac -DEBUG- is");
+    // printPayload(mac, SIZE_OF_MAC);
+
+    // safe_free(serializedString);
+        
+    
+    // encryptedMessageSizeString = (char*) malloc(10);
+    // itoa(encryptedMessageSize, encryptedMessageSizeString, 10);
+
+
+    // char* concatStrings[] = {iv, colon, mac, colon, encryptedMessageSizeString, colon, encryptedMessage};
+    // int concatLenghts[] = {SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageSizeString), strlen(colon), encryptedMessageSize};
+    // char* sealed_data = concatMutipleStringsWithLength(concatStrings, concatLenghts, 7);
+    // int sealed_data_total_size = returnTotalSizeofLengthArray(concatLenghts, 7) + 1;
+
+    // // ocall_print("encryptedMessageSize is");
+    // // ocall_print_int(encryptedMessageSize);
+    // // ocall_print("helper encryptedMessageSizeString is");
+    // // ocall_print(encryptedMessageSizeString);
+
+    // PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SEALED_DATA));
+    // memset(str, sizeof(PRT_CHAR) * (SIZE_OF_SEALED_DATA), 0);
+
+    // memcpy(str, sealed_data, sealed_data_total_size);
+    // safe_free(encryptedMessage);
+    // safe_free(encryptedMessageSizeString);
+    // safe_free(sealed_data);
+
+    PRT_STRING ret = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SEALED_DATA));
+
+    #ifdef ENCLAVE_STD_ALT
+    PRT_VALUE* serializePrtValue = (PRT_VALUE*) (*argRefs[0]);
 
     int eventPayloadType = serializePrtValue->discriminator;
     char* eventPayloadTypeString = (char*) malloc(10);
@@ -2548,116 +2635,92 @@ extern "C" PRT_VALUE* P_GenerateSealedData_IMPL(PRT_MACHINEINST* context, PRT_VA
 
     safe_free(restOfSerializedString);
 
-    char* iv = generateIV();
-    char* mac = "1234567891234567";
-    char* encryptedMessage;
-    char* messageToEncrypt;
-    int messageToEncryptSize;
-    int encryptedMessageSize;
-    char* encryptedMessageSizeString;
+    size_t sealed_size_sgx = sizeof(sgx_sealed_data_t) + serializedStringSize;
+    char* sealed_data_sgx = (char*)malloc(sealed_size_sgx);
 
-    messageToEncrypt = serializedString;
-    messageToEncryptSize = serializedStringSize;
+    sgx_status_t status2 = sgx_seal_data(0, NULL, serializedStringSize, (uint8_t*)serializedString, sealed_size_sgx, (sgx_sealed_data_t*)sealed_data_sgx);
 
-    string sessionKey = string(key, SIZE_OF_REAL_SESSION_KEY);
+    memcpy(ret, sealed_data_sgx, sealed_size_sgx);
 
-    char* trustedPayload = messageToEncrypt;
-    int trustedPayloadLength = messageToEncryptSize;
-    // ocall_print("Printing Untrusted Payload after public key");
-    // ocall_print(trustedPayload + SGX_RSA3072_KEY_SIZE);
-    
-    sgx_aes_ctr_128bit_key_t g_region_key;
-    sgx_aes_gcm_128bit_tag_t g_mac;
-    memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
 
-    encryptedMessageSize = trustedPayloadLength;
-    encryptedMessage = (char*) malloc(encryptedMessageSize);
-    #ifdef ENCLAVE_STD_ALT
-    sgx_status_t status = sgx_rijndael128GCM_encrypt(&g_region_key, (const uint8_t*) trustedPayload, trustedPayloadLength, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
-    #else 
-    enclave_sgx_rijndael128GCM_encrypt_Ecall(global_app_eid, &g_region_key, (const uint8_t*) trustedPayload, trustedPayloadLength, (uint8_t*)encryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
     #endif
-    ocall_print("Encrypted Message -DEBUG- is");
-    printPayload(encryptedMessage, encryptedMessageSize);
-    mac = (char*) malloc(SIZE_OF_MAC);
-    memcpy(mac, (char*)g_mac, SIZE_OF_MAC);
-
-    ocall_print("mac -DEBUG- is");
-    printPayload(mac, SIZE_OF_MAC);
-
-    safe_free(serializedString);
-        
-    
-    encryptedMessageSizeString = (char*) malloc(10);
-    itoa(encryptedMessageSize, encryptedMessageSizeString, 10);
 
 
-    char* concatStrings[] = {iv, colon, mac, colon, encryptedMessageSizeString, colon, encryptedMessage};
-    int concatLenghts[] = {SIZE_OF_IV, strlen(colon), SIZE_OF_MAC, strlen(colon), strlen(encryptedMessageSizeString), strlen(colon), encryptedMessageSize};
-    char* sealed_data = concatMutipleStringsWithLength(concatStrings, concatLenghts, 7);
-    int sealed_data_total_size = returnTotalSizeofLengthArray(concatLenghts, 7) + 1;
 
-    // ocall_print("encryptedMessageSize is");
-    // ocall_print_int(encryptedMessageSize);
-    // ocall_print("helper encryptedMessageSizeString is");
-    // ocall_print(encryptedMessageSizeString);
+    //END TEST CODE
 
-    PRT_STRING str = (PRT_STRING) PrtMalloc(sizeof(PRT_CHAR) * (SIZE_OF_SEALED_DATA));
-    memset(str, sizeof(PRT_CHAR) * (SIZE_OF_SEALED_DATA), 0);
 
-    memcpy(str, sealed_data, sealed_data_total_size);
-    safe_free(encryptedMessage);
-    safe_free(encryptedMessageSizeString);
-    safe_free(sealed_data);
-    return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_sealed_data);
+
+
+    return PrtMkForeignValue((PRT_UINT64)ret, P_TYPEDEF_sealed_data);
     
 }
 
 extern "C" PRT_VALUE* P_unseal_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs)
 {
-
-    PRT_VALUE* sealedDataKey = (PRT_VALUE*) (*argRefs[0]);
-    char* key = (char*)sealedDataKey->valueUnion.frgn->value;
-    PRT_VALUE* encryptedPrtValue = (PRT_VALUE*) (*argRefs[1]);
-    char* encryptedString = (char*) encryptedPrtValue->valueUnion.frgn->value;
-
-    char* iv;
-    char* mac;
-    char* encryptedMessage;
-
-    iv = encryptedString;
-    mac = encryptedString + SIZE_OF_IV + 1;
-    encryptedMessage = encryptedString + SIZE_OF_IV + 1 + SIZE_OF_MAC + 1;
-
-    char* split = strtok(encryptedMessage, ":");
-    char* encryptedMessageSize = split;
-    int encryptedMessageSizeInt = atoi(encryptedMessageSize);
-    int encryptedMessageSizeIntString = strlen(encryptedMessageSize);
-    char* eventNum;
-    int numArgs;
-    int payloadType;
-    char* payload;
-    int payloadSize;
-    char* next = NULL;
-
-    char* decryptedMessage = NULL;
-    
-    string sessionKey = string(key, SIZE_OF_REAL_SESSION_KEY);
-
-    sgx_aes_ctr_128bit_key_t g_region_key;
-    sgx_aes_gcm_128bit_tag_t g_mac;
-    memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
-    memcpy(g_mac, mac, SIZE_OF_MAC);
-
-    char* actualEncryptedMessage = encryptedMessage + strlen(encryptedMessageSize) + 1;
-    decryptedMessage = (char*) malloc(atoi(encryptedMessageSize));
     #ifdef ENCLAVE_STD_ALT
-    sgx_status_t status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) actualEncryptedMessage, atoi(encryptedMessageSize), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
-    #else
-    sgx_status_t status = enclave_sgx_rijndael128GCM_decrypt_Ecall(global_app_eid, &g_region_key, (const uint8_t*) actualEncryptedMessage, atoi(encryptedMessageSize), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
-    #endif
+
+    uint32_t unsealed_len;
+    char* unsealed = (char*) malloc(SIZE_OF_SEALED_DATA);
+    PRT_VALUE* sealedPrtValue = (PRT_VALUE*) (*argRefs[0]);
+    char* sealedString = (char*) sealedPrtValue->valueUnion.frgn->value;
+
+    sgx_status_t status2 = sgx_unseal_data((sgx_sealed_data_t*)sealedString, NULL, NULL, (uint8_t*)unsealed, &unsealed_len);
+    // if (status2 == SGX_SUCCESS) {
+    //     ocall_enclave_print("HELLLO BRUH/n");
+    //     ocall_enclave_print("OUtput is/n");
+    //     // ocall_enclave_print(output);
+
+    // } else {
+    //     ocall_enclave_print("SAD BOIS/n");
+    // }
+
     int numCharactersProcessed;
-    return *(deserializeStringToPrtValue(1, decryptedMessage, atoi(encryptedMessageSize), &numCharactersProcessed));
+    return *(deserializeStringToPrtValue(1, unsealed, unsealed_len, &numCharactersProcessed));
+    #endif
+
+    // PRT_VALUE* sealedDataKey = (PRT_VALUE*) (*argRefs[0]);
+    // char* key = (char*)sealedDataKey->valueUnion.frgn->value;
+    // PRT_VALUE* encryptedPrtValue = (PRT_VALUE*) (*argRefs[1]);
+    // char* encryptedString = (char*) encryptedPrtValue->valueUnion.frgn->value;
+
+    // char* iv;
+    // char* mac;
+    // char* encryptedMessage;
+
+    // iv = encryptedString;
+    // mac = encryptedString + SIZE_OF_IV + 1;
+    // encryptedMessage = encryptedString + SIZE_OF_IV + 1 + SIZE_OF_MAC + 1;
+
+    // char* split = strtok(encryptedMessage, ":");
+    // char* encryptedMessageSize = split;
+    // int encryptedMessageSizeInt = atoi(encryptedMessageSize);
+    // int encryptedMessageSizeIntString = strlen(encryptedMessageSize);
+    // char* eventNum;
+    // int numArgs;
+    // int payloadType;
+    // char* payload;
+    // int payloadSize;
+    // char* next = NULL;
+
+    // char* decryptedMessage = NULL;
+    
+    // string sessionKey = string(key, SIZE_OF_REAL_SESSION_KEY);
+
+    // sgx_aes_ctr_128bit_key_t g_region_key;
+    // sgx_aes_gcm_128bit_tag_t g_mac;
+    // memcpy(g_region_key, (char*)sessionKey.c_str(), SIZE_OF_REAL_SESSION_KEY);
+    // memcpy(g_mac, mac, SIZE_OF_MAC);
+
+    // char* actualEncryptedMessage = encryptedMessage + strlen(encryptedMessageSize) + 1;
+    // decryptedMessage = (char*) malloc(atoi(encryptedMessageSize));
+    // #ifdef ENCLAVE_STD_ALT
+    // sgx_status_t status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) actualEncryptedMessage, atoi(encryptedMessageSize), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    // #else
+    // sgx_status_t status = enclave_sgx_rijndael128GCM_decrypt_Ecall(global_app_eid, &g_region_key, (const uint8_t*) actualEncryptedMessage, atoi(encryptedMessageSize), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
+    // #endif
+    // int numCharactersProcessed;
+    // return *(deserializeStringToPrtValue(1, decryptedMessage, atoi(encryptedMessageSize), &numCharactersProcessed));
 }
 
 extern "C" PRT_VALUE* P_localAuthenticate_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs) {

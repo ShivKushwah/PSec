@@ -12,6 +12,7 @@ extern "C" {
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDVoteRequest;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDGetResults;
     extern PRT_EVENTDECL P_EVENT_UNTRUSTEDProvisionVotingUSM;
+    extern PRT_EVENTDECL P_EVENT_UNTRUSTEDSendSealedVote;
     extern PRT_EVENTDECL P_EVENT_eCloseElection;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeStartElection;
     extern PRT_EVENTDECL P_EVENT_TRUSTEDeVote;
@@ -38,6 +39,7 @@ extern "C" {
     extern PRT_INTERFACEDECL P_I_SecureBulletinBoardMachine;
     extern PRT_INTERFACEDECL P_I_SecureBallotBoxMachine;
     extern PRT_INTERFACEDECL P_I_SecureTamperEvidentLogMachine;
+    extern PRT_INTERFACEDECL P_I_StorageMachine;
     extern PRT_INTERFACEDECL P_I_SecureTabulationTellerMachine;
     extern PRT_INTERFACEDECL P_I_SecureVotingClientMachine;
     extern PRT_MACHINEDECL P_MACHINE_InitializerMachine;
@@ -46,6 +48,7 @@ extern "C" {
     extern PRT_MACHINEDECL P_MACHINE_SecureBulletinBoardMachine;
     extern PRT_MACHINEDECL P_MACHINE_SecureBallotBoxMachine;
     extern PRT_MACHINEDECL P_MACHINE_SecureTamperEvidentLogMachine;
+    extern PRT_MACHINEDECL P_MACHINE_StorageMachine;
     extern PRT_MACHINEDECL P_MACHINE_SecureTabulationTellerMachine;
     extern PRT_MACHINEDECL P_MACHINE_SecureVotingClientMachine;
     extern PRT_TYPE* P_TYPEDEF_StringType;
