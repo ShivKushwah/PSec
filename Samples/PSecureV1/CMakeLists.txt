@@ -11,9 +11,9 @@ set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas-PBaseline/CivitasH
 set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/CivitasHeaders.c) #only need CivitasHeaders.c because P compiler writes all p code from multiple files into first p file with c extension
 add_definitions(-DCIVITAS_EXAMPLE)
 
-# set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPBankServerCode.p  ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPClientCode.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPHeaderDeclarations.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/PSecInternalLib.p)
-# set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/OTPBankServerCode.c) #only need OTPBankServerCode.c because P compiler writes all p code from multiple files into first p file with c extension
-# add_definitions(-DOTP_EXAMPLE)
+set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPBankServerCode.p  ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPClientCode.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPHeaderDeclarations.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/PSecInternalLib.p)
+set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/OTPBankServerCode.c) #only need OTPBankServerCode.c because P compiler writes all p code from multiple files into first p file with c extension
+add_definitions(-DOTP_EXAMPLE)
 
 # set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample-PBaseline/OTPBankServerCode.p  ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample-PBaseline/OTPClientCode.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample-PBaseline/OTPHeaderDeclarations.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/PSecInternalLib.p)
 # set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/OTPBankServerCode.c) #only need OTPBankServerCode.c because P compiler writes all p code from multiple files into first p file with c extension
