@@ -15,6 +15,14 @@ secure_machine SecureTamperEvidentLogMachine
 
     state WaitForRequests {
         on TRUSTEDeAddItem do (payload: (credential : secure_StringType, vote: secure_int)){
+            var sealedDataDump : sealed_data;
+
+            sealedDataDump = seal(payload);
+
+            if (Declassify((unseal(sealedDataDump) as (secure_StringType, secure_int)).1) as int == Declassify(payload.vote) as int) {
+                print "Sealed Vote Successfully!";
+            }
+            
             log += (sizeof(log), (credential = payload.credential, vote = payload.vote));
             send parent, TRUSTEDeRespAddItem, Endorse(true) as secure_bool; //secure_send
         }
