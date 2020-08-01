@@ -24,7 +24,32 @@ secure_machine ClientEnclave {
 
     state WaitForGenerateOTP {
         on GenerateOTPCodeEvent do (password: StringType) {
-            var hashedString : StringType;          
+            var hashedString : StringType;      
+            
+            var test1: int;
+            var test2: map[int, int];
+            var test3: (int, int);
+
+            var sealedDataDump : (sealed_data_key, sealed_data);
+
+            test1 = 7;
+            sealedDataDump = seal(test1);
+            if (unseal(sealedDataDump.0, sealedDataDump.1) as int == 7) {
+                print "First Seal Test Success!";
+            }
+            
+            test2[3] = 8;
+            sealedDataDump = seal(test2);
+            if ((unseal(sealedDataDump.0, sealedDataDump.1) as map[int, int])[3] == 8) {
+                print "Second Seal Test Success!";
+            }
+
+            test3 = (9, 9);
+            sealedDataDump = seal(test3);
+            if ((unseal(sealedDataDump.0, sealedDataDump.1) as (int, int)).1 == 9) {
+                print "Third Seal Test Success!";
+            }
+                
             hashedString = Hash(Declassify(masterSecret) as StringType, password);
             send clientUSM, OTPCodeEvent, hashedString; //untrusted_send
         }

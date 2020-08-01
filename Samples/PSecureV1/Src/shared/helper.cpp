@@ -12,11 +12,13 @@
 
 #ifdef ENCLAVE_STD_ALT
 #include "enclave_t.h"
+#include "sgx_tseal.h"
 #endif
 
 #ifndef ENCLAVE_STD_ALT
 #include "enclave_u.h"
 #include "sgx_tcrypto.h"
+#include "sgx_tseal.h"
 
 extern sgx_enclave_id_t global_app_eid;
 #endif
@@ -2609,6 +2611,38 @@ extern "C" PRT_VALUE* P_GenerateSealedData_IMPL(PRT_MACHINEINST* context, PRT_VA
     safe_free(encryptedMessage);
     safe_free(encryptedMessageSizeString);
     safe_free(sealed_data);
+
+    //TEST CODE
+    #ifdef ENCLAVE_STD_ALT
+    size_t sealed_size_sgx = sizeof(sgx_sealed_data_t) + 6;
+    char* sealed_data_sgx = (char*)malloc(sealed_size_sgx);
+
+    sgx_status_t status2 = sgx_seal_data(0, NULL, 6, (uint8_t*)"hello", sealed_size_sgx, (sgx_sealed_data_t*)sealed_data_sgx);
+
+    uint32_t output_len = 6;
+    char* output = (char*) malloc(output_len);
+
+
+    status2 = sgx_unseal_data((sgx_sealed_data_t*)sealed_data_sgx, NULL, NULL, (uint8_t*)output, &output_len);
+    if (status2 == SGX_SUCCESS) {
+        ocall_enclave_print("HELLLO BRUH/n");
+        ocall_enclave_print("OUtput is/n");
+        ocall_enclave_print(output);
+
+    } else {
+        ocall_enclave_print("SAD BOIS/n");
+    }
+
+
+    #endif
+
+
+
+    //END TEST CODE
+
+
+
+
     return PrtMkForeignValue((PRT_UINT64)str, P_TYPEDEF_sealed_data);
     
 }
