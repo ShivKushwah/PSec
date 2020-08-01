@@ -534,6 +534,8 @@ int returnSizeOfForeignType(int type_tag) {
         return SIZE_OF_P_CAPABILITY_FOREIGN_TYPE;
     } else if (type_tag == P_TYPEDEF_secure_machine_handle->typeUnion.foreignType->declIndex) {
         return SIZE_OF_SECURE_MACHINE_HANDLE;
+    } else if (type_tag == P_TYPEDEF_sealed_data->typeUnion.foreignType->declIndex) {
+        return SIZE_OF_SEALED_DATA;
     } else {
         return -1;
     }

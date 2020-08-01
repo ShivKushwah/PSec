@@ -6,20 +6,24 @@ secure_machine SecureTamperEvidentLogMachine
 {
     var log: seq[(credential: secure_StringType, vote: secure_int)];
     var parent: secure_machine_handle;
+    var memory : machine_handle;
     start state Init {
          on TRUSTEDProvisionSecureTamperEvidentLogMachine do (payload: secure_machine_handle) {
             parent = payload;
+            memory = new StorageMachine() @ this;
             goto WaitForRequests;
          }
     }
 
     state WaitForRequests {
         on TRUSTEDeAddItem do (payload: (credential : secure_StringType, vote: secure_int)){
-            var sealedDataDump : sealed_data;
+            var sealedVote : sealed_data;
 
-            sealedDataDump = seal(payload);
+            sealedVote = seal(payload);
+            send memory, UNTRUSTEDSendSealedVote, sealedVote;
+            // Can later retrieve using `unseal(sealedVote) as (secure_StringType, secure_int)`
 
-            if (Declassify((unseal(sealedDataDump) as (secure_StringType, secure_int)).1) as int == Declassify(payload.vote) as int) {
+            if (Declassify((unseal(sealedVote) as (secure_StringType, secure_int)).1) as int == Declassify(payload.vote) as int) {
                 print "Sealed Vote Successfully!";
             }
             
@@ -30,5 +34,16 @@ secure_machine SecureTamperEvidentLogMachine
         {
             send parent, TRUSTEDeRespGetLog, log; //secure_send
         }
+    }
+}
+
+machine StorageMachine 
+{
+    var untrusted_memory: seq[sealed_data];
+
+    start state Init {
+         on UNTRUSTEDSendSealedVote do (payload: sealed_data) {
+            untrusted_memory += (sizeof(untrusted_memory), payload);
+         }
     }
 }
