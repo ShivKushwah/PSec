@@ -7,6 +7,10 @@ set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas/CivitasHeaders.p  
 set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/CivitasHeaders.c) #only need CivitasHeaders.c because P compiler writes all p code from multiple files into first p file with c extension
 add_definitions(-DCIVITAS_EXAMPLE)
 
+# set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas-PBaseline/CivitasHeaders.p  ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas-PBaseline/InitializerMachine.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas-PBaseline/SecureSupervisor.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas-PBaseline/VotingMachine.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas-PBaseline/SecureBulletinBoard.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas-PBaseline/SecureBallotBoxMachine.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas-PBaseline/SecureTamperEvidentLog.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas-PBaseline/SecureTabulationTellerMachine.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/Civitas-PBaseline/SecureVotingClientMachine.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/PSecInternalLib.p)
+# set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/CivitasHeaders.c) #only need CivitasHeaders.c because P compiler writes all p code from multiple files into first p file with c extension
+# add_definitions(-DCIVITAS_EXAMPLE)
+
 # set (P_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPBankServerCode.p  ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPClientCode.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/OTPExample/OTPHeaderDeclarations.p ${CMAKE_CURRENT_SOURCE_DIR}/PSrc/PSecInternalLib.p)
 # set (P_SOURCE_C_CODE_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/PGenerated/OTPBankServerCode.c) #only need OTPBankServerCode.c because P compiler writes all p code from multiple files into first p file with c extension
 # add_definitions(-DOTP_EXAMPLE)
