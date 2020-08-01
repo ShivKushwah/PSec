@@ -28,11 +28,11 @@ machine VotingUSM {
 
 	state Vote {
 		entry (payload: machine_handle) {
-			var machineTypeToValidate : string;
-            machineTypeToValidate = "SecureVotingClientMachine";
-            if (localAuthenticate(votingSecureMachine, machineTypeToValidate)) {
-                print "Authenticated installed enclave!";
-            }
+			// var machineTypeToValidate : string;
+            // machineTypeToValidate = "SecureVotingClientMachine";
+            // if (localAuthenticate(votingSecureMachine, machineTypeToValidate)) {
+            //     print "Authenticated installed enclave!";
+            // }
 			votingSecureMachine = payload;
 			vote = 1;
 			send votingSecureMachine, UNTRUSTEDVoteRequest, (credential = credential, vote = vote, requestingMachine = this); //untrusted_send
