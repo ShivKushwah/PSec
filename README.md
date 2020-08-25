@@ -15,6 +15,9 @@ Follow [this](docs/RepoInstallation.md) if building this project on a pre-existi
 ##### Running Instructions:
 In order to run sample programs, follow [this](docs/Running.md).
 
+##### Performance Testing Instructions:
+For performance testing, read [this](docs/PerformanceTesting.md).
+
 ##### Other Documentation
 The architecture of the codebase is documented [here](docs/ArchitectureOverview.md).
 
