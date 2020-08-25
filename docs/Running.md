@@ -121,4 +121,5 @@ In order to run the debugger,
 1. Run the custom source command for the Intel SGX environment: `source /home/shivendra/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment`
 2. `cd build && cd Samples && cd PSecureV1 && sgx-gdb ./app ;cd ~/Research/PSec/`
 3. `(sgx-gdb) r {command-line arguments}`
+Make sure you install gdb beforehand using `sudo apt-get install gdb`!
 
