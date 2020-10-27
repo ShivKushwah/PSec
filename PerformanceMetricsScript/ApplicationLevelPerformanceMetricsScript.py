@@ -18,6 +18,7 @@ host = sys.argv[4]
 
 is_civitas = False
 is_otp = False
+is_perf_metrics_example = False
 is_sim = False
 is_host1 = False 
 is_host2 = False
@@ -26,6 +27,8 @@ if (example_name == 'CIVITAS'):
     is_civitas = True
 elif (example_name == 'OTP'):
     is_otp = True
+elif (example_name == 'PERF_METRICS'):
+    is_perf_metrics_example = True
 else:
     print("Example not supported!")
     sys.exit()
@@ -62,15 +65,15 @@ elif (host == 'host2'):
 #Move program to root context
 os.chdir('..')
 
-if is_sim:
-    if is_host1:
+if is_host1:
+    if is_perf_metrics_example:
+        host_lst = ["MEASURE UNTRUSTED CREATE START"]
+    else:
         host_lst = []
-    elif is_host2:
-        host_lst = ['MEASURE BASELINE START', 'MEASURE BASELINE END']
-else:
-    if is_host1:
-        host_lst = []
-    elif is_host2:
+elif is_host2:
+    if is_perf_metrics_example:
+        host_lst = ['MEASURE UNTRUSTED CREATE END']
+    else:
         host_lst = ['MEASURE BASELINE START', 'MEASURE BASELINE END']
 
 #Commands to build and run PSec PerformanceMetricsExample
@@ -85,6 +88,10 @@ if is_sim:
         kps_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem KpsCertificateKeysLocation=~/Research/PSec/keys/KPS.key 127.0.0.1:8070=[VotingUSM,SecureVotingClientMachine] 127.0.0.1:8080=[InitializerMachine,SecureBallotBoxMachine,SecureBulletinBoardMachine,SecureSupervisorMachine,SecureTabulationTellerMachine,SecureTamperEvidentLogMachine] > kpsOutput.txt ;cd ~/Research/PSec/'
         host_1_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8080 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost.key isStartMachine=True startMachine=InitializerMachine > host1Output.txt ;cd ~/Research/PSec/'
         host_2_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8070 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost2.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost2.key isStartMachine=False > host2Output.txt ;cd ~/Research/PSec/'
+    elif is_perf_metrics_example:
+        kps_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem KpsCertificateKeysLocation=~/Research/PSec/keys/KPS.key 127.0.0.1:8070=[BankEnclave,TrustedInitializer,MeasureMachine] 127.0.0.1:8080=[ClientWebBrowser,ClientEnclave,UntrustedInitializer] > kpsOutput.txt ;cd ~/Research/PSec'
+        host_1_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8080 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost.key isStartMachine=True startMachine=UntrustedInitializer > host1Output.txt ;cd ~/Research/PSec'
+        host_2_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8070 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost2.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost2.key isStartMachine=False > host2Output.txt ;cd ~/Research/PSec'
 else:
     environment_cmd = 'source ~/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment; unset LD_LIBRARY_PATH; export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:/opt/intel/sgxpsw/lib64; '
     if is_otp:
