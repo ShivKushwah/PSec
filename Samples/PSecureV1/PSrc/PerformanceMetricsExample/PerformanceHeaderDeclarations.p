@@ -25,7 +25,7 @@ fun Concat(input1:StringType, input2:StringType) : StringType;
 fun Hash(input1:StringType, input2:StringType) : StringType;
 fun PrintKey(input : machine_handle);
 fun GenerateRandomMasterSecret() : secure_StringType;
-fun GetUserInput() : StringType;
+// fun GetUserInput() : StringType;
 fun GetHelloWorld() : StringType;
 fun MeasureTime();
 fun EXIT();

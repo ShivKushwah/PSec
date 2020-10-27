@@ -64,7 +64,7 @@ machine ClientWebBrowser {
     state RegisterAccountInBank {
         entry {
             var credentials : StringType;
-            credentials = GetUserInput();
+            // credentials = GetUserInput();
             print "MEASURE UNTRUSTED SEND START:";
             MeasureTime();
             send bankSSM, MeasureEvent1, (fst = 1, snd = GetHelloWorld());
@@ -81,7 +81,7 @@ machine ClientWebBrowser {
         entry (payload: machine_handle) {
             clientSSM = payload;
             print "Client Web Browser: Enter Credentials to login to bank!\n";
-            usernamePassword = GetUserInput();
+            // usernamePassword = GetUserInput();
             goto RequestOTPCodeGeneration;
         }
     }
@@ -117,8 +117,9 @@ machine ClientWebBrowser {
                 case AuthFailure : {
                     print "Authentication Failed!";
                     print "Client Web Browser: Reenter Credentials to login!";
-                    usernamePassword = GetUserInput();
-                    goto RequestOTPCodeGeneration;
+                    goto Done;
+                    // usernamePassword = GetUserInput();
+                    // goto RequestOTPCodeGeneration;
                 }
             }
         }
@@ -127,29 +128,29 @@ machine ClientWebBrowser {
 
     state Done {
         entry {
-            var test1: int;
-            var test2: map[int, int];
-            var test3: (int, int);
+            // var test1: int;
+            // var test2: map[int, int];
+            // var test3: (int, int);
 
-            var sealedDataDump : (sealed_data_key, sealed_data);
+            // var sealedDataDump : (sealed_data_key, sealed_data);
 
-            test1 = 7;
-            sealedDataDump = seal(test1);
-            if (unseal(sealedDataDump.0, sealedDataDump.1) as int == 7) {
-                print "First Seal Test Success!";
-            }
+            // test1 = 7;
+            // sealedDataDump = seal(test1);
+            // if (unseal(sealedDataDump.0, sealedDataDump.1) as int == 7) {
+            //     print "First Seal Test Success!";
+            // }
             
-            test2[3] = 8;
-            sealedDataDump = seal(test2);
-            if ((unseal(sealedDataDump.0, sealedDataDump.1) as map[int, int])[3] == 8) {
-                print "Second Seal Test Success!";
-            }
+            // test2[3] = 8;
+            // sealedDataDump = seal(test2);
+            // if ((unseal(sealedDataDump.0, sealedDataDump.1) as map[int, int])[3] == 8) {
+            //     print "Second Seal Test Success!";
+            // }
 
-            test3 = (9, 9);
-            sealedDataDump = seal(test3);
-            if ((unseal(sealedDataDump.0, sealedDataDump.1) as (int, int)).1 == 9) {
-                print "Third Seal Test Success!";
-            }
+            // test3 = (9, 9);
+            // sealedDataDump = seal(test3);
+            // if ((unseal(sealedDataDump.0, sealedDataDump.1) as (int, int)).1 == 9) {
+            //     print "Third Seal Test Success!";
+            // }
 
             print "Client Web Browser Authenticated Successfully!";
         }
