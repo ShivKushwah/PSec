@@ -492,7 +492,12 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 			break;
 		}
 
-		fprintf(stderr, "Cannot connect to the server. Retrying...\n");
+		fprintf(stderr, "Cannot connect to the server. Retrying...");
+		fprintf(stderr, " IP Address: ");
+		fprintf(stderr, ipAddressCopy);
+		fprintf(stderr, " Port: ");
+		fprintf(stderr, port);
+		fprintf(stderr, "\n");
 		ocall_print("Cannot connect to the server. Retrying...");
 		close(sockfd);
 		sleep(1);
