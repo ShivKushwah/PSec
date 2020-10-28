@@ -496,7 +496,9 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 		fprintf(stderr, " IP Address: ");
 		fprintf(stderr, ipAddressCopy);
 		fprintf(stderr, " Port: ");
-		fprintf(stderr, port);
+		if (port == 8070) {
+		   fprintf(stderr, "8070");
+		}
 		fprintf(stderr, "\n");
 		ocall_print("Cannot connect to the server. Retrying...");
 		close(sockfd);
