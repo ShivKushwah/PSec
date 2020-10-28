@@ -498,6 +498,12 @@ char* network_socket_sender(char* request, int request_size, char* ipAddress, in
 		fprintf(stderr, " Port: ");
 		if (port == 8070) {
 		   fprintf(stderr, "8070");
+		} else if (port == 8092) {
+		   fprintf(stderr, "8092");
+		} else if (port == 8090) {
+		   fprintf(stderr, "8090");
+		} else if (port == 8080) {
+		   fprintf(stderr, "8080");
 		}
 		fprintf(stderr, "\n");
 		ocall_print("Cannot connect to the server. Retrying...");
