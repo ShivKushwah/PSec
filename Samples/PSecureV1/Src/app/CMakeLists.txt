@@ -41,7 +41,7 @@ include_directories(
 set(LIBHANDLERLIB_PATH ${P_LIBHANDLER_PATH}/out/gcc-amd64-linux-gnu/debug/libhandler.a)
 
 target_link_libraries(app
-        -L${SGX_LIBRARY_PATH} -lsgx_epid -lsgx_quote_ex -l${SGX_USVC_LIB} -lsgx_ukey_exchange
+        -L${SGX_LIBRARY_PATH} -l${SGX_URTS_LIB} -l${SGX_USVC_LIB} -lsgx_ukey_exchange
         Prt_untrusted_static
         ${LIBHANDLERLIB_PATH}
         -lsgx_capable -Wl,-rpath=$(SGX_LIBRARY_PATH)
