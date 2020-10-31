@@ -7,19 +7,21 @@ import time
 import os
 import sys
 
-if (len(sys.argv) != 5):
+if (len(sys.argv) != 6):
     print("Insufficient arguments!")
     sys.exit()
 
 example_name = sys.argv[1]
 mode = sys.argv[2]
-num_iterations = int(sys.argv[3])
-host = sys.argv[4]
+local_or_distributed = sys.argv[3]
+num_iterations = int(sys.argv[4])
+host = sys.argv[5]
 
 is_civitas = False
 is_otp = False
 is_perf_metrics_example = False
 is_sim = False
+is_local = False
 is_host1 = False 
 is_host2 = False
 
@@ -37,6 +39,14 @@ if (mode == 'SIM'):
     is_sim = True
 elif (mode == 'HW'):
     is_sim = False
+else:
+    print("Incorrect SIM/HW argument!")
+    sys.exit()
+
+if (local_or_distributed == 'LOCAL'):
+    is_local = True
+elif (local_or_distributed == 'DIST'):
+    is_local = False
 else:
     print("Incorrect SIM/HW argument!")
     sys.exit()
@@ -78,8 +88,13 @@ elif is_host2:
 
 #Commands to build and run PSec PerformanceMetricsExample
 build_cmd = 'cd Submodule/P && ./Bld/build-compiler.sh && cd .. && cd .. && cd build && make clean && cmake .. && make'
+
 if is_sim:
-    environment_cmd = 'source ~/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment; '
+    environment_cmd = 'source /opt/intel/sgxsdk/environment; '
+else:
+    environment_cmd = 'source /opt/intel/sgxsdk/environment; unset LD_LIBRARY_PATH; export LD_LIBRARY_PATH=/usr/lib/:/opt/intel/sgxpsw/lib64; '
+
+if is_local:
     if is_otp:
         kps_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem KpsCertificateKeysLocation=~/Research/PSec/keys/KPS.key 127.0.0.1:8070=[ClientWebBrowser,ClientEnclave] 127.0.0.1:8080=[BankEnclave,TrustedInitializer,UntrustedInitializer] > kpsOutput.txt ;cd ~/Research/PSec'
         host_1_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8080 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost.key isStartMachine=True startMachine=UntrustedInitializer > host1Output.txt ;cd ~/Research/PSec/'
@@ -93,7 +108,6 @@ if is_sim:
         host_1_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8080 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost.key isStartMachine=True startMachine=UntrustedInitializer > host1Output.txt ;cd ~/Research/PSec'
         host_2_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=127.0.0.1:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=127.0.0.1:8070 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost2.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost2.key isStartMachine=False > host2Output.txt ;cd ~/Research/PSec'
 else:
-    environment_cmd = 'source ~/Research/Intel-SGX-Installation/linux-sgx/linux/installer/bin/sgxsdk/environment; unset LD_LIBRARY_PATH; export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:/opt/intel/sgxpsw/lib64; '
     if is_otp:
         kps_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=True KpsIPAddress=10.0.0.4:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem KpsCertificateKeysLocation=~/Research/PSec/keys/KPS.key 10.0.0.5:8070=[ClientWebBrowser,ClientEnclave] 10.0.0.4:8080=[BankEnclave,TrustedInitializer,UntrustedInitializer] > kpsOutput.txt ;cd ~/Research/PSec'
         host_1_app_cmd = 'cd build && cd Samples && cd PSecureV1 && ./app isKPSProcess=False KpsIPAddress=10.0.0.4:8092 8090 KpsCertificateLocation=~/Research/PSec/keys/KPS.pem currentHostMachineAddress=10.0.0.4:8080 currentHostMachineCertificateLocation=~/Research/PSec/keys/dstHost.pem currentHostMachineCertificateKeysLocation=~/Research/PSec/keys/dstHost.key isStartMachine=True startMachine=UntrustedInitializer > host1Output.txt ;cd ~/Research/PSec/'
