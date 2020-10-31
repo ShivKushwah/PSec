@@ -15,7 +15,8 @@
 #include <tuple>
 #include "sample_libcrypto.h"
 #include "network_simulator.h"
-#include "sgx_uae_service.h"
+#include "sgx_uae_epid.h"
+#include "sgx_uae_quote_ex.h"
 #include "sgx_capable.h"
 
 using namespace std;
