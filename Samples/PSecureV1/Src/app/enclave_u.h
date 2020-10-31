@@ -8,6 +8,7 @@
 #include "sgx_edger8r.h" /* for sgx_status_t etc. */
 
 #include "sgx_key_exchange.h"
+#include "sgx_trts.h"
 
 #include <stdlib.h> /* for size_t */
 
@@ -92,22 +93,6 @@ int SGX_UBRIDGE(SGX_CDECL, sgx_thread_setwait_untrusted_events_ocall, (const voi
 #ifndef SGX_THREAD_SET_MULTIPLE_UNTRUSTED_EVENTS_OCALL_DEFINED__
 #define SGX_THREAD_SET_MULTIPLE_UNTRUSTED_EVENTS_OCALL_DEFINED__
 int SGX_UBRIDGE(SGX_CDECL, sgx_thread_set_multiple_untrusted_events_ocall, (const void** waiters, size_t total));
-#endif
-#ifndef CREATE_SESSION_OCALL_DEFINED__
-#define CREATE_SESSION_OCALL_DEFINED__
-sgx_status_t SGX_UBRIDGE(SGX_NOCONVENTION, create_session_ocall, (uint32_t* sid, uint8_t* dh_msg1, uint32_t dh_msg1_size, uint32_t timeout));
-#endif
-#ifndef EXCHANGE_REPORT_OCALL_DEFINED__
-#define EXCHANGE_REPORT_OCALL_DEFINED__
-sgx_status_t SGX_UBRIDGE(SGX_NOCONVENTION, exchange_report_ocall, (uint32_t sid, uint8_t* dh_msg2, uint32_t dh_msg2_size, uint8_t* dh_msg3, uint32_t dh_msg3_size, uint32_t timeout));
-#endif
-#ifndef CLOSE_SESSION_OCALL_DEFINED__
-#define CLOSE_SESSION_OCALL_DEFINED__
-sgx_status_t SGX_UBRIDGE(SGX_NOCONVENTION, close_session_ocall, (uint32_t sid, uint32_t timeout));
-#endif
-#ifndef INVOKE_SERVICE_OCALL_DEFINED__
-#define INVOKE_SERVICE_OCALL_DEFINED__
-sgx_status_t SGX_UBRIDGE(SGX_NOCONVENTION, invoke_service_ocall, (uint8_t* pse_message_req, uint32_t pse_message_req_size, uint8_t* pse_message_resp, uint32_t pse_message_resp_size, uint32_t timeout));
 #endif
 
 sgx_status_t enclave_enclave_init_ra(sgx_enclave_id_t eid, sgx_status_t* retval, int b_pse, sgx_ra_context_t* p_context);
