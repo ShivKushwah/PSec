@@ -3,6 +3,7 @@ enclave {
     from "sgx_tkey_exchange.edl" import *;
 
     include "sgx_key_exchange.h"
+    include "sgx_trts.h"
 
     trusted {
         /* define ECALLs here. */
