@@ -1,3 +1,11 @@
+machine TempMachine {
+    start state Initial {
+        entry {
+            print "Temp machine created to prevent first call from influencing results"
+        }
+    }
+}
+
 machine MeasureMachine {
     start state Initial {
         entry {
