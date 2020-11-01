@@ -73,6 +73,7 @@ machine ClientWebBrowser {
             send bankSSM, MeasureEvent2, (fst = 1, snd = GetHelloWorld());
 
             print "Done!";
+            EXIT();
 
             // send bankSSM, UNTRUSTEDReceiveRegistrationCredentials, credentials;
         }
