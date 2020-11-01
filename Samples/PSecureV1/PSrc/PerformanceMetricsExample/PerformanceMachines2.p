@@ -1,7 +1,7 @@
 machine TempMachine {
     start state Initial {
         entry {
-            print "Temp machine created to prevent first call from influencing results"
+            print "Temp machine created to prevent first call from influencing results";
         }
     }
 }
