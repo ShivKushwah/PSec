@@ -1,3 +1,21 @@
+machine MeasureMachine {
+    start state Initial {
+        entry {
+            print "MEASURE UNTRUSTED CREATE END:";
+            MeasureTime();
+        }
+    }
+}
+
+secure_machine MeasureMachine2 {
+    start state Initial {
+        entry {
+            print "MEASURE UNTRUSTED CREATE SSM END:";
+            MeasureTime();
+        }
+    }
+}
+
 secure_machine ClientEnclave {
     var masterSecret: secure_StringType;
     var clientUSM : machine_handle;

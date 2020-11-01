@@ -7,16 +7,8 @@ machine UntrustedInitializer {
             handler = new MeasureMachine();
             print "MEASURE UNTRUSTED CREATE SSM START:";
             MeasureTime();
+            handler = new MeasureMachine2();
             handler = new TrustedInitializer() @ this;
-        }
-    }
-}
-
-machine MeasureMachine {
-    start state Initial {
-        entry {
-            print "MEASURE UNTRUSTED CREATE END:";
-            MeasureTime();
         }
     }
 }
@@ -27,8 +19,6 @@ secure_machine TrustedInitializer {
     var bankSSM: secure_machine_handle;
     start state Initial {
         entry {
-            print "MEASURE UNTRUSTED CREATE SSM END:";
-            MeasureTime();
             clientUSM = new ClientWebBrowser();
             bankSSM = new BankEnclave() @ this;
             send bankSSM, TRUSTEDProvisionBankSSM, Endorse(clientUSM) as secure_machine_handle; //secure_send
