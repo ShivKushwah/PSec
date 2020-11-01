@@ -2,7 +2,7 @@ machine UntrustedInitializer {
     var handler: machine_handle;
     start state Initial {
         entry {
-            handler = TempMachine();
+            handler = new TempMachine();
             print "MEASURE UNTRUSTED CREATE START:";
             MeasureTime();
             handler = new MeasureMachine();
