@@ -7,10 +7,20 @@ machine TempMachine {
 }
 
 machine MeasureMachine {
+    var usm: machine_handle;
     start state Initial {
         entry {
             print "MEASURE UNTRUSTED CREATE END:";
             MeasureTime();
+        }
+        on BankPublicIDEvent do (payload: machine_handle) {
+            usm = payload;
+            print "MEASURE UNTRUSTED USM SEND START:";
+            MeasureTime();
+            send usm, MeasureEvent1, (fst = 1, snd = GetHelloWorld());
+            print "MEASURE UNTRUSTED USM SEND 2 START:";
+            MeasureTime();
+            send usm, MeasureEvent2, (fst = 1, snd = GetHelloWorld());
         }
     }
 }

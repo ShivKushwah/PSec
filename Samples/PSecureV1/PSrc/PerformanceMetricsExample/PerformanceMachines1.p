@@ -6,6 +6,16 @@ machine UntrustedInitializer {
             print "MEASURE UNTRUSTED CREATE START:";
             MeasureTime();
             handler = new MeasureMachine();
+            send handler, BankPublicIDEvent, this;            
+        }
+        on MeasureEvent1 do (payload: (fst:int, snd:StringType)) {
+            print "MEASURE UNTRUSTED USM SEND END:";
+            MeasureTime();
+        }
+        on MeasureEvent2 do (payload: (fst:int, snd:StringType)) {
+            print "MEASURE UNTRUSTED USM SEND 2 END:";
+            MeasureTime();
+
             print "MEASURE UNTRUSTED CREATE SSM START:";
             MeasureTime();
             handler = new MeasureMachine2();
