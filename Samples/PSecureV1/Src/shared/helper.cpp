@@ -765,7 +765,7 @@ PRT_VALUE** deserializeStringToPrtValue(int numArgs, char* strOriginal, int payl
         
         if (payloadType == PRT_VALUE_KIND_INT || payloadType == PRT_VALUE_KIND_SECURE_INT || payloadType == PRT_VALUE_KIND_FOREIGN || payloadType == PRT_VALUE_KIND_BOOL || payloadType == PRT_VALUE_KIND_SECURE_BOOL) {
             ocall_print("Processing Primitative Type:");
-            printRSAKey(strOriginal);
+            // printRSAKey(strOriginal);
             int numProcessedInHelper;
             values[i] = deserializeHelper(strOriginal, &numProcessedInHelper);
             *numCharactersProcessed = numProcessedInHelper;
