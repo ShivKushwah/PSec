@@ -2120,7 +2120,7 @@ void decryptAndSendInternalMessageHelper(char* requestingMachineIDKey, char* rec
         memcpy(g_mac, mac, SIZE_OF_MAC);
 
         char* actualEncryptedMessage = encryptedMessage + strlen(encryptedMessageSize) + 1;
-        decryptedMessage = (char*) malloc(atoi(encryptedMessageSize));
+        decryptedMessage = (char*) malloc(atoi(encryptedMessageSize) + SGX_RSA3072_KEY_SIZE + 1);
         #ifdef ENCLAVE_STD_ALT
         sgx_status_t status = sgx_rijndael128GCM_decrypt(&g_region_key, (const uint8_t*) actualEncryptedMessage, atoi(encryptedMessageSize), (uint8_t*)decryptedMessage, (const uint8_t*) iv, SIZE_OF_IV, NULL, 0, &g_mac);
         #else
