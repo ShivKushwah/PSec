@@ -41,6 +41,7 @@ secure_machine SecureVotingClientMachine
     }
 
     state ValidateResults {
+        ignore TRUSTEDeRespConfirmVote;
         entry {
             send bulletinBoard, TRUSTEDeGetElectionResults, this; //secure_send
         }
