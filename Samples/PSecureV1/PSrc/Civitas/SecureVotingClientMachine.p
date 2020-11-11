@@ -25,10 +25,15 @@ secure_machine SecureVotingClientMachine
     state SubmitVote {
         entry (payload: (credential : StringType, vote : int, requestingMachine : machine_handle)) {
             var secure_vote: secure_int;
+            var i : int;
+            i = 0;
             requestingMachine = payload.requestingMachine;
             secure_vote = Endorse(payload.vote) as secure_int;
             credential = Endorse(payload.credential) as secure_StringType;
-            send ballotBox, TRUSTEDeVote, (credential = credential, vote = Endorse(payload.vote) as secure_int, requestingMachine = this); //secure_send
+            while (i < 5) {
+                send ballotBox, TRUSTEDeVote, (credential = credential, vote = Endorse(payload.vote) as secure_int, requestingMachine = this); //secure_send
+                i = i + 1;
+            }
         }
         on TRUSTEDeRespConfirmVote goto ValidateResults with {
             print "Vote successfully submitted to the ballot box";
