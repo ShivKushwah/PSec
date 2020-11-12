@@ -806,6 +806,7 @@ sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_
     );
     if (status != SGX_SUCCESS) {
         ocall_print("Error in signing string!");
+        ocall_print_int(status);
     } else {
         ocall_print("Message signed successfully!");
     }
