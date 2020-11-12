@@ -787,8 +787,8 @@ bool verifySignature(char* message, int message_size, sgx_rsa3072_signature_t* s
 
 //Responsibility of caller to free signature
 sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_key_t *private_key) {
-
-    sgx_rsa3072_signature_t* signatureMessage = (sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));
+    sgx_rsa3072_signature_t* signatureMessage = NULL;
+    signatureMessage = (sgx_rsa3072_signature_t*) malloc(sizeof(sgx_rsa3072_signature_t));
     uint8_t* p_data = (uint8_t*) message;
     uint32_t data_size = size;
 
@@ -807,6 +807,13 @@ sgx_rsa3072_signature_t* signStringMessage(char* message, int size, sgx_rsa3072_
     if (status != SGX_SUCCESS) {
         ocall_print("Error in signing string!");
         ocall_print_int(status);
+        ocall_print_int(data_size);
+        if (!signatureMessage) {
+            ocall_print("malloc allocation for signature message failed");
+        }
+        ocall_print("message was ");
+        ocall_print(message);
+        
     } else {
         ocall_print("Message signed successfully!");
     }
