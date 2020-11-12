@@ -27,7 +27,7 @@ machine SecureSupervisorMachine
 
             //We send 1 because this is how many votes we need to be submitted
             //before the election is considered finished
-            send bBox, TRUSTEDeStartElection, 10; //send
+            send bBox, TRUSTEDeStartElection, 15; //send
 
             goto SendVotingClientMachinesOrValidateCredentials;
         }
