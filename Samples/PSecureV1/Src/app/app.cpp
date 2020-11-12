@@ -191,6 +191,9 @@ int main(int argc, char const *argv[]) {
     startPrtProcessIfNotStarted();
     initKPS();
     initApp();
+    // Place the measurement of the enclave into metadata_info.txt
+    system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
+    
     if (!isKpsProcess) {
         // if distributed host machine, start threads that wait for network messages on appropiate ports
         start_socket_network_handler();
@@ -203,8 +206,7 @@ int main(int argc, char const *argv[]) {
             }
         }
     } else {
-        // Place the measurement of the enclave into metadata_info.txt
-        system("sgx_sign dump -enclave enclave.signed.so -dumpfile metadata_info.txt");
+        
 
         //if KPS process, start threads that wait for attestation and other network messages for KPS and keep main process running forever
         start_socket_attestation_network_handler();
