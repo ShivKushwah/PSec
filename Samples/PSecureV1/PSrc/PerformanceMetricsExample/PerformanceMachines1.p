@@ -1,7 +1,9 @@
 machine UntrustedInitializer {
     var handler: machine_handle;
+    var numSends: int;
     start state Initial {
         entry {
+            numSends = 0;
             handler = new TempMachine();
             print "MEASURE UNTRUSTED CREATE START:";
             MeasureTime();
@@ -9,12 +11,15 @@ machine UntrustedInitializer {
             send handler, BankPublicIDEvent, this;            
         }
         on MeasureEvent1 do (payload: (fst:int, snd:StringType)) {
-            print "MEASURE UNTRUSTED USM SEND END:";
-            MeasureTime();
+            numSends = numSends + 1;
+            if (numSends >= 20) {
+                print "MEASURE UNTRUSTED USM SEND END:";
+                MeasureTime();
+            }
         }
         on MeasureEvent2 do (payload: (fst:int, snd:StringType)) {
-            print "MEASURE UNTRUSTED USM SEND 2 END:";
-            MeasureTime();
+            // print "MEASURE UNTRUSTED USM SEND 2 END:";
+            // MeasureTime();
 
             print "MEASURE UNTRUSTED CREATE SSM START:";
             MeasureTime();
@@ -51,6 +56,8 @@ secure_machine BankEnclave {
 
     state ReceiveClientUSM {
         on TRUSTEDProvisionBankSSM do (payload: secure_machine_handle) {
+            var numSends : int;
+            numSends = 0;
             clientUSM = Declassify(payload) as machine_handle;
 
             print "MEASURE TRUSTED CREATE START:";
@@ -58,9 +65,12 @@ secure_machine BankEnclave {
             clientSSM = new ClientEnclave() @ clientUSM;
             print "MEASURE TRUSTED SEND START:";
             MeasureTime();
-            send clientSSM, TRUSTEDMeasureEvent1, (fst = Endorse(1) as secure_int, snd = Endorse(GetHelloWorld()) as secure_StringType);
-            print "MEASURE TRUSTED SEND 2 START:";
-            MeasureTime();
+            while (numSends < 20) {
+                send clientSSM, TRUSTEDMeasureEvent1, (fst = Endorse(1) as secure_int, snd = Endorse(GetHelloWorld()) as secure_StringType);
+                numSends = numSends + 1;
+            }
+            // print "MEASURE TRUSTED SEND 2 START:";
+            // MeasureTime();
             send clientSSM, TRUSTEDMeasureEvent2, (fst = Endorse(1) as secure_int, snd = Endorse(GetHelloWorld()) as secure_StringType);
 
             // 

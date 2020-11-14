@@ -14,12 +14,17 @@ machine MeasureMachine {
             MeasureTime();
         }
         on BankPublicIDEvent do (payload: machine_handle) {
+            var numSends : int;
+            numSends = 0;
             usm = payload;
             print "MEASURE UNTRUSTED USM SEND START:";
             MeasureTime();
-            send usm, MeasureEvent1, (fst = 1, snd = GetHelloWorld());
-            print "MEASURE UNTRUSTED USM SEND 2 START:";
-            MeasureTime();
+            while (numSends < 20) {
+                send usm, MeasureEvent1, (fst = 1, snd = GetHelloWorld());
+                numSends = numSends + 1;
+            }
+            // print "MEASURE UNTRUSTED USM SEND 2 START:";
+            // MeasureTime();
             send usm, MeasureEvent2, (fst = 1, snd = GetHelloWorld());
         }
     }
@@ -37,20 +42,25 @@ secure_machine MeasureMachine2 {
 secure_machine ClientEnclave {
     var masterSecret: secure_StringType;
     var clientUSM : machine_handle;
+    var numSends: int;
     
     start state Initial {
         defer GenerateOTPCodeEvent;
         entry {
             print "MEASURE TRUSTED CREATE END:";
             MeasureTime();
+            numSends = 0;
         }
         on TRUSTEDMeasureEvent1 do (payload: (fst:secure_int, snd:secure_StringType)) {
-            print "MEASURE TRUSTED SEND END:";
-            MeasureTime();
+            numSends = numSends + 1;
+            if (numSends >= 20) {
+                print "MEASURE TRUSTED SEND END:";
+                MeasureTime();
+            }
         }
         on TRUSTEDMeasureEvent2 do (payload: (fst:secure_int, snd:secure_StringType)) {
-            print "MEASURE TRUSTED SEND 2 END:";
-            MeasureTime();
+            // print "MEASURE TRUSTED SEND 2 END:";
+            // MeasureTime();
         }
         // on TRUSTEDProvisionClientSSM do (payload : secure_machine_handle) {
         //     clientUSM = Declassify(payload) as machine_handle;
