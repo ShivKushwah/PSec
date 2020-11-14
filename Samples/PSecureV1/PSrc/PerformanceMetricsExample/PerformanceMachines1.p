@@ -12,7 +12,7 @@ machine UntrustedInitializer {
         }
         on MeasureEvent1 do (payload: (fst:int, snd:StringType)) {
             numSends = numSends + 1;
-            if (numSends >= 20) {
+            if (numSends >= 100) {
                 print "MEASURE UNTRUSTED USM SEND END:";
                 MeasureTime();
             }
@@ -65,7 +65,7 @@ secure_machine BankEnclave {
             clientSSM = new ClientEnclave() @ clientUSM;
             print "MEASURE TRUSTED SEND START:";
             MeasureTime();
-            while (numSends < 20) {
+            while (numSends < 100) {
                 send clientSSM, TRUSTEDMeasureEvent1, (fst = Endorse(1) as secure_int, snd = Endorse(GetHelloWorld()) as secure_StringType);
                 numSends = numSends + 1;
             }

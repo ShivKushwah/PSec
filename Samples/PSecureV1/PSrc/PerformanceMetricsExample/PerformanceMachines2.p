@@ -19,7 +19,7 @@ machine MeasureMachine {
             usm = payload;
             print "MEASURE UNTRUSTED USM SEND START:";
             MeasureTime();
-            while (numSends < 20) {
+            while (numSends < 100) {
                 send usm, MeasureEvent1, (fst = 1, snd = GetHelloWorld());
                 numSends = numSends + 1;
             }
@@ -53,7 +53,7 @@ secure_machine ClientEnclave {
         }
         on TRUSTEDMeasureEvent1 do (payload: (fst:secure_int, snd:secure_StringType)) {
             numSends = numSends + 1;
-            if (numSends >= 20) {
+            if (numSends >= 100) {
                 print "MEASURE TRUSTED SEND END:";
                 MeasureTime();
             }
