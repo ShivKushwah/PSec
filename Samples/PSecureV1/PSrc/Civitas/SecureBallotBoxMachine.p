@@ -36,20 +36,26 @@ secure_machine SecureBallotBoxMachine
             currentNumberOfVotes = 0;
         }
         on TRUSTEDeVote do (payload: (credential : secure_StringType, vote : secure_int, requestingMachine : secure_machine_handle))
-        {
-            send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote); //secure_send
-            receive {
-                case TRUSTEDeRespAddItem : (result: secure_bool) {
-                    if(Declassify(result) as bool)
-                    {
-                        send payload.requestingMachine, TRUSTEDeRespConfirmVote; //secure_send
-                        currentNumberOfVotes = currentNumberOfVotes + 1;
+        { 
+            if (currentNumberOfVotes == 0) {
+                send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote); //secure_send
+                receive {
+                    case TRUSTEDeRespAddItem : (result: secure_bool) {
+                        if(Declassify(result) as bool)
+                        {
+                            send payload.requestingMachine, TRUSTEDeRespConfirmVote; //secure_send
+                            currentNumberOfVotes = currentNumberOfVotes + 1;
+                        }
                     }
                 }
+            } else {
+                send payload.requestingMachine, TRUSTEDeRespConfirmVote; //secure_send
             }
+
             if (currentNumberOfVotes >= numberOfTotalVotesAllowed) {
                 goto VoteCounting;
             }
+            
             // if ($) {
             //     goto VoteCounting;
             // }

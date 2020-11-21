@@ -37,16 +37,21 @@ machine SecureBallotBoxMachine
         }
         on TRUSTEDeVote do (payload: (credential : StringType, vote : int, requestingMachine : machine_handle))
         {
-            send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote); //send
-            receive {
-                case TRUSTEDeRespAddItem : (result: bool) {
-                    if(result)
-                    {
-                        send payload.requestingMachine, TRUSTEDeRespConfirmVote; //send
-                        currentNumberOfVotes = currentNumberOfVotes + 1;
+            if (currentNumberOfVotes == 0) {
+                send appendOnlyLog, TRUSTEDeAddItem, (credential = payload.credential, vote = payload.vote); //send
+                receive {
+                    case TRUSTEDeRespAddItem : (result: bool) {
+                        if(result)
+                        {
+                            send payload.requestingMachine, TRUSTEDeRespConfirmVote; //send
+                            currentNumberOfVotes = currentNumberOfVotes + 1;
+                        }
                     }
                 }
+            } else {
+                send payload.requestingMachine, TRUSTEDeRespConfirmVote; //send
             }
+            
             if (currentNumberOfVotes >= numberOfTotalVotesAllowed) {
                 goto VoteCounting;
             }
