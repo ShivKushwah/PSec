@@ -117,11 +117,12 @@ machine ClientWebBrowser {
                 case AuthSuccess : {
                     if (numCodesGenerated > 15) {
                         goto Done;
+                    } else {
+                        numCodesGenerated = numCodesGenerated + 1;
+                        // username = GetUsernameInput();
+                        // password = GetPasswordInput();
+                        goto RequestOTPCodeGeneration;
                     }
-                    numCodesGenerated = numCodesGenerated + 1;
-                    username = GetUsernameInput();
-                    password = GetPasswordInput();
-                    goto RequestOTPCodeGeneration;
                 }
                 case AuthFailure : {
                     print "Authentication Failed!";
