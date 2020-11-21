@@ -112,8 +112,6 @@ machine ClientWebBrowser {
 
     state ValidateOTPCode {
         entry {
-            username = GetUsernameInput();
-            password = GetPasswordInput();
             send bankSSM, UNTRUSTEDAuthenticateRequest, (Username = username, Password = password, OTPCode = OTPCode); //untrusted_send
             receive {
                 case AuthSuccess : {
@@ -121,6 +119,8 @@ machine ClientWebBrowser {
                         goto Done;
                     }
                     numCodesGenerated = numCodesGenerated + 1;
+                    username = GetUsernameInput();
+                    password = GetPasswordInput();
                     goto RequestOTPCodeGeneration;
                 }
                 case AuthFailure : {
