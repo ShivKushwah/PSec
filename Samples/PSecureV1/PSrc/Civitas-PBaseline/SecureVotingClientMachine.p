@@ -30,7 +30,7 @@ machine SecureVotingClientMachine
             requestingMachine = payload.requestingMachine;
             secure_vote = payload.vote;
             credential = payload.credential;
-            while (i < 30) {
+            while (i < 50) {
                 send ballotBox, TRUSTEDeVote, (credential = credential, vote = payload.vote, requestingMachine = this); //send
                 i = i + 1;
             }
