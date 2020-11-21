@@ -50,6 +50,7 @@ secure_machine SecureBallotBoxMachine
                 }
             } else {
                 send payload.requestingMachine, TRUSTEDeRespConfirmVote; //secure_send
+                currentNumberOfVotes = currentNumberOfVotes + 1;
             }
 
             if (currentNumberOfVotes >= numberOfTotalVotesAllowed) {
