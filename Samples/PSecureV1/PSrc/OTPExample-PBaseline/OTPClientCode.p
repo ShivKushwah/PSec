@@ -115,7 +115,7 @@ machine ClientWebBrowser {
             unencrypted_send bankSSM, UNTRUSTEDAuthenticateRequest, (Username = username, Password = password, OTPCode = OTPCode); //untrusted_unencrypted_send
             receive {
                 case AuthSuccess : {
-                    if (numCodesGenerated > 15) {
+                    if (numCodesGenerated > 1) {
                         goto Done;
                     } else {
                         numCodesGenerated = numCodesGenerated + 1;
