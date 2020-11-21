@@ -30,7 +30,7 @@ secure_machine SecureVotingClientMachine
             requestingMachine = payload.requestingMachine;
             secure_vote = Endorse(payload.vote) as secure_int;
             credential = Endorse(payload.credential) as secure_StringType;
-            while (i < 40) {
+            while (i < 35) {
                 send ballotBox, TRUSTEDeVote, (credential = credential, vote = Endorse(payload.vote) as secure_int, requestingMachine = this); //secure_send
                 i = i + 1;
             }
