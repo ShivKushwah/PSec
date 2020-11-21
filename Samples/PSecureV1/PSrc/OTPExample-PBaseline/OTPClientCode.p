@@ -70,17 +70,23 @@ machine ClientWebBrowser {
             
             clientSSM = payload;
             print "Client Web Browser: Enter Credentials to login to bank!\n";
-            goto RequestOTPCodeGeneration;
+            goto CheckEnclave;
         }
     }
 
-    state RequestOTPCodeGeneration {
+    state CheckEnclave {
         entry {
             var machineTypeToValidate : string;
             machineTypeToValidate = "ClientEnclave";
             // if (localAuthenticate(clientSSM, machineTypeToValidate)) {
             //     print "Authenticated installed enclave!";
             // }
+            goto RequestOTPCodeGeneration;
+        }
+    }
+
+    state RequestOTPCodeGeneration {
+        entry {
             unencrypted_send clientSSM, GenerateOTPCodeEvent, password; //untrusted_unencrypted_send
             receive {
                 case OTPCodeEvent : (payload : StringType) {
