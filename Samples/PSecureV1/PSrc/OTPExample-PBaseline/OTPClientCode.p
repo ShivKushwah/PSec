@@ -38,6 +38,7 @@ machine ClientWebBrowser {
     var username: StringType;
     var password: StringType;
     var OTPCode: StringType;
+    var numCodesGenerated: int;
 
     start state Initial {
         defer PublicIDEvent;
@@ -67,6 +68,8 @@ machine ClientWebBrowser {
         entry (payload: machine_handle) {
             print "MEASURE BASELINE START:";
             MeasureTime();
+
+            numCodesGenerated = 0;
             
             clientSSM = payload;
             print "Client Web Browser: Enter Credentials to login to bank!\n";
@@ -112,7 +115,11 @@ machine ClientWebBrowser {
             unencrypted_send bankSSM, UNTRUSTEDAuthenticateRequest, (Username = username, Password = password, OTPCode = OTPCode); //untrusted_unencrypted_send
             receive {
                 case AuthSuccess : {
-                    goto Done;
+                    if (numCodesGenerated > 5) {
+                        goto Done;
+                    }
+                    numCodesGenerated = numCodesGenerated + 1;
+                    goto RequestOTPCodeGeneration;
                 }
                 case AuthFailure : {
                     print "Authentication Failed!";
