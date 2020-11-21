@@ -2790,7 +2790,7 @@ extern "C" PRT_VALUE* P_Hash_IMPL(PRT_MACHINEINST* context, PRT_VALUE*** argRefs
     memcpy(combined + SIZE_OF_PRT_STRING_SERIALIZED, (void*) val2, SIZE_OF_PRT_STRING_SERIALIZED);
 
     long hash = hashFn((unsigned char*)combined, SIZE_OF_PRT_STRING_SERIALIZED*2);
-    char* hashString = (char*) malloc(10);
+    char* hashString = (char*) malloc(SIZE_OF_PRT_STRING_SERIALIZED);
     itoa((int)hash, hashString, 10); 
 
     // strncat((char*) val, (char*) val2, SGX_RSA3072_KEY_SIZE + 1); //TODO shividentity
