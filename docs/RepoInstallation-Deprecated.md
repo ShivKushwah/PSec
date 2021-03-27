@@ -1,7 +1,5 @@
 # PSec Repo Installation
 
-This instruction set assumes you have setup Docker with Intel SGX. It's highly recommended to follow [these SGX + Docker installation instructions](docs/SGXInstallation.md) for compatibility. Alternatively, you can use follow the [deprecated instructions](docs/SGXInstallation-Deprecated.md) if you want to avoid using Docker.
-
 Build Instructions Below:
 
 ```shell
