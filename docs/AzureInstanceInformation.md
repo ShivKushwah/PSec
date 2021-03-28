@@ -85,3 +85,5 @@ API Version: 2017-03-30
 ![Image 1](AzureInstance1.png)
 
 ![Image 2](AzureInstance2.png)
+
+![Image 3](AzureInstance3.png)
