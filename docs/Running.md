@@ -3,7 +3,7 @@
 ### Docker Setup
 If you are running without docker, follow the legacy instructions [here](Running-Deprecated.md). Otherwise, this documentation assumes you have installed using our recommended instructions.
 
-- Run `docker ps -a` and find the name of the container with the "sgx_sample" image and the "sgx_aesm". For the remainder of the instructions, we are assuming the name of the "sgx_sample" container was "gracious_gates" and "sgx_aesm" was "sweet_grothendieck".
+- Run `docker ps -a` and find the name of the container with the "sgx_sample" image and the "sgx_aesm" image. For the remainder of the instructions, we are assuming the name of the "sgx_sample" container was "gracious_gates" and "sgx_aesm" was "sweet_grothendieck".
 - Ensure the "sgx_sample" and "sgx_aesm" docker containers are running (in 2 separate terminal windows, you will need to re-ssh). If they are already running, you can skip the below command.
 ```shell
 docker start -a -i gracious_gates
@@ -62,7 +62,7 @@ For all commands above, replace `{...}` with the requested value.
 If the `@` command is used in the PSec code, this overrides the provided commandline creation locations (e.g. `{DistributedHost1IPAddress:DistributedHost1Port}=[PSecMachine1,PSecMachine2,...]`) and this `PSecMachine` is created in the distributed host specified by the `@` command.
 
 ##### Example Deployments
-Before running any of the samples below, create 3 additional terminals and login to docker "sgx_sample":
+Before running any of the samples below, create 3 additional terminals and login to the "sgx_sample" docker instance:
 
 In each tab, if you wish to run in simulation mode, do the following:
 1. Run the custom source command for the Intel SGX environment: `source /opt/intel/sgxsdk/environment`

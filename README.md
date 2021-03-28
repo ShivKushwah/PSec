@@ -11,8 +11,8 @@ A programming language for writing secure distributed systems by leveraging Inte
 [**Presentation Video**](https://youtu.be/QS-BgX-e180) [3-20-2020]
 
 ##### Build Instructions:  
-Follow [this](docs/SGXInstallation.md) if Intel SGX + Docker is not installed [Recommended for compatibility].  
-Follow [this](docs/RepoInstallation.md) if building this project on a pre-existing Intel SGX + Docker installation.
+Follow [this](docs/SGXInstallation.md) if Intel SGX and Docker are not installed [Recommended for compatibility].  
+Follow [this](docs/RepoInstallation.md) if building this project on a pre-existing Intel SGX and Docker installation.
 
 ##### Running Instructions:
 In order to run sample programs, follow [this](docs/Running.md).

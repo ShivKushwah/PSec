@@ -1,6 +1,6 @@
 # PSec Repo Installation
 
-This instruction set assumes you have setup Docker with Intel SGX. It's highly recommended to follow [these SGX + Docker installation instructions](docs/SGXInstallation.md) for compatibility. Alternatively, you can use follow the [deprecated instructions](docs/SGXInstallation-Deprecated.md) if you want to avoid using Docker.
+This instruction set assumes you have setup Docker with Intel SGX. It's highly recommended to follow [these SGX + Docker installation instructions](docs/SGXInstallation.md) for compatibility. Alternatively, you can use follow the [deprecated instructions](docs/SGXInstallation-Deprecated.md) if you want to avoid using Docker and already have a pre-existing Intel SGX installation.
 
 - Run `docker ps -a` and find the name of the container with the "sgx_sample" image. For the remainder of the instructions, we are assuming the name of this container was "gracious_gates"
 
@@ -60,12 +60,13 @@ ENGINESDIR: "/usr/lib/x86_64-linux-gnu/engines-1.1"
 Seeding source: os-specific
 ```
 
+# Next Steps
 In order to run sample programs, follow [this](Running.md) next.
 
-# Testing Instructions
+# Installation Testing Instructions
 To test installation,  first change the selected sample to "PERFORMANCE_METRICS_EXAMPLE" (see [this](Running.md)).
 
-- Run `docker ps -a` and find the name of the container with the "sgx_sample" image and the "sgx_aesm". For the remainder of the instructions, we are assuming the name of the "sgx_sample" container was "gracious_gates" and "sgx_aesm" was "sweet_grothendieck".
+- Run `docker ps -a` and find the name of the container with the "sgx_sample" image and the "sgx_aesm" image. For the remainder of the instructions, we are assuming the name of the "sgx_sample" container was "gracious_gates" and "sgx_aesm" was "sweet_grothendieck".
 - Ensure the "sgx_sample" and "sgx_aesm" docker containers are running (in 2 separate terminal windows, you will need to re-ssh). If they are already running, you can skip the below command.
 ```shell
 docker start -a -i gracious_gates

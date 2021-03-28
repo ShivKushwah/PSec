@@ -3,7 +3,7 @@ This installation process was tested on new Azure Confidential Compute Instances
 
 After this installation process, Intel SGX should work with both simulation and hardware mode programs.
 
-### Install SGX Packages on Docker
+### Install SGX using Docker
 ```shell
 # Tested on a fresh Azure instance with username shivendra
 # Initial directory is home directory
@@ -68,7 +68,7 @@ cd docker/build
 Next, you need to modify the following files:
 - `vim` into `docker-compose.yml`, `build_and_run_aesm_docker.sh`, and `build_and_run_sample_docker.sh`
 - Replace all instance of "/dev/sgx/enclave" with "/dev/isgx" and remove all instances of "/dev/sgx/provision" and "--device=/dev/sgx/provision" in `docker-compose.yml`, `build_and_run_aesm_docker.sh`, and `build_and_run_sample_docker.sh`
-- Add to `build_and_run_sample_docker.sh` the following command: “— network host” and “--cap-add=SYS_PTRACE --security-opt seccomp=unconfined”. The final command should be `docker run --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --env http_proxy --env https_proxy --network host --device=/dev/isgx -v aesmd-socket:/var/run/aesmd -it sgx_sample`
+- Add to `build_and_run_sample_docker.sh` the following command: “—-network host” and “--cap-add=SYS_PTRACE --security-opt seccomp=unconfined”. The final command should be `docker run --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --env http_proxy --env https_proxy --network host --device=/dev/isgx -v aesmd-socket:/var/run/aesmd -it sgx_sample`
 
 To test the installation,
 - Run `./build_and_run_aesm_docker.sh`
