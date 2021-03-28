@@ -3,6 +3,7 @@
 JSON configuration:
 
 Resource ID: `/subscriptions/d410b223-1c4c-4783-912f-b7b0acfe9f3e/resourcegroups/shiv-temp/providers/Microsoft.Compute/virtualMachines/shiv-azure3`
+API Version: 2017-03-30
 ```shell
 {
     "name": "shiv-azure3",
