@@ -1,5 +1,5 @@
 # Intel SGX Installation
-This installation process was tested on new Azure Confidential Compute Instances (Standard DC2s\_v2 instances with 2 vcpus and 8 GiB memory) running on 3.7GHz Intel Xeon E-2176G Processors with SGX technology on Ubuntu 18.04. For ease of installation, create 2 virtual machines that are connected to the same virtual network where the first VM has a local IP address of 10.0.0.4 while the second one has a local IP address of 10.0.0.5.
+This installation process was tested on new Azure Confidential Compute Instances (Standard DC2s\_v2 instances with 2 vcpus and 8 GiB memory) running on 3.7GHz Intel Xeon E-2176G Processors with SGX technology on Ubuntu 18.04. For ease of installation, create 2 virtual machines that are connected to the same virtual network where the first VM has a local IP address of 10.0.0.4 while the second one has a local IP address of 10.0.0.5. See [this](AzureInstanceInformation.md) for more information.
 
 After this installation process, Intel SGX should work with both simulation and hardware mode programs.
 
