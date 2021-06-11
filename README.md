@@ -1,14 +1,16 @@
 # The PSec Programming Language
 
-A programming language for writing secure distributed systems by leveraging Intel SGX. Built on top of the P programming language for distributed systems, located [here](https://github.com/p-org/P).
+A programming language for writing secure distributed systems by leveraging Intel SGX. Built on top of the [P programming language](https://github.com/p-org/P) for distributed systems.
 
-[**Conference Paper (Coming soon!)**](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2020/EECS-2020-83.html) [3-24-2021]
+[**Asia CCS 2021 Conference Paper**](https://dl.acm.org/doi/10.1145/3433210.3453113) [5-24-2021]
+
+[**Conference Presentation**](https://youtu.be/HO_bTjuSyZk) [7-7-2021]
+
+[**Conference Presentation Slides**](https://docs.google.com/presentation/d/1Z9GsMF3SJEn_ZwNQ-pQURpnAcxE5U-Ndlwq8fRTZ3zQ/edit?usp=sharing) [7-7-2021]
 
 [**Master's Thesis**](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2020/EECS-2020-83.html) [5-28-2020]
 
-[**Presentation**](https://docs.google.com/presentation/d/1Paf3SXun9uCw4QMuHtezIfzKtVLJAu1-0ZgFQ4BKVM4/edit?usp=sharing) [4-14-2020]
-
-[**Presentation Video**](https://youtu.be/QS-BgX-e180) [3-20-2020]
+[**Learn&Verify Group Presentation Video**](https://youtu.be/QS-BgX-e180) [3-20-2020]
 
 ##### Build Instructions:  
 Follow [this](docs/SGXInstallation.md) if Intel SGX and Docker are not installed [Recommended for compatibility].  
